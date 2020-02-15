@@ -1,38 +1,42 @@
+import fetch from 'isomorphic-unfetch'
 import React from 'react'
 import Head from 'next/head'
 import Nav from '../components/nav'
+
+const topLevelLinks = () => {
+  return [
+    { href: 'https://github.com/drewstone', label: 'GitHub' },
+  ].map(link => ({
+    ...link,
+    key: `nav-link-${link.href}-${link.label}`,
+  }));
+};
 
 const Home = () => (
   <div>
     <Head>
       <title>Home</title>
       <link rel="icon" href="/favicon.ico" />
+      <link rel="stylesheet"
+        href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+        integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
+        crossorigin="anonymous" />
     </Head>
 
-    <Nav />
+    <Nav links={topLevelLinks()} hasFlex={true} />
 
     <div className="hero">
-      <h1 className="title">Welcome to Next.js!</h1>
+      <h1 className="title">A blog or personal site</h1>
       <p className="description">
-        To get started, edit <code>pages/index.js</code> and save to reload.
+        Hi, I'm Drew Stone.
       </p>
 
-      <div className="row">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
+      <div class="pure-g">
+        <div class="pure-u-1-4"><p></p></div>
+        <div class="pure-u-1-2">
+          <Nav links={topLevelLinks()} hasFlex={true}/>
+        </div>
+        <div class="pure-u-1-4"><p></p></div>
       </div>
     </div>
 
@@ -46,7 +50,7 @@ const Home = () => (
         width: 100%;
         padding-top: 80px;
         line-height: 1.15;
-        font-size: 48px;
+        font-size: 30px;
       }
       .title,
       .description {

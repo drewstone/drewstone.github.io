@@ -1,15 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-const links = [
-  { href: 'https://zeit.co/now', label: 'ZEIT' },
-  { href: 'https://github.com/zeit/next.js', label: 'GitHub' },
-].map(link => ({
-  ...link,
-  key: `nav-link-${link.href}-${link.label}`,
-}))
-
-const Nav = () => (
+const Nav = ({ hasFlex, links }) => (
   <nav>
     <ul>
       <li>
@@ -34,20 +26,20 @@ const Nav = () => (
         text-align: center;
       }
       ul {
-        display: flex;
-        justify-content: space-between;
+        ${hasFlex ? 'display: flex;': ''}
+        margin-left: 20%;
       }
       nav > ul {
         padding: 4px 16px;
       }
       li {
         display: flex;
-        padding: 6px 8px;
+        padding: 6px 8px
       }
       a {
         color: #067df7;
         text-decoration: none;
-        font-size: 13px;
+        font-size: 20px;
       }
     `}</style>
   </nav>
