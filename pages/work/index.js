@@ -21,10 +21,6 @@ const Work = () => (
       <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
     </Head>
 
-    <Nav links={formatLinks([
-      { href: 'https://github.com/drewstone', label: 'Github' }
-    ])} hasFlex={true} />
-
     <div className="hero">
       <div className="row">
         <div className="pure-g">
