@@ -1,7 +1,7 @@
-import fetch from 'isomorphic-unfetch'
-import React from 'react'
-import Head from 'next/head'
-import Nav from '../components/nav'
+import fetch from 'isomorphic-unfetch';
+import React from 'react';
+import Head from 'next/head';
+import Nav from '../../components/nav';
 
 const formatLinks = (links) => {
   return links.map(link => ({
@@ -10,10 +10,10 @@ const formatLinks = (links) => {
   }));
 }
 
-const Home = () => (
+const Academia = () => (
   <div>
     <Head>
-      <title>Home</title>
+      <title>Academia</title>
       <link rel="icon" href="/favicon.ico" />
       <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
         integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
@@ -28,22 +28,22 @@ const Home = () => (
     <div className="hero">
       <div className="row">
         <div className="pure-g">
-          <h1 className="title">Welcome</h1>
+          <h1 className="title">Academia</h1>
           <div className="pure-u-1-4">
             <Nav links={formatLinks([])} hasFlex={false}/>
           </div>
           <div className="pure-u-1-2">
             <div className="row-content">
               <p className="description">
-                <b>ME:</b> Hi, I'm Drew Stone. Here you'll find some thoughts, books I'm reading,
-                and random things in my life.
+                <b>ACADEMIA:</b> I started and dropped my PhD at The Hebrew University of Jerusalem under Aviv Zohar.
+                I studied mechanism design, voting theory, and adversarial behavior in cryptocurrency protocols.
               </p>
             </div>
             <div className="row-content">
               <p className="description">
-                I enjoy reading books, running, cooking, and eating sushi. I work remotely and am
-                learning to embrace a more nomadic lifestyle. I find traveling to be an immensely
-                liberating way of life.
+                Prior, I finished my BSE in <a href="https://www.nets.upenn.edu/">NETS</a> and Masters at the University of Pennsylvania advised
+                by <a href="https://www.cis.upenn.edu/~aaroth/">Aaron Roth</a> and <a href="https://www.cis.upenn.edu/~mkearns/">Michael Kearns</a> on
+                the <b><i>Theoretical Foundations of Blockchain Protocols</i></b>.
               </p>
             </div>
           </div>
@@ -104,4 +104,4 @@ const Home = () => (
   </div>
 )
 
-export default Home
+export default Academia

@@ -1,15 +1,25 @@
 import React from 'react'
 import Link from 'next/link'
 
-const Nav = ({ hasFlex, links }) => (
+const Nav = ({ hasFlex, links = [] }) => (
   <nav>
     <ul>
       <li>
         <Link href="/">
           <a>Home</a>
+        </Link>ֿֿ
+      </li>
+      <li>
+        <Link href="/work">
+          <a>Work</a>
         </Link>
       </li>
-      {links.map(({ key, href, label }) => (
+      <li>
+        <Link href="/academia">
+          <a>Academia</a>
+        </Link>
+      </li>
+      {links.length > 0 && links.map(({ key, href, label }) => (
         <li key={key}>
           <a href={href}>{label}</a>
         </li>
@@ -17,11 +27,6 @@ const Nav = ({ hasFlex, links }) => (
     </ul>
 
     <style jsx>{`
-      :global(body) {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir,
-          Helvetica, sans-serif;
-      }
       nav {
         text-align: center;
       }
@@ -34,7 +39,8 @@ const Nav = ({ hasFlex, links }) => (
       }
       li {
         display: flex;
-        padding: 6px 8px
+        padding: 6px 8px;
+        font-family: 'Roboto Mono', monospace;
       }
       a {
         color: #067df7;
