@@ -69,11 +69,11 @@ const Books = () => (
               </div>
               <div className="description">
                 <input id="cb" type="checkbox" checked={true}/>
-                Checked while boxes indicate books I'm currently reading
+                Checked white boxes indicate books I'm currently reading
               </div>
               <div className="description">
                 <input id="cb" type="checkbox"/>
-                Unchecked while boxes indicate books I hope to read soon
+                Unchecked white boxes indicate books I hope to read soon
               </div>
               <ul>
                 <li>
