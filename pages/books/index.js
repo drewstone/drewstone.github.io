@@ -81,7 +81,7 @@ const Books = () => (
                 {
                   amReading().map((book, inx) => (
                     <li className={"card"} key={inx}>
-                      <input id="cb" type="checkbox" checked={true} disabled/>
+                      <input id="cb" type="checkbox" checked={true}/>
                       {book}
                     </li>
                   ))
