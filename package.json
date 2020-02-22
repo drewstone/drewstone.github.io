@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "rm -rf node_modules/.cache && rimraf out && next build && next export && touch out/.nojekyll && touch out/CNAME && echo \"drewst.one\" >> out/CNAME && gh-pages -d out"
+    "deploy": "rm -rf node_modules/.cache && rimraf out && next build && next export && touch out/.nojekyll && touch out/CNAME && echo \"drewst.one\" >> out/CNAME && gh-pages -d out --branch master"
   },
   "dependencies": {
     "@mdx-js/loader": "^1.5.5",

@@ -10,6 +10,31 @@ const formatLinks = (links) => {
   }));
 }
 
+const haveRead = () => ([
+  'Wild Sheep Chase',
+  'The Jew and The Lotus',
+  'Joyful Wisdom',
+  'What I Talk About When I Talk About Running',
+  'Exhalation',
+  'The Pisces',
+  'Man\'s Search for Meaning (audio)',
+  'Principles (audio)',
+  'How to Change Your Mind',
+])
+
+const amReading = () => ([
+  'Killing Commendator',
+  'Shrinks (audio)',
+  'Adaptive Markets (audio)',
+  'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel',
+]);
+
+const planneingToRead = () => ([
+  'Barbarian Days',
+  'Radical Acceptance',
+  'Good Profit',
+]);
+
 const Books = () => (
   <div>
     <Head>
@@ -46,74 +71,26 @@ const Books = () => (
               </ul>
               <ul className="pure-controls">
                 {
-                  [{
-                    book: 'Wild Sheep Chase',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'The Jew and The Lotus',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'Joyful Wisdom',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'What I Talk About When I Talk About Running',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'Exhalation',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'The Pisces',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'Man\'s Search for Meaning (audio)',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'Principles (audio)',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'How to Change Your Mind',
-                    reading: true,
-                    finished: true,
-                  }, {
-                    book: 'Killing Comendator',
-                    reading: true,
-                    finished: false,
-                  }, {
-                    book: 'Shrinks (audio)',
-                    reading: true,
-                    finished: false,
-                  }, {
-                    book: 'Adaptive Markets (audio)',
-                    reading: true,
-                    finished: false,
-                  }, {
-                    book: 'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel',
-                    reading: true,
-                    finished: false,
-                  }, {
-                    book: 'Barbarian Days',
-                    reading: false,
-                    finished: false,
-                  }, {
-                    book: 'Radical Acceptance',
-                    reading: false,
-                    finished: false,
-                  }, {
-                    book: 'Good Profit',
-                    reading: false,
-                    finished: false,
-                  }].map((elt, inx) => (
-                    <li className={(elt.finished) ? "card-grey" : "card"} key={inx}>
-                          <input id="cb" type="checkbox" checked={elt.reading}/>
-                          {elt.book}
+                  haveRead().map((book, inx) => (
+                    <li className={"card-grey"} key={inx}>
+                      <input id="cb" type="checkbox" checked={true} disabled/>
+                      {book}
+                    </li>
+                  ))
+                }
+                {
+                  amReading().map((book, inx) => (
+                    <li className={"card"} key={inx}>
+                      <input id="cb" type="checkbox" checked={true} disabled/>
+                      {book}
+                    </li>
+                  ))
+                }
+                {
+                  planneingToRead().map((book, inx) => (
+                    <li className={"card"} key={inx}>
+                      <input id="cb" type="checkbox" />
+                      {book}
                     </li>
                   ))
                 }
