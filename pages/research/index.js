@@ -10,10 +10,10 @@ const formatLinks = (links) => {
   }));
 }
 
-const Work = () => (
+const Research = () => (
   <div>
     <Head>
-      <title>Work</title>
+      <title>Research</title>
       <link rel="icon" href="/favicon.ico" />
       <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
         integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
@@ -24,8 +24,8 @@ const Work = () => (
     <div className="hero">
       <div className="row">
         <div className="pure-g">
-          <h1 className="title">Work</h1>
-          <div className="pure-u-1-4">
+          <h1 className="title">Research</h1>
+          <div className="pure-u-1-6">
             <Nav links={formatLinks([
               { href: '/', label: 'Home' },
               { href: '/books', label: 'Books' },
@@ -33,22 +33,31 @@ const Work = () => (
               { href: '/research', label: 'Research'}
             ])} hasFlex={false}/>
           </div>
-          <div className="pure-u-1-2">
+          <div className="pure-u-5-6">
             <div className="row-content">
               <p className="description">
-                Currently, I am the CTO and a cofounder of <a href="https://commonwealth.im">Commonwealth Labs</a>.
-                I am also the technical lead and project maintainer of <a href="https://edgewa.re">Edgeware</a>.
+                In 2018, I started and eventually dropped my PhD in Computer Science at The Hebrew University of Jerusalem under <a href="https://www.avivz.net/">Aviv Zohar</a>.
+                I studied <b>mechanism design</b>, <b>voting theory</b>, and <b>adversarial behavior in cryptocurrency protocols</b>.
+                I was particularly interested in incentive compatible, token weighted voting mechanisms for on-chain governance. However,
+                I struggled to find incentive compatible parameter selection mechanisms. While my mechanisms did have nice properties even
+                under rational deviations, I discontinued the research to focus on other interests. I still am interested in novel
+                mechanisms for blockchain parameter selection and often think about the usefulness of learning theory and control theory
+                in maintaing the stability of these systems in the presence of rational agents.
               </p>
             </div>
             <div className="row-content">
               <p className="description">
-                I spend some time building privacy focused applications for blockchains, integrating zero knowledge tools
-                into smart contracts and blockchain runtimes. I'm interested in using blockchains to <i><b>"act"</b></i> anonymously
-                from mixing tokens to voting to creating social content.
+                I graduated from the University of Pennsylvania where I studied <a href="https://www.nets.upenn.edu/">NETS</a> and completed my
+                Masters in mathematics under the advisors <a href="https://www.cis.upenn.edu/~aaroth/">Aaron Roth</a> and&nbsp;	 
+                <a href="https://www.cis.upenn.edu/~mkearns/">Michael Kearns</a> on the <b>Theoretical Foundations of Blockchain Protocols</b>.
+                The thesis blended topics from such as algebraic topology, the theory of consensus protocols, and ultimately game theory.
+                My original contribution can be found in the paper <a href="https://arxiv.org/abs/1804.06836">Delayed Blockchain Protocols</a>,&nbsp;
+                where I adapted traditional proof of work systems with a combination of delayed rewards and fraud proofs to disincentivize
+                double-spend attacks with slashing penalties. I evaluated subgame perfect equilibria of my adapted mechanism and provided lower
+                bounds on the profit for rational deviations for any arbitrary delayed reward.
               </p>
             </div>
           </div>
-          <div className="pure-u-1-4"></div>
         </div>
       </div>
     </div>
@@ -105,4 +114,4 @@ const Work = () => (
   </div>
 )
 
-export default Work
+export default Research

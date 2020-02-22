@@ -4,24 +4,9 @@ import Link from 'next/link'
 const Nav = ({ hasFlex, links = [] }) => (
   <nav>
     <ul>
-      <li>
-        <Link href="/">
-          <a>Home</a>
-        </Link>ֿֿ
-      </li>
-      <li>
-        <Link href="/work">
-          <a>Work</a>
-        </Link>
-      </li>
-      <li>
-        <Link href="/academia">
-          <a>Academia</a>
-        </Link>
-      </li>
       {links.length > 0 && links.map(({ key, href, label }) => (
         <li key={key}>
-          <a href={href}>{label}</a>
+          <Link href={href}>{label}</Link>
         </li>
       ))}
     </ul>

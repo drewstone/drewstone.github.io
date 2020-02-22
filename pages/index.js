@@ -26,20 +26,33 @@ const Home = () => (
         <div className="pure-g">
           <h1 className="title">Welcome</h1>
           <div className="pure-u-1-4">
-            <Nav links={formatLinks([])} hasFlex={false}/>
+            <Nav links={formatLinks([
+              { href: '/', label: 'Home' },
+              { href: '/books', label: 'Books' },
+              { href: '/work', label: 'Work'},
+              { href: '/reserach', label: 'Research'}
+            ])} hasFlex={false}/>
           </div>
           <div className="pure-u-1-2">
             <div className="row-content">
               <p className="description">
-                <b>ME:</b> Hi, I'm Drew Stone. Here you'll find some thoughts, books I'm reading,
+                Hi, I'm Drew Stone. Here you'll find some thoughts, books I'm reading,
                 and random things in my life.
               </p>
             </div>
             <div className="row-content">
               <p className="description">
-                I enjoy reading books, running, cooking, and eating sushi. I work remotely and am
-                learning to embrace a more nomadic lifestyle. I find traveling to be an immensely
-                liberating way of life.
+                I enjoy running, cooking, and especially eating sushi. I work remotely and am
+                learning to embrace a more nomadic lifestyle, traveling ever more as time permits.
+                You can find me in cities such as New York, Tel Aviv, Tokyo, Berlin, and more. Shoot me
+                a message at my twitter <a href="https://twitter.com/drew___stone">drew___stone</a> if
+                you want to get in touch or meet up sometime!
+              </p>
+            </div>
+            <div className="row-content">
+              <p className="description">
+                For email inquiries, you can contact my work
+                email <a href="mailto:drew@commonwealth.im">drew@commonwealth.im</a>.
               </p>
             </div>
           </div>
