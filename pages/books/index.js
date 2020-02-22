@@ -62,8 +62,19 @@ const Books = () => (
             <div className="row-content">
               <p className="description">
                 Here you can find what I've read and am currently reading, this list starts from the year 2020.
-                Books that I am currently reading are checked, while books that I have finished are greyed out.
               </p>
+              <div className="description">
+                <input id="cb" type="checkbox" checked={true} disabled/>
+                Disabled grey boxes indicate books I've finished
+              </div>
+              <div className="description">
+                <input id="cb" type="checkbox" checked={true}/>
+                Checked while boxes indicate books I'm currently reading
+              </div>
+              <div className="description">
+                <input id="cb" type="checkbox"/>
+                Unchecked while boxes indicate books I hope to read soon
+              </div>
               <ul>
                 <li>
                   <a>2020</a>
