@@ -1,6 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
 
+const formatLinks = (links) => {
+  return links.map(link => ({
+    ...link,
+    key: `nav-link-${(link.href) ? link.href : ''}-${link.label}`,
+  }));
+}
+
 const Nav = ({ hasFlex, links = [] }) => (
   <nav>
     <ul>
@@ -38,4 +45,15 @@ const Nav = ({ hasFlex, links = [] }) => (
   </nav>
 )
 
-export default Nav
+const getNav = (hasFlex) => {
+  return (
+    <Nav links={formatLinks([
+      { href: '/', label: 'Home' },
+      { href: '/books', label: 'Books' },
+      { href: '/work', label: 'Work'},
+      { href: '/research', label: 'Research'}
+    ])} hasFlex={hasFlex}/>
+  );
+}
+export default getNav;
+

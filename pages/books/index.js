@@ -3,13 +3,6 @@ import React from 'react';
 import Head from 'next/head';
 import Nav from '../../components/nav';
 
-const formatLinks = (links) => {
-  return links.map(link => ({
-    ...link,
-    key: `nav-link-${(link.href) ? link.href : ''}-${link.label}`,
-  }));
-}
-
 const haveRead = () => ([
   { title: 'Wild Sheep Chase', href: 'https://www.amazon.com/Wild-Sheep-Chase-Novel/dp/037571894X' },
   { title: 'The Jew in the Lotus: A Poet\'s Rediscovery of Jewish Identity in Buddhist India', href: 'https://www.amazon.com/Jew-Lotus-Rediscovery-Identity-Buddhist-ebook/dp/B000Z4JQNS' },
@@ -48,20 +41,12 @@ const Books = () => (
         crossorigin="anonymous" />
       <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
     </Head>
-
+    { Nav(true) }
     <div className="hero">
       <div className="row">
         <div className="pure-g">
           <h1 className="title">Books</h1>
-          <div className="read pure-u-1-4">
-            <Nav links={formatLinks([
-              { href: '/', label: 'Home' },
-              { href: '/books', label: 'Books' },
-              { href: '/work', label: 'Work'},
-              { href: '/research', label: 'Research'}
-            ])} hasFlex={false}/>
-          </div>
-          <div className="pure-u-3-4">
+          <div className="pure-u-1-1">
             <div className="row-content">
               <p className="description">
                 Here you can find what I've read and am currently reading, this list starts from the year 2020.
@@ -91,8 +76,10 @@ const Books = () => (
                       <input id="cb" type="checkbox" checked={true} disabled readOnly/>
                         {book.title}
                       </div>
-                      <div className="read pure-u-1-8">
-                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      <div className="pure-u-1-8">
+                        <div className="read-link">
+                          <center><a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a></center>
+                        </div>
                       </div>
                     </li>
                   ))
@@ -104,8 +91,10 @@ const Books = () => (
                       <input id="cb" type="checkbox" checked={true} readOnly/>
                         {book.title}
                       </div>
-                      <div className="read pure-u-1-8">
-                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      <div className="pure-u-1-8">
+                        <div className="read-link">
+                          <center><a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a></center>
+                        </div>
                       </div>
                     </li>
                   ))
@@ -117,8 +106,10 @@ const Books = () => (
                         <input id="cb" type="checkbox" readOnly/>
                         {book.title}
                       </div>
-                      <div className="read pure-u-1-8">
-                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      <div className="pure-u-1-8">
+                        <div className="read-link">
+                          <center><a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a></center>
+                        </div>
                       </div>
                     </li>
                   ))
@@ -155,10 +146,13 @@ const Books = () => (
       }
       .row {
         max-width: 880px;
-        margin: 80px auto 40px;
+        margin: 20px auto 40px;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
+      }
+      .row-content {
+        margin: 0 0.5rem;
       }
       .card {
         padding: 9px 9px 12px;
@@ -206,15 +200,19 @@ const Books = () => (
       a {
         color: #067df7;
         text-decoration: none;
-        font-size: 20px;
       }
       .book-title {
         width: 100%;
+        margin-right: 0.2rem;
       }
       .read {
-        display: inline-block;
-        margin-left:auto;
-        margin-right:0;
+        background-color: blue;
+      }
+      .read-link {
+        margin: -5px;
+        border: thick solid #add8e6;
+        border-radius: 25px;
+        background-color: white;
       }
     `}</style>
   </div>

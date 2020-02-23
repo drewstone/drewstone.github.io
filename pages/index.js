@@ -3,13 +3,6 @@ import React from 'react'
 import Head from 'next/head'
 import Nav from '../components/nav'
 
-const formatLinks = (links) => {
-  return links.map(link => ({
-    ...link,
-    key: `nav-link-${(link.href) ? link.href : ''}-${link.label}`,
-  }));
-}
-
 const Home = () => (
   <div>
     <Head>
@@ -20,20 +13,12 @@ const Home = () => (
         crossorigin="anonymous" />
       <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
     </Head>
-
+    { Nav(true) }
     <div className="hero">
       <div className="row">
         <div className="pure-g">
           <h1 className="title">Welcome</h1>
-          <div className="pure-u-1-4">
-            <Nav links={formatLinks([
-              { href: '/', label: 'Home' },
-              { href: '/books', label: 'Books' },
-              { href: '/work', label: 'Work'},
-              { href: '/research', label: 'Research'}
-            ])} hasFlex={false}/>
-          </div>
-          <div className="pure-u-1-2">
+          <div className="pure-u-1-1">
             <div className="row-content">
               <p className="description">
                 Hi, I'm Drew Stone. Here you'll find some thoughts, books I'm reading,
@@ -56,7 +41,6 @@ const Home = () => (
               </p>
             </div>
           </div>
-          <div className="pure-u-1-4"></div>
         </div>
       </div>
     </div>
@@ -86,10 +70,13 @@ const Home = () => (
       }
       .row {
         max-width: 880px;
-        margin: 80px auto 40px;
+        margin: 20px auto 40px;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
+      }
+      .row-content {
+        margin: 0 0.5rem;
       }
       .card {
         padding: 18px 18px 24px;

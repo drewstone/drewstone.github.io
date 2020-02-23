@@ -3,13 +3,6 @@ import React from 'react';
 import Head from 'next/head';
 import Nav from '../../components/nav';
 
-const formatLinks = (links) => {
-  return links.map(link => ({
-    ...link,
-    key: `nav-link-${(link.href) ? link.href : ''}-${link.label}`,
-  }));
-}
-
 const Work = () => (
   <div>
     <Head>
@@ -20,20 +13,12 @@ const Work = () => (
         crossorigin="anonymous" />
       <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
     </Head>
-
+    { Nav(true) }
     <div className="hero">
       <div className="row">
         <div className="pure-g">
           <h1 className="title">Work</h1>
-          <div className="pure-u-1-4">
-            <Nav links={formatLinks([
-              { href: '/', label: 'Home' },
-              { href: '/books', label: 'Books' },
-              { href: '/work', label: 'Work'},
-              { href: '/research', label: 'Research'}
-            ])} hasFlex={false}/>
-          </div>
-          <div className="pure-u-1-2">
+          <div className="pure-u-1-1">
             <div className="row-content">
               <p className="description">
                 Currently, I am the CTO and a cofounder of <a href="https://commonwealth.im">Commonwealth Labs</a>.
@@ -48,12 +33,15 @@ const Work = () => (
               </p>
             </div>
           </div>
-          <div className="pure-u-1-4"></div>
         </div>
       </div>
     </div>
 
     <style jsx>{`
+      html, button, input, select, textarea,
+      .pure-g [class *= "pure-u"] {
+          font-family: 'Roboto Mono', monospace;
+      }
       .hero {
         width: 100%;
         color: #333;
@@ -74,10 +62,13 @@ const Work = () => (
       }
       .row {
         max-width: 880px;
-        margin: 80px auto 40px;
+        margin: 20px auto 40px;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
+      }
+      .row-content {
+        margin: 0 0.5rem;
       }
       .card {
         padding: 18px 18px 24px;
