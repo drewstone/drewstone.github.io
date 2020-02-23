@@ -11,28 +11,31 @@ const formatLinks = (links) => {
 }
 
 const haveRead = () => ([
-  'Wild Sheep Chase',
-  'The Jew and The Lotus',
-  'Joyful Wisdom',
-  'What I Talk About When I Talk About Running',
-  'Exhalation',
-  'The Pisces',
-  'Man\'s Search for Meaning (audio)',
-  'Principles (audio)',
-  'How to Change Your Mind',
+  { title: 'Wild Sheep Chase', href: 'https://www.amazon.com/Wild-Sheep-Chase-Novel/dp/037571894X' },
+  { title: 'The Jew in the Lotus: A Poet\'s Rediscovery of Jewish Identity in Buddhist India', href: 'https://www.amazon.com/Jew-Lotus-Rediscovery-Identity-Buddhist-ebook/dp/B000Z4JQNS' },
+  { title: 'Joyful Wisdom', href: 'https://www.amazon.com/Joyful-Wisdom-Embracing-Finding-Freedom/dp/B00262UAYQ' },
+  { title: 'What I Talk About When I Talk About Running', href: 'https://www.amazon.com/What-Talk-About-When-Running/dp/0307389839' },
+  { title: 'Exhalation', href: 'https://www.amazon.com/Exhalation-Stories-Ted-Chiang-ebook/dp/B07GD46PQZ' },
+  { title: 'The Pisces', href: 'https://www.amazon.com/Pisces-Novel-Melissa-Broder-ebook/dp/B074LVLHF2' },
+  { title: 'Man\'s Search for Meaning (audio)', href: 'https://www.amazon.com/Mans-Search-Meaning-Viktor-Frankl/dp/0807014273' },
+  { title: 'Principles (audio)', href: 'https://www.amazon.com/Simon-Schuster-Audio-Principles-Life/dp/B074B2CZJG' },
+  { title: 'How to Change Your Mind', href: 'https://www.amazon.com/Change-Your-Mind-Consciousness-Transcendence/dp/B07B1V3RF5' },
 ])
 
 const amReading = () => ([
-  'Killing Commendator',
-  'Shrinks (audio)',
-  'Adaptive Markets (audio)',
-  'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel',
+  { title: 'Killing Commendatore', href: 'https://www.amazon.com/dp/B079WM2HMV' },
+  { title: 'Shrinks (audio)', href: 'https://www.amazon.com/dp/B00LLIJ0OC' },
+  { title: 'Adaptive Markets (audio)', href: 'https://www.amazon.com/Adaptive-Markets-Financial-Evolution-Thought-ebook/dp/B07R4C6PDZ' },
+  { title: 'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel', href: 'https://www.amazon.com/Vagabonding-Uncommon-Guide-Long-Term-Travel-ebook/dp/B000FBFMKM' },
 ]);
 
 const planneingToRead = () => ([
-  'Barbarian Days',
-  'Radical Acceptance',
-  'Good Profit',
+  { title: 'Barbarian Days', href: 'https://www.amazon.com/dp/B00G3L6JMS' },
+  { title: 'Radical Acceptance', href: 'https://www.amazon.com/Radical-Acceptance-Tara-Brach-ebook/dp/B000FC2NHG' },
+  { title: 'Good Profit', href: 'https://www.amazon.com/Good-Profit-Creating-Successful-Companies-ebook/dp/B00TWEMGE8' },
+  { title: 'The Coming Anarchy', href: 'https://www.theatlantic.com/magazine/archive/1994/02/the-coming-anarchy/304670/' },
+  { title: 'The Long Boom: A History of the Future, 1980–2020', href: 'https://www.wired.com/1997/07/longboom/' },
+  { title: 'Sources of the Self: The Making of the Modern Identity', href: 'https://www.amazon.com/Sources-Self-Making-Modern-Identity/dp/0674824261' }
 ]);
 
 const Books = () => (
@@ -50,7 +53,7 @@ const Books = () => (
       <div className="row">
         <div className="pure-g">
           <h1 className="title">Books</h1>
-          <div className="pure-u-1-4">
+          <div className="read pure-u-1-4">
             <Nav links={formatLinks([
               { href: '/', label: 'Home' },
               { href: '/books', label: 'Books' },
@@ -64,15 +67,15 @@ const Books = () => (
                 Here you can find what I've read and am currently reading, this list starts from the year 2020.
               </p>
               <div className="description">
-                <input id="cb" type="checkbox" checked={true} disabled/>
+                <input id="cb" type="checkbox" checked={true} disabled readOnly/>
                 Disabled grey boxes indicate books I've finished
               </div>
               <div className="description">
-                <input id="cb" type="checkbox" checked={true}/>
+                <input id="cb" type="checkbox" checked={true} readOnly/>
                 Checked white boxes indicate books I'm currently reading
               </div>
               <div className="description">
-                <input id="cb" type="checkbox"/>
+                <input id="cb" type="checkbox" readOnly/>
                 Unchecked white boxes indicate books I hope to read soon
               </div>
               <ul>
@@ -84,24 +87,39 @@ const Books = () => (
                 {
                   haveRead().map((book, inx) => (
                     <li className={"card-grey"} key={inx}>
-                      <input id="cb" type="checkbox" checked={true} disabled/>
-                      {book}
+                      <div className="book-title pure-u-7-8">
+                      <input id="cb" type="checkbox" checked={true} disabled readOnly/>
+                        {book.title}
+                      </div>
+                      <div className="read pure-u-1-8">
+                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      </div>
                     </li>
                   ))
                 }
                 {
                   amReading().map((book, inx) => (
-                    <li className={"card"} key={inx}>
-                      <input id="cb" type="checkbox" checked={true}/>
-                      {book}
+                    <li className="card" key={inx}>
+                      <div className="book-title pure-u-7-8">
+                      <input id="cb" type="checkbox" checked={true} readOnly/>
+                        {book.title}
+                      </div>
+                      <div className="read pure-u-1-8">
+                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      </div>
                     </li>
                   ))
                 }
                 {
                   planneingToRead().map((book, inx) => (
-                    <li className={"card"} key={inx}>
-                      <input id="cb" type="checkbox" />
-                      {book}
+                    <li className="card" key={inx}>
+                      <div className="book-title pure-u-7-8">
+                        <input id="cb" type="checkbox" readOnly/>
+                        {book.title}
+                      </div>
+                      <div className="read pure-u-1-8">
+                        <a target="_blank" rel="noopener noreferrer" href={book.href}>Read</a>
+                      </div>
                     </li>
                   ))
                 }
@@ -113,6 +131,10 @@ const Books = () => (
     </div>
 
     <style jsx>{`
+      html, button, input, select, textarea,
+      .pure-g [class *= "pure-u"] {
+          font-family: 'Roboto Mono', monospace;
+      }
       .hero {
         width: 100%;
         color: #333;
@@ -146,7 +168,7 @@ const Books = () => (
         border: 1px solid #9b9b9b;
       }
       .card-grey {
-        padding: 9px 9px 12px;
+        padding: 9px 9px 9px;
         text-align: left;
         text-decoration: none;
         background-color: #F0F0F0;
@@ -185,6 +207,14 @@ const Books = () => (
         color: #067df7;
         text-decoration: none;
         font-size: 20px;
+      }
+      .book-title {
+        width: 100%;
+      }
+      .read {
+        display: inline-block;
+        margin-left:auto;
+        margin-right:0;
       }
     `}</style>
   </div>

@@ -30,7 +30,7 @@ const Home = () => (
               { href: '/', label: 'Home' },
               { href: '/books', label: 'Books' },
               { href: '/work', label: 'Work'},
-              { href: '/reserach', label: 'Research'}
+              { href: '/research', label: 'Research'}
             ])} hasFlex={false}/>
           </div>
           <div className="pure-u-1-2">
@@ -62,6 +62,10 @@ const Home = () => (
     </div>
 
     <style jsx>{`
+      html, button, input, select, textarea,
+      .pure-g [class *= "pure-u"] {
+          font-family: 'Roboto Mono', monospace;
+      }
       .hero {
         width: 100%;
         color: #333;

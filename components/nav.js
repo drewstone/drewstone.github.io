@@ -6,7 +6,9 @@ const Nav = ({ hasFlex, links = [] }) => (
     <ul>
       {links.length > 0 && links.map(({ key, href, label }) => (
         <li key={key}>
-          <Link href={href}>{label}</Link>
+          <Link href={href}>
+            <a>{label}</a>
+          </Link>
         </li>
       ))}
     </ul>
@@ -17,7 +19,7 @@ const Nav = ({ hasFlex, links = [] }) => (
       }
       ul {
         ${hasFlex ? 'display: flex;': ''}
-        margin-left: 20%;
+        margin-left: 10%;
       }
       nav > ul {
         padding: 4px 16px;
