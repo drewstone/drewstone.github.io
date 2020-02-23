@@ -1,7 +1,7 @@
-import fetch from 'isomorphic-unfetch';
 import React from 'react';
 import Head from 'next/head';
 import Nav from '../../components/nav';
+import Layout from '../../components/layout';
 
 const haveRead = () => ([
   { title: 'Wild Sheep Chase', href: 'https://www.amazon.com/Wild-Sheep-Chase-Novel/dp/037571894X' },
@@ -32,15 +32,8 @@ const planneingToRead = () => ([
 ]);
 
 const Books = () => (
-  <div>
-    <Head>
-      <title>Books</title>
-      <link rel="icon" href="/favicon.ico" />
-      <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
-        integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
-        crossorigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
-    </Head>
+  <Layout>
+    { Head('Books') }
     { Nav(true) }
     <div className="hero">
       <div className="row">
@@ -215,7 +208,7 @@ const Books = () => (
         background-color: white;
       }
     `}</style>
-  </div>
+  </Layout>
 )
 
 export default Books
