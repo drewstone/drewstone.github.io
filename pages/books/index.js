@@ -13,17 +13,18 @@ const haveRead = () => ([
   { title: 'Man\'s Search for Meaning (audio)', href: 'https://www.amazon.com/Mans-Search-Meaning-Viktor-Frankl/dp/0807014273' },
   { title: 'Principles (audio)', href: 'https://www.amazon.com/Simon-Schuster-Audio-Principles-Life/dp/B074B2CZJG' },
   { title: 'How to Change Your Mind', href: 'https://www.amazon.com/Change-Your-Mind-Consciousness-Transcendence/dp/B07B1V3RF5' },
+  { title: 'Killing Commendatore', href: 'https://www.amazon.com/dp/B079WM2HMV' },
+  { title: 'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel', href: 'https://www.amazon.com/Vagabonding-Uncommon-Guide-Long-Term-Travel-ebook/dp/B000FBFMKM' },
 ])
 
 const amReading = () => ([
-  { title: 'Killing Commendatore', href: 'https://www.amazon.com/dp/B079WM2HMV' },
   { title: 'Shrinks (audio)', href: 'https://www.amazon.com/dp/B00LLIJ0OC' },
   { title: 'Adaptive Markets (audio)', href: 'https://www.amazon.com/Adaptive-Markets-Financial-Evolution-Thought-ebook/dp/B07R4C6PDZ' },
-  { title: 'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel', href: 'https://www.amazon.com/Vagabonding-Uncommon-Guide-Long-Term-Travel-ebook/dp/B000FBFMKM' },
+  { title: 'The Handmaid\'s Tale', href: 'https://www.amazon.com/Handmaids-Tale-Margaret-Atwood/dp/038549081X/' },
+  { title: 'Barbarian Days', href: 'https://www.amazon.com/dp/B00G3L6JMS' },
 ]);
 
 const planneingToRead = () => ([
-  { title: 'Barbarian Days', href: 'https://www.amazon.com/dp/B00G3L6JMS' },
   { title: 'Radical Acceptance', href: 'https://www.amazon.com/Radical-Acceptance-Tara-Brach-ebook/dp/B000FC2NHG' },
   { title: 'Good Profit', href: 'https://www.amazon.com/Good-Profit-Creating-Successful-Companies-ebook/dp/B00TWEMGE8' },
   { title: 'The Coming Anarchy', href: 'https://www.theatlantic.com/magazine/archive/1994/02/the-coming-anarchy/304670/' },
@@ -44,16 +45,16 @@ const Books = () => (
               <p className="description">
                 Here you can find what I've read and am currently reading, this list starts from the year 2020.
               </p>
-              <div className="description">
-                <input id="cb" type="checkbox" checked={true} disabled readOnly/>
+              <div>
+                <input type="checkbox" checked={true} disabled readOnly/>
                 Disabled grey boxes indicate books I've finished
               </div>
-              <div className="description">
-                <input id="cb" type="checkbox" checked={true} readOnly/>
+              <div>
+                <input type="checkbox" checked={true} readOnly/>
                 Checked white boxes indicate books I'm currently reading
               </div>
-              <div className="description">
-                <input id="cb" type="checkbox" readOnly/>
+              <div>
+                <input type="checkbox" readOnly/>
                 Unchecked white boxes indicate books I hope to read soon
               </div>
               <ul>
@@ -187,8 +188,7 @@ const Books = () => (
       }
       input {
         float: left;
-        margin-top: 5px;
-        margin-right: 20px;
+        margin-right: 10px;
       }
       a {
         color: #067df7;
@@ -204,7 +204,7 @@ const Books = () => (
       .read-link {
         margin: -5px;
         border: thick solid #add8e6;
-        border-radius: 25px;
+        border-radius: 5px;
         background-color: white;
       }
     `}</style>

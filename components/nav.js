@@ -25,8 +25,8 @@ const Nav = ({ hasFlex, links = [] }) => (
         text-align: center;
       }
       ul {
+        justify-content: center;
         ${hasFlex ? 'display: flex;': ''}
-        margin-left: 10%;
       }
       nav > ul {
         padding: 4px 16px;
