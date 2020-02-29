@@ -1,36 +1,9 @@
 import React from 'react';
-import Head from 'next/head';
+import Head from '../../components/head';
 import Nav from '../../components/nav';
 import Layout from '../../components/layout';
+import { haveRead, amReading, planningToRead } from '../../components/readinglist';
 
-const haveRead = () => ([
-  { title: 'Wild Sheep Chase', href: 'https://www.amazon.com/Wild-Sheep-Chase-Novel/dp/037571894X' },
-  { title: 'The Jew in the Lotus: A Poet\'s Rediscovery of Jewish Identity in Buddhist India', href: 'https://www.amazon.com/Jew-Lotus-Rediscovery-Identity-Buddhist-ebook/dp/B000Z4JQNS' },
-  { title: 'Joyful Wisdom', href: 'https://www.amazon.com/Joyful-Wisdom-Embracing-Finding-Freedom/dp/B00262UAYQ' },
-  { title: 'What I Talk About When I Talk About Running', href: 'https://www.amazon.com/What-Talk-About-When-Running/dp/0307389839' },
-  { title: 'Exhalation', href: 'https://www.amazon.com/Exhalation-Stories-Ted-Chiang-ebook/dp/B07GD46PQZ' },
-  { title: 'The Pisces', href: 'https://www.amazon.com/Pisces-Novel-Melissa-Broder-ebook/dp/B074LVLHF2' },
-  { title: 'Man\'s Search for Meaning (audio)', href: 'https://www.amazon.com/Mans-Search-Meaning-Viktor-Frankl/dp/0807014273' },
-  { title: 'Principles (audio)', href: 'https://www.amazon.com/Simon-Schuster-Audio-Principles-Life/dp/B074B2CZJG' },
-  { title: 'How to Change Your Mind', href: 'https://www.amazon.com/Change-Your-Mind-Consciousness-Transcendence/dp/B07B1V3RF5' },
-  { title: 'Killing Commendatore', href: 'https://www.amazon.com/dp/B079WM2HMV' },
-  { title: 'Vagabonding: An Uncommon Guide to the Art of Long-Term World Travel', href: 'https://www.amazon.com/Vagabonding-Uncommon-Guide-Long-Term-Travel-ebook/dp/B000FBFMKM' },
-])
-
-const amReading = () => ([
-  { title: 'Shrinks (audio)', href: 'https://www.amazon.com/dp/B00LLIJ0OC' },
-  { title: 'Adaptive Markets (audio)', href: 'https://www.amazon.com/Adaptive-Markets-Financial-Evolution-Thought-ebook/dp/B07R4C6PDZ' },
-  { title: 'The Handmaid\'s Tale', href: 'https://www.amazon.com/Handmaids-Tale-Margaret-Atwood/dp/038549081X/' },
-  { title: 'Barbarian Days', href: 'https://www.amazon.com/dp/B00G3L6JMS' },
-]);
-
-const planneingToRead = () => ([
-  { title: 'Radical Acceptance', href: 'https://www.amazon.com/Radical-Acceptance-Tara-Brach-ebook/dp/B000FC2NHG' },
-  { title: 'Good Profit', href: 'https://www.amazon.com/Good-Profit-Creating-Successful-Companies-ebook/dp/B00TWEMGE8' },
-  { title: 'The Coming Anarchy', href: 'https://www.theatlantic.com/magazine/archive/1994/02/the-coming-anarchy/304670/' },
-  { title: 'The Long Boom: A History of the Future, 1980–2020', href: 'https://www.wired.com/1997/07/longboom/' },
-  { title: 'Sources of the Self: The Making of the Modern Identity', href: 'https://www.amazon.com/Sources-Self-Making-Modern-Identity/dp/0674824261' }
-]);
 
 const Books = () => (
   <Layout>
@@ -41,34 +14,29 @@ const Books = () => (
         <div className="pure-g">
           <h1 className="title">Books</h1>
           <div className="pure-u-1-1">
-            <div className="row-content">
+          <div className="row-content">
               <p className="description">
                 Here you can find what I've read and am currently reading, this list starts from the year 2020.
               </p>
-              <div>
+              <div className="description">
                 <input type="checkbox" checked={true} disabled readOnly/>
                 Disabled grey boxes indicate books I've finished
               </div>
-              <div>
+              <div className="description">
                 <input type="checkbox" checked={true} readOnly/>
                 Checked white boxes indicate books I'm currently reading
               </div>
-              <div>
+              <div className="description">
                 <input type="checkbox" readOnly/>
                 Unchecked white boxes indicate books I hope to read soon
               </div>
-              <ul>
-                <li>
-                  <a>2020</a>
-                </li>
-              </ul>
-              <ul className="pure-controls">
+              <ul className="pure-controls description">
                 {
                   haveRead().map((book, inx) => (
                     <li className={"card-grey"} key={inx}>
-                      <div className="book-title pure-u-7-8">
-                      <input id="cb" type="checkbox" checked={true} disabled readOnly/>
-                        {book.title}
+                      <div className="pure-u-7-8">
+                        <input id="cb" type="checkbox" checked={true} disabled readOnly/>
+                        <label className="book-title">{book.title}</label>
                       </div>
                       <div className="pure-u-1-8">
                         <div className="read-link">
@@ -81,9 +49,9 @@ const Books = () => (
                 {
                   amReading().map((book, inx) => (
                     <li className="card" key={inx}>
-                      <div className="book-title pure-u-7-8">
-                      <input id="cb" type="checkbox" checked={true} readOnly/>
-                        {book.title}
+                      <div className="pure-u-7-8">
+                        <input id="cb" type="checkbox" checked={true} readOnly/>
+                        <label className="book-title">{book.title}</label>
                       </div>
                       <div className="pure-u-1-8">
                         <div className="read-link">
@@ -94,11 +62,11 @@ const Books = () => (
                   ))
                 }
                 {
-                  planneingToRead().map((book, inx) => (
+                  planningToRead().map((book, inx) => (
                     <li className="card" key={inx}>
-                      <div className="book-title pure-u-7-8">
+                      <div className="pure-u-7-8">
                         <input id="cb" type="checkbox" readOnly/>
-                        {book.title}
+                        <label className="book-title">{book.title}</label>
                       </div>
                       <div className="pure-u-1-8">
                         <div className="read-link">
@@ -115,11 +83,7 @@ const Books = () => (
       </div>
     </div>
 
-    <style jsx>{`
-      html, button, input, select, textarea,
-      .pure-g [class *= "pure-u"] {
-          font-family: 'Roboto Mono', monospace;
-      }
+      <style jsx>{`
       .hero {
         width: 100%;
         color: #333;
@@ -127,11 +91,11 @@ const Books = () => (
       .title {
         margin: 0;
         width: 100%;
-        padding-top: 80px;
+        padding-top: 20px;
         line-height: 1.15;
         font-size: 30px;
         text-align: center;
-        font-family: 'Roboto Mono', serif;
+        font-family: 'Roboto Mono', monospace;
         letter-spacing: 0px;
       }
       .description {
@@ -168,44 +132,23 @@ const Books = () => (
       .card-grey:hover {
         border-color: #067df7;
       }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
-      }
       ul {
         padding-left: 0px;
       }
       li {
         display: flex;
-        font-family: 'Roboto Mono', monospace;
-      }
-      input {
-        float: left;
-        margin-right: 10px;
-      }
-      a {
-        color: #067df7;
-        text-decoration: none;
       }
       .book-title {
         width: 100%;
-        margin-right: 0.2rem;
-      }
-      .read {
-        background-color: blue;
+        font-family: 'Roboto Mono', monospace;
+        margin-left: 10px;
       }
       .read-link {
         margin: -5px;
         border: thick solid #add8e6;
         border-radius: 5px;
         background-color: white;
+        font-family: 'Roboto Mono', monospace;
       }
     `}</style>
   </Layout>

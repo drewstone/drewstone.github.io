@@ -40,11 +40,7 @@ const Research = () => (
       </div>
     </div>
 
-    <style jsx>{`
-      html, button, input, select, textarea,
-      .pure-g [class *= "pure-u"] {
-          font-family: 'Roboto Mono', monospace;
-      }
+      <style jsx>{`
       .hero {
         width: 100%;
         color: #333;
@@ -52,11 +48,11 @@ const Research = () => (
       .title {
         margin: 0;
         width: 100%;
-        padding-top: 80px;
+        padding-top: 20px;
         line-height: 1.15;
         font-size: 30px;
         text-align: center;
-        font-family: 'Roboto Mono', serif;
+        font-family: 'Roboto Mono', monospace;
         letter-spacing: 0px;
       }
       .description {
@@ -72,28 +68,6 @@ const Research = () => (
       }
       .row-content {
         margin: 0 0.5rem;
-      }
-      .card {
-        padding: 18px 18px 24px;
-        width: 220px;
-        text-align: left;
-        text-decoration: none;
-        color: #434343;
-        border: 1px solid #9b9b9b;
-      }
-      .card:hover {
-        border-color: #067df7;
-      }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
       }
     `}</style>
   </Layout>

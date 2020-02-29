@@ -9,7 +9,7 @@ const Header = (title) => (
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
       integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47"
       crossOrigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet" />
   </Head>
 );
 
