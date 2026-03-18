@@ -1,0 +1,145 @@
+---
+title: 'Convergence in Multi-Agent Review Loops'
+description: 'When you have AI agents writing and reviewing each other, how do you know when to stop? The math of iterative quality convergence.'
+date: 2026-03-10
+tags: ['math', 'agents', 'systems']
+---
+
+import Chart from '../../components/Chart.astro'
+
+There's a pattern I keep coming back to in multi-agent systems: the **draft-review-revise loop**. An agent writes something. Another agent scores it. The writer revises. Repeat. The question that matters is: *when do you stop?*
+
+## The setup
+
+Say you have a deliverable $d$ scored by $k$ reviewers across $n$ dimensions. Each reviewer $j$ assigns a score $s_{ij} \in [0, 100]$ on dimension $i$, weighted by $w_i$ where $\sum w_i = 1$. The aggregate score after round $r$ is:
+
+$$
+S(r) = \sum_{i=1}^{n} w_i \cdot \frac{1}{k} \sum_{j=1}^{k} s_{ij}(r)
+$$
+
+We converge when three conditions hold simultaneously:
+
+$$
+S(r) \geq S_{\min} \quad \land \quad \min_i \bar{s}_i(r) \geq S_{\text{dim}} \quad \land \quad \forall j: \text{approved}_j(r)
+$$
+
+In practice, $S_{\min} = 75$ and $S_{\text{dim}} = 60$ work well. The first prevents shipping mediocre work. The second prevents a deliverable that scores 90 on style but 40 on evidence. The minimum across all dimensions must clear its own threshold.
+
+## Plateau detection
+
+The harder problem is detecting when *more rounds won't help*. If you've done three revisions and the score is bouncing between 72 and 74, a fourth round isn't going to break through. We track a score history $H = [S(1), S(2), \ldots, S(r)]$ and declare a plateau when:
+
+$$
+\max(H_{\text{recent}}) - \min(H_{\text{recent}}) < \epsilon
+$$
+
+where $\epsilon = 3$ and $H_{\text{recent}}$ is the last $m$ rounds. This catches oscillation and stagnation without requiring a fixed round limit.
+
+## What convergence actually looks like
+
+Here's a simulation of three deliverables going through review-revise loops. The consulting memo converges fast. The research paper plateaus. The strategy deck needs more work.
+
+<Chart
+  id="convergence-chart"
+  code={`
+const W = 700, H = 340, pad = { t: 20, r: 30, b: 50, l: 55 }
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const border = style.getPropertyValue('--border').trim() || '#ddd'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+
+ctx.fillStyle = bg
+ctx.fillRect(0, 0, W, H)
+
+// data: score per round
+const series = [
+  { label: 'Consulting memo', color: '#111', data: [48, 62, 71, 78, 82, 84] },
+  { label: 'Research paper', color: '#888', data: [35, 51, 63, 68, 70, 71, 72, 71] },
+  { label: 'Strategy deck', color: '#bbb', data: [42, 55, 58, 64, 69, 73, 76, 79, 81] },
+]
+
+const maxRounds = 9
+const pw = W - pad.l - pad.r
+const ph = H - pad.t - pad.b
+
+function x(r) { return pad.l + (r / (maxRounds - 1)) * pw }
+function y(s) { return pad.t + (1 - (s - 20) / 80) * ph }
+
+// grid
+ctx.strokeStyle = border
+ctx.lineWidth = 0.5
+for (let s = 20; s <= 100; s += 20) {
+  ctx.beginPath(); ctx.moveTo(pad.l, y(s)); ctx.lineTo(W - pad.r, y(s)); ctx.stroke()
+}
+
+// threshold line
+ctx.strokeStyle = fg
+ctx.lineWidth = 1
+ctx.setLineDash([4, 4])
+ctx.beginPath(); ctx.moveTo(pad.l, y(75)); ctx.lineTo(W - pad.r, y(75)); ctx.stroke()
+ctx.setLineDash([])
+ctx.fillStyle = faint; ctx.font = '11px JetBrains Mono, monospace'
+ctx.textAlign = 'right'
+ctx.fillText('S_min = 75', W - pad.r - 4, y(75) - 6)
+
+// axes labels
+ctx.fillStyle = faint; ctx.font = '11px JetBrains Mono, monospace'
+ctx.textAlign = 'right'
+for (let s = 20; s <= 100; s += 20) {
+  ctx.fillText(s.toString(), pad.l - 8, y(s) + 4)
+}
+ctx.textAlign = 'center'
+for (let r = 0; r < maxRounds; r++) {
+  ctx.fillText('R' + (r + 1), x(r), H - pad.b + 20)
+}
+
+// series
+for (const s of series) {
+  ctx.strokeStyle = s.color; ctx.lineWidth = 2
+  ctx.beginPath()
+  s.data.forEach((v, i) => {
+    i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v))
+  })
+  ctx.stroke()
+  // dots
+  s.data.forEach((v, i) => {
+    ctx.beginPath(); ctx.arc(x(i), y(v), 3, 0, Math.PI * 2)
+    ctx.fillStyle = s.color; ctx.fill()
+  })
+  // label at end
+  const last = s.data[s.data.length - 1]
+  ctx.fillStyle = s.color; ctx.font = '11px JetBrains Mono, monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText(s.label, x(s.data.length - 1) + 8, y(last) + 4)
+}
+
+// axis lines
+ctx.strokeStyle = fg; ctx.lineWidth = 1
+ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke()
+
+container.appendChild(canvas)
+  `}
+/>
+
+The consulting memo crosses $S_{\min}$ at round 4 and converges at round 5. The research paper plateaus around 70-72 (the range over rounds 5-8 is less than 3), so we exit early rather than wasting compute. The strategy deck takes longer but gets there.
+
+## The cost function you're really optimizing
+
+Each revision round costs tokens. If the expected score gain per round is $\Delta S(r)$ and the cost per round is $C$, you're implicitly solving:
+
+$$
+\underset{r^*}{\arg\min} \; \left[ \max(0, S_{\min} - S(r^*)) \cdot \lambda + r^* \cdot C \right]
+$$
+
+where $\lambda$ is the penalty for not converging. In practice we don't solve this; the plateau detector handles it. But it's useful to think about: each round has diminishing returns, and the early rounds do most of the work. That first revision typically accounts for 35-45% of the total score improvement, and each subsequent round contributes less.
+
+## Reviewer disagreement is signal
+
+When two reviewers score the same dimension 85 and 45, the deliverable has a clarity problem. The argument reads differently depending on your priors. The revision prompt should target that specific dimension, not ask for a general improvement.
+
+Quality frameworks matter more than model choice. A mediocre model with a sharp rubric (specific dimensions, weighted, with concrete criteria) outperforms a frontier model with "rate this 1-10."

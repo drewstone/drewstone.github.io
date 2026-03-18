@@ -1,0 +1,169 @@
+---
+title: 'Sandboxes All the Way Down'
+description: 'AI agents need isolated compute. Building the infrastructure that provisions it, meters it, and stays out of the way.'
+date: 2026-03-15
+tags: ['infrastructure', 'agents', 'tangle']
+---
+
+import Chart from '../../components/Chart.astro'
+
+## Agents need sandboxes
+
+When I run Claude Code locally, it has access to my filesystem, my shell, my git config, my SSH keys. That's fine when I'm sitting here watching it. But the moment you want agents running autonomously (and I do), you need isolation.
+
+An agent exploring hypotheses about your codebase might `rm -rf node_modules` and reinstall to test a dependency theory. Locally, that's annoying. In production, with multiple agents sharing infrastructure, it's a disaster.
+
+At Tangle, this is what we build. Sandboxed compute for AI agents. Every agent session gets an isolated container with only the tools it needs, network access scoped to what's necessary, and a lifecycle that cleans up after itself. The hard part is speed: the sandbox can't get in the way of the vibecoding loop.
+
+## The speed problem
+
+Cold-starting a container with a full development toolchain takes 15 to 30 seconds. That's fine for a CI job. It's death for an interactive session where a developer is waiting to start coding.
+
+We solved this the same way iOS simulator provisioning works in our browser farm: pre-warmed templates. Instead of building a container from scratch, we snapshot a fully-provisioned container (toolchain installed, dependencies cached, sidecar running) and clone from the snapshot. Clone boot is under 5 seconds.
+
+But most sessions don't need a container at all. Someone opens the IDE, asks a question, and leaves. So we split sessions into two phases.
+
+**Discovery phase**: a lightweight agent handles the conversation with no container. It can answer questions, discuss architecture, plan an approach. Zero compute cost.
+
+**Orchestrator phase**: when the session actually needs to run code (build, test, deploy), a container provisions and the agent gets access to a real environment. The frontend upgrades its WebSocket connection transparently.
+
+This split means roughly 40% of sessions never touch a container. The economics matter at scale.
+
+## The lifecycle nobody thinks about
+
+Containers that aren't cleaned up accumulate.
+
+<Chart
+  id="lifecycle-chart"
+  code={`
+const W = 600, H = 200
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#1c1c1c'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#faf9f7'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const plans = [
+  { name: 'Free', idle: 5, cold: 30, vcpu: 1, mem: 1 },
+  { name: 'Starter', idle: 15, cold: 60, vcpu: 2, mem: 4 },
+  { name: 'Pro', idle: 30, cold: 120, vcpu: 4, mem: 8 },
+]
+
+const rowH = 45, top = 40, left = 80
+const scale = 3.5
+
+ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('minutes after last activity', left + 200, 22)
+
+ctx.strokeStyle = faint; ctx.lineWidth = 0.5
+for (let m = 0; m <= 120; m += 15) {
+  const x = left + m * scale
+  ctx.beginPath(); ctx.moveTo(x, top - 5); ctx.lineTo(x, top + plans.length * rowH); ctx.stroke()
+  ctx.fillStyle = faint; ctx.font = '9px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+  ctx.fillText(m + 'm', x, top + plans.length * rowH + 14)
+}
+
+plans.forEach((p, i) => {
+  const y = top + i * rowH
+  ctx.fillStyle = fg; ctx.font = 'bold 11px JetBrains Mono, monospace'; ctx.textAlign = 'right'
+  ctx.fillText(p.name, left - 10, y + 16)
+  ctx.fillStyle = faint; ctx.font = '9px JetBrains Mono, monospace'
+  ctx.fillText(p.vcpu + ' vCPU / ' + p.mem + 'GB', left - 10, y + 30)
+
+  ctx.fillStyle = fg; ctx.globalAlpha = 0.7
+  ctx.fillRect(left, y + 4, p.idle * scale, 22)
+  ctx.globalAlpha = 1
+
+  ctx.fillStyle = faint; ctx.globalAlpha = 0.3
+  ctx.fillRect(left + p.idle * scale, y + 4, (p.cold - p.idle) * scale, 22)
+  ctx.globalAlpha = 1
+
+  ctx.fillStyle = bg; ctx.font = '9px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+  if (p.idle * scale > 30) ctx.fillText('hot', left + p.idle * scale / 2, y + 19)
+
+  ctx.fillStyle = faint; ctx.font = '9px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+  const suspW = (p.cold - p.idle) * scale
+  if (suspW > 50) ctx.fillText('suspended', left + p.idle * scale + suspW / 2, y + 19)
+
+  const endX = left + p.cold * scale
+  ctx.strokeStyle = fg; ctx.lineWidth = 1.5
+  ctx.beginPath(); ctx.moveTo(endX, y + 2); ctx.lineTo(endX, y + 28); ctx.stroke()
+})
+
+container.appendChild(canvas)
+  `}
+/>
+
+A user works for 10 minutes, then opens Twitter. Do you keep their container alive? For how long? The answer depends on how much you're charging them.
+
+Free users get 5 minutes of idle before the container suspends. Suspended means the filesystem is preserved but compute is released. If they come back within 30 minutes, the container resumes from the snapshot. After 30 minutes, it's terminated and they start fresh. Pro users get 30 minutes hot and 2 hours cold, because they're paying for the privilege.
+
+The trick is that suspended containers cost almost nothing. You're storing a filesystem snapshot, not running a process. The transition between hot and suspended is the mechanism that makes the economics work.
+
+## Metering heterogeneous compute
+
+Traditional cloud metering is straightforward: CPUs by the hour. Agent sessions are heterogeneous. In a single session, you're paying for container uptime (CPU and RAM), LLM inference (tokens at wildly different rates per model), and tool invocations (web search, file operations, API calls). Each has different cost curves from different upstream providers.
+
+<Chart
+  id="credit-breakdown"
+  code={`
+const W = 500, H = 200
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#1c1c1c'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#faf9f7'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const data = [
+  { label: 'LLM tokens', pct: 62 },
+  { label: 'Compute', pct: 28 },
+  { label: 'Tools', pct: 10 },
+]
+
+const barTop = 50, barH = 40, barLeft = 60, barW = 380
+let offset = 0
+
+ctx.fillStyle = faint; ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('typical session credit breakdown', W / 2, 28)
+
+data.forEach((d, i) => {
+  const w = (d.pct / 100) * barW
+  ctx.fillStyle = fg; ctx.globalAlpha = [0.8, 0.5, 0.3][i]
+  ctx.fillRect(barLeft + offset, barTop, w, barH)
+  ctx.globalAlpha = 1
+
+  ctx.fillStyle = fg; ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+  ctx.fillText(d.label, barLeft + offset + w / 2, barTop + barH + 20)
+  ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'
+  ctx.fillText(d.pct + '%', barLeft + offset + w / 2, barTop + barH + 36)
+
+  offset += w
+})
+
+container.appendChild(canvas)
+  `}
+/>
+
+We normalize everything into credits. One credit is $0.0001. Container compute is metered in core-hours, LLM tokens are priced per model (we pull pricing from LiteLLM), tool calls get a flat rate. Everything converts to the same unit. A user sees one number going down, not three different meters with three different units.
+
+The interesting finding: LLM tokens are 62% of the average session cost. Compute is only 28%, and most of that is idle time between interactions. The agent thinking is more expensive than the agent doing. This has implications for how you architect sessions. If you can front-load the thinking (plan first, then execute), you can keep containers alive for shorter periods and save on the compute portion.
+
+## Things that weren't obvious
+
+We burned a week on a bug where checkpoint restore generated new session IDs. Agents kept "forgetting" what they were working on because a new session ID means a new conversation. Session continuity is sacred.
+
+The median session is under 5 minutes and costs $0.02 in credits. But the tail is long: some run for hours across multiple containers. Infrastructure needs to handle both without optimizing for one at the expense of the other.
+
+We've seen agents install a package manager they prefer over the one pre-installed. Agents that rewrite their own config files. Agents that spin up servers on unexpected ports and can't connect because the firewall doesn't allow it. Isolation by default is the right policy. Start with everything locked down and let agents request capabilities explicitly.
+
+If the user is thinking about containers, we've failed.

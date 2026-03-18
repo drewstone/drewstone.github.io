@@ -1,0 +1,65 @@
+---
+title: 'Vibecoding a Browser Agent'
+description: 'We gave Claude Code the directive to build its own experimentation harness, run tests, measure regressions, and iterate autonomously. It works.'
+date: 2026-03-11
+tags: ['agents', 'systems', 'meta']
+---
+
+import Tweet from '../../components/Tweet.astro'
+
+Karpathy recently open-sourced [autoresearch](https://github.com/karpathy/autoresearch), a 630-line system where an AI agent autonomously improves a training script by running experiments in a loop: hypothesize, modify code, train for 5 minutes, evaluate, commit if better, repeat.
+
+<Tweet id="2030371219518931079" />
+
+Left running for two days, it found ~20 additive improvements to nanochat training that transferred to larger models and cut the time-to-GPT-2 benchmark by 11%.
+
+<Tweet id="2031135152349524125" />
+
+We've been doing something structurally identical for browser automation. Not ML training, but the same meta-pattern: an agent that builds and tests its own improvements.
+
+## The setup
+
+The browser agent driver is a system that takes a goal ("compare pricing on these three SaaS tools" or "find the author's contact info from their university page") and a URL, then autonomously navigates a real browser to accomplish it. It reads the page via accessibility trees, decides actions via GPT-5.4, executes them in Playwright, and verifies the result.
+
+The problem is reliability. The agent completes about 70% of tasks on a first attempt. Getting to 90% requires hundreds of small improvements: better stuck detection, smarter recovery strategies, more robust selectors, tighter verification. Each change might help one case and break another.
+
+## The experiment loop
+
+Instead of manually writing and testing each improvement, we set up an environment where Claude Code (the CLI) could run the full loop itself:
+
+1. **Read** the current benchmark results and identify failing cases
+2. **Hypothesize** a code change that might fix a specific failure mode
+3. **Implement** the change in the driver source
+4. **Run the benchmark** against a test suite of 50 real-world tasks
+5. **Compare** pass rates, turn counts, token usage, and timing
+6. **Keep or revert** based on whether the change improved overall metrics without regressions
+
+Every experiment is directly comparable because the benchmark is deterministic: same tasks, same browser, same timeout budget. The human writes the spec (what to optimize, how to measure, what regressions look like) and the agent iterates on the implementation.
+
+## Why this works for browser agents
+
+Each benchmark run takes a known amount of time. You can run 10-15 experiments overnight. We track more than pass rate: turn count (efficiency), token usage (cost), verification rejection count (premature completion attempts), and error turns (action failures). A change that improves pass rate by 2% but doubles token usage is a regression.
+
+Each experiment lives on a git branch. The agent commits the change, runs the benchmark, and either merges or drops. The git history becomes an experiment log.
+
+## What the agent found
+
+Some examples of improvements the agent discovered autonomously:
+
+**Oscillation detection.** The agent noticed that some failures were A-B-A-B loops (open dropdown, close dropdown, repeat). It added pattern detection on the last 4 page states and a forced strategy switch when oscillation is detected.
+
+**Snapshot budget tuning.** The accessibility tree snapshot was capped at 16k characters. The agent found that loosening this to 24k on the first turn (when context is cheapest) improved pass rate on complex pages without meaningful cost increase.
+
+**Recovery ordering.** The recovery strategies (scroll, escape, reload, navigate) were tried in a fixed order. The agent discovered that pressing Escape first (dismiss modal) before scrolling produced better results on e-commerce sites where cookie banners are common.
+
+None of these are breakthroughs. Each is a small, empirically validated tweak. But they compound. 70% to 90% is not one big fix. It's thirty small ones, each tested against regressions.
+
+## Parallel experimentation
+
+Karpathy's next step is making autoresearch collaborative and asynchronous. Multiple agents working on different hypotheses in parallel, sharing results.
+
+<Tweet id="2030705271627284816" />
+
+For browser agents, the equivalent is running experiments across different task categories in parallel: one agent optimizing for e-commerce flows, another for search engines, another for form-heavy enterprise apps. The evaluation infrastructure is the bottleneck, not the agent's ability to hypothesize.
+
+If you can express your quality criteria as a benchmark, you can vibecode the improvement loop.

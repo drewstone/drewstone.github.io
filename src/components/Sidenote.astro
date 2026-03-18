@@ -1,0 +1,46 @@
+---
+interface Props {
+  side?: 'left' | 'right'
+}
+
+const { side = 'right' } = Astro.props
+---
+
+<span class={`sidenote sidenote-${side}`}>
+  <slot />
+</span>
+
+<style>
+  .sidenote {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--ornament);
+    line-height: 1.45;
+  }
+
+  @media (min-width: 1200px) {
+    .sidenote {
+      position: absolute;
+      width: 155px;
+    }
+
+    .sidenote-right {
+      right: -185px;
+    }
+
+    .sidenote-left {
+      left: -185px;
+      text-align: right;
+    }
+  }
+
+  @media (max-width: 1199px) {
+    .sidenote {
+      display: block;
+      margin: var(--space-xs) 0 var(--space-sm);
+      padding-left: var(--space-md);
+      border-left: 1px solid var(--ornament);
+      font-size: 0.82rem;
+    }
+  }
+</style>

@@ -1,0 +1,180 @@
+---
+title: 'RL Without Gradients'
+description: 'Agents cannot update their own weights. But they can change their prompts, tools, memory, and planning strategies. What does the outer optimization loop look like?'
+date: 2026-03-16
+tags: ['agents', 'eval', 'systems']
+---
+
+import Chart from '../../components/Chart.astro'
+
+RL works because weights are differentiable: run, measure, compute gradients, update. Agents can't do that. An agent built on Claude or GPT doesn't get to update its weights.
+
+But it has other knobs: the system prompt, the tool definitions, the memory it retrieves, the planning strategy it uses, the verification criteria it applies to its own output. These are all parameters in the optimization sense. They're just not differentiable.
+
+We've been building an outer loop that optimizes these non-differentiable parameters the same way RL optimizes weights. Hypothesize a change, test it, measure the result, keep it if it helps.
+
+## The browser agent's eval loop
+
+The browser agent started at 70% pass rate on our benchmark. We wanted 90%+. The manual approach (read failure logs, write fixes, run benchmark) works but each cycle takes hours. So we built an AB testing framework that lets the agent improve itself. An experiment has arms (treatment vs control), a test suite, and repetitions:
+
+```json
+{
+  "casesPath": "./bench/scenarios/cases/webbench-reachable4.json",
+  "repetitions": 10,
+  "concurrency": 2,
+  "arms": [
+    { "id": "baseline", "configPath": "./configs/supervisor-off.mjs" },
+    { "id": "treatment", "configPath": "./configs/supervisor-on.mjs" }
+  ]
+}
+```
+
+Each arm runs 10 repetitions across the test suite. We compute pass rates, average tokens, average turns, then bootstrap a 95% confidence interval on the delta. If the CI lower bound is positive, the change is promoted. If the upper bound is negative, it's rejected. Otherwise, inconclusive: refine and try again.
+
+The "treatment" is a change to the agent's configuration: a new prompt strategy, a different stall detection threshold, an additional tool, a modified memory retrieval window.
+
+## What the agent can actually change
+
+The parameter space for agent improvement is richer than most people realize:
+
+**Prompts**: the system prompt, the per-turn reasoning template, the verification prompt, the recovery prompt when stuck. Each one is a lever. We found that adding trajectory-based hints (injecting feedback from past failures into the system prompt) improved pass rates by ~4pp on its own.
+
+**Tool configuration**: which tools are available, their descriptions, their parameter schemas. A browser agent with a `scroll_to_element` tool behaves differently than one with only `scroll_down`. The tool vocabulary shapes the agent's action space.
+
+**Memory and retrieval**: what past experiences to inject into context. Our trajectory analyzer scores past runs by similarity (60%), recency (20%), duration (10%), and verification outcome (10%). Only the best-matching successful trajectory gets injected.
+
+**Planning strategy**: whether to use a supervisor that intervenes on stalls, when to escalate from accessibility tree to screenshots, whether to use a link scout for navigation decisions. These are architectural choices that affect behavior without touching the core prompt.
+
+**Verification criteria**: how strict the agent is about confirming its own success. Loose verification means false positives (agent claims success, ground truth says otherwise). Strict verification means wasted turns on unnecessary re-checks.
+
+<Chart
+  id="parameter-space"
+  code={`
+const W = 620, H = 280
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#1c1c1c'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#faf9f7'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const layers = [
+  { label: 'Weights', desc: 'frozen (can\\'t touch)', w: 520, opacity: 0.12 },
+  { label: 'Prompts', desc: 'system, recovery, verification', w: 460, opacity: 0.22 },
+  { label: 'Tools', desc: 'vocabulary, schemas, descriptions', w: 400, opacity: 0.32 },
+  { label: 'Memory', desc: 'trajectory selection, hints, facts', w: 340, opacity: 0.42 },
+  { label: 'Strategy', desc: 'supervisor, scout, escalation', w: 280, opacity: 0.52 },
+  { label: 'Verification', desc: 'strictness, criteria, thresholds', w: 220, opacity: 0.62 },
+]
+
+const centerX = W / 2
+const startY = 20
+const rowH = 40
+
+layers.forEach((layer, i) => {
+  const y = startY + i * rowH
+  const x = centerX - layer.w / 2
+
+  ctx.fillStyle = fg
+  ctx.globalAlpha = layer.opacity
+  ctx.fillRect(x, y, layer.w, 32)
+  ctx.globalAlpha = 1
+
+  ctx.fillStyle = i === 0 ? faint : fg
+  ctx.font = 'bold 11px JetBrains Mono, monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText(layer.label, x + 10, y + 15)
+
+  ctx.fillStyle = faint
+  ctx.font = '10px JetBrains Mono, monospace'
+  ctx.textAlign = 'right'
+  ctx.fillText(layer.desc, x + layer.w - 10, y + 15)
+
+  if (i === 0) {
+    ctx.fillStyle = faint
+    ctx.font = '10px JetBrains Mono, monospace'
+    ctx.textAlign = 'left'
+    ctx.fillText('← not optimizable', x + layer.w + 10, y + 15)
+  }
+  if (i === 1) {
+    ctx.fillStyle = fg
+    ctx.font = '10px JetBrains Mono, monospace'
+    ctx.textAlign = 'left'
+    ctx.fillText('← optimizable', x + layer.w + 10, y + 15)
+  }
+})
+
+container.appendChild(canvas)
+  `}
+/>
+
+These parameters interact in unpredictable ways. You need the AB testing framework because you can't reason about them analytically.
+
+## The loss function problem
+
+For the browser agent, the loss function is relatively clean: did the agent accomplish the goal? We have ground-truth success criteria per test case (check for specific text on the page, verify a form was submitted, confirm navigation to the right URL). Pass rate is the primary metric.
+
+But pass rate alone isn't enough. An agent that completes 85% of tasks in 50 turns each is worse than one that completes 82% in 12 turns. So we track a composite:
+
+- **Clean pass rate**: successes divided by attempts, excluding external blockers (bot challenges, auth walls, rate limits). The "clean" part matters because you don't want to penalize the agent for things outside its control.
+- **Average turns**: efficiency. Fewer turns means less compute, faster results, lower cost.
+- **Token usage**: direct cost proxy.
+- **Waste metrics**: repeated queries, verification rejections, turns spent after the agent already had sufficient evidence. These are the most useful diagnostic signal because they point at specific failure modes.
+
+"You asked the same question 4 times" is actionable feedback in a way that "you failed this test" is not.
+
+## What agent platforms are missing
+
+None of the major agent platforms (Claude Code, Codex CLI, Amp, Pimono, Factory) have a built-in eval loop. Prompt changes are tested by intuition, not statistically.
+
+The architecture that matters:
+
+```
+┌──────────────────────────────────────┐
+│          Agent Configuration         │
+│  prompt + tools + memory + strategy  │
+└──────────┬───────────────────────────┘
+           │
+     ┌─────▼─────┐
+     │  Execute   │ ← run on benchmark suite
+     └─────┬─────┘
+           │
+     ┌─────▼─────┐
+     │  Measure   │ ← pass rate, turns, tokens, waste
+     └─────┬─────┘
+           │
+     ┌─────▼─────┐
+     │ Analyze    │ ← failure taxonomy, trajectory scoring
+     └─────┬─────┘
+           │
+     ┌─────▼─────┐
+     │ Hypothesize│ ← propose config change
+     └─────┬─────┘
+           │
+     ┌─────▼─────┐
+     │    AB Test │ ← statistical validation
+     └─────┬─────┘
+           │
+     ┌─────▼─────┐
+     │  Promote / │
+     │  Reject    │ → update config or discard
+     └────────────┘
+```
+
+The key insight: the "hypothesize" step is itself an agent task. You can use an LLM to analyze failure patterns and propose configuration changes. Our trajectory analyzer does this already: it reads past failures, detects patterns (high-failure actions, stuck loops, verification gaps), and generates hints. The step from "generate hints for the next run" to "generate a configuration change for the next experiment" is small.
+
+## Why this isn't just prompt engineering
+
+Prompt engineering is manual, one-shot, and evaluated by gut feel. This is automated, iterative, and evaluated statistically. The difference matters at scale.
+
+We run 10 repetitions per arm, 50+ test cases per repetition, bootstrap confidence intervals on the delta. A change that improves pass rate by 2pp isn't noise; it's a real signal when you have 500+ data points per arm. A change that helps on navigation tasks but hurts on form-filling tasks shows up as a heterogeneous treatment effect in the per-category breakdown.
+
+You can't do this analysis manually. You need the infrastructure: the benchmark suite, the experiment runner, the statistical framework, the failure taxonomy that separates agent errors from external blockers. Once you have it, agent improvement becomes empirical rather than intuitive.
+
+The key: the "hypothesize" step is itself an agent task. You can use an LLM to analyze failure patterns and propose configuration changes. Our trajectory analyzer does this already: it reads past failures, detects patterns, and generates hints. The step from "generate hints for the next run" to "generate a configuration change for the next experiment" is small.
+
+Right now everyone is competing on the same frozen weights with different prompts and tool configurations, all tuned by human intuition. The team that replaces intuition with eval infrastructure will compound faster than everyone else.

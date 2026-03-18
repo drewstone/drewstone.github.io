@@ -1,0 +1,217 @@
+---
+import Base from '../layouts/Base.astro'
+import { getCollection, render } from 'astro:content'
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+
+const latest = posts[0]
+const rest = posts.slice(1, 8)
+
+// render first ~paragraph of the latest post as a teaser
+let teaser = ''
+if (latest) {
+  const { remarkPluginFrontmatter } = await render(latest)
+  // pull description as teaser fallback
+  teaser = latest.data.description
+}
+
+function fmtDate(d: Date) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+---
+
+<Base title="drew">
+  <section class="intro">
+    <p>
+      I'm <strong>Drew</strong>. I build software and think about mathematics.
+      This is where I write things down.
+    </p>
+  </section>
+
+  {latest && (
+    <section class="latest">
+      <span class="section-label">Latest</span>
+      <article class="latest-post">
+        <a href={`/posts/${latest.id}`} class="latest-link">
+          <h2>{latest.data.title}</h2>
+          <p class="latest-teaser">{teaser}</p>
+          <span class="latest-meta">{fmtDate(latest.data.date)} &middot; Read &rarr;</span>
+        </a>
+      </article>
+    </section>
+  )}
+
+  {rest.length > 0 && (
+    <section class="more">
+      <span class="section-label">Previously</span>
+      <ul class="post-list">
+        {rest.map((post) => (
+          <li>
+            <a href={`/posts/${post.id}`}>
+              <span class="post-title">{post.data.title}</span>
+              <span class="post-date">{fmtDate(post.data.date)}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {posts.length > 8 && (
+    <nav class="archive-link">
+      <a href="/posts">Full archive &rarr;</a>
+    </nav>
+  )}
+</Base>
+
+<style>
+  .intro {
+    padding: var(--space-3xl) 0 var(--space-2xl);
+  }
+
+  .intro p {
+    font-size: 1.5rem;
+    line-height: 1.5;
+    max-width: 520px;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .intro strong {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .section-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-variant: small-caps;
+    letter-spacing: 0.12em;
+    color: var(--ornament);
+    margin-bottom: var(--space-md);
+  }
+
+  /* Latest post */
+  .latest {
+    padding-bottom: var(--space-2xl);
+  }
+
+  .latest-link {
+    display: block;
+    text-decoration: none;
+    color: var(--fg);
+    padding: var(--space-lg) 0;
+    border-top: 3px double var(--ornament);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
+  }
+
+  .latest-link:hover {
+    background: var(--bg-alt);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+    margin-left: calc(-1 * var(--space-lg));
+    margin-right: calc(-1 * var(--space-lg));
+  }
+
+  .latest-link h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 var(--space-sm);
+    border: none;
+    padding: 0;
+    color: var(--fg);
+    font-variant: normal;
+    text-transform: none;
+    letter-spacing: -0.01em;
+  }
+
+  .latest-teaser {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 var(--space-sm);
+    max-width: 560px;
+  }
+
+  .latest-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ornament);
+  }
+
+  /* Post list */
+  .more {
+    padding-bottom: var(--space-xl);
+  }
+
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 3px double var(--ornament);
+  }
+
+  .post-list li {
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-lg);
+    padding: var(--space-sm) 0;
+    text-decoration: none;
+    color: var(--fg);
+    transition: background 0.12s;
+  }
+
+  .post-list a:hover {
+    background: var(--bg-alt);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+    margin-left: calc(-1 * var(--space-lg));
+    margin-right: calc(-1 * var(--space-lg));
+  }
+
+  .post-list .post-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .post-list .post-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--fg-faint);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .archive-link {
+    padding: var(--space-md) 0;
+  }
+
+  .archive-link a {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+  }
+
+  .archive-link a:hover {
+    color: var(--fg);
+  }
+
+  @media (max-width: 640px) {
+    .intro p {
+      font-size: 1.25rem;
+    }
+
+    .latest-link h2 {
+      font-size: 1.3rem;
+    }
+  }
+</style>

@@ -1,0 +1,152 @@
+---
+title: 'Building a Browser Agent That Doesn''t Get Stuck'
+description: 'Detecting when an autonomous browser agent is going in circles, and what to do about it.'
+date: 2026-03-07
+tags: ['agents', 'systems', 'algorithms']
+---
+
+import Chart from '../../components/Chart.astro'
+import AnimatedCanvas from '../../components/AnimatedCanvas.astro'
+
+You give an LLM a browser and a goal. It reads the page, decides what to click, observes the result, and repeats. In theory this is a simple loop. In practice, the agent gets stuck about 30% of the time, and the ways it gets stuck are fascinating.
+
+## The agent loop
+
+The core is a perception-action cycle:
+
+1. **Observe**: read the accessibility tree (structured DOM), optionally take a screenshot
+2. **Decide**: LLM chooses an action (click, type, scroll, navigate, or declare completion)
+3. **Execute**: Playwright performs the action
+4. **Verify**: check if the expected effect happened
+
+Repeat until done or budget exhausted. The interesting problems all live in step 4 and in what happens when the answer is "no."
+
+## Three flavors of stuck
+
+### Classic stall
+
+The simplest case: the page state hasn't changed for $n$ consecutive turns. The agent clicks a button, nothing happens (maybe it's disabled, maybe a modal is blocking it), and it clicks the same button again. And again.
+
+Detection is a hash comparison. Let $h(t)$ be the hash of the accessibility snapshot at turn $t$, and $u(t)$ the URL. A classic stall fires when:
+
+$$
+\exists \, t : \forall \, i \in [t-n, t], \; h(i) = h(t) \land u(i) = u(t)
+$$
+
+### Oscillation
+
+The subtler case. The agent opens a dropdown, reads the options, clicks elsewhere to dismiss it, then opens the dropdown again. The state alternates:
+
+$$
+h(t) = h(t-2) = h(t-4), \quad h(t-1) = h(t-3)
+$$
+
+This is an A-B-A-B loop. Detecting it means checking not just "is the state the same as last turn" but "have we seen this *sequence* before." We check the last 4 states for the alternating pattern.
+
+### URL cycles
+
+The agent navigates from page A to page B, clicks back to A, then forward to B again. Or worse: A → B → C → A → B → C. This is a cycle in the navigation graph with period $p$.
+
+<Chart
+  id="stuck-patterns"
+  code={`
+const W = 700, H = 260, pad = { t: 30, r: 20, b: 20, l: 20 }
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+function drawPattern(ox, oy, label, states, edges) {
+  ctx.fillStyle = fg; ctx.font = 'bold 13px JetBrains Mono, monospace'
+  ctx.textAlign = 'center'
+  ctx.fillText(label, ox + 110, oy)
+
+  states.forEach(s => {
+    ctx.beginPath()
+    ctx.arc(s.x + ox, s.y + oy, 18, 0, Math.PI * 2)
+    ctx.strokeStyle = fg; ctx.lineWidth = 1.5; ctx.stroke()
+    ctx.fillStyle = fg; ctx.font = '13px JetBrains Mono, monospace'
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+    ctx.fillText(s.label, s.x + ox, s.y + oy)
+  })
+
+  edges.forEach(e => {
+    const dx = e.to.x - e.from.x, dy = e.to.y - e.from.y
+    const len = Math.sqrt(dx*dx + dy*dy)
+    const ux = dx/len, uy = dy/len
+    const sx = e.from.x + ox + ux * 20, sy = e.from.y + oy + uy * 20
+    const ex = e.to.x + ox - ux * 20, ey = e.to.y + oy - uy * 20
+
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey)
+    ctx.strokeStyle = e.color || faint; ctx.lineWidth = 1.5; ctx.stroke()
+
+    // arrowhead
+    const ax = ex - ux * 8 - uy * 4, ay = ey - uy * 8 + ux * 4
+    const bx = ex - ux * 8 + uy * 4, by = ey - uy * 8 - ux * 4
+    ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ax, ay); ctx.lineTo(bx, by); ctx.closePath()
+    ctx.fillStyle = e.color || faint; ctx.fill()
+  })
+}
+
+// Classic stall: A -> A -> A
+const s1 = [{ x: 50, y: 60, label: 'A' }, { x: 120, y: 60, label: 'A' }, { x: 190, y: 60, label: 'A' }]
+drawPattern(10, 50, 'Classic Stall', s1, [
+  { from: s1[0], to: s1[1] }, { from: s1[1], to: s1[2] }
+])
+
+// Oscillation: A -> B -> A -> B
+const s2 = [{ x: 40, y: 60, label: 'A' }, { x: 110, y: 60, label: 'B' }, { x: 180, y: 60, label: 'A' }, { x: 250, y: 60, label: 'B' }]
+drawPattern(230, 50, 'Oscillation', s2, [
+  { from: s2[0], to: s2[1] }, { from: s2[1], to: s2[2] }, { from: s2[2], to: s2[3] }
+])
+
+// URL cycle: A -> B -> C -> A
+const s3 = [{ x: 110, y: 30, label: 'A' }, { x: 180, y: 90, label: 'B' }, { x: 40, y: 90, label: 'C' }]
+drawPattern(490, 50, 'URL Cycle', s3, [
+  { from: s3[0], to: s3[1] }, { from: s3[1], to: s3[2] }, { from: s3[2], to: s3[0] }
+])
+
+container.appendChild(canvas)
+  `}
+/>
+
+## Recovery is a state machine, not a retry
+
+When stuck, the worst thing to do is retry the same action. We cycle through *different* recovery strategies:
+
+1. **Scroll to top**: the element might be below a sticky header
+2. **Press Escape**: a modal or dropdown might be intercepting
+3. **Page reload**: transient DOM corruption
+4. **Direct navigation**: bypass broken navigation entirely
+
+Each strategy is tried once. If all fail, a **supervisor** (a separate LLM call with the full context) decides whether to abort or suggest a novel approach.
+
+## The error budget
+
+The key insight is that *some failure is expected*. If an agent runs 30 turns, maybe 5 will have action errors. That's fine. What's not fine is 10 consecutive errors, or errors that don't resolve. We set an error budget:
+
+$$
+E_{\max} = \max\left(3, \left\lceil \frac{T_{\max}}{3} \right\rceil\right)
+$$
+
+where $T_{\max}$ is the turn limit. This allows roughly one error per three turns. Exceeding the budget triggers an abort. The floor of 3 ensures very short runs still get a few chances.
+
+## Stable references via hashing
+
+One source of stuckness is *stale selectors*. The agent remembers "click button #submit-3" but the DOM has re-rendered and the ID changed. We solve this by generating stable references from the accessibility tree:
+
+$$
+\text{ref}(e) = \text{role}(e)[0] \; \| \; \text{FNV-1a}(\text{role}(e) \; \| \; \text{name}(e)) \bmod 2^{14}
+$$
+
+The FNV-1a hash is deterministic: a button labeled "Submit" always maps to the same 3-4 character reference. If the element disappears, we know. If it reappears, we recognize it. This is much more stable than CSS selectors or XPaths, which break on any structural DOM change.
+
+## Current numbers
+
+After a lot of iteration, the system passes about 90% of tasks on a 50-case benchmark, averaging 11 turns and ~90 seconds per task. The biggest wins weren't from better models. They were from better stuck detection and faster recovery.

@@ -1,0 +1,391 @@
+/* KaTeX fonts loaded via <link> in Base.astro layout */
+
+:root {
+  --font-body: 'CMU Serif', 'Latin Modern Roman', 'Computer Modern', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  --font-heading: var(--font-body);
+
+  --bg: #f4efe6;
+  --bg-alt: #eae4d8;
+  --bg-deep: #ddd6c8;
+  --fg: #2a2520;
+  --fg-muted: #5c554d;
+  --fg-faint: #908780;
+  --accent: #7c3238;
+  --accent-hover: #5a2228;
+  --border: #d4cdc4;
+  --border-strong: #2a2520;
+  --rule: #2a2520;
+  --ornament: #7c3238;
+  --ornament-faint: #c4a8a0;
+
+  --max-width: 820px;
+  --max-width-wide: 1080px;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1816;
+    --bg-alt: #231f1c;
+    --bg-deep: #121010;
+    --fg: #c8bfb0;
+    --fg-muted: #8c8378;
+    --fg-faint: #5c554d;
+    --accent: #c47a7a;
+    --accent-hover: #d49898;
+    --border: #302a25;
+    --border-strong: #c8bfb0;
+    --rule: #c8bfb0;
+    --ornament: #c47a7a;
+    --ornament-faint: #4a3535;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  font-size: 19px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--fg);
+  line-height: 1.75;
+  min-height: 100dvh;
+}
+
+/* Page frame */
+.page-frame {
+  max-width: 1200px;
+  margin: var(--space-lg) auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-height: calc(100dvh - var(--space-2xl));
+}
+
+/* Layout */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.container-wide {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h1 { font-size: 2rem; margin-bottom: var(--space-md); letter-spacing: -0.01em; }
+h2 {
+  font-size: 1.3rem;
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-md);
+  letter-spacing: 0.06em;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  color: var(--accent);
+}
+h3 { font-size: 1.15rem; margin-top: var(--space-xl); margin-bottom: var(--space-sm); font-style: italic; font-weight: 400; }
+
+p {
+  margin-bottom: var(--space-md);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--ornament-faint);
+  transition: text-decoration-color 0.15s, color 0.15s;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: var(--accent);
+}
+
+strong {
+  font-weight: 700;
+}
+
+blockquote {
+  border-left: 3px solid var(--ornament);
+  padding-left: var(--space-lg);
+  margin: var(--space-xl) 0;
+  color: var(--fg-muted);
+  font-style: italic;
+  position: relative;
+}
+
+blockquote::before {
+  content: '\201C';
+  position: absolute;
+  left: var(--space-sm);
+  top: -0.3em;
+  font-size: 2.5rem;
+  color: var(--ornament-faint);
+  line-height: 1;
+  font-family: var(--font-body);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-xl) 0;
+}
+
+ul, ol {
+  padding-left: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+li {
+  margin-bottom: var(--space-xs);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+figure {
+  margin: var(--space-xl) 0;
+  text-align: center;
+}
+
+figcaption {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  margin-top: var(--space-sm);
+  font-style: italic;
+}
+
+/* Inline code */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bg-alt);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+/* Code blocks */
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  padding: 1.5rem 1.75rem;
+  overflow-x: auto;
+  margin: var(--space-xl) calc(-1 * var(--space-lg));
+  border-radius: 0;
+  position: relative;
+  tab-size: 2;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Shiki dual-theme: activate dark variables in dark mode */
+@media (prefers-color-scheme: dark) {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+pre[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.6rem;
+  right: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ornament);
+  opacity: 0.5;
+  user-select: none;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* full-bleed code blocks that break out of the reading column */
+@media (min-width: 800px) {
+  pre {
+    margin-left: -3rem;
+    margin-right: -3rem;
+    padding: 1.5rem 3rem;
+  }
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-lg) 0;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
+/* KaTeX overrides */
+.katex-display {
+  margin: var(--space-lg) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.katex {
+  font-size: 1.15em;
+}
+
+/* Footnotes */
+.footnotes {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+
+/* Asides */
+aside, .note {
+  background: var(--bg-alt);
+  border-left: 3px solid var(--ornament);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-lg) 0;
+  font-size: 0.9rem;
+}
+
+/* Shared utility: thin rule */
+.rule {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 0;
+}
+
+.rule-thick {
+  border: none;
+  border-top: 3px solid var(--rule);
+  margin: 0;
+}
+
+.rule-double {
+  border: none;
+  border-top: 3px double var(--rule);
+  margin: 0;
+}
+
+/* Tag */
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--ornament);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--ornament-faint);
+  padding: 0.15em 0.5em;
+  border-radius: 2px;
+}
+
+/* Drop cap for the first paragraph of prose */
+.prose > p:first-child::first-letter {
+  font-family: var(--font-body);
+  float: left;
+  font-size: 4.2em;
+  line-height: 0.72;
+  padding: 0.06em 0.12em 0.04em 0.06em;
+  margin-right: 0.06em;
+  margin-top: 0.04em;
+  font-weight: 700;
+  color: var(--accent);
+  border: 2px solid var(--ornament);
+  background: var(--bg-alt);
+}
+
+/* Ornamental flourish after h2 */
+.prose h2::after {
+  content: '❦';
+  display: block;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ornament-faint);
+  margin-top: 0.4rem;
+  font-family: serif;
+}
+
+/* Transitions */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* No page frame on mobile */
+@media (max-width: 640px) {
+  body {
+    background: var(--bg);
+  }
+
+  .page-frame {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* Print */
+@media print {
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+
+  nav, footer, .no-print {
+    display: none;
+  }
+}

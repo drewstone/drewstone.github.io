@@ -1,0 +1,180 @@
+---
+title: 'The Expected Cost of Fallback Chains'
+description: 'When you route AI requests across 40 providers with retries and fallbacks, what does the cost distribution actually look like?'
+date: 2026-03-05
+tags: ['math', 'systems', 'optimization']
+---
+
+import Chart from '../../components/Chart.astro'
+
+I run a system that routes creative generation requests (images, video, audio, 3D) across 40+ provider APIs. Each provider has different pricing, latency, reliability, and capability. When a request comes in, we pick a preferred provider and fall through a chain of alternatives if it fails.
+
+The naive approach is: try provider A, if it fails try B, if that fails try C. But the cost and latency characteristics of this are non-obvious.
+
+## Modeling the chain
+
+Let $p_i$ be the success probability of provider $i$ in a fallback chain of length $n$, and $c_i$ the cost per attempt. Assume independence (generous, since correlated failures are a real problem, but let's start simple).
+
+The probability that we reach provider $k$ (i.e., all previous providers failed) is:
+
+$$
+P(\text{reach } k) = \prod_{i=1}^{k-1} (1 - p_i)
+$$
+
+The expected cost of a single pass through the chain is:
+
+$$
+\mathbb{E}[C] = \sum_{k=1}^{n} c_k \cdot P(\text{reach } k) \cdot p_k + C_{\text{fail}} \cdot \prod_{i=1}^{n} (1 - p_i)
+$$
+
+where $C_{\text{fail}}$ is the cost of total failure (all providers down). The first term accounts for the cost of the provider that *succeeds*. But we also pay for every *failed* attempt along the way:
+
+$$
+\mathbb{E}[C_{\text{total}}] = \sum_{k=1}^{n} c_k \cdot P(\text{reach } k) + C_{\text{fail}} \cdot \prod_{i=1}^{n}(1-p_i)
+$$
+
+Wait. That's not right either. On failure, we still pay the cost of the attempt. Let me be precise. The total expected cost is the sum of attempt costs for every provider we actually call:
+
+$$
+\mathbb{E}[C_{\text{total}}] = \sum_{k=1}^{n} c_k \cdot \prod_{i=1}^{k-1}(1-p_i)
+$$
+
+This is simpler and correct: each provider $k$ is called with probability $\prod_{i=1}^{k-1}(1-p_i)$, and we pay $c_k$ regardless of whether it succeeds.
+
+## Retries add a second dimension
+
+Now add $R$ retry rounds with exponential backoff. The total expected cost becomes:
+
+$$
+\mathbb{E}[C_{\text{total}}] = \sum_{r=1}^{R} \sum_{k=1}^{n} c_k \cdot \left[\prod_{j=1}^{n}(1-p_j)\right]^{r-1} \cdot \prod_{i=1}^{k-1}(1-p_i)
+$$
+
+The outer product term is the probability that all $r-1$ previous full-chain attempts failed.
+
+## What this looks like in practice
+
+Let's take a concrete image generation chain: Stability ($0.04/image, 97% uptime), Leonardo ($0.03, 94%), Ideogram ($0.05, 91%).
+
+<Chart
+  id="cost-distribution"
+  code={`
+const W = 700, H = 320, pad = { t: 30, r: 30, b: 55, l: 65 }
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const border = style.getPropertyValue('--border').trim() || '#ddd'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const providers = [
+  { name: 'Stability', cost: 0.04, p: 0.97 },
+  { name: 'Leonardo', cost: 0.03, p: 0.94 },
+  { name: 'Ideogram', cost: 0.05, p: 0.91 },
+]
+
+// simulate 10000 runs
+const costs = []
+for (let i = 0; i < 10000; i++) {
+  let totalCost = 0
+  let success = false
+  for (let r = 0; r < 3; r++) {
+    for (const prov of providers) {
+      totalCost += prov.cost
+      if (Math.random() < prov.p) { success = true; break }
+    }
+    if (success) break
+  }
+  costs.push(totalCost)
+}
+
+// histogram
+const buckets = 20
+const maxCost = 0.40
+const hist = new Array(buckets).fill(0)
+costs.forEach(c => {
+  const idx = Math.min(buckets - 1, Math.floor((c / maxCost) * buckets))
+  hist[idx]++
+})
+const maxCount = Math.max(...hist)
+
+const pw = W - pad.l - pad.r
+const ph = H - pad.t - pad.b
+const barW = pw / buckets - 2
+
+// bars
+hist.forEach((count, i) => {
+  const bx = pad.l + (i / buckets) * pw + 1
+  const bh = (count / maxCount) * ph
+  const by = pad.t + ph - bh
+  ctx.fillStyle = i === 0 ? fg : (i < 3 ? '#666' : '#bbb')
+  ctx.fillRect(bx, by, barW, bh)
+})
+
+// axes
+ctx.strokeStyle = fg; ctx.lineWidth = 1
+ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke()
+
+// x labels
+ctx.fillStyle = faint; ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+for (let i = 0; i <= 4; i++) {
+  const v = (i / 4) * maxCost
+  const xp = pad.l + (i / 4) * pw
+  ctx.fillText('$' + v.toFixed(2), xp, H - pad.b + 20)
+}
+ctx.fillText('Cost per request', pad.l + pw / 2, H - pad.b + 42)
+
+// y label
+ctx.save(); ctx.translate(15, pad.t + ph / 2); ctx.rotate(-Math.PI / 2)
+ctx.fillStyle = faint; ctx.font = '11px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('Frequency', 0, 0); ctx.restore()
+
+// annotation
+const mean = costs.reduce((a, b) => a + b) / costs.length
+ctx.fillStyle = fg; ctx.font = '12px JetBrains Mono, monospace'; ctx.textAlign = 'left'
+ctx.fillText('E[C] = $' + mean.toFixed(3), pad.l + pw * 0.55, pad.t + 20)
+ctx.fillText('n = 10,000 simulated requests', pad.l + pw * 0.55, pad.t + 38)
+
+container.appendChild(canvas)
+  `}
+/>
+
+The distribution is heavily right-skewed. 97% of requests cost exactly $0.04 (Stability succeeds on first try). The long tail comes from the ~3% of cases where we fall through to Leonardo or Ideogram, paying cumulative attempt costs.
+
+## The ordering insight
+
+The expected total cost is sensitive to chain ordering. If you put the cheapest provider first, you minimize the base case cost. But if you put the *most reliable* provider first, you minimize the probability of entering the expensive tail. When the cheapest provider is also the most reliable, you win. When they diverge, you're solving a tradeoff.
+
+For two providers with costs $c_1, c_2$ and success probabilities $p_1, p_2$, ordering 1-then-2 gives:
+
+$$
+\mathbb{E}[C_{1 \to 2}] = c_1 + (1 - p_1) \cdot c_2
+$$
+
+Ordering 2-then-1:
+
+$$
+\mathbb{E}[C_{2 \to 1}] = c_2 + (1 - p_2) \cdot c_1
+$$
+
+Provider 1 should go first when $\mathbb{E}[C_{1 \to 2}] < \mathbb{E}[C_{2 \to 1}]$, which simplifies to:
+
+$$
+c_1(1 - (1 - p_2)) < c_2(1 - (1 - p_1)) \implies \frac{c_1}{p_1} < \frac{c_2}{p_2}
+$$
+
+The optimal ordering is by ascending **cost-per-success ratio** $c_i / p_i$. This is the same structure as the knapsack greedy bound: you get the most value per unit cost by sorting on efficiency.
+
+## Caching changes everything
+
+In practice, the most powerful cost optimization isn't chain ordering. It's caching. A deterministic request hash (prompt + parameters + provider) means identical requests skip the provider entirely. The effective per-request cost becomes:
+
+$$
+\mathbb{E}[C_{\text{eff}}] = (1 - h) \cdot \mathbb{E}[C_{\text{total}}]
+$$
+
+where $h$ is the cache hit rate. For iterative creative workflows where the same plan stage runs many times, $h$ can exceed 0.8. That dominates any chain ordering optimization.

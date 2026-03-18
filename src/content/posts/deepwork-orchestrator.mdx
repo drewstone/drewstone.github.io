@@ -1,0 +1,172 @@
+---
+title: 'Multi-Agent Orchestration with Convergence Loops'
+description: 'Draft, review, revise, repeat. The hard part is not the loop. It is keeping agent sessions coherent across iterations.'
+date: 2026-03-14
+tags: ['agents', 'architecture', 'systems']
+---
+
+import Chart from '../../components/Chart.astro'
+
+You have an agent that produces output. It's not good enough. You add a reviewer, feed the review back, revise. Repeat.
+
+Deepwork is the system I built to handle this pattern generically. You give it a project spec (objective, agents, deliverables, quality criteria) and it runs them through draft/review/revision phases until quality converges or the budget runs out. The orchestration engine doesn't know whether it's producing a consulting memo, a research paper, or a code review. It just knows how to run agents in loops until reviewers are satisfied.
+
+## How the loop actually works
+
+Every project goes through four phases:
+
+1. **Research** (optional): agents gather information, produce a synthesis document that all later agents can reference.
+2. **Draft**: each deliverable's owner writes the first version. Multiple owners work in parallel.
+3. **Review**: reviewer agents score the draft against a quality framework. If it doesn't meet the bar, the owner revises. This repeats.
+4. **Finalize**: read the final content, snapshot everything, done.
+
+The review phase is where the action is. It's a loop with three exit conditions:
+
+**Convergence**: aggregate score meets the minimum (say, 75/100), every quality dimension is above its floor (say, 60/100), and all reviewers approve. All three must hold.
+
+**Plateau**: the scores stopped improving. If the last three rounds are 66, 67, 68, further revision won't help. The system detects this and stops.
+
+**Max revisions**: hard cap, usually 3 or 4 rounds.
+
+```typescript
+function checkPlateau(scoreHistory: number[], threshold: number): boolean {
+  if (scoreHistory.length < threshold) return false
+  const recent = scoreHistory.slice(-threshold)
+  return Math.max(...recent) - Math.min(...recent) < 3
+}
+```
+
+Without plateau detection, the system burns through revision after revision making cosmetic changes that bounce the score between 65 and 67.
+
+<Chart
+  id="convergence-chart"
+  code={`
+const W = 600, H = 260
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#1c1c1c'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#faf9f7'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const ox = 60, oy = 220, gw = 500, gh = 180
+ctx.strokeStyle = fg; ctx.lineWidth = 1
+ctx.beginPath(); ctx.moveTo(ox, oy - gh); ctx.lineTo(ox, oy); ctx.lineTo(ox + gw, oy); ctx.stroke()
+
+ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'right'
+for (let s = 0; s <= 100; s += 25) {
+  const y = oy - (s / 100) * gh
+  ctx.fillText(s.toString(), ox - 8, y + 4)
+  if (s > 0 && s < 100) {
+    ctx.strokeStyle = faint; ctx.lineWidth = 0.3
+    ctx.beginPath(); ctx.moveTo(ox, y); ctx.lineTo(ox + gw, y); ctx.stroke()
+  }
+}
+ctx.strokeStyle = fg; ctx.lineWidth = 1
+
+const threshY = oy - (75 / 100) * gh
+ctx.strokeStyle = faint; ctx.lineWidth = 1; ctx.setLineDash([6, 4])
+ctx.beginPath(); ctx.moveTo(ox, threshY); ctx.lineTo(ox + gw, threshY); ctx.stroke()
+ctx.setLineDash([])
+ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'left'
+ctx.fillText('convergence threshold', ox + gw - 150, threshY - 6)
+
+const scores1 = [42, 61, 73, 78]
+const scores2 = [38, 55, 64, 67, 68, 69]
+const scores3 = [51, 70, 80]
+
+function plotLine(scores, shade, label, labelY) {
+  const step = gw / 6
+  ctx.strokeStyle = shade; ctx.lineWidth = 2
+  ctx.beginPath()
+  scores.forEach((s, i) => {
+    const x = ox + (i + 1) * step
+    const y = oy - (s / 100) * gh
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+  })
+  ctx.stroke()
+  scores.forEach((s, i) => {
+    const x = ox + (i + 1) * step
+    const y = oy - (s / 100) * gh
+    ctx.fillStyle = shade
+    ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill()
+  })
+  const lastX = ox + scores.length * step
+  const lastY = oy - (scores[scores.length - 1] / 100) * gh
+  ctx.fillStyle = shade; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'left'
+  ctx.fillText(label, lastX + 8, lastY + labelY)
+}
+
+plotLine(scores1, fg, 'memo (converged r4)', 4)
+plotLine(scores2, faint, 'analysis (plateau r6)', 4)
+plotLine(scores3, fg + '88', 'brief (converged r3)', 4)
+
+ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('review round', ox + gw / 2, oy + 22)
+
+container.appendChild(canvas)
+  `}
+/>
+
+Three deliverables from a real run. The memo converges at 78 in round 4. The brief hits 80 by round 3. The analysis plateaus around 68: the reviewer keeps asking for stronger evidence, the writer keeps making marginal improvements, and the score barely moves. The system catches this and stops burning tokens.
+
+## Session continuity is the real problem
+
+Session continuity was the hardest part to get right.
+
+When a writer agent drafts a memo, it builds up context over several turns. It understands the objective, it's made structural decisions, it has reasoning about what evidence to include. When the reviewer comes back and says "section 3 needs stronger supporting data," the writer needs all that prior context to make a targeted fix rather than rewriting from scratch.
+
+The solution is dead simple in concept: every agent gets a session ID that persists across all its tasks. Draft turn 1, draft turn 2, revision turn 1, revision turn 2: same session. The sandbox preserves the full conversation history.
+
+```typescript
+function createSession(agentId: string, sandboxId: string): Session {
+  return {
+    id: `dw-${agentId}-${randomUUID().slice(0, 8)}`,
+    agentId,
+    sandboxId,
+    turns: 0,
+    totalUsage: { inputTokens: 0, outputTokens: 0 },
+    lastActiveAt: new Date(),
+    history: [],
+  }
+}
+```
+
+The implementation is where it gets tricky. We have checkpoint/resume (because a 6-agent project might run 20+ minutes). When you restore from checkpoint, the session ID must be preserved exactly. Generate a new one and the agent starts fresh, losing everything.
+
+We had a bug where checkpoint restore called `createSession()` instead of `restoreSessionFromCheckpoint()` in one code path. Agents would work beautifully for the first three rounds, checkpoint would trigger, and suddenly the writer would produce a completely unrelated draft because it had lost its entire conversation history. Took three days to find because the symptom (bad output) looked like a model quality problem, not a plumbing problem.
+
+## Quality frameworks are pluggable
+
+The review prompts aren't freeform. A quality framework generates them. The McKinsey consulting framework scores on Pyramid Principle (20%), Evidence Quality (25%), So-What Factor (25%), Actionability (15%), and Communication Clarity (15%). BCG swaps in Hypothesis-Driven and Pragmatism. An academic framework has completely different dimensions.
+
+The framework produces three things: a review prompt (what to evaluate), a revision prompt (what to fix, including the weakest dimensions and specific suggestions), and a parser (extracting structured scores from natural language). Same orchestration engine, different quality criteria. I haven't had to touch the loop logic when adding a new framework.
+
+## Agents coordinate through files
+
+There's no message-passing between agents. The writer writes `drafts/memo.md`. The reviewer reads it, writes a structured review to `.reviews/review-{id}-r{round}.json`. The orchestrator reads the review, checks convergence, and if revision is needed, gives the writer the review feedback as a prompt. The writer revises the file.
+
+File-based coordination is debuggable: you can look at the workspace at any point and see what every agent produced. No message queues, no pub/sub.
+
+## The API
+
+Four methods:
+
+```typescript
+class Deepwork {
+  async run(project: ProjectConfig): Promise<ProjectResult>
+  async start(project: ProjectConfig): Promise<ProjectHandle>
+  async resume(checkpoint: CheckpointData): Promise<ProjectHandle>
+  on(handler: DeepworkEventHandler): () => void
+}
+```
+
+`run()` blocks. `start()` returns a handle for async control. `resume()` restores from checkpoint (with session IDs preserved, obviously). `on()` gives you events for observability.
+
+Everything else is configuration. Agent specs, deliverable specs, framework selection, sandbox strategy (shared, per-agent, or grouped). The orchestrator handles sequencing, parallel dispatch, convergence detection, and cleanup. You describe what you want. It figures out how to get there.
+
+Any task where you can express "better" as a function is a candidate for this loop.

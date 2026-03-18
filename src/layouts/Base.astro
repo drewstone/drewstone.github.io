@@ -1,0 +1,184 @@
+---
+interface Props {
+  title: string
+  description?: string
+  wide?: boolean
+}
+
+const { title, description = 'Thoughts on life, tech, and math.', wide = false } = Astro.props
+const year = new Date().getFullYear()
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/katex.min.css"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="page-frame">
+      <header class="site-header">
+        <div class="container-wide">
+          <nav class="nav-inner">
+            <a href="/" class="nav-home">drew</a>
+            <div class="nav-links">
+              <a href="/posts">archive</a>
+              <span class="nav-sep" aria-hidden="true">·</span>
+              <a href="/about">about</a>
+              <span class="nav-sep" aria-hidden="true">·</span>
+              <a href="/rss.xml" title="RSS feed">rss</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <main class={wide ? 'container-wide' : 'container'}>
+        <slot />
+      </main>
+      <footer>
+        <div class="container-wide">
+          <div class="footer-ornament" aria-hidden="true">
+            <hr class="rule" />
+            <span>&#x2767;</span>
+            <hr class="rule" />
+          </div>
+          <div class="footer-inner">
+            <span>&copy; {year}</span>
+            <span class="footer-links">
+              <a href="/rss.xml">rss</a>
+            </span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    padding: var(--space-lg) 0;
+    border-bottom: 3px double var(--ornament);
+  }
+
+  .nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .nav-home {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    font-variant: small-caps;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .nav-home:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: baseline;
+  }
+
+  .nav-sep {
+    color: var(--ornament);
+    font-size: 0.7rem;
+    user-select: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover {
+    color: var(--accent);
+  }
+
+  main {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-3xl);
+    min-height: 60vh;
+  }
+
+  footer {
+    padding-bottom: var(--space-xl);
+  }
+
+  .footer-ornament {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .footer-ornament .rule {
+    flex: 1;
+  }
+
+  .footer-ornament span {
+    font-size: 1rem;
+    color: var(--ornament);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: var(--space-md);
+    font-size: 0.78rem;
+    color: var(--fg-faint);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .footer-links a {
+    color: var(--fg-faint);
+    text-decoration: none;
+    font-variant: small-caps;
+    letter-spacing: 0.03em;
+  }
+
+  .footer-links a:hover {
+    color: var(--fg);
+  }
+</style>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

@@ -1,0 +1,88 @@
+---
+interface Props {
+  id: string
+  code: string
+}
+
+const { id, code } = Astro.props
+---
+
+<figure class="chart-container" id={id}>
+  <div class="chart-inner"></div>
+</figure>
+
+<script define:vars={{ id, code }}>
+  const container = document.querySelector(`#${id} .chart-inner`)
+  if (container) {
+    try {
+      // Auto-scale: replace hardcoded W,H with container dimensions
+      const _cw = container.clientWidth
+      const _dimMatch = code.match(/const W\s*=\s*(\d+),\s*H\s*=\s*(\d+)/)
+      let _scaledCode = code
+      if (_dimMatch) {
+        const _origW = parseInt(_dimMatch[1])
+        const _origH = parseInt(_dimMatch[2])
+        const _newH = Math.round(_origH * (_cw / _origW))
+        _scaledCode = code.replace(
+          /const W\s*=\s*\d+,\s*H\s*=\s*\d+/,
+          'const W = ' + _cw + ', H = ' + _newH
+        )
+      }
+
+      // wrap the user code so any canvas it creates gets HiDPI scaling
+      const wrappedCode = `
+        const _origCreate = document.createElement.bind(document)
+        const _dpr = window.devicePixelRatio || 1
+        document.createElement = function(tag, opts) {
+          const el = _origCreate(tag, opts)
+          if (tag === 'canvas') {
+            const _origGetCtx = el.getContext.bind(el)
+            let _scaled = false
+            el.getContext = function(type, attrs) {
+              const ctx = _origGetCtx(type, attrs)
+              if (type === '2d' && !_scaled && _dpr > 1) {
+                _scaled = true
+                const w = el.width, h = el.height
+                el.width = w * _dpr
+                el.height = h * _dpr
+                el.style.width = w + 'px'
+                el.style.height = h + 'px'
+                ctx.scale(_dpr, _dpr)
+              }
+              return ctx
+            }
+          }
+          return el
+        }
+        ${_scaledCode}
+        document.createElement = _origCreate
+      `
+      const fn = new Function('container', wrappedCode)
+      fn(container)
+    } catch (e) {
+      container.textContent = `Chart error: ${e.message}`
+    }
+  }
+</script>
+
+<style>
+  .chart-container {
+    margin: var(--space-xl) calc(-1 * var(--space-lg));
+  }
+
+  .chart-inner {
+    display: block;
+  }
+
+  .chart-inner canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  @media (min-width: 800px) {
+    .chart-container {
+      margin-left: -3rem;
+      margin-right: -3rem;
+    }
+  }
+</style>

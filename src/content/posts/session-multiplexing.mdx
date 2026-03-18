@@ -1,0 +1,96 @@
+---
+title: 'One API for Eight Browser Backends'
+description: 'Chrome, Safari, iOS simulators, Android emulators, physical devices. How we built a unified session layer for all of them.'
+date: 2026-02-25
+tags: ['systems', 'infrastructure']
+---
+
+import Chart from '../../components/Chart.astro'
+
+If you're building browser automation that needs to work on Safari, you have a problem. Playwright supports WebKit, but WebKit isn't Safari. The rendering is close, but the browser chrome, extensions, permissions, and device APIs are different. If you need real Safari, you need a real Mac with safaridriver. If you need mobile Safari, you need an iOS simulator or a physical iPhone.
+
+Multiply this across every browser and device combination and you get eight separate backends, each with its own protocol, lifecycle, and failure modes. The question is: how do you give clients a single API that hides all of this?
+
+## The problem
+
+A client wants to run a browser automation task. They specify a browser type (Chrome, Firefox, Safari, mobile Safari, Android Chrome). They shouldn't need to know whether that request is fulfilled by a cloud Browserless instance, a local Playwright process, an iOS simulator clone, or an Android emulator. They just want a session that works.
+
+The requirements:
+
+- **One API** for session create/destroy/list across all backends
+- **Quotas** per client and globally, so one client can't starve others
+- **Automatic cleanup** of sessions that crash, disconnect, or are abandoned
+- **Health-aware routing** so degraded backends get fewer sessions
+- **Two protocols** (WebSocket for CDP, HTTP for WebDriver) behind the same facade
+
+## What each backend actually looks like
+
+The backends are remarkably different in how they provision a "browser session":
+
+**Browserless** is the simplest. You connect a WebSocket and that's your session. The connection *is* the lifecycle. When the socket closes, the session is done.
+
+**Playwright WebKit** spawns a new browser process per session via `webkit.launchServer()`. The process lives until you kill it.
+
+**iOS Simulator** is the most involved. Cold-booting a simulator takes 30 seconds. So instead, we keep a pre-warmed template with WebDriverAgent already installed, and *clone* it per session. The clone boots in ~5 seconds, inheriting the full filesystem state. On cleanup, we shutdown and delete the clone.
+
+**Android Emulator** spawns an emulator process from an AVD snapshot, waits for boot, launches Chrome via ADB, and forwards a CDP port. There's a pair of ports to manage (console + ADB) plus a separate CDP port.
+
+**Physical devices** (iPhone, Android) are the trickiest operationally. You can't spawn them. They're already running. So you maintain a pool of available devices and lock one per session. iPhones need code signing for WebDriverAgent. Androids need ADB port forwarding. Each device supports exactly one concurrent session.
+
+**Safari Desktop** spawns a `safaridriver` process on a specific port, waits for it to become ready, then creates a WebDriver session.
+
+## The session layer
+
+All of this collapses into one interface:
+
+```typescript
+interface Backend {
+  createSession(): Promise<BackendSession>
+  destroySession(id: string): Promise<void>
+  status(): PoolStatus
+  healthCheck(): Promise<boolean>
+}
+```
+
+An allocator sits on top, maintaining a map of active sessions with metadata: which client owns it, which backend handles it, when it was created, when it last had activity.
+
+Session creation: filter backends that support the requested browser type, prefer healthy ones, check capacity and client quotas, pick the first match, delegate to its `createSession()`.
+
+Session destruction: call the backend's `destroySession()`, clean up the session map.
+
+## The idle reaper
+
+Clients crash. WebSockets disconnect silently. Appium sessions hang. If you don't clean up, leaked sessions accumulate until a backend runs out of capacity.
+
+A reaper runs every 30 seconds and checks two things per session:
+
+1. **Expiry**: has the session exceeded its maximum lifetime? (default 5 minutes)
+2. **Idle**: has there been no WebSocket activity for too long? (default 5 minutes)
+
+For WebSocket sessions, the proxy touches a timestamp on every frame it relays. If no frames have passed in 5 minutes, the session is idle and gets destroyed. This is the only reliable signal. You can't trust the client to send heartbeats.
+
+## The WebSocket relay
+
+CDP-based backends (Chrome, Android, Playwright WebKit) communicate via WebSocket. The farm sits between client and backend as a thin relay:
+
+```
+Client WS <-> Farm Proxy <-> Backend WS
+```
+
+The relay doesn't parse or inspect CDP messages. It just forwards frames in both directions with a small buffer (128 messages max) to handle the window between client connect and backend connect. Either side closing triggers cleanup of both sides and session destruction.
+
+The important property is that this adds near-zero latency. The relay exists only for lifecycle management and idle detection, not for protocol translation.
+
+## WebDriver sessions skip the relay
+
+Safari and iOS backends use WebDriver (HTTP-based), not WebSocket. For these, the farm returns the backend's WebDriver URL and session ID directly. The client talks to the backend with no intermediary. The farm monitors the session (timeout, idle) but doesn't relay traffic.
+
+This is a pragmatic choice. Proxying HTTP request/response pairs is more complex than relaying WebSocket frames, and the latency impact is higher. Since WebDriver sessions are inherently request-response (not streaming), the client can talk directly without losing anything.
+
+## In practice
+
+The `Backend` interface is small enough that adding a new backend is a day of work. The allocator doesn't care about protocol details.
+
+For iOS simulators, the clone-from-template approach (30s provisioning down to 5s) was a bigger win than any connection pooling strategy. The session map is a plain `Map`. No Redis, no Postgres. For 20-50 concurrent sessions, the operational simplicity is worth it.
+
+When the Android emulator host is overloaded, its health check fails, and the allocator routes Chrome requests to Browserless instead. No manual intervention. The system self-heals for the common case.

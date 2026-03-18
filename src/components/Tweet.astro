@@ -1,0 +1,65 @@
+---
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<div class="tweet-embed" data-tweet-id={id}>
+  <blockquote class="tweet-placeholder">
+    <a href={`https://x.com/i/status/${id}`}>Loading tweet...</a>
+  </blockquote>
+</div>
+
+<script>
+  // load Twitter widget JS once, then render all embeds
+  function renderTweets() {
+    const embeds = document.querySelectorAll('.tweet-embed[data-tweet-id]')
+    if (!embeds.length) return
+
+    if ((window as any).twttr?.widgets) {
+      embeds.forEach((el) => {
+        const id = el.getAttribute('data-tweet-id')!
+        const placeholder = el.querySelector('.tweet-placeholder')
+        if (placeholder) placeholder.remove()
+
+        const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        ;(window as any).twttr.widgets.createTweet(id, el, {
+          theme,
+          dnt: true,
+          conversation: 'none',
+        })
+      })
+    }
+  }
+
+  if (!(window as any).twttr) {
+    const script = document.createElement('script')
+    script.src = 'https://platform.twitter.com/widgets.js'
+    script.async = true
+    script.onload = renderTweets
+    document.head.appendChild(script)
+  } else {
+    renderTweets()
+  }
+</script>
+
+<style>
+  .tweet-embed {
+    margin: var(--space-xl) 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .tweet-placeholder {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--fg-faint);
+    padding: var(--space-lg);
+    border: 1px solid var(--border);
+    text-align: center;
+    max-width: 550px;
+    width: 100%;
+  }
+</style>

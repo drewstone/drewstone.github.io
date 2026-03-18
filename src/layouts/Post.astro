@@ -1,0 +1,148 @@
+---
+import Base from './Base.astro'
+
+interface Props {
+  title: string
+  description: string
+  date: Date
+  updated?: Date
+  tags?: string[]
+}
+
+const { title, description, date, updated, tags = [] } = Astro.props
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+---
+
+<Base title={title} description={description}>
+  <article>
+    <header class="post-header">
+      <div class="post-meta">
+        {tags.length > 0 && (
+          <span class="post-tags">
+            {tags.map((tag) => <span class="tag">{tag}</span>)}
+          </span>
+        )}
+      </div>
+      <h1>{title}</h1>
+      <p class="post-desc">{description}</p>
+      <div class="post-date-line">
+        <time>{formatDate(date)}</time>
+        {updated && <span class="updated">(updated {formatDate(updated)})</span>}
+      </div>
+      <div class="ornament-band" aria-hidden="true">
+        <hr class="rule" />
+        <span class="ornament-center">&#x2766;</span>
+        <hr class="rule" />
+      </div>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  article {
+    padding-top: var(--space-md);
+  }
+
+  .post-header {
+    margin-bottom: var(--space-xl);
+    text-align: center;
+  }
+
+  .post-meta {
+    margin-bottom: var(--space-sm);
+  }
+
+  .post-tags {
+    display: inline-flex;
+    gap: var(--space-sm);
+  }
+
+  .post-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 auto var(--space-sm);
+    max-width: 640px;
+  }
+
+  .post-desc {
+    font-size: 0.92rem;
+    color: var(--fg-muted);
+    font-style: italic;
+    letter-spacing: 0.04em;
+    max-width: 520px;
+    margin: 0 auto var(--space-md);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .ornament-band {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+
+  .ornament-band .rule {
+    flex: 1;
+  }
+
+  .ornament-center {
+    font-size: 1.2rem;
+    color: var(--ornament);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .post-date-line {
+    font-size: 0.82rem;
+    color: var(--fg-faint);
+  }
+
+  .post-date-line time {
+    text-decoration: none;
+  }
+
+  .updated {
+    margin-left: var(--space-xs);
+    color: var(--fg-faint);
+  }
+
+  .prose {
+    line-height: 1.8;
+    position: relative;
+  }
+
+  .prose :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prose :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(p + p) {
+    margin-top: 0;
+  }
+
+  @media (max-width: 640px) {
+    .post-header h1 {
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+    }
+  }
+</style>

@@ -1,0 +1,160 @@
+---
+title: 'Anatomy of an Autonomous Security Audit'
+description: 'We tried one big agent with every security tool. It was terrible. Here is what actually works.'
+date: 2026-03-13
+tags: ['security', 'agents', 'architecture']
+---
+
+import Chart from '../../components/Chart.astro'
+
+We tried the obvious thing first. One agent, every security tool available, pointed at a smart contract repo. "Find vulnerabilities." It ran Slither, got a wall of output, tried to parse it, got confused about which findings were real, ran Echidna on the wrong contract, exhausted its context window, and produced a report full of duplicates and hallucinated severity ratings.
+
+Security auditing is several different jobs, and cramming them into one agent context produces a mess.
+
+## One coordinator, many specialists
+
+The architecture we landed on has a coordinator agent at the top. It receives a repo URL, reads the codebase, figures out what ecosystems are present (is this Solidity? Anchor? Move? Circom?), and spawns specialist subagents to do the actual analysis.
+
+Its only real tool is `spawn_subagent`:
+
+```typescript
+interface SubagentParams {
+  agentType: string        // 'evm-security', 'solana-pentester', etc.
+  task: string             // what to analyze
+  focusFiles?: string[]    // narrow scope
+  maxToolCalls?: number    // budget (default 150)
+}
+```
+
+It can also batch-spawn via `spawn_subagent_async` when different parts of the codebase need independent analysis. A typical EVM audit spawns an `evm-security` agent (static analysis + fuzzing), an `evm-pentester` (writes exploits for anything the first one finds), and an `evm-defi` agent if the contracts involve AMMs, oracles, or flash loans. All three run in parallel.
+
+The coordinator keeps a scratchpad of what's been looked at, what findings have come in, and what still needs attention. The subagents can read this to stay coordinated.
+
+## Every agent gets a sandbox
+
+This was the decision that made everything else work. Each subagent runs in an isolated container with exactly the tools it needs. The EVM agent gets Foundry, Slither, Echidna, Medusa. A Solana agent gets Anchor and Trdelnik. The ZK agent gets Circom and snarkjs.
+
+Why isolation? A pentester agent writes exploit code and runs it. You don't want that on your host, and you don't want one agent's test suite interfering with another's.
+
+We support five sandbox backends (Tangle's Sandbox API, Morph Cloud, Docker, Cloudflare Workers, bare local), all behind the same interface. Adding a sixth would be an afternoon of work. The subagent never knows or cares which backend it got.
+
+<Chart
+  id="audit-flow"
+  code={`
+const W = 700, H = 320
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#1c1c1c'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#999'
+const bg = style.getPropertyValue('--bg').trim() || '#faf9f7'
+const border = style.getPropertyValue('--border').trim() || '#ddd'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+function box(x, y, w, h, label, sub) {
+  ctx.strokeStyle = fg; ctx.lineWidth = 1.5
+  ctx.strokeRect(x, y, w, h)
+  ctx.fillStyle = fg; ctx.font = 'bold 13px JetBrains Mono, monospace'
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+  ctx.fillText(label, x + w/2, y + h/2 - (sub ? 8 : 0))
+  if (sub) {
+    ctx.fillStyle = faint; ctx.font = '10px JetBrains Mono, monospace'
+    ctx.fillText(sub, x + w/2, y + h/2 + 10)
+  }
+}
+
+function arrow(x1, y1, x2, y2) {
+  ctx.strokeStyle = fg; ctx.lineWidth = 1.2
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke()
+  const angle = Math.atan2(y2 - y1, x2 - x1)
+  ctx.beginPath()
+  ctx.moveTo(x2, y2)
+  ctx.lineTo(x2 - 8 * Math.cos(angle - 0.4), y2 - 8 * Math.sin(angle - 0.4))
+  ctx.lineTo(x2 - 8 * Math.cos(angle + 0.4), y2 - 8 * Math.sin(angle + 0.4))
+  ctx.closePath(); ctx.fillStyle = fg; ctx.fill()
+}
+
+function dashedArrow(x1, y1, x2, y2) {
+  ctx.strokeStyle = faint; ctx.lineWidth = 1; ctx.setLineDash([4, 3])
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke()
+  ctx.setLineDash([])
+  const angle = Math.atan2(y2 - y1, x2 - x1)
+  ctx.beginPath()
+  ctx.moveTo(x2, y2)
+  ctx.lineTo(x2 - 6 * Math.cos(angle - 0.4), y2 - 6 * Math.sin(angle - 0.4))
+  ctx.lineTo(x2 - 6 * Math.cos(angle + 0.4), y2 - 6 * Math.sin(angle + 0.4))
+  ctx.closePath(); ctx.fillStyle = faint; ctx.fill()
+}
+
+box(260, 20, 180, 50, 'Coordinator', 'plans + dispatches')
+
+box(40, 140, 140, 50, 'EVM Security', 'slither, echidna')
+box(210, 140, 140, 50, 'EVM Pentester', 'forge, exploit')
+box(390, 140, 140, 50, 'Solana Agent', 'anchor, trdelnik')
+box(560, 140, 120, 50, 'ZK Agent', 'circom, noir')
+
+ctx.fillStyle = faint; ctx.font = '9px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('sandbox', 110, 202)
+ctx.fillText('sandbox', 280, 202)
+ctx.fillText('sandbox', 460, 202)
+ctx.fillText('sandbox', 620, 202)
+
+arrow(300, 70, 110, 138)
+arrow(340, 70, 280, 138)
+arrow(380, 70, 460, 138)
+arrow(400, 70, 620, 138)
+
+box(180, 250, 160, 45, 'Dedup + Merge', '')
+box(420, 250, 160, 45, 'Validator', 'exploit or disprove')
+
+dashedArrow(110, 192, 240, 248)
+dashedArrow(280, 192, 260, 248)
+dashedArrow(460, 192, 300, 248)
+dashedArrow(620, 192, 320, 248)
+
+arrow(342, 272, 418, 272)
+
+ctx.fillStyle = faint; ctx.font = '9px JetBrains Mono, monospace'; ctx.textAlign = 'center'
+ctx.fillText('high/critical only', 380, 260)
+ctx.fillText('publish_finding()', 180, 225)
+
+container.appendChild(canvas)
+  `}
+/>
+
+When a subagent finds something, it calls `publish_finding` immediately. The finding streams back to the coordinator without waiting for the agent to finish its analysis. This matters because the coordinator can start reasoning about patterns across findings while agents are still working. "Two agents flagged reentrancy in different contracts" is useful information that might prompt the coordinator to spawn a third agent focused specifically on cross-contract reentrancy.
+
+## The deduplication problem
+
+Three agents independently flag the same reentrancy issue. Each describes it differently. One calls it "state change after external call in withdraw()," another says "potential reentrancy vulnerability in fund withdrawal logic," the third reports "CEI violation in ETH transfer." Same bug, three entries.
+
+You can't string-match these. We use a weighted similarity score: Jaccard similarity on tokenized titles (weight 0.4), code location proximity within a 15-line window (weight 0.35), and n-gram overlap on descriptions (weight 0.25). Anything above 0.65 similarity in the same vulnerability category gets merged.
+
+The category gate is important. Without it, a SQL injection finding and an XSS finding would merge because they both mention "user input" and "sanitization." Same vocabulary, completely different bugs.
+
+## Keeping the coordinator's context clean
+
+A full finding is heavy: title, description, impact analysis, code locations, references, PoC code, metadata. The coordinator needs to think about dozens of findings simultaneously but can't afford to load them all into its context window.
+
+We project each finding into a compact form: ID, title, severity, file:line location, a 200-character summary, and a confidence score. The coordinator reasons over these lightweight specs. When it needs the full details (to write the final report, or to decide if two findings are related), it pulls from the artifact store by ID.
+
+When an orchestrating agent needs awareness of many things, give it summaries and let it pull details on demand.
+
+## Profiles over code
+
+There are around 50 agent profiles in the system. Each one is pure configuration: what sandbox capability it needs, what LLM to use, what system prompt to send, what skill resources to attach (curated knowledge from Trail of Bits, Pashov, etc.).
+
+Adding a new specialist is writing a config file, not writing code. I added a Move security profile last week in about 20 minutes. Define the capability (`move-aptos`), write instructions that reference the Move Prover and common Move vulnerability patterns, attach relevant skill resources, register it. The coordinator automatically discovers it and will spawn it when it sees Move code.
+
+Getting the profiles right is where the time goes, not the coordinator logic. Tuning the instructions so agents actually use their tools effectively is the real work. A badly-prompted Echidna agent will fuzzing random functions for 150 tool calls and find nothing. A well-prompted one targets specific invariants and finds real bugs.
+
+## The economics
+
+A typical smart contract audit runs $5 to $20 in LLM costs depending on codebase size, plus sandbox compute. Everything persists to SQLite (seven migrations and counting), so audits can pause and resume. The system tracks token usage per agent and warns at 80% of budget.
+
+The cost of the multi-agent approach is roughly 2x a single-agent audit in raw LLM spend. But the single-agent approach produces reports that need heavy human triage. The multi-agent approach produces reports where the high-severity findings have working PoCs attached. The human reviewing it can focus on "is this PoC realistic?" rather than "is this finding real?"
+
+That tradeoff is not close.
