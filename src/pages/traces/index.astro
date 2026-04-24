@@ -1,105 +1,74 @@
 ---
 import Base from '../../layouts/Base.astro'
-import DataTable, { type Col } from '../../components/DataTable.astro'
-import Paginator from '../../components/Paginator.astro'
+import PostHistoryCard from '../../components/PostHistoryCard.astro'
 import { getCollection } from 'astro:content'
 
-const PER_PAGE = 25
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+const allTraces = await getCollection('traces')
 
-const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
-
-const traces = await getCollection('traces')
-
-const posts = await getCollection('posts', ({ data }) => !data.draft)
-const postBySlug = new Map(posts.map((p) => [p.id, p]))
-const titleOf = (slug: string) => postBySlug.get(slug)?.data.title ?? slug
-const postDateOf = (slug: string) => postBySlug.get(slug)?.data.date?.toISOString() ?? ''
-
-// Sort by post creation date (desc) — newest posts on top, regardless of
-// when the trace for them was captured.
-traces.sort((a, b) => postDateOf(b.data.post).localeCompare(postDateOf(a.data.post)))
-
-const short = (model: string | null | undefined): string => {
-  if (!model) return 'unknown'
-  if (model === 'unknown') return 'unknown'
-  if (model.startsWith('claude-')) {
-    const parts = model.replace(/^claude-/, '').split('-')
-    if (parts.length >= 2) return parts[0][0].toUpperCase() + parts[0].slice(1) + ' ' + parts.slice(1).join('.')
-  }
-  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
-  return model
+// Group traces by post slug
+const tracesByPost = new Map<string, typeof allTraces>()
+for (const t of allTraces) {
+  const arr = tracesByPost.get(t.data.post) ?? []
+  arr.push(t)
+  tracesByPost.set(t.data.post, arr)
 }
 
-const toneForRole = (role: string): 'action' | 'info' | 'run' | undefined => {
-  if (role === 'draft') return 'info'
-  if (role === 'review') return 'run'
-  return 'action'
-}
+// Sort posts by creation date desc (newest first)
+const posts = [...allPosts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 
-// Stats cards
-const totalTurns = traces.reduce((s, t) => s + t.data.turns.length, 0)
-const totalToolCalls = traces.reduce(
+// Headline stats
+const totalTraces = allTraces.length
+const totalTurns = allTraces.reduce((s, t) => s + t.data.turns.length, 0)
+const totalToolCalls = allTraces.reduce(
   (s, t) => s + t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
   0
 )
-const postsWithTraces = new Set(traces.map((t) => t.data.post)).size
+const totalRevisions = posts.reduce((s, p) => s + (p.data.revisions?.length ?? 0), 0)
 
 const modelCounts: Record<string, number> = {}
-for (const t of traces) {
-  const m = t.data.model ?? 'unknown'
-  modelCounts[m] = (modelCounts[m] ?? 0) + 1
+for (const p of posts) {
+  for (const a of p.data.authors ?? []) {
+    const m = a.model || 'unknown'
+    modelCounts[m] = (modelCounts[m] ?? 0) + 1
+  }
+  for (const r of p.data.revisions ?? []) {
+    const m = r.model || 'unknown'
+    modelCounts[m] = (modelCounts[m] ?? 0) + 1
+  }
 }
 const sortedModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1])
 const maxModel = sortedModels[0]?.[1] ?? 1
 
-// Build rows: Created = post's original publish date; Updated = last captured
-// session for that post.
-const allRows = traces.map((t) => ({
-  created: postDateOf(t.data.post),
-  updated: t.data.started_at,
-  post: titleOf(t.data.post),
-  postHref: `/posts/${t.data.post}`,
-  traceHref: `/traces/${t.data.trace_id}`,
-  role: t.data.role,
-  model: short(t.data.model),
-  turns: t.data.turns.length,
-  tools: t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
-}))
-
-const total = allRows.length
-const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
-const safePage = Math.max(1, Math.min(totalPages, pageParam))
-const rows = allRows.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
-
-const columns: Col[] = [
-  { key: 'created', label: 'Created', type: 'date', width: '6.5rem' },
-  { key: 'updated', label: 'Updated', type: 'date', width: '6.5rem' },
-  { key: 'post',    label: 'Post',    type: 'link', linkKey: 'postHref' },
-  { key: 'model',   label: 'Model',   type: 'mono', width: '7.5rem' },
-  { key: 'turns',   label: 'Turns',   type: 'num',  align: 'right', width: '4.5rem' },
-  { key: 'tools',   label: 'Tools',   type: 'num',  align: 'right', width: '4.5rem' },
-  { key: 'trace',   label: 'Trace',   type: 'link', linkKey: 'traceHref', format: () => 'open →', width: '5rem' },
-]
+const short = (m: string | null | undefined): string => {
+  if (!m || m === 'unknown') return 'unknown'
+  if (m.startsWith('claude-')) {
+    const p = m.replace(/^claude-/, '').split('-')
+    if (p.length >= 2) return p[0][0].toUpperCase() + p[0].slice(1) + ' ' + p.slice(1).join('.')
+  }
+  if (m.startsWith('gpt-')) return 'GPT-' + m.replace(/^gpt-/, '')
+  return m
+}
 ---
 
 <Base title="traces" wide>
   <section class="intro">
     <h1>Session traces</h1>
     <p>
-      Every post has captured sessions behind it. When an agent edits a post, the prompt that
-      drove the edit, the assistant's response, and the tool calls get summarized and stored
-      here. Each row below is a clickable record: the conversation that produced the commit.
+      Every post's authorship and edit history. Click any row to expand the full revision log,
+      with links to the captured session trace and the commit for each edit.
     </p>
     <p class="intro-sub">
       Captured via <code>tools/trace-capture.ts</code>. User turns trimmed to &lt;600 chars,
-      assistant to &lt;280 chars with tool-call counts only. Raw JSONL stays in
-      <code>~/.claude/projects/</code> or <code>~/.codex/sessions/</code>.
+      assistant to &lt;280 chars with tool-call counts only. Raw JSONL stays on the authoring
+      machine.
     </p>
   </section>
 
   <section class="stats">
-    <div class="stat-card"><div class="sv">{traces.length}</div><div class="sl">Traces</div></div>
-    <div class="stat-card"><div class="sv">{postsWithTraces}</div><div class="sl">Posts covered</div></div>
+    <div class="stat-card"><div class="sv">{posts.length}</div><div class="sl">Posts</div></div>
+    <div class="stat-card"><div class="sv">{totalRevisions}</div><div class="sl">Revisions</div></div>
+    <div class="stat-card"><div class="sv">{totalTraces}</div><div class="sl">Traces</div></div>
     <div class="stat-card"><div class="sv">{totalTurns}</div><div class="sl">Turns</div></div>
     <div class="stat-card"><div class="sv">{totalToolCalls}</div><div class="sl">Tool calls</div></div>
   </section>
@@ -110,7 +79,7 @@ const columns: Col[] = [
       <div class="model-bars">
         {sortedModels.map(([m, n]) => (
           <div class="mb-row">
-            <span class="mb-label">{short(m)}</span>
+            <span class={`mb-label ${m === 'unknown' ? 'is-unknown' : ''}`}>{short(m)}</span>
             <div class="mb-track"><div class="mb-fill" style={`width: ${(n / maxModel) * 100}%`}></div></div>
             <span class="mb-count">{n}</span>
           </div>
@@ -120,14 +89,51 @@ const columns: Col[] = [
   )}
 
   <section class="section">
-    <h2>All traces</h2>
-    <DataTable
-      columns={columns}
-      rows={rows}
-      initialSort={{ key: 'created', dir: 'desc' }}
-    />
-    <Paginator page={safePage} total={total} perPage={PER_PAGE} basePath="/traces" />
+    <div class="section-head">
+      <h2>History by post</h2>
+      <div class="sort-controls" role="group" aria-label="sort order">
+        <button data-sort="created" class="sort-btn is-active">Created ↓</button>
+        <button data-sort="updated" class="sort-btn">Updated ↓</button>
+      </div>
+    </div>
+
+    <div class="phc-header" aria-hidden="true">
+      <span></span>
+      <span>Post</span>
+      <span>Created</span>
+      <span>Written by</span>
+      <span>Updated</span>
+      <span>Last model</span>
+      <span>Revs</span>
+    </div>
+
+    <div class="phc-list">
+      {posts.map((post) => (
+        <PostHistoryCard post={post} traces={tracesByPost.get(post.id) ?? []} />
+      ))}
+    </div>
   </section>
+
+  <script>
+    (function() {
+      const list = document.querySelector('.phc-list')
+      const btns = document.querySelectorAll<HTMLButtonElement>('.sort-btn')
+      if (!list || !btns.length) return
+      for (const b of btns) {
+        b.addEventListener('click', () => {
+          const key = b.dataset.sort!
+          const cards = Array.from(list.querySelectorAll<HTMLElement>('.phc'))
+          cards.sort((a, b) => {
+            const av = a.dataset[key === 'created' ? 'created' : 'updated'] ?? ''
+            const bv = b.dataset[key === 'created' ? 'created' : 'updated'] ?? ''
+            return bv.localeCompare(av)
+          })
+          for (const c of cards) list.appendChild(c)
+          for (const x of btns) x.classList.toggle('is-active', x === b)
+        })
+      }
+    })()
+  </script>
 </Base>
 
 <style>
@@ -145,19 +151,19 @@ const columns: Col[] = [
 
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.6rem;
     margin: 0 0 var(--space-2xl);
   }
   .stat-card {
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 0.9rem 1.1rem;
+    padding: 0.85rem 1rem;
     background: var(--bg);
   }
   .sv {
     font-family: var(--font-body);
-    font-size: 2.1rem;
+    font-size: 1.9rem;
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -173,15 +179,47 @@ const columns: Col[] = [
   }
 
   .section { margin: 0 0 var(--space-2xl); }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin: 0 0 var(--space-md);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--border);
+  }
   .section h2 {
     font-family: var(--font-body);
     font-size: 1.1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    margin: 0 0 var(--space-md);
-    padding-bottom: 0.4rem;
-    border-bottom: 1px dotted var(--border);
+    margin: 0;
+  }
+
+  .sort-controls {
+    display: inline-flex;
+    gap: 0.3rem;
+  }
+  .sort-btn {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.65rem;
+    background: var(--bg);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .sort-btn:hover { background: var(--bg-alt); color: var(--fg); }
+  .sort-btn.is-active {
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border-color: var(--c-action-border);
   }
 
   .model-bars { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -192,6 +230,7 @@ const columns: Col[] = [
     gap: 0.8rem;
   }
   .mb-label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--fg); }
+  .mb-label.is-unknown { color: var(--fg-faint); font-style: italic; font-weight: 500; }
   .mb-track { height: 10px; background: var(--bg-alt); border-radius: 5px; overflow: hidden; }
   .mb-fill { height: 100%; background: var(--c-action); border-radius: 5px; }
   .mb-count {
@@ -200,5 +239,42 @@ const columns: Col[] = [
     color: var(--fg-muted);
     font-variant-numeric: tabular-nums;
     text-align: right;
+  }
+
+  /* PostHistoryCard header row — aligns with grid in the summary */
+  .phc-header {
+    display: grid;
+    grid-template-columns:
+      1.4rem
+      minmax(0, 1.6fr)
+      7rem
+      7rem
+      7rem
+      7rem
+      4.5rem;
+    gap: 0.9rem;
+    padding: 0.5rem 0.95rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-faint);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+  }
+  .phc-list {
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 10px 10px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  @media (max-width: 800px) {
+    .phc-header { display: none; }
+    .phc-list { border-radius: 10px; border-top: 1px solid var(--border); }
   }
 </style>

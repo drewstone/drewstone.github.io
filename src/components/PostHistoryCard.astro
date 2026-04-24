@@ -1,0 +1,305 @@
+---
+/**
+ * PostHistoryCard — one row per post, summary on the closed state,
+ * full revision log (with trace links) on open.
+ *
+ * Shape mirrors a table row at rest but uses <details> so the expansion
+ * is native and accessible. Rows share a CSS grid so columns align across
+ * all cards.
+ */
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  post: CollectionEntry<'posts'>
+  traces: CollectionEntry<'traces'>[]
+}
+
+const { post, traces } = Astro.props
+
+const short = (m: string | null | undefined): string => {
+  if (!m || m === 'unknown') return 'unknown'
+  if (m.startsWith('claude-')) {
+    const p = m.replace(/^claude-/, '').split('-')
+    if (p.length >= 2) return p[0][0].toUpperCase() + p[0].slice(1) + ' ' + p.slice(1).join('.')
+  }
+  if (m.startsWith('gpt-')) return 'GPT-' + m.replace(/^gpt-/, '')
+  return m
+}
+
+const fmtDate = (d: Date | string) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+const authors = post.data.authors ?? []
+const revisions = post.data.revisions ?? []
+
+const draftAuthor = authors.find((a) => a.role === 'draft') ?? authors[0]
+const latestRevision = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf())[0]
+const lastRevisionAuthor = authors.filter((a) => a.role !== 'draft').slice(-1)[0] ?? latestRevision
+
+const traceIndex = new Map(traces.map((t) => [t.data.trace_id, t]))
+const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf())
+
+const createdModel = draftAuthor?.model ?? 'unknown'
+const updatedModel = latestRevision?.model ?? 'unknown'
+const updatedDate = latestRevision?.date ?? post.data.date
+---
+
+<details class="phc" data-created={post.data.date.toISOString()} data-updated={new Date(updatedDate).toISOString()}>
+  <summary>
+    <span class="phc-chev" aria-hidden="true">
+      <svg viewBox="0 0 10 10" width="10" height="10"><path d="M3 1l4 4-4 4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="phc-title"><a href={`/posts/${post.id}`}>{post.data.title}</a></span>
+    <span class="phc-created">{fmtDate(post.data.date)}</span>
+    <span class={`phc-model ${createdModel === 'unknown' ? 'is-unknown' : ''}`}>{short(createdModel)}</span>
+    <span class="phc-updated">{fmtDate(updatedDate)}</span>
+    <span class={`phc-model ${updatedModel === 'unknown' ? 'is-unknown' : ''}`}>{short(updatedModel)}</span>
+    <span class="phc-revs">{revisions.length} {revisions.length === 1 ? 'rev' : 'revs'}</span>
+  </summary>
+  {ordered.length > 0 && (
+    <ol class="phc-log">
+      {ordered.map((r) => {
+        const trace = r.trace_id ? traceIndex.get(r.trace_id) : undefined
+        return (
+          <li class={r.reconstructed ? 'reconstructed' : ''}>
+            <time>{fmtDate(r.date)}</time>
+            <span class={`phc-log-model ${r.model === 'unknown' ? 'is-unknown' : ''}`}>{short(r.model)}</span>
+            <span class="phc-log-note">{r.note}</span>
+            <span class="phc-log-links">
+              {r.trace_id && <a class="phc-log-trace" href={`/traces/${r.trace_id}`}>trace →</a>}
+              {r.commit && (
+                <a class="phc-log-commit" href={`https://github.com/drewstone/drewstone.github.io/commit/${r.commit}`} target="_blank" rel="noopener">
+                  <code>{r.commit.slice(0, 7)}</code>
+                </a>
+              )}
+              {r.reconstructed && <span class="phc-log-recon">reconstructed</span>}
+            </span>
+          </li>
+        )
+      })}
+    </ol>
+  )}
+</details>
+
+<style>
+  .phc {
+    border-bottom: 1px solid var(--border);
+  }
+  .phc:last-child { border-bottom: 0; }
+
+  .phc > summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns:
+      1.4rem                 /* chevron */
+      minmax(0, 1.6fr)       /* title */
+      7rem                   /* created date */
+      7rem                   /* created model */
+      7rem                   /* updated date */
+      7rem                   /* updated model */
+      4.5rem;                /* revs count */
+    gap: 0.9rem;
+    align-items: baseline;
+    padding: 0.65rem 0.95rem;
+    transition: background 0.12s;
+  }
+  .phc > summary:hover { background: var(--bg-alt); }
+  .phc > summary::-webkit-details-marker { display: none; }
+  .phc[open] > summary { background: var(--bg-alt); border-bottom: 1px solid var(--border); }
+
+  .phc-chev {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-faint);
+    transition: transform 0.12s, color 0.12s;
+  }
+  .phc[open] .phc-chev {
+    transform: rotate(90deg);
+    color: var(--c-action);
+  }
+
+  .phc-title {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--fg);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .phc-title a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 3px;
+  }
+  .phc-title a:hover { text-decoration-color: var(--fg); }
+
+  .phc-created, .phc-updated {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .phc-model {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+    justify-self: start;
+    white-space: nowrap;
+  }
+  .phc-model.is-unknown {
+    background: var(--bg);
+    color: var(--fg-faint);
+    border-color: var(--border);
+    border-style: dashed;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .phc-revs {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Expanded revision log */
+  .phc-log {
+    list-style: none;
+    padding: 0.55rem 0.95rem 0.9rem 3rem;
+    margin: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-left: 2px solid var(--c-action-border);
+    margin-left: 1.2rem;
+  }
+
+  .phc-log li {
+    display: grid;
+    grid-template-columns: 6.5rem 7rem 1fr auto;
+    gap: 0.85rem;
+    align-items: baseline;
+    padding: 0.3rem 0;
+    border-top: 1px dotted var(--border);
+  }
+  .phc-log li:first-child { border-top: 0; padding-top: 0; }
+  .phc-log li.reconstructed .phc-log-note {
+    color: var(--fg-faint);
+    font-style: italic;
+  }
+
+  .phc-log time {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--fg-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .phc-log-model {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.08rem 0.4rem;
+    border-radius: 3px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+    justify-self: start;
+    white-space: nowrap;
+  }
+  .phc-log-model.is-unknown {
+    background: var(--bg-alt);
+    color: var(--fg-faint);
+    border-color: var(--border);
+    border-style: dashed;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .phc-log-note {
+    font-family: var(--font-body);
+    font-size: 0.94rem;
+    line-height: 1.5;
+    color: var(--fg);
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .phc-log-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .phc-log-trace {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    padding: 0.12rem 0.5rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+    text-decoration: none;
+  }
+  .phc-log-trace:hover { background: var(--c-action); color: var(--bg); }
+
+  .phc-log-commit {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--fg-faint);
+  }
+  .phc-log-commit code { background: transparent; padding: 0; font-size: inherit; }
+  .phc-log-commit:hover { color: var(--fg); border-bottom-color: var(--fg); }
+
+  .phc-log-recon {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-style: italic;
+    color: var(--fg-faint);
+  }
+
+  /* Responsive: stack columns on narrow screens */
+  @media (max-width: 800px) {
+    .phc > summary {
+      grid-template-columns: 1.4rem 1fr auto;
+      row-gap: 0.25rem;
+    }
+    .phc-created, .phc-updated, .phc-model, .phc-revs {
+      grid-column: 2 / 4;
+      justify-self: start;
+      font-size: 10.5px;
+    }
+    .phc-model { display: inline-block; margin-right: 0.3rem; }
+    .phc-log li {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>
