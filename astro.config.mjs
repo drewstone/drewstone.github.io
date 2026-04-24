@@ -7,7 +7,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeParagraphIds from './src/lib/rehype-paragraph-ids.ts'
 
 export default defineConfig({
-  site: 'https://yourusername.github.io',
+  site: 'https://drewstone.github.io',
   integrations: [mdx(), sitemap()],
   markdown: {
     remarkPlugins: [remarkMath],
