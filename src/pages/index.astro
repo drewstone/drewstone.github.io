@@ -48,31 +48,45 @@ for (const p of posts) {
 ---
 
 <Base title="drew" wide>
-  <section class="intro">
-    <p class="intro-lead">
-      This is the blog of <strong>Drew Stone</strong>. I work on AI infrastructure at
-      <a href="https://tangle.tools">Tangle</a>: agent sandboxes, eval harnesses, a payable
-      agent registry, and the plumbing between them. Most of what's written here is a by-product
-      of that work &mdash; eval loops, convergence detection, workflow UIs, red-team
-      architecture, payment-gated agent composition.
-    </p>
-    <p class="intro-meta">
-      <span class="intro-caps">The experiment</span>: every post was drafted, edited, or revisited
-      by AI agents under my direction. Each carries a
-      <a href="/experiment">revision log</a> with the model that wrote it, and every edit links
-      to its <a href="/traces">captured session trace</a>. As of today: <strong>{posts.length} posts</strong>,
-      <strong>{totalRevisions} tracked revisions</strong>,
-      <strong>{distinctModels.size}</strong> distinct models with confirmed attribution.
-    </p>
-    <p class="intro-features">
-      <span class="intro-caps">Navigation</span>: <a href="/posts">full archive</a> ·
-      <a href="/experiment">experiment</a> · <a href="/traces">traces</a> ·
-      <a href="/about">about</a> · <a href="/rss.xml">rss</a>.
-    </p>
+  <section class="hero">
+    <div class="intro">
+      <p class="intro-lead">
+        This is the blog of <strong>Drew Stone</strong>. I work on AI and autoresearch
+        infrastructure at <a href="https://tangle.tools">Tangle</a>: <strong>sandboxes for
+        agents</strong>, <strong>eval harnesses</strong>, and <strong>loops that automatically
+        build autoresearch pipelines</strong> and run the optimization against them. Also
+        crypto &mdash; specifically <strong>stablecoin payments</strong> and
+        <strong>privacy</strong>. Most of what's written here is a by-product of that work.
+      </p>
+      <p class="intro-meta">
+        <span class="intro-caps">The experiment</span>: every post was drafted, edited, or
+        revisited by AI agents under my direction. Each carries a
+        <a href="/experiment">revision log</a> with the model that wrote it, and every edit links
+        to its <a href="/traces">captured session trace</a>. As of today:
+        <strong>{posts.length} posts</strong>,
+        <strong>{totalRevisions} tracked revisions</strong>,
+        <strong>{distinctModels.size}</strong> distinct models with confirmed attribution.
+      </p>
+    </div>
+    <aside class="hero-side">
+      <div class="hero-side-head">
+        <span class="hero-side-label">Newest</span>
+        <a class="hero-side-more" href="/posts">archive &rarr;</a>
+      </div>
+      <ol class="hero-side-list">
+        {newest.slice(0, 7).map((post) => (
+          <li>
+            <span class="hs-bullet" aria-hidden="true">
+              <svg viewBox="0 0 10 10" width="9" height="9"><path d="M5 0l2.5 5L5 10 2.5 5z" fill="currentColor"/></svg>
+            </span>
+            <a href={`/posts/${post.id}`}>{post.data.title}</a>
+          </li>
+        ))}
+      </ol>
+    </aside>
   </section>
 
   <div class="home-grid">
-    <HomeSection title="Newest" posts={newest} moreHref="/posts" />
     {featured.length > 0 && <HomeSection title="Featured" posts={featured} />}
     {CATEGORIES.filter((c) => byCategory.has(c.key)).map((c) => (
       <HomeSection title={c.title} posts={byCategory.get(c.key)!.slice(0, 12)} />
@@ -92,10 +106,25 @@ for (const p of posts) {
 </script>
 
 <style>
+  /* ===== Hero: side-by-side intro + newest ===== */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+    margin: var(--space-lg) 0 var(--space-2xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px dotted var(--border);
+  }
+
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; gap: 1.8rem; }
+  }
+
   /* ===== Intro block ===== */
   .intro {
-    margin: var(--space-xl) 0 var(--space-3xl);
-    max-width: 720px;
+    margin: 0;
+    max-width: none;
   }
   .intro p {
     font-size: 1.08rem;
@@ -135,6 +164,75 @@ for (const p of posts) {
   .intro a:hover {
     text-decoration-color: var(--c-action);
   }
+
+  /* ===== Newest side column ===== */
+  .hero-side {
+    min-width: 0;
+    padding-top: 0.25rem;
+  }
+  .hero-side-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin: 0 0 0.7rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--border);
+  }
+  .hero-side-label {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg);
+  }
+  .hero-side-more {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .hero-side-more:hover { color: var(--fg); }
+
+  .hero-side-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .hero-side-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.1rem 0;
+    min-width: 0;
+  }
+  .hs-bullet {
+    color: var(--c-action);
+    flex-shrink: 0;
+    transform: translateY(1px);
+  }
+  .hs-bullet svg { display: block; }
+  .hero-side-list a {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+  .hero-side-list a:hover { text-decoration-color: var(--fg); }
 
   /* ===== Section grid ===== */
   .home-grid {
