@@ -3,11 +3,26 @@ import Base from '../../layouts/Base.astro'
 import PostHistoryCard from '../../components/PostHistoryCard.astro'
 import Paginator from '../../components/Paginator.astro'
 import { getCollection } from 'astro:content'
+import type { GetStaticPaths } from 'astro'
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const PER_PAGE = 10
+  const posts = (await getCollection('posts', ({ data }) => !data.draft))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  const total = posts.length
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
+  const params: any[] = []
+  for (let p = 1; p <= totalPages; p++) {
+    params.push({ params: { page: p === 1 ? undefined : String(p) }, props: { page: p, totalPages, total } })
+  }
+  return params
+}
 
 const PER_PAGE = 10
-const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
+const { page: safePage, totalPages, total } = Astro.props as { page: number; totalPages: number; total: number }
 
 const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 const allTraces = await getCollection('traces')
 
 // Group traces by post slug
@@ -18,12 +33,8 @@ for (const t of allTraces) {
   tracesByPost.set(t.data.post, arr)
 }
 
-// Sort posts by creation date desc (newest first)
-const sortedPosts = [...allPosts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-
-const totalPages = Math.max(1, Math.ceil(sortedPosts.length / PER_PAGE))
-const safePage = Math.max(1, Math.min(totalPages, pageParam))
-const posts = sortedPosts.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+const posts = allPosts.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+const sortedPosts = allPosts // alias for stats
 
 // Headline stats
 const totalTraces = allTraces.length
@@ -121,7 +132,7 @@ const short = (m: string | null | undefined): string => {
       ))}
     </div>
 
-    <Paginator page={safePage} total={sortedPosts.length} perPage={PER_PAGE} basePath="/traces" />
+    <Paginator page={safePage} total={total} perPage={PER_PAGE} basePath="/traces" />
   </section>
 
   <script>

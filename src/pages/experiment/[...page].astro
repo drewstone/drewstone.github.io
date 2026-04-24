@@ -1,11 +1,25 @@
 ---
-import Base from '../layouts/Base.astro'
-import DataTable, { type Col } from '../components/DataTable.astro'
-import Paginator from '../components/Paginator.astro'
+import Base from '../../layouts/Base.astro'
+import DataTable, { type Col } from '../../components/DataTable.astro'
+import Paginator from '../../components/Paginator.astro'
 import { getCollection } from 'astro:content'
+import type { GetStaticPaths } from 'astro'
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const PER_PAGE = 10
+  const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  let total = 0
+  for (const p of posts) total += (p.data.revisions ?? []).length
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
+  const out: any[] = []
+  for (let p = 1; p <= totalPages; p++) {
+    out.push({ params: { page: p === 1 ? undefined : String(p) }, props: { page: p, totalPages, total } })
+  }
+  return out
+}
 
 const PER_PAGE = 10
-const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
+const { page: safePage, total } = Astro.props as { page: number; totalPages: number; total: number }
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -71,9 +85,6 @@ const allRows = allRevisions.map((r) => ({
   reconstructed: r.reconstructed,
 }))
 
-const total = allRows.length
-const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
-const safePage = Math.max(1, Math.min(totalPages, pageParam))
 const rows = allRows.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
 
 const columns: Col[] = [

@@ -18,7 +18,9 @@ const { page, total, perPage, basePath } = Astro.props
 const totalPages = Math.max(1, Math.ceil(total / perPage))
 const safePage = Math.max(1, Math.min(totalPages, page))
 
-const href = (p: number) => (p === 1 ? basePath : `${basePath}?page=${p}`)
+// Path-based pagination so Astro static output can prerender each page.
+// basePath e.g. "/traces" → page 1 = "/traces", page 2 = "/traces/2".
+const href = (p: number) => (p === 1 ? basePath : `${basePath}/${p}`)
 
 // Compute a compact page-number window: first, last, and a few around current
 function pageWindow(cur: number, total: number): (number | '…')[] {
