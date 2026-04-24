@@ -1,7 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro'
 import PostHistoryCard from '../../components/PostHistoryCard.astro'
+import Paginator from '../../components/Paginator.astro'
 import { getCollection } from 'astro:content'
+
+const PER_PAGE = 10
+const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
 
 const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
 const allTraces = await getCollection('traces')
@@ -15,7 +19,11 @@ for (const t of allTraces) {
 }
 
 // Sort posts by creation date desc (newest first)
-const posts = [...allPosts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+const sortedPosts = [...allPosts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+
+const totalPages = Math.max(1, Math.ceil(sortedPosts.length / PER_PAGE))
+const safePage = Math.max(1, Math.min(totalPages, pageParam))
+const posts = sortedPosts.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
 
 // Headline stats
 const totalTraces = allTraces.length
@@ -112,6 +120,8 @@ const short = (m: string | null | undefined): string => {
         <PostHistoryCard post={post} traces={tracesByPost.get(post.id) ?? []} />
       ))}
     </div>
+
+    <Paginator page={safePage} total={sortedPosts.length} perPage={PER_PAGE} basePath="/traces" />
   </section>
 
   <script>
