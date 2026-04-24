@@ -3,6 +3,11 @@ title: 'Convergence in Multi-Agent Review Loops'
 description: 'When you have AI agents writing and reviewing each other, how do you know when to stop? The math of iterative quality convergence.'
 date: 2026-03-10
 tags: ['math', 'agents', 'systems']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-10 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 1 asst turns · 1 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-35-27-913Z-claude-opus-4-7' }
+  - { date: 2026-03-10, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
@@ -42,7 +47,7 @@ Here's a simulation of three deliverables going through review-revise loops. The
 <Chart
   id="convergence-chart"
   code={`
-const W = 700, H = 340, pad = { t: 20, r: 30, b: 50, l: 55 }
+const W = 700, H = 480, pad = { t: 20, r: 30, b: 50, l: 55 }
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -142,4 +147,6 @@ where $\lambda$ is the penalty for not converging. In practice we don't solve th
 
 When two reviewers score the same dimension 85 and 45, the deliverable has a clarity problem. The argument reads differently depending on your priors. The revision prompt should target that specific dimension, not ask for a general improvement.
 
-Quality frameworks matter more than model choice. A mediocre model with a sharp rubric (specific dimensions, weighted, with concrete criteria) outperforms a frontier model with "rate this 1-10."
+On one consulting memo, the evidence reviewer scored 78 and the narrative reviewer scored 42. Same paragraph: well-sourced to one, buried lede to the other. Rewriting the top two sentences to surface the punchline before the evidence brought narrative to 81 and evidence held at 76. One pass, two reviewers, one small edit, and the plateau detector exited on the next round.
+
+Quality frameworks matter more than model choice. A mediocre model with a sharp rubric (specific dimensions, weighted, with concrete criteria) outperforms a frontier model with "rate this 1-10." The frontier model cannot tell you which dimension is weakest. The sharp rubric can, and that is the only thing a revision loop actually needs.

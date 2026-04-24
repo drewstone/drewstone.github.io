@@ -3,12 +3,22 @@ title: 'Teaching Agents to Improve Themselves'
 description: 'We built four composable skills that turn any coding agent into an autonomous improvement loop. Here is how they work and what they found.'
 date: 2026-03-18
 tags: ['agents', 'systems', 'meta']
+featured: true
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-18 }
+  - { model: 'claude-opus-4-7', role: 'diagram', date: 2026-04-23 }
+  - { model: 'claude-opus-4-7', role: 'polish', date: 2026-04-24 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 5 asst turns · 5 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-17-37-593Z-claude-opus-4-7' }
+  - { date: 2026-03-18, model: 'claude-opus-4-6', note: 'initial draft — /improve, /diagnose, /research, /evolve skills, 66→81 F1 arc, anti-overfitting rules', reconstructed: true }
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'composition diagram redrawn: /evolve becomes the outer container wrapping the three commands; phase track nested inside; switched palette to current B&W + action-color vocabulary' }
+  - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'closing tightened to the concrete shift — one overnight run, six failure modes classified, four fixed, $30 of compute replacing two weeks of diagnostic work' }
 ---
 
 import Chart from '../../components/Chart.astro'
 import Sidenote from '../../components/Sidenote.astro'
 
-Last week I was running a security audit benchmark. Three AI agents, each with a different analysis profile, auditing smart contracts from past audit contests. The results were mediocre: 66% F1 on the honest baseline.<Sidenote>F1 = harmonic mean of precision and recall. We use it because both false positives (wasted triage) and false negatives (missed vulns) are costly.</Sidenote> I could read through the traces, spot the failure modes, tweak the prompts, rerun. I've done this hundreds of times. Each cycle takes a few hours.
+Last week I was running a security audit benchmark. Three AI agents, each with a different analysis profile, auditing smart contracts from past audit contests. The results were mediocre: 66% F1 on the honest baseline.<Sidenote num={1}>F1 = harmonic mean of precision and recall. See <a href="https://en.wikipedia.org/wiki/F-score">Wikipedia</a>. We use it because both false positives (wasted triage) and false negatives (missed vulns) are costly.</Sidenote> I could read through the traces, spot the failure modes, tweak the prompts, rerun. I've done this hundreds of times. Each cycle takes a few hours.
 
 Instead, I wrote a set of skills that let the coding agent do the entire cycle itself. Discover what's broken, diagnose why, hypothesize a fix, test it, keep or revert. Four skills that compose into one autonomous loop. It ran overnight and pushed F1 to 81% without overfitting.
 
@@ -16,7 +26,7 @@ Instead, I wrote a set of skills that let the coding agent do the entire cycle i
 
 Every team building on top of LLMs has the same workflow. You run your agent/pipeline/tool against a test suite. Something fails. You read the logs. You change a prompt, adjust a threshold, add a tool. You rerun. Maybe it's better. Maybe it broke something else. You check by feel.
 
-This is prompt engineering, and it has two problems. First, it doesn't scale. You can run maybe 3-4 iterations in a day if you're disciplined.<Sidenote side="left">cf. Karpathy's autoresearch, which found ~20 additive improvements to nanochat training by running this loop autonomously for two days.</Sidenote> Second, you can't trust your own judgment about whether a change actually helped. A 2% improvement on 50 test cases could be noise. Without statistical rigor, you're guessing.
+This is prompt engineering, and it has two problems. First, it doesn't scale. You can run maybe 3-4 iterations in a day if you're disciplined.<Sidenote num={2} side="left">cf. Karpathy's <a href="https://x.com/karpathy/status/1886192184808149383">autoresearch post</a>, which found ~20 additive improvements to nanochat training by running this loop autonomously for two days.</Sidenote> Second, you can't trust your own judgment about whether a change actually helped. A 2% improvement on 50 test cases could be noise. Without statistical rigor, you're guessing.
 
 The thing is, a coding agent already has everything it needs to do this work. It can read test output. It can classify failures. It can modify code and config. It can run benchmarks. It can compare results. The missing piece is structure: a protocol that tells the agent how to do each step and when to stop.
 
@@ -27,134 +37,214 @@ I built four Claude Code skills that compose into the full cycle:
 <Chart
   id="skill-composition"
   code={`
-const W = 760, H = 300
+const W = 780, H = 300
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
 
 const style = getComputedStyle(document.documentElement)
-const fg = style.getPropertyValue('--fg').trim() || '#2a2520'
-const faint = style.getPropertyValue('--fg-faint').trim() || '#908780'
-const bg = style.getPropertyValue('--bg').trim() || '#f5f0e8'
-const ornament = style.getPropertyValue('--ornament').trim() || '#b8ad9e'
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const muted = style.getPropertyValue('--fg-muted').trim() || '#4a4a4a'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#7a7a7a'
+const border = style.getPropertyValue('--border').trim() || '#d4d4d4'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+const action = style.getPropertyValue('--c-action').trim() || '#6d28d9'
+const actionBg = style.getPropertyValue('--c-action-bg').trim() || '#ddd6fe'
 
 ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
 
+// --- outer /evolve container ---
+const evolve = { x: 24, y: 20, w: W - 48, h: 180, r: 10 }
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+}
+
+// evolve header bar
+ctx.fillStyle = actionBg
+roundRect(evolve.x, evolve.y, evolve.w, 32, evolve.r)
+ctx.fill()
+// patch bottom of header so it's not rounded at the bottom edge
+ctx.fillStyle = actionBg
+ctx.fillRect(evolve.x, evolve.y + 16, evolve.w, 16)
+
+// outer frame
+ctx.strokeStyle = action
+ctx.lineWidth = 1.5
+roundRect(evolve.x, evolve.y, evolve.w, evolve.h, evolve.r)
+ctx.stroke()
+
+// header divider
+ctx.strokeStyle = action
+ctx.lineWidth = 1
+ctx.beginPath()
+ctx.moveTo(evolve.x, evolve.y + 32)
+ctx.lineTo(evolve.x + evolve.w, evolve.y + 32)
+ctx.stroke()
+
+// evolve title
+ctx.fillStyle = action
+ctx.font = 'bold 13px JetBrains Mono, monospace'
+ctx.textAlign = 'left'
+ctx.fillText('/evolve', evolve.x + 16, evolve.y + 21)
+ctx.fillStyle = muted
+ctx.font = '11px JetBrains Mono, monospace'
+ctx.fillText('orchestrator — runs all three in sequence, caps hypotheses, gates on cost', evolve.x + 82, evolve.y + 21)
+
+// --- inner three command boxes ---
+const boxY = evolve.y + 60
+const boxH = 56
+const inset = 24
+const gap = 14
+const innerW = evolve.w - inset * 2
+const boxW = (innerW - gap * 2) / 3
+
 const boxes = [
-  { x: 40, y: 30, w: 150, h: 55, label: '/improve', desc: 'Bootstrap infra', phase: 'Build' },
-  { x: 220, y: 30, w: 150, h: 55, label: '/diagnose', desc: 'Read failure traces', phase: 'Analyze' },
-  { x: 400, y: 30, w: 150, h: 55, label: '/research', desc: 'Run experiments', phase: 'Test' },
-  { x: 580, y: 30, w: 150, h: 55, label: '/evolve', desc: 'Orchestrate all 3', phase: 'Loop' },
+  { label: '/improve',  desc: 'Bootstrap eval infra' },
+  { label: '/diagnose', desc: 'Read failure traces' },
+  { label: '/research', desc: 'Run experiments' },
 ]
 
-boxes.forEach(b => {
-  ctx.strokeStyle = fg
-  ctx.lineWidth = 1.5
-  ctx.strokeRect(b.x, b.y, b.w, b.h)
+boxes.forEach((b, i) => {
+  const x = evolve.x + inset + i * (boxW + gap)
 
+  // box
+  ctx.fillStyle = bg
+  roundRect(x, boxY, boxW, boxH, 6)
+  ctx.fill()
+  ctx.strokeStyle = fg
+  ctx.lineWidth = 1.25
+  roundRect(x, boxY, boxW, boxH, 6)
+  ctx.stroke()
+
+  // label
   ctx.fillStyle = fg
   ctx.font = 'bold 14px JetBrains Mono, monospace'
   ctx.textAlign = 'center'
-  ctx.fillText(b.label, b.x + b.w/2, b.y + 24)
+  ctx.fillText(b.label, x + boxW / 2, boxY + 23)
 
-  ctx.fillStyle = faint
+  // desc
+  ctx.fillStyle = muted
   ctx.font = '11px JetBrains Mono, monospace'
-  ctx.fillText(b.desc, b.x + b.w/2, b.y + 42)
-})
+  ctx.fillText(b.desc, x + boxW / 2, boxY + 42)
 
-// arrows between first 3
-for (let i = 0; i < 2; i++) {
-  const from = boxes[i], to = boxes[i+1]
-  ctx.strokeStyle = ornament
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(from.x + from.w + 4, from.y + from.h/2)
-  ctx.lineTo(to.x - 4, to.y + to.h/2)
-  ctx.stroke()
-  // arrowhead
-  ctx.fillStyle = ornament
-  ctx.beginPath()
-  ctx.moveTo(to.x - 4, to.y + to.h/2)
-  ctx.lineTo(to.x - 12, to.y + to.h/2 - 4)
-  ctx.lineTo(to.x - 12, to.y + to.h/2 + 4)
-  ctx.fill()
-}
-
-// evolve encompasses: draw bracket under first 3
-ctx.strokeStyle = ornament
-ctx.lineWidth = 1
-ctx.beginPath()
-ctx.moveTo(boxes[0].x, boxes[0].y + boxes[0].h + 15)
-ctx.lineTo(boxes[0].x, boxes[0].y + boxes[0].h + 25)
-ctx.lineTo(boxes[2].x + boxes[2].w, boxes[2].y + boxes[2].h + 25)
-ctx.lineTo(boxes[2].x + boxes[2].w, boxes[2].y + boxes[2].h + 15)
-ctx.stroke()
-
-// center tick
-const bracketCx = (boxes[0].x + boxes[2].x + boxes[2].w) / 2
-ctx.beginPath()
-ctx.moveTo(bracketCx, boxes[0].y + boxes[0].h + 25)
-ctx.lineTo(bracketCx, boxes[0].y + boxes[0].h + 38)
-ctx.stroke()
-
-ctx.fillStyle = faint
-ctx.font = '11px JetBrains Mono, monospace'
-ctx.textAlign = 'center'
-ctx.fillText('composed by /evolve', bracketCx, boxes[0].y + boxes[0].h + 52)
-
-// the loop diagram
-const loopY = 150
-const loopLabels = ['Discover', 'Measure', 'Diagnose', 'Hypothesize', 'Implement', 'Test', 'Promote']
-const loopW = 90
-const gap = 6
-const totalW = loopLabels.length * loopW + (loopLabels.length - 1) * gap
-const startX = (W - totalW) / 2
-
-loopLabels.forEach((label, i) => {
-  const x = startX + i * (loopW + gap)
-  ctx.fillStyle = fg
-  ctx.globalAlpha = 0.08 + i * 0.06
-  ctx.fillRect(x, loopY, loopW, 32)
-  ctx.globalAlpha = 1
-
-  ctx.fillStyle = fg
-  ctx.font = '10px JetBrains Mono, monospace'
-  ctx.textAlign = 'center'
-  ctx.fillText(label, x + loopW/2, loopY + 20)
-
-  if (i < loopLabels.length - 1) {
-    ctx.fillStyle = ornament
+  // arrow to next
+  if (i < boxes.length - 1) {
+    const ax = x + boxW
+    const ay = boxY + boxH / 2
+    ctx.strokeStyle = faint
+    ctx.lineWidth = 1.25
     ctx.beginPath()
-    ctx.moveTo(x + loopW + gap - 2, loopY + 16)
-    ctx.lineTo(x + loopW + gap - 8, loopY + 12)
-    ctx.lineTo(x + loopW + gap - 8, loopY + 20)
+    ctx.moveTo(ax + 2, ay)
+    ctx.lineTo(ax + gap - 2, ay)
+    ctx.stroke()
+    // arrowhead
+    ctx.fillStyle = faint
+    ctx.beginPath()
+    ctx.moveTo(ax + gap - 2, ay)
+    ctx.lineTo(ax + gap - 7, ay - 3.5)
+    ctx.lineTo(ax + gap - 7, ay + 3.5)
+    ctx.closePath()
     ctx.fill()
   }
 })
 
-// return arrow from Promote back to Measure
-const lastX = startX + 6 * (loopW + gap)
-const firstMeasureX = startX + 1 * (loopW + gap)
-ctx.strokeStyle = ornament
-ctx.lineWidth = 1
-ctx.setLineDash([4, 3])
-ctx.beginPath()
-ctx.moveTo(lastX + loopW/2, loopY + 32)
-ctx.lineTo(lastX + loopW/2, loopY + 52)
-ctx.lineTo(firstMeasureX + loopW/2, loopY + 52)
-ctx.lineTo(firstMeasureX + loopW/2, loopY + 32)
-ctx.stroke()
-ctx.setLineDash([])
-
-ctx.fillStyle = faint
-ctx.font = '10px JetBrains Mono, monospace'
-ctx.fillText('repeat', (lastX + firstMeasureX + loopW) / 2, loopY + 64)
-
-// phase labels
+// label above the command row
 ctx.fillStyle = faint
 ctx.font = '10px JetBrains Mono, monospace'
 ctx.textAlign = 'left'
-ctx.fillText('Phase:', startX - 2, loopY - 10)
+ctx.fillText('SKILLS', evolve.x + inset, boxY - 10)
+
+// --- phase track under the three boxes (inside /evolve frame) ---
+const phaseY = evolve.y + 136
+const phases = ['Bootstrap', 'Measure', 'Diagnose', 'Experiment', 'Promote']
+const phaseW = (innerW - (phases.length - 1) * 6) / phases.length
+const phaseH = 24
+
+ctx.fillStyle = faint
+ctx.font = '10px JetBrains Mono, monospace'
+ctx.textAlign = 'left'
+ctx.fillText('PHASES', evolve.x + inset, phaseY - 8)
+
+phases.forEach((p, i) => {
+  const x = evolve.x + inset + i * (phaseW + 6)
+  // subtle fill with increasing action-tint
+  const alpha = 0.08 + i * 0.05
+  ctx.fillStyle = action
+  ctx.globalAlpha = alpha
+  roundRect(x, phaseY, phaseW, phaseH, 4)
+  ctx.fill()
+  ctx.globalAlpha = 1
+
+  // border
+  ctx.strokeStyle = action
+  ctx.globalAlpha = 0.35
+  ctx.lineWidth = 1
+  roundRect(x, phaseY, phaseW, phaseH, 4)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  ctx.fillStyle = action
+  ctx.font = '10.5px JetBrains Mono, monospace'
+  ctx.textAlign = 'center'
+  ctx.fillText(p, x + phaseW / 2, phaseY + 16)
+
+  // separator arrow
+  if (i < phases.length - 1) {
+    const ax = x + phaseW + 1
+    const ay = phaseY + phaseH / 2
+    ctx.fillStyle = action
+    ctx.beginPath()
+    ctx.moveTo(ax + 4.5, ay)
+    ctx.lineTo(ax + 0.5, ay - 3)
+    ctx.lineTo(ax + 0.5, ay + 3)
+    ctx.closePath()
+    ctx.fill()
+  }
+})
+
+// loop arc returning from Promote back over the top to Bootstrap
+const loopStartX = evolve.x + inset + 4 * (phaseW + 6) + phaseW / 2
+const loopEndX = evolve.x + inset + phaseW / 2
+const loopY1 = phaseY + phaseH
+const loopY2 = phaseY + phaseH + 30
+
+ctx.strokeStyle = action
+ctx.lineWidth = 1
+ctx.setLineDash([3, 3])
+ctx.beginPath()
+ctx.moveTo(loopStartX, loopY1)
+ctx.lineTo(loopStartX, loopY2)
+ctx.lineTo(loopEndX, loopY2)
+ctx.lineTo(loopEndX, loopY1)
+ctx.stroke()
+ctx.setLineDash([])
+
+// tiny arrowhead pointing up into Bootstrap
+ctx.fillStyle = action
+ctx.beginPath()
+ctx.moveTo(loopEndX, loopY1 + 1)
+ctx.lineTo(loopEndX - 3, loopY1 + 6)
+ctx.lineTo(loopEndX + 3, loopY1 + 6)
+ctx.closePath()
+ctx.fill()
+
+ctx.fillStyle = muted
+ctx.font = 'italic 10px JetBrains Mono, monospace'
+ctx.textAlign = 'center'
+ctx.fillText('loop — each cycle promotes winners and re-measures', (loopStartX + loopEndX) / 2, loopY2 + 14)
+
+// caption under the whole diagram
+ctx.fillStyle = faint
+ctx.font = 'italic 11px CMU Serif, Georgia, serif'
+ctx.textAlign = 'center'
+ctx.fillText('/evolve composes the three skills into a cyclic improvement loop', W / 2, H - 12)
 
 container.appendChild(canvas)
   `}
@@ -164,9 +254,9 @@ container.appendChild(canvas)
 
 **`/diagnose`** reads actual failure traces. Not "5 tests failed" but *why* each one failed. It classifies root causes (logic error, timeout, stale state, model hallucination, wrong strategy), clusters similar failures, and ranks them by impact-to-fix-complexity ratio. For AI/agent systems it has extra categories: snapshot stale, dialog obstruction, anti-bot blocked.
 
-**`/research`** runs the experiment cycle. Audit current metrics, propose hypotheses ranked by expected impact, design experiments, run them, analyze with bootstrap CIs, promote winners or reject losers.<Sidenote>Bootstrap CI: resample the results 1000 times, compute the metric each time, take the 2.5th and 97.5th percentile as the 95% confidence interval.</Sidenote> It has anti-overfitting rules baked in: never tune to specific test cases, prefer architectural changes over parameter tuning, validate on held-out cases.
+**`/research`** runs the experiment cycle. Audit current metrics, propose hypotheses ranked by expected impact, design experiments, run them, analyze with bootstrap CIs, promote winners or reject losers.<Sidenote num={3}>Bootstrap CI: resample 1000 times, compute the metric each time, take the 2.5th and 97.5th percentile. See <a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">bootstrap methods</a>.</Sidenote> It has anti-overfitting rules baked in: never tune to specific test cases, prefer architectural changes over parameter tuning, validate on held-out cases.
 
-**`/evolve`** orchestrates all three in sequence. One command, full cycle. It caps at 3 hypotheses per invocation to prevent runaway loops, gates on cost (auto-approve under $5, ask above), and tracks a cumulative scorecard across cycles.
+**`/evolve`** orchestrates all three in sequence. One command, full cycle. It caps at 3 hypotheses per invocation to prevent runaway loops, gates on cost (auto-approve under \$5, ask above), and tracks a cumulative scorecard across cycles.
 
 ## What the loop actually found
 
@@ -184,7 +274,7 @@ None of these are obvious from the aggregate pass rate. You only see them when y
 
 The improvement loop also caught itself overfitting. Early in the process, it generated prompts that included specific hints about known vulnerabilities (essentially an answer key). These scored 99.3% on the training benchmarks. But the loop has a train/test split with gap detection: if the gap between train and test F1 exceeds 15 percentage points, the change is rejected. The answer-key prompts were rejected and flagged as an anti-pattern.
 
-The honest improvement arc: 66% F1 baseline, 81% after the loop, with the train-test gap dropping from 33pp to 18pp.<Sidenote side="left">Benchmarks: DYAD, OLAS, Karak audit contests. 3 train, 3 test, rotated each cycle.</Sidenote> Real generalization, not benchmark gaming.
+The honest improvement arc: 66% F1 baseline, 81% after the loop, with the train-test gap dropping from 33pp to 18pp.<Sidenote num={4} side="left">Benchmarks: <a href="https://github.com/ZhangZhuoSJTU/Web3Bugs">DYAD</a>, OLAS, Karak audit contests. 3 train, 3 test, rotated each cycle.</Sidenote> Real generalization, not benchmark gaming.
 
 ## The anti-overfitting problem
 
@@ -207,7 +297,7 @@ The fix has multiple layers:
 <Chart
   id="overfitting-detection"
   code={`
-const W = 760, H = 280
+const W = 760, H = 400
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -352,7 +442,7 @@ The same pattern works outside of benchmarks. In nanoforge (a creative asset pip
 
 Each iteration generates N candidate variants, scores them on weighted criteria, picks the winner, and builds the next iteration's action plan from the winner's weakest scores. It stops on plateau (less than 2% improvement across two consecutive rounds) or cost cap.
 
-The interesting addition here is a prompt advisor that evaluates the *prompt itself* before running it.<Sidenote>The advisor scores specificity, clarity, constraint coverage, and actionability. Each on a 0-1 scale.</Sidenote> If any dimension scores below 0.72, the advisor rewrites it before generation. This catches a class of failures where the output is bad because the instructions were bad, not because the model is bad.
+The interesting addition here is a prompt advisor that evaluates the *prompt itself* before running it.<Sidenote num={5}>The advisor scores specificity, clarity, constraint coverage, and actionability. Each on a 0-1 scale. Similar to <a href="https://arxiv.org/abs/2312.16171">prompt quality evaluation</a> work.</Sidenote> If any dimension scores below 0.72, the advisor rewrites it before generation. This catches a class of failures where the output is bad because the instructions were bad, not because the model is bad.
 
 ## Why skills, not scripts
 
@@ -370,4 +460,4 @@ There's an obvious recursion here. I used a coding agent (Claude Code) to write 
 
 I haven't closed that recursion yet. But the pieces are there. The `/evolve` skill could run against its own skill definitions, measuring how well each version of `/diagnose` classifies failures, how well each version of `/research` promotes real improvements vs noise. The readiness score from `/improve` is itself a metric you could optimize.
 
-For now, the practical value is already clear. The security audit loop found 6 distinct failure modes and fixed 4 of them in one overnight run. The manual equivalent would have taken me a week of reading traces. The difference between "I run the benchmark and eyeball the results" and "the agent runs the benchmark, classifies every failure, proposes targeted fixes, validates them with statistical rigor, and rejects its own overfitting" is not incremental. It's a different way of working.
+One overnight run: six failure modes classified, four fixed with validated improvements, one overfitting cheat caught and rejected by gap detection. The manual equivalent would have taken a week of reading traces and another week to believe the numbers. Running the loop replaced two weeks of diagnostic work with eight hours of compute and about \$30 in tokens. That is not an incremental improvement. It is the actual shift: the agent runs the benchmark, reads its own failures, and closes the gap while I sleep.

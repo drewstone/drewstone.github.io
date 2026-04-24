@@ -1,0 +1,55 @@
+---
+interface Props {
+  repo: string
+  url: string
+}
+
+const { repo, url } = Astro.props
+---
+
+<div class="repo-banner">
+  <a href={url} target="_blank" rel="noopener">
+    <span class="repo-star">&#9733;</span>
+    <span class="repo-name">{repo}</span>
+    <span class="repo-cta">Star on GitHub &rarr;</span>
+  </a>
+</div>
+
+<style>
+  .repo-banner {
+    margin: var(--space-lg) 0 var(--space-xl);
+    border: 1px solid var(--border);
+  }
+
+  .repo-banner a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    text-decoration: none;
+    color: var(--fg);
+    transition: background 0.15s;
+  }
+
+  .repo-banner a:hover {
+    background: var(--bg-alt);
+  }
+
+  .repo-star {
+    font-size: 1.2rem;
+    color: var(--fg-muted);
+  }
+
+  .repo-name {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    flex: 1;
+  }
+
+  .repo-cta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+</style>

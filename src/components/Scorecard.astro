@@ -1,0 +1,177 @@
+---
+/**
+ * Scorecard — dimensional rubric with colored progress bars.
+ * Useful for multi-judge aggregation, quality dimensions, any "these are the axes" display.
+ *
+ * <Scorecard
+ *   title="Completion criteria — audit scenario"
+ *   total="83% complete"
+ *   rows={[
+ *     { label: 'Vulnerabilities found', score: 4, max: 5, tone: 'ok' },
+ *     { label: 'False positives', score: 1, max: 0, tone: 'fail', note: '1 reported, 0 expected' },
+ *     { label: 'Root cause depth', score: 4, max: 5, tone: 'ok' },
+ *     { label: 'Cost efficiency', score: 3, max: 5, tone: 'run' },
+ *   ]}
+ * />
+ */
+interface Row {
+  label: string
+  score: number
+  max: number
+  tone?: 'ok' | 'fail' | 'run' | 'action' | 'info' | 'neutral'
+  note?: string
+}
+
+interface Props {
+  title?: string
+  total?: string
+  rows: Row[]
+}
+
+const { title, total, rows } = Astro.props
+
+const toneBg: Record<string, string> = {
+  ok: 'var(--c-ok)',
+  fail: 'var(--c-fail)',
+  run: 'var(--c-run)',
+  action: 'var(--c-action)',
+  info: 'var(--c-info)',
+  neutral: 'var(--fg)',
+}
+---
+
+<figure class="scorecard">
+  {(title || total) && (
+    <header class="sc-head">
+      {title && <span class="sc-title">{title}</span>}
+      {total && <span class="sc-total">{total}</span>}
+    </header>
+  )}
+  <div class="sc-body">
+    {rows.map((r) => {
+      const tone = r.tone ?? 'neutral'
+      const pct = r.max > 0 ? Math.min(100, Math.max(0, (r.score / r.max) * 100)) : 0
+      return (
+        <div class="sc-row">
+          <div class="sc-meta">
+            <span class="sc-label">{r.label}</span>
+            <span class="sc-num" style={`color: ${toneBg[tone]}`}>
+              {r.score}<span class="sc-divider">/</span>{r.max}
+            </span>
+          </div>
+          <div class="sc-track">
+            <div
+              class="sc-fill"
+              style={`width: ${pct}%; background: ${toneBg[tone]}`}
+            ></div>
+          </div>
+          {r.note && <div class="sc-note">{r.note}</div>}
+        </div>
+      )
+    })}
+  </div>
+</figure>
+
+<style>
+  .scorecard {
+    margin: var(--space-xl) 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  @media (min-width: 800px) {
+    .scorecard {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+  }
+
+  .sc-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sc-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg);
+  }
+
+  .sc-total {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sc-body {
+    padding: 0.8rem 1rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .sc-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sc-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .sc-label {
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  .sc-num {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sc-divider {
+    color: var(--fg-faint);
+    font-weight: 400;
+    margin: 0 0.15em;
+  }
+
+  .sc-track {
+    height: 6px;
+    background: var(--bg-alt);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .sc-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .sc-note {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--fg-faint);
+    font-style: italic;
+    margin-top: 0.15rem;
+  }
+</style>

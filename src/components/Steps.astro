@@ -1,0 +1,118 @@
+---
+/**
+ * Steps — numbered procedure with a continuous left rule.
+ *
+ * <Steps items={[
+ *   { title: 'Define criteria', body: 'Each scenario gets a vector of binary checks and progress functions.' },
+ *   { title: 'Run turn', body: 'The agent takes one step; the judge scores it against the criteria.' },
+ *   { title: 'Track progress', body: 'completion% is monotone and resumable.' },
+ * ]} />
+ */
+interface Step {
+  title: string
+  body?: string
+  meta?: string
+}
+
+interface Props {
+  items: Step[]
+}
+
+const { items } = Astro.props
+---
+
+<ol class="steps">
+  {items.map((s, i) => (
+    <li class="step">
+      <span class="step-num">{String(i + 1).padStart(2, '0')}</span>
+      <div class="step-content">
+        <div class="step-head">
+          <span class="step-title">{s.title}</span>
+          {s.meta && <span class="step-meta">{s.meta}</span>}
+        </div>
+        {s.body && <div class="step-body">{s.body}</div>}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-xl) 0;
+    position: relative;
+    counter-reset: step;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    left: 0.95rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    column-gap: 0.9rem;
+    padding: 0.35rem 0 0.85rem;
+    position: relative;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--fg);
+    border-radius: 50%;
+    width: 1.95rem;
+    height: 1.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    z-index: 1;
+  }
+
+  .step-content {
+    padding-top: 0.2rem;
+    min-width: 0;
+  }
+
+  .step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .step-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--fg);
+  }
+
+  .step-meta {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--fg-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .step-body {
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+</style>

@@ -1,5 +1,23 @@
 ---
 import Base from './Base.astro'
+import AuthorBadges from '../components/AuthorBadges.astro'
+import Revisions from '../components/Revisions.astro'
+import PostReactions from '../components/PostReactions.astro'
+import ParagraphReactor from '../components/ParagraphReactor.astro'
+import Giscus from '../components/Giscus.astro'
+
+interface Author {
+  model: string
+  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  date: Date
+}
+interface Revision {
+  date: Date
+  model: string
+  note: string
+  commit?: string
+  reconstructed?: boolean
+}
 
 interface Props {
   title: string
@@ -7,44 +25,43 @@ interface Props {
   date: Date
   updated?: Date
   tags?: string[]
+  slug?: string
+  authors?: Author[]
+  revisions?: Revision[]
 }
 
-const { title, description, date, updated, tags = [] } = Astro.props
+const { title, description, date, updated, tags = [], slug, authors, revisions } = Astro.props
 
 function formatDate(d: Date): string {
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
+
+const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
 ---
 
 <Base title={title} description={description}>
   <article>
     <header class="post-header">
-      <div class="post-meta">
+      <div class="post-meta-line">
+        <time>{formatDate(date)}</time>
         {tags.length > 0 && (
           <span class="post-tags">
             {tags.map((tag) => <span class="tag">{tag}</span>)}
           </span>
         )}
+        {updated && <span class="updated">updated {formatDate(updated)}</span>}
       </div>
       <h1>{title}</h1>
       <p class="post-desc">{description}</p>
-      <div class="post-date-line">
-        <time>{formatDate(date)}</time>
-        {updated && <span class="updated">(updated {formatDate(updated)})</span>}
-      </div>
-      <div class="ornament-band" aria-hidden="true">
-        <hr class="rule" />
-        <span class="ornament-center">&#x2766;</span>
-        <hr class="rule" />
-      </div>
+      <AuthorBadges authors={authors} />
     </header>
     <div class="prose">
       <slot />
     </div>
+    <Revisions revisions={revisions} repo={repo} />
+    {slug && <PostReactions slug={slug} />}
+    {slug && <ParagraphReactor slug={slug} />}
+    {slug && <Giscus term={slug} />}
   </article>
 </Base>
 
@@ -54,12 +71,19 @@ function formatDate(d: Date): string {
   }
 
   .post-header {
-    margin-bottom: var(--space-xl);
-    text-align: center;
+    margin-bottom: var(--space-2xl);
   }
 
-  .post-meta {
-    margin-bottom: var(--space-sm);
+  .post-meta-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--fg-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: var(--space-md);
   }
 
   .post-tags {
@@ -68,60 +92,28 @@ function formatDate(d: Date): string {
   }
 
   .post-header h1 {
-    font-size: 1.4rem;
+    font-size: 2.6rem;
     font-weight: 700;
-    line-height: 1.4;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin: 0 auto var(--space-sm);
-    max-width: 640px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-md);
   }
 
   .post-desc {
-    font-size: 0.92rem;
+    font-size: 1.1rem;
     color: var(--fg-muted);
     font-style: italic;
-    letter-spacing: 0.04em;
-    max-width: 520px;
-    margin: 0 auto var(--space-md);
-    text-align: center;
-    line-height: 1.5;
-  }
-
-  .ornament-band {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-top: var(--space-sm);
-  }
-
-  .ornament-band .rule {
-    flex: 1;
-  }
-
-  .ornament-center {
-    font-size: 1.2rem;
-    color: var(--ornament);
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .post-date-line {
-    font-size: 0.82rem;
-    color: var(--fg-faint);
-  }
-
-  .post-date-line time {
-    text-decoration: none;
+    margin: 0 0 var(--space-lg);
+    line-height: 1.55;
+    max-width: 640px;
   }
 
   .updated {
-    margin-left: var(--space-xs);
     color: var(--fg-faint);
   }
 
   .prose {
-    line-height: 1.8;
+    line-height: 1.75;
     position: relative;
   }
 
@@ -135,14 +127,12 @@ function formatDate(d: Date): string {
     margin-bottom: 0.5rem;
   }
 
-  .prose :global(p + p) {
-    margin-top: 0;
-  }
-
   @media (max-width: 640px) {
     .post-header h1 {
-      font-size: 1.1rem;
-      letter-spacing: 0.12em;
+      font-size: 1.85rem;
+    }
+    .post-header {
+      padding-top: 0;
     }
   }
 </style>

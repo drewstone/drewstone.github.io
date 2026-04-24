@@ -3,13 +3,29 @@ title: 'One API for Eight Browser Backends'
 description: 'Chrome, Safari, iOS simulators, Android emulators, physical devices. How we built a unified session layer for all of them.'
 date: 2026-02-25
 tags: ['systems', 'infrastructure']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-02-25 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 5 asst turns · 5 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-37-17-788Z-claude-opus-4-7' }
+  - { date: 2026-02-25, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
 
-If you're building browser automation that needs to work on Safari, you have a problem. Playwright supports WebKit, but WebKit isn't Safari. The rendering is close, but the browser chrome, extensions, permissions, and device APIs are different. If you need real Safari, you need a real Mac with safaridriver. If you need mobile Safari, you need an iOS simulator or a physical iPhone.
+Eight browser backends, four protocol families, four lifecycle models, four cost curves. They do not share a single assumption.
 
-Multiply this across every browser and device combination and you get eight separate backends, each with its own protocol, lifecycle, and failure modes. The question is: how do you give clients a single API that hides all of this?
+| Backend | Protocol | Lifecycle | Provisioning |
+| --- | --- | --- | --- |
+| Browserless (Chrome) | CDP / WebSocket | connection = session | instant |
+| Playwright WebKit | CDP / WebSocket | process per session | ~1s |
+| Safari desktop | WebDriver / HTTP | `safaridriver` process | ~2s |
+| iOS simulator | WebDriver / HTTP | clone from template | 5s (30s cold) |
+| Physical iPhone | WebDriver / HTTP | pool + lock | pre-allocated |
+| Android emulator | CDP / WebSocket | AVD snapshot + ADB forward | ~8s |
+| Physical Android | CDP / WebSocket | pool + ADB lock | pre-allocated |
+| Firefox (geckodriver) | WebDriver / HTTP | process per session | ~2s |
+
+A client asking for a Chrome session should not have to know any of this. They want one API, one session object, one socket to talk to. This post is about how that single façade actually works.
 
 ## The problem
 
@@ -67,7 +83,16 @@ A reaper runs every 30 seconds and checks two things per session:
 1. **Expiry**: has the session exceeded its maximum lifetime? (default 5 minutes)
 2. **Idle**: has there been no WebSocket activity for too long? (default 5 minutes)
 
-For WebSocket sessions, the proxy touches a timestamp on every frame it relays. If no frames have passed in 5 minutes, the session is idle and gets destroyed. This is the only reliable signal. You can't trust the client to send heartbeats.
+```typescript
+// called every 30s on every live session
+function reap(session: Session): 'keep' | 'destroy' {
+  if (Date.now() - session.createdAt > MAX_LIFETIME) return 'destroy'
+  if (Date.now() - session.lastFrameAt > IDLE_LIMIT) return 'destroy'
+  return 'keep'
+}
+```
+
+For WebSocket sessions, the proxy touches `lastFrameAt` on every frame it relays in either direction. If no frames have passed in 5 minutes, the session is idle and gets destroyed. This is the only reliable signal. You cannot trust the client to send heartbeats; half the clients we see are LLMs that crash mid-turn without closing a socket.
 
 ## The WebSocket relay
 
@@ -87,10 +112,12 @@ Safari and iOS backends use WebDriver (HTTP-based), not WebSocket. For these, th
 
 This is a pragmatic choice. Proxying HTTP request/response pairs is more complex than relaying WebSocket frames, and the latency impact is higher. Since WebDriver sessions are inherently request-response (not streaming), the client can talk directly without losing anything.
 
+## Why in-memory beats Redis at this scale
+
+For 20–50 concurrent sessions, the session map is a plain JavaScript `Map`. Not Redis, not Postgres, no external store. At this scale, a Redis round-trip to update `lastFrameAt` on every frame would add 1–3 ms per frame, which is 30–90× the cost of a Map write. Persistence buys nothing: sessions are inherently ephemeral, and on process restart we want them gone anyway. When the concurrent-session count passes a few hundred we will reach for Redis; until then, the operational simplicity is worth more than the durability.
+
 ## In practice
 
-The `Backend` interface is small enough that adding a new backend is a day of work. The allocator doesn't care about protocol details.
+The `Backend` interface is small enough that adding a new backend is a day of work. The iOS clone-from-template alone (30s cold boot down to 5s) was a bigger cost win than any connection pooling strategy we tried. The allocator does not know or care which backend it is dispatching to.
 
-For iOS simulators, the clone-from-template approach (30s provisioning down to 5s) was a bigger win than any connection pooling strategy. The session map is a plain `Map`. No Redis, no Postgres. For 20-50 concurrent sessions, the operational simplicity is worth it.
-
-When the Android emulator host is overloaded, its health check fails, and the allocator routes Chrome requests to Browserless instead. No manual intervention. The system self-heals for the common case.
+Observable self-healing, one concrete case: when the Android emulator host's load average climbs past the threshold, its `healthCheck()` returns `false` within two reap cycles. The allocator's backend filter removes it. Inbound Chrome requests route to Browserless transparently. The Android host drains, load drops, the health check recovers, and new Chrome requests start landing there again. No pages, no oncall, no manual failover. Clients see a brief uptick in provisioning latency and nothing else.

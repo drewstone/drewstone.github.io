@@ -1,0 +1,232 @@
+---
+/**
+ * Revisions — collapsible timeline of real edits on a post.
+ * Pairs with the agentic-experiment framing: every edit is a datapoint.
+ */
+interface Revision {
+  date: Date
+  model: string
+  note: string
+  commit?: string
+  reconstructed?: boolean
+  trace_id?: string
+}
+
+interface Props {
+  revisions?: Revision[]
+  repo?: string // e.g. "drewstone/blog" — used to link commit SHAs
+}
+
+const { revisions = [], repo } = Astro.props
+
+const short = (model: string): string => {
+  if (model.startsWith('claude-')) {
+    const parts = model.replace(/^claude-/, '').split('-')
+    if (parts.length >= 2) {
+      const family = parts[0][0].toUpperCase() + parts[0].slice(1)
+      const version = parts.slice(1).join('.')
+      return `${family} ${version}`
+    }
+    return model
+  }
+  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
+  return model
+}
+
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+// Sort newest first
+const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf())
+---
+
+{ordered.length > 0 && (
+  <details class="revisions" open>
+    <summary>
+      <span class="rev-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="13" height="13"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 4v4l2.5 2" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+      </span>
+      <span class="rev-title">Revision history</span>
+      <span class="rev-count">{ordered.length} {ordered.length === 1 ? 'revision' : 'revisions'}</span>
+      <svg class="rev-chev" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </summary>
+    <ol class="rev-list">
+      {ordered.map((r) => (
+        <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}`}>
+          <div class="rev-head">
+            <time datetime={r.date.toISOString()}>{fmtDate(r.date)}</time>
+            <span class="rev-model">{short(r.model)}</span>
+            {r.reconstructed && <span class="rev-recon">reconstructed</span>}
+            {r.trace_id && (
+              <a class="rev-trace" href={`/traces/${r.trace_id}`} title="view captured session">
+                view trace →
+              </a>
+            )}
+            {r.commit && repo && (
+              <a class="rev-commit" href={`https://github.com/${repo}/commit/${r.commit}`} target="_blank" rel="noopener">
+                {r.commit.slice(0, 7)}
+              </a>
+            )}
+          </div>
+          <div class="rev-note">{r.note}</div>
+        </li>
+      ))}
+    </ol>
+  </details>
+)}
+
+<style>
+  .revisions {
+    margin: var(--space-2xl) 0 var(--space-xl);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .revisions > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.95rem;
+    background: var(--bg-alt);
+    user-select: none;
+    transition: background 0.12s;
+  }
+
+  .revisions > summary:hover {
+    background: var(--bg-sink);
+  }
+
+  .revisions > summary::-webkit-details-marker { display: none; }
+
+  .rev-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--c-action-bg), var(--bg-alt));
+    border: 1px solid var(--c-action-border);
+    color: var(--c-action);
+    flex-shrink: 0;
+  }
+
+  .rev-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg);
+  }
+
+  .rev-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+
+  .rev-chev {
+    margin-left: auto;
+    color: var(--fg-faint);
+    transition: transform 0.12s;
+  }
+
+  .revisions[open] > summary .rev-chev {
+    transform: rotate(90deg);
+  }
+
+  .revisions[open] > summary {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rev-list {
+    list-style: none;
+    padding: 0.25rem 0;
+    margin: 0;
+  }
+
+  .rev-item {
+    padding: 0.7rem 1rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .rev-item:last-child { border-bottom: 0; }
+
+  .rev-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  .rev-head time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rev-model {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+  }
+
+  .rev-recon {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-style: italic;
+    color: var(--fg-faint);
+  }
+
+  .rev-commit {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .rev-commit:hover { color: var(--fg); border-bottom-color: var(--fg); }
+
+  .rev-trace {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.12rem 0.5rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+    text-decoration: none;
+  }
+  .rev-trace:hover { background: var(--c-action); color: var(--bg); }
+
+  .rev-note {
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--fg);
+  }
+
+  .rev-item.reconstructed .rev-note {
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+</style>

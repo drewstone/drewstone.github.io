@@ -1,0 +1,184 @@
+---
+/**
+ * ParagraphReactor — hover-to-react on any paragraph.
+ *
+ * Pairs with the rehype-paragraph-ids plugin which stamps each <p> inside `.prose`
+ * with a deterministic id (sha-1 of normalized text, first 8 hex chars).
+ *
+ * On hover, shows a tiny floating reactor. Clicking submits via the same
+ * /react endpoint as PostReactions but with the `paragraph` field set.
+ */
+interface Props {
+  slug: string
+}
+
+const { slug } = Astro.props
+const API = import.meta.env.PUBLIC_REACTIONS_API as string | undefined
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined
+---
+
+<div class="paragraph-reactor" data-slug={slug} data-api={API ?? ''} data-site-key={TURNSTILE_SITE_KEY ?? ''} hidden>
+  <button class="pr-btn" data-kind="like" title="useful">✓</button>
+  <button class="pr-btn" data-kind="insight" title="insightful">✶</button>
+  <button class="pr-btn" data-kind="meh" title="meh">~</button>
+  <span class="pr-close" title="close">×</span>
+</div>
+
+<script>
+  (function init() {
+    const host = document.querySelector('.paragraph-reactor') as HTMLElement | null
+    if (!host) return
+    const api = host.dataset.api
+    const slug = host.dataset.slug!
+    const siteKey = host.dataset.siteKey
+    if (!api) return
+
+    const paragraphs = Array.from(
+      document.querySelectorAll<HTMLElement>('.prose p[data-pid], .prose li[data-pid], .prose h2[data-pid], .prose h3[data-pid]')
+    )
+    if (!paragraphs.length) return
+
+    let current: HTMLElement | null = null
+    let hideT: number | null = null
+
+    const show = (el: HTMLElement) => {
+      current = el
+      const rect = el.getBoundingClientRect()
+      host.style.top = `${window.scrollY + rect.top - 4}px`
+      host.style.left = `${window.scrollX + rect.right + 12}px`
+      host.hidden = false
+      host.classList.add('visible')
+    }
+
+    const scheduleHide = () => {
+      if (hideT) window.clearTimeout(hideT)
+      hideT = window.setTimeout(() => {
+        host.hidden = true
+        host.classList.remove('visible')
+        current = null
+      }, 220)
+    }
+
+    for (const p of paragraphs) {
+      p.addEventListener('mouseenter', () => {
+        if (hideT) { window.clearTimeout(hideT); hideT = null }
+        show(p)
+      })
+      p.addEventListener('mouseleave', scheduleHide)
+    }
+    host.addEventListener('mouseenter', () => {
+      if (hideT) { window.clearTimeout(hideT); hideT = null }
+    })
+    host.addEventListener('mouseleave', scheduleHide)
+
+    host.querySelector('.pr-close')?.addEventListener('click', () => {
+      host.hidden = true
+      host.classList.remove('visible')
+      current = null
+    })
+
+    const getToken = (): Promise<string> =>
+      new Promise((resolve, reject) => {
+        if (!siteKey) return resolve('')
+        const ts = (window as any).turnstile
+        if (!ts) return reject(new Error('turnstile not loaded'))
+        // reuse the PostReactions turnstile host if present
+        const tsHost = document.querySelector('[data-turnstile]') as HTMLElement | null
+        if (!tsHost) return reject(new Error('no turnstile host'))
+        ts.render(tsHost, {
+          sitekey: siteKey,
+          size: 'invisible',
+          callback: (token: string) => resolve(token),
+          'error-callback': () => reject(new Error('turnstile error')),
+        })
+        ts.execute(tsHost)
+      })
+
+    for (const btn of host.querySelectorAll<HTMLButtonElement>('.pr-btn')) {
+      btn.addEventListener('click', async () => {
+        if (!current) return
+        const pid = current.dataset.pid!
+        btn.classList.add('pending')
+        try {
+          const token = siteKey ? await getToken() : ''
+          const res = await fetch(`${api}/react`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ slug, kind: btn.dataset.kind, paragraph: pid, turnstile_token: token }),
+          })
+          if (res.ok) {
+            btn.classList.add('reacted')
+            setTimeout(() => btn.classList.remove('reacted'), 600)
+          } else {
+            btn.classList.add('failed')
+            setTimeout(() => btn.classList.remove('failed'), 1500)
+          }
+        } catch {
+          btn.classList.add('failed')
+          setTimeout(() => btn.classList.remove('failed'), 1500)
+        } finally {
+          btn.classList.remove('pending')
+        }
+      })
+    }
+  })()
+</script>
+
+<style>
+  .paragraph-reactor {
+    position: absolute;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.45rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    font-family: var(--font-mono);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    pointer-events: none;
+  }
+  .paragraph-reactor.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .pr-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--c-action);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.08s;
+  }
+  .pr-btn:hover {
+    background: var(--c-action-bg);
+    border-color: var(--c-action-border);
+  }
+  .pr-btn:active { transform: scale(0.94); }
+  .pr-btn.reacted { background: var(--c-action); color: #fff; border-color: var(--c-action); }
+  .pr-btn.failed { background: var(--c-fail-bg); color: var(--c-fail); border-color: var(--c-fail); }
+  .pr-btn.pending { opacity: 0.6; }
+
+  .pr-close {
+    color: var(--fg-faint);
+    font-size: 14px;
+    padding: 0 0.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .pr-close:hover { color: var(--fg); }
+
+  @media (max-width: 800px) {
+    .paragraph-reactor { display: none; }
+  }
+</style>

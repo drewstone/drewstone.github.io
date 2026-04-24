@@ -1,0 +1,89 @@
+---
+/**
+ * Giscus — GitHub-Discussions-powered comments.
+ *
+ * Configure by setting these in an env file or astro.config; see giscus.app.
+ * If repo is unset, the component renders a helpful placeholder instead of
+ * loading the script. Comments require the reader to sign in with GitHub,
+ * which is the sybil defense — no separate auth needed.
+ */
+interface Props {
+  term?: string // mapping key; typically the post slug
+}
+
+const { term } = Astro.props
+
+const REPO = import.meta.env.PUBLIC_GISCUS_REPO        // e.g. "drewstone/blog"
+const REPO_ID = import.meta.env.PUBLIC_GISCUS_REPO_ID  // from giscus.app
+const CATEGORY = import.meta.env.PUBLIC_GISCUS_CATEGORY // e.g. "Announcements"
+const CATEGORY_ID = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
+
+const configured = REPO && REPO_ID && CATEGORY && CATEGORY_ID
+---
+
+<section class="comments">
+  <h2 class="comments-label">Comments</h2>
+  {configured ? (
+    <script
+      src="https://giscus.app/client.js"
+      data-repo={REPO}
+      data-repo-id={REPO_ID}
+      data-category={CATEGORY}
+      data-category-id={CATEGORY_ID}
+      data-mapping="specific"
+      data-term={term ?? Astro.url.pathname}
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="1"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="en"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async
+    />
+  ) : (
+    <div class="comments-placeholder">
+      Comments load from GitHub Discussions via Giscus. Configure
+      <code>PUBLIC_GISCUS_REPO</code>, <code>PUBLIC_GISCUS_REPO_ID</code>,
+      <code>PUBLIC_GISCUS_CATEGORY</code>, and <code>PUBLIC_GISCUS_CATEGORY_ID</code>
+      in <code>.env</code>. See
+      <a href="https://giscus.app" target="_blank" rel="noopener">giscus.app</a>
+      to generate the IDs after you enable Discussions on the repo.
+    </div>
+  )}
+</section>
+
+<style>
+  .comments {
+    margin: var(--space-2xl) 0 var(--space-xl);
+  }
+
+  .comments-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-faint);
+    margin: 0 0 1rem;
+  }
+
+  .comments-placeholder {
+    padding: 0.9rem 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+  .comments-placeholder code {
+    font-size: 0.85em;
+    padding: 0.1em 0.35em;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+  }
+  .comments-placeholder a { color: var(--fg); }
+</style>

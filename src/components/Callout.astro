@@ -1,0 +1,89 @@
+---
+/**
+ * Callout — semantic aside with a tone-coded left rail and badge.
+ *
+ * <Callout tone="insight" title="Why this matters">
+ *   body content as slot...
+ * </Callout>
+ *
+ * Tones: insight (violet), note (neutral), warn (amber), fail (red), ok (green)
+ */
+interface Props {
+  tone?: 'insight' | 'note' | 'warn' | 'fail' | 'ok'
+  title?: string
+}
+
+const { tone = 'note', title } = Astro.props
+---
+
+<aside class={`callout callout-${tone}`}>
+  {title && <div class="callout-head">{title}</div>}
+  <div class="callout-body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    margin: var(--space-xl) 0;
+    padding: 0.95rem 1.1rem 1rem 1.15rem;
+    border-radius: 0 8px 8px 0;
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    background: var(--bg);
+  }
+
+  .callout-head {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 0.5rem;
+    color: var(--fg-muted);
+  }
+
+  .callout-body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--fg);
+  }
+
+  .callout-body :global(p) {
+    margin: 0 0 0.5rem;
+  }
+  .callout-body :global(p:last-child) { margin-bottom: 0; }
+  .callout-body :global(code) {
+    font-size: 0.88em;
+    background: var(--bg-alt);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+
+  .callout-insight {
+    border-left-color: var(--c-action);
+    background: linear-gradient(to right, var(--c-action-bg), var(--bg) 60%);
+  }
+  .callout-insight .callout-head { color: var(--c-action); }
+
+  .callout-ok {
+    border-left-color: var(--c-ok);
+    background: linear-gradient(to right, var(--c-ok-bg), var(--bg) 60%);
+  }
+  .callout-ok .callout-head { color: var(--c-ok); }
+
+  .callout-fail {
+    border-left-color: var(--c-fail);
+    background: linear-gradient(to right, var(--c-fail-bg), var(--bg) 60%);
+  }
+  .callout-fail .callout-head { color: var(--c-fail); }
+
+  .callout-warn {
+    border-left-color: var(--c-run);
+    background: linear-gradient(to right, var(--c-run-bg), var(--bg) 60%);
+  }
+  .callout-warn .callout-head { color: var(--c-run); }
+
+  .callout-note {
+    border-left-color: var(--fg);
+  }
+</style>

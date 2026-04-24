@@ -3,6 +3,11 @@ title: 'Multi-Agent Orchestration with Convergence Loops'
 description: 'Draft, review, revise, repeat. The hard part is not the loop. It is keeping agent sessions coherent across iterations.'
 date: 2026-03-14
 tags: ['agents', 'architecture', 'systems']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-14 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 2 asst turns · 2 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-35-34-190Z-claude-opus-4-7' }
+  - { date: 2026-03-14, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
@@ -41,7 +46,7 @@ Without plateau detection, the system burns through revision after revision maki
 <Chart
   id="convergence-chart"
   code={`
-const W = 600, H = 260
+const W = 600, H = 300
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -140,6 +145,18 @@ The implementation is where it gets tricky. We have checkpoint/resume (because a
 
 We had a bug where checkpoint restore called `createSession()` instead of `restoreSessionFromCheckpoint()` in one code path. Agents would work beautifully for the first three rounds, checkpoint would trigger, and suddenly the writer would produce a completely unrelated draft because it had lost its entire conversation history. Took three days to find because the symptom (bad output) looked like a model quality problem, not a plumbing problem.
 
+The fix was one line:
+
+```typescript
+// before — creates a fresh session ID, agent loses history
+const session = createSession(agentId, sandboxId)
+
+// after — restores the exact session ID from the checkpoint
+const session = restoreSessionFromCheckpoint(checkpoint.sessionId, checkpoint.history)
+```
+
+Session IDs are the identity of an agent across time. Regenerate one and you have spawned a new agent wearing the old agent's name tag.
+
 ## Quality frameworks are pluggable
 
 The review prompts aren't freeform. A quality framework generates them. The McKinsey consulting framework scores on Pyramid Principle (20%), Evidence Quality (25%), So-What Factor (25%), Actionability (15%), and Communication Clarity (15%). BCG swaps in Hypothesis-Driven and Pragmatism. An academic framework has completely different dimensions.
@@ -169,4 +186,4 @@ class Deepwork {
 
 Everything else is configuration. Agent specs, deliverable specs, framework selection, sandbox strategy (shared, per-agent, or grouped). The orchestrator handles sequencing, parallel dispatch, convergence detection, and cleanup. You describe what you want. It figures out how to get there.
 
-Any task where you can express "better" as a function is a candidate for this loop.
+A six-agent consulting memo with three revision rounds and full convergence runs in about 20 minutes and costs roughly \$12 in tokens, landing at an aggregate score in the low 80s across five dimensions. The human editor's job shrinks from "rewrite this" to "push here, pull there." Any task where you can express "better" as a function over dimensions is a candidate for this loop.

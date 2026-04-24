@@ -1,0 +1,199 @@
+---
+import Base from '../../layouts/Base.astro'
+import DataTable, { type Col } from '../../components/DataTable.astro'
+import Paginator from '../../components/Paginator.astro'
+import { getCollection } from 'astro:content'
+
+const PER_PAGE = 25
+
+const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
+
+const traces = await getCollection('traces')
+traces.sort((a, b) => b.data.started_at.localeCompare(a.data.started_at))
+
+const posts = await getCollection('posts', ({ data }) => !data.draft)
+const titleOf = (slug: string) => posts.find((p) => p.id === slug)?.data.title ?? slug
+
+const short = (model: string | null | undefined): string => {
+  if (!model) return 'unknown'
+  if (model === 'unknown') return 'unknown'
+  if (model.startsWith('claude-')) {
+    const parts = model.replace(/^claude-/, '').split('-')
+    if (parts.length >= 2) return parts[0][0].toUpperCase() + parts[0].slice(1) + ' ' + parts.slice(1).join('.')
+  }
+  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
+  return model
+}
+
+const toneForRole = (role: string): 'action' | 'info' | 'run' | undefined => {
+  if (role === 'draft') return 'info'
+  if (role === 'review') return 'run'
+  return 'action'
+}
+
+// Stats cards
+const totalTurns = traces.reduce((s, t) => s + t.data.turns.length, 0)
+const totalToolCalls = traces.reduce(
+  (s, t) => s + t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
+  0
+)
+const postsWithTraces = new Set(traces.map((t) => t.data.post)).size
+
+const modelCounts: Record<string, number> = {}
+for (const t of traces) {
+  const m = t.data.model ?? 'unknown'
+  modelCounts[m] = (modelCounts[m] ?? 0) + 1
+}
+const sortedModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1])
+const maxModel = sortedModels[0]?.[1] ?? 1
+
+// Build rows for the table
+const allRows = traces.map((t) => ({
+  date: t.data.started_at,
+  post: titleOf(t.data.post),
+  postHref: `/posts/${t.data.post}`,
+  traceHref: `/traces/${t.data.trace_id}`,
+  role: t.data.role,
+  model: short(t.data.model),
+  turns: t.data.turns.length,
+  tools: t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
+  files: t.data.files_touched.length,
+}))
+
+const total = allRows.length
+const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
+const safePage = Math.max(1, Math.min(totalPages, pageParam))
+const rows = allRows.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
+
+const columns: Col[] = [
+  { key: 'date',  label: 'Date',   type: 'date', width: '7.5rem' },
+  { key: 'post',  label: 'Post',   type: 'link', linkKey: 'postHref' },
+  { key: 'role',  label: 'Role',   type: 'pill', tone: (v) => toneForRole(String(v)) as any, width: '6rem' },
+  { key: 'model', label: 'Model',  type: 'mono', width: '8rem' },
+  { key: 'turns', label: 'Turns',  type: 'num',  align: 'right', width: '5rem' },
+  { key: 'tools', label: 'Tools',  type: 'num',  align: 'right', width: '5rem' },
+  { key: 'files', label: 'Files',  type: 'num',  align: 'right', width: '5rem' },
+  { key: 'trace', label: 'Trace',  type: 'link', linkKey: 'traceHref', format: () => 'open →', width: '5rem' },
+]
+---
+
+<Base title="traces" wide>
+  <section class="intro">
+    <h1>Session traces</h1>
+    <p>
+      Every post has captured sessions behind it. When an agent edits a post, the prompt that
+      drove the edit, the assistant's response, and the tool calls get summarized and stored
+      here. Each row below is a clickable record: the conversation that produced the commit.
+    </p>
+    <p class="intro-sub">
+      Captured via <code>tools/trace-capture.ts</code>. User turns trimmed to &lt;600 chars,
+      assistant to &lt;280 chars with tool-call counts only. Raw JSONL stays in
+      <code>~/.claude/projects/</code> or <code>~/.codex/sessions/</code>.
+    </p>
+  </section>
+
+  <section class="stats">
+    <div class="stat-card"><div class="sv">{traces.length}</div><div class="sl">Traces</div></div>
+    <div class="stat-card"><div class="sv">{postsWithTraces}</div><div class="sl">Posts covered</div></div>
+    <div class="stat-card"><div class="sv">{totalTurns}</div><div class="sl">Turns</div></div>
+    <div class="stat-card"><div class="sv">{totalToolCalls}</div><div class="sl">Tool calls</div></div>
+  </section>
+
+  {sortedModels.length > 0 && (
+    <section class="section">
+      <h2>By model</h2>
+      <div class="model-bars">
+        {sortedModels.map(([m, n]) => (
+          <div class="mb-row">
+            <span class="mb-label">{short(m)}</span>
+            <div class="mb-track"><div class="mb-fill" style={`width: ${(n / maxModel) * 100}%`}></div></div>
+            <span class="mb-count">{n}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <h2>All traces</h2>
+    <DataTable
+      columns={columns}
+      rows={rows}
+      initialSort={{ key: 'date', dir: 'desc' }}
+    />
+    <Paginator page={safePage} total={total} perPage={PER_PAGE} basePath="/traces" />
+  </section>
+</Base>
+
+<style>
+  .intro { margin: var(--space-xl) 0 var(--space-2xl); max-width: 780px; }
+  .intro h1 { font-size: 2.4rem; letter-spacing: -0.02em; margin: 0 0 var(--space-md); }
+  .intro p { font-size: 1.08rem; line-height: 1.6; margin: 0 0 var(--space-md); }
+  .intro-sub { color: var(--fg-muted); font-size: 0.95rem !important; }
+  .intro code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    padding: 0.08em 0.3em;
+    background: var(--bg-alt);
+    border-radius: 3px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+    margin: 0 0 var(--space-2xl);
+  }
+  .stat-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    background: var(--bg);
+  }
+  .sv {
+    font-family: var(--font-body);
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--c-action);
+  }
+  .sl {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-faint);
+    margin-top: 0.35rem;
+  }
+
+  .section { margin: 0 0 var(--space-2xl); }
+  .section h2 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0 0 var(--space-md);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--border);
+  }
+
+  .model-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+  .mb-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 3rem;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .mb-label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--fg); }
+  .mb-track { height: 10px; background: var(--bg-alt); border-radius: 5px; overflow: hidden; }
+  .mb-fill { height: 100%; background: var(--c-action); border-radius: 5px; }
+  .mb-count {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+</style>

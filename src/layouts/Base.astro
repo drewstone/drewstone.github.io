@@ -5,7 +5,7 @@ interface Props {
   wide?: boolean
 }
 
-const { title, description = 'Thoughts on life, tech, and math.', wide = false } = Astro.props
+const { title, description = 'Notes on systems, agents, and math.', wide = false } = Astro.props
 const year = new Date().getFullYear()
 ---
 
@@ -26,7 +26,7 @@ const year = new Date().getFullYear()
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link
@@ -36,47 +36,33 @@ const year = new Date().getFullYear()
     />
   </head>
   <body>
-    <div class="page-frame">
-      <header class="site-header">
-        <div class="container-wide">
-          <nav class="nav-inner">
-            <a href="/" class="nav-home">drew</a>
-            <div class="nav-links">
-              <a href="/posts">archive</a>
-              <span class="nav-sep" aria-hidden="true">·</span>
-              <a href="/about">about</a>
-              <span class="nav-sep" aria-hidden="true">·</span>
-              <a href="/rss.xml" title="RSS feed">rss</a>
-            </div>
-          </nav>
-        </div>
-      </header>
-      <main class={wide ? 'container-wide' : 'container'}>
-        <slot />
-      </main>
-      <footer>
-        <div class="container-wide">
-          <div class="footer-ornament" aria-hidden="true">
-            <hr class="rule" />
-            <span>&#x2767;</span>
-            <hr class="rule" />
-          </div>
-          <div class="footer-inner">
-            <span>&copy; {year}</span>
-            <span class="footer-links">
-              <a href="/rss.xml">rss</a>
-            </span>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <header class="site-header">
+      <div class="container-wide nav-inner">
+        <a href="/" class="nav-home">drew</a>
+        <nav class="nav-links">
+          <a href="/posts">archive</a>
+          <a href="/about">about</a>
+          <a href="/rss.xml" title="RSS feed">rss</a>
+        </nav>
+      </div>
+    </header>
+    <main class={wide ? 'container-wide' : 'container'}>
+      <slot />
+    </main>
+    <footer>
+      <div class="container-wide footer-inner">
+        <span>&copy; {year} Drew</span>
+        <span class="footer-links">
+          <a href="/rss.xml">rss</a>
+        </span>
+      </div>
+    </footer>
   </body>
 </html>
 
 <style>
   .site-header {
-    padding: var(--space-lg) 0;
-    border-bottom: 3px double var(--ornament);
+    padding: var(--space-lg) 0 var(--space-md);
   }
 
   .nav-inner {
@@ -86,44 +72,34 @@ const year = new Date().getFullYear()
   }
 
   .nav-home {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 0.95rem;
-    font-variant: small-caps;
-    letter-spacing: 0.12em;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.9rem;
     text-decoration: none;
-    color: var(--accent);
+    color: var(--fg);
+    letter-spacing: 0.02em;
   }
 
   .nav-home:hover {
     text-decoration: underline;
-    text-decoration-color: var(--accent);
   }
 
   .nav-links {
     display: flex;
-    gap: var(--space-sm);
+    gap: var(--space-lg);
     align-items: baseline;
   }
 
-  .nav-sep {
-    color: var(--ornament);
-    font-size: 0.7rem;
-    user-select: none;
-  }
-
   .nav-links a {
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-variant: small-caps;
-    letter-spacing: 0.05em;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
     color: var(--fg-muted);
     text-decoration: none;
-    transition: color 0.15s;
+    letter-spacing: 0.02em;
   }
 
   .nav-links a:hover {
-    color: var(--accent);
+    color: var(--fg);
   }
 
   main {
@@ -133,32 +109,17 @@ const year = new Date().getFullYear()
   }
 
   footer {
-    padding-bottom: var(--space-xl);
-  }
-
-  .footer-ornament {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-  }
-
-  .footer-ornament .rule {
-    flex: 1;
-  }
-
-  .footer-ornament span {
-    font-size: 1rem;
-    color: var(--ornament);
-    flex-shrink: 0;
-    line-height: 1;
+    padding: var(--space-xl) 0;
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-2xl);
   }
 
   .footer-inner {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding-top: var(--space-md);
-    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
     color: var(--fg-faint);
   }
 
@@ -170,8 +131,6 @@ const year = new Date().getFullYear()
   .footer-links a {
     color: var(--fg-faint);
     text-decoration: none;
-    font-variant: small-caps;
-    letter-spacing: 0.03em;
   }
 
   .footer-links a:hover {

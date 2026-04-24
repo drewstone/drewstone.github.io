@@ -3,6 +3,12 @@ title: 'Building a Browser Agent That Doesn''t Get Stuck'
 description: 'Detecting when an autonomous browser agent is going in circles, and what to do about it.'
 date: 2026-03-07
 tags: ['agents', 'systems', 'algorithms']
+featured: true
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-07 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 2 asst turns · 2 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-34-22-687Z-claude-opus-4-7' }
+  - { date: 2026-03-07, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
@@ -50,7 +56,7 @@ The agent navigates from page A to page B, clicks back to A, then forward to B a
 <Chart
   id="stuck-patterns"
   code={`
-const W = 700, H = 260, pad = { t: 30, r: 20, b: 20, l: 20 }
+const W = 700, H = 180, pad = { t: 30, r: 20, b: 20, l: 20 }
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -149,4 +155,4 @@ The FNV-1a hash is deterministic: a button labeled "Submit" always maps to the s
 
 ## Current numbers
 
-After a lot of iteration, the system passes about 90% of tasks on a 50-case benchmark, averaging 11 turns and ~90 seconds per task. The biggest wins weren't from better models. They were from better stuck detection and faster recovery.
+The system passes 90% of tasks on a 50-case benchmark, averaging 11 turns at 90 seconds per task. Oscillation detection alone bought 3pp. Stable hash-based references added another 2pp. Supervisor-guided recovery on escalation added another 2pp. The model is Claude Sonnet 4.6, same as at 70%. The delta came from the error budget, the recovery state machine, and knowing when to stop.

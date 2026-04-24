@@ -1,0 +1,316 @@
+---
+/**
+ * DataTable — sortable, styled table with typed columns.
+ *
+ * Usage:
+ *   <DataTable
+ *     columns={[
+ *       { key: 'date',  label: 'Date',   type: 'date',   width: '7rem' },
+ *       { key: 'post',  label: 'Post',   type: 'link',   linkKey: 'href' },
+ *       { key: 'model', label: 'Model',  type: 'pill' },
+ *       { key: 'turns', label: 'Turns',  type: 'num',    align: 'right' },
+ *     ]}
+ *     rows={rows}
+ *   />
+ *
+ * Rows are plain objects matching the column keys. Sort is client-side.
+ */
+
+export type Col = {
+  key: string
+  label: string
+  type?: 'text' | 'num' | 'date' | 'link' | 'pill' | 'mono'
+  align?: 'left' | 'right' | 'center'
+  width?: string
+  linkKey?: string      // for type=link, the row field holding the href
+  tone?: (v: any, row: any) => 'ok' | 'fail' | 'run' | 'action' | 'info' | 'neutral' | undefined
+  sortable?: boolean    // default true
+  format?: (v: any, row: any) => string
+}
+
+interface Props {
+  columns: Col[]
+  rows: Record<string, any>[]
+  initialSort?: { key: string; dir: 'asc' | 'desc' }
+  id?: string           // optional id, used for table scoping
+  empty?: string        // text to show when rows is empty
+}
+
+const { columns, rows, initialSort, id = 'dt', empty = 'Nothing to show yet.' } = Astro.props
+
+const toneClass = (t?: string) => t ? `tone-${t}` : ''
+
+const renderCell = (col: Col, row: Record<string, any>) => {
+  const v = row[col.key]
+  const formatted = col.format ? col.format(v, row) : v
+  const tone = col.tone?.(v, row)
+  const tc = toneClass(tone)
+  if (v === undefined || v === null || v === '') {
+    return { html: '<span class="dt-empty">—</span>', sortVal: '' }
+  }
+  if (col.type === 'link' && col.linkKey) {
+    const href = row[col.linkKey]
+    if (href) {
+      return { html: `<a class="dt-link" href="${href}">${escape(String(formatted))}</a>`, sortVal: String(v) }
+    }
+    return { html: escape(String(formatted)), sortVal: String(v) }
+  }
+  if (col.type === 'pill') {
+    return { html: `<span class="dt-pill ${tc}">${escape(String(formatted))}</span>`, sortVal: String(v) }
+  }
+  if (col.type === 'num') {
+    const n = Number(v)
+    return { html: `<span class="dt-num ${tc}">${escape(String(formatted))}</span>`, sortVal: String(isNaN(n) ? v : n) }
+  }
+  if (col.type === 'date') {
+    const d = new Date(v)
+    const label = col.format ? col.format(v, row) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return { html: `<time class="dt-date" datetime="${d.toISOString()}">${escape(label)}</time>`, sortVal: String(d.valueOf()) }
+  }
+  if (col.type === 'mono') {
+    return { html: `<code class="dt-mono">${escape(String(formatted))}</code>`, sortVal: String(v) }
+  }
+  return { html: escape(String(formatted)), sortVal: String(v) }
+}
+
+function escape(s: string): string {
+  return s.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] as string))
+}
+---
+
+{rows.length === 0 ? (
+  <div class="dt-empty-state">{empty}</div>
+) : (
+  <div class="dt-wrap" data-dt-id={id}>
+    <table class="dt">
+      <thead>
+        <tr>
+          {columns.map((c) => (
+            <th
+              class={`dt-th align-${c.align ?? 'left'}`}
+              style={c.width ? `width: ${c.width}` : ''}
+              data-sort-key={c.key}
+              data-sort-type={c.type ?? 'text'}
+              data-sort-default={initialSort?.key === c.key ? initialSort.dir : ''}
+              role="columnheader"
+              aria-sort={initialSort?.key === c.key ? (initialSort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+            >
+              <button class="dt-sort-btn" type="button" title={`sort by ${c.label}`}>
+                <span>{c.label}</span>
+                <span class="dt-sort-ind" aria-hidden="true">
+                  <svg viewBox="0 0 10 10" width="9" height="9"><path d="M5 2l3 3H2z M5 8l-3-3h6z" fill="currentColor"/></svg>
+                </span>
+              </button>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr>
+            {columns.map((c) => {
+              const cell = renderCell(c, row)
+              return (
+                <td class={`dt-td align-${c.align ?? 'left'}`} data-sort-value={cell.sortVal}>
+                  <Fragment set:html={cell.html} />
+                </td>
+              )
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+<script>
+  // Client-side sort. Idempotent: can be called on any .dt-wrap block.
+  (function () {
+    const wraps = document.querySelectorAll<HTMLElement>('.dt-wrap')
+    for (const wrap of wraps) {
+      const table = wrap.querySelector('table')
+      if (!table) continue
+      const tbody = table.querySelector('tbody')
+      if (!tbody) continue
+      const headers = Array.from(table.querySelectorAll<HTMLElement>('th.dt-th'))
+
+      // Apply initial sort if declared
+      const initHeader = headers.find((h) => h.dataset.sortDefault)
+      if (initHeader) applySort(initHeader, initHeader.dataset.sortDefault as 'asc' | 'desc')
+
+      for (const th of headers) {
+        const btn = th.querySelector('.dt-sort-btn')
+        if (!btn) continue
+        btn.addEventListener('click', () => {
+          const current = th.getAttribute('aria-sort')
+          const next: 'asc' | 'desc' =
+            current === 'ascending' ? 'desc' : current === 'descending' ? 'asc' : 'asc'
+          for (const h of headers) h.setAttribute('aria-sort', 'none')
+          applySort(th, next)
+        })
+      }
+
+      function applySort(th: HTMLElement, dir: 'asc' | 'desc') {
+        const idx = headers.indexOf(th)
+        const type = th.dataset.sortType ?? 'text'
+        const rows = Array.from(tbody!.querySelectorAll<HTMLTableRowElement>('tr'))
+        rows.sort((a, b) => {
+          const av = a.children[idx] as HTMLElement
+          const bv = b.children[idx] as HTMLElement
+          const as = av?.dataset.sortValue ?? ''
+          const bs = bv?.dataset.sortValue ?? ''
+          let cmp = 0
+          if (type === 'num' || type === 'date') {
+            const an = parseFloat(as), bn = parseFloat(bs)
+            cmp = (isFinite(an) ? an : 0) - (isFinite(bn) ? bn : 0)
+          } else {
+            cmp = as.localeCompare(bs, undefined, { numeric: true })
+          }
+          return dir === 'asc' ? cmp : -cmp
+        })
+        for (const r of rows) tbody!.appendChild(r)
+        th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : 'descending')
+      }
+    }
+  })()
+</script>
+
+<style>
+  .dt-empty-state {
+    padding: 1.25rem 1.4rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    color: var(--fg-muted);
+    font-style: italic;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .dt-wrap {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    background: var(--bg);
+  }
+
+  .dt {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+  }
+
+  .dt thead th {
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .dt th.align-right .dt-sort-btn { justify-content: flex-end; text-align: right; }
+  .dt th.align-center .dt-sort-btn { justify-content: center; }
+
+  .dt-sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    background: transparent;
+    border: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: color 0.12s, background 0.12s;
+  }
+  .dt-sort-btn:hover { color: var(--fg); background: var(--bg-sink); }
+
+  .dt-sort-ind {
+    opacity: 0.4;
+    color: currentColor;
+    display: inline-flex;
+    align-items: center;
+    transform: translateY(-1px);
+  }
+  .dt th[aria-sort="ascending"] .dt-sort-ind,
+  .dt th[aria-sort="descending"] .dt-sort-ind {
+    opacity: 1;
+    color: var(--c-action);
+  }
+  .dt th[aria-sort="ascending"] .dt-sort-ind svg { transform: scaleY(-1); }
+  .dt th[aria-sort="ascending"] .dt-sort-btn,
+  .dt th[aria-sort="descending"] .dt-sort-btn { color: var(--fg); }
+
+  .dt tbody td {
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: baseline;
+  }
+  .dt tbody tr:last-child td { border-bottom: 0; }
+  .dt tbody tr:hover td { background: var(--bg-alt); }
+
+  .dt td.align-right { text-align: right; font-variant-numeric: tabular-nums; }
+  .dt td.align-center { text-align: center; }
+
+  .dt-link {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 3px;
+  }
+  .dt-link:hover { text-decoration-color: var(--fg); }
+
+  .dt-pill {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    background: var(--bg-alt);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
+  }
+  .dt-pill.tone-ok { background: var(--c-ok-bg); color: var(--c-ok); border-color: var(--c-ok-border); }
+  .dt-pill.tone-fail { background: var(--c-fail-bg); color: var(--c-fail); border-color: var(--c-fail-border); }
+  .dt-pill.tone-run { background: var(--c-run-bg); color: var(--c-run); border-color: var(--c-run-border); }
+  .dt-pill.tone-action { background: var(--c-action-bg); color: var(--c-action); border-color: var(--c-action-border); }
+  .dt-pill.tone-info { background: var(--c-info-bg); color: var(--c-info); border-color: var(--c-info); }
+
+  .dt-num {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+  }
+  .dt-num.tone-ok { color: var(--c-ok); }
+  .dt-num.tone-fail { color: var(--c-fail); }
+  .dt-num.tone-run { color: var(--c-run); }
+
+  .dt-date {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dt-mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: transparent;
+    padding: 0;
+    color: var(--fg-muted);
+  }
+
+  .dt-empty {
+    color: var(--fg-faint);
+  }
+</style>

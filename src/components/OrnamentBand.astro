@@ -1,0 +1,91 @@
+---
+/**
+ * Decorative geometric band inspired by Islamic interlace woodcuts.
+ * Renders as an inline SVG with a repeating tile pattern.
+ * Theme-aware via CSS custom properties.
+ */
+interface Props {
+  height?: number
+}
+
+const { height = 60 } = Astro.props
+const id = `orn-${Math.random().toString(36).slice(2, 8)}`
+---
+
+<div class="ornament-band-wrap" aria-hidden="true" style={`height: ${height}px`}>
+  <svg
+    class="ornament-band-svg"
+    viewBox={`0 0 400 ${height}`}
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern id={id} x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+        {/* Dark base */}
+        <rect width="60" height="60" class="of"/>
+
+        {/* Primary diamond cutout */}
+        <path d="M30,2 L58,30 L30,58 L2,30 Z" class="oc"/>
+
+        {/* Inner diamond band (dark) */}
+        <path d="M30,10 L50,30 L30,50 L10,30 Z" class="of"/>
+
+        {/* Innermost diamond cutout */}
+        <path d="M30,17 L43,30 L30,43 L17,30 Z" class="oc"/>
+
+        {/* Center ring */}
+        <circle cx="30" cy="30" r="6" class="of"/>
+        <circle cx="30" cy="30" r="3" class="oc"/>
+
+        {/* Corner quarter-circles (creates rosette at tile intersections) */}
+        <path d="M0,0 Q15,0 15,15 Q0,15 0,0 Z" class="oc"/>
+        <path d="M60,0 Q45,0 45,15 Q60,15 60,0 Z" class="oc"/>
+        <path d="M0,60 Q15,60 15,45 Q0,45 0,60 Z" class="oc"/>
+        <path d="M60,60 Q45,60 45,45 Q60,45 60,60 Z" class="oc"/>
+
+        {/* Corner rosette centers (dark dots at tile corners) */}
+        <circle cx="0" cy="0" r="4" class="of"/>
+        <circle cx="60" cy="0" r="4" class="of"/>
+        <circle cx="0" cy="60" r="4" class="of"/>
+        <circle cx="60" cy="60" r="4" class="of"/>
+
+        {/* Teardrop accents on axes (dark, pointing outward) */}
+        <path d="M30,2 Q34,9 30,10 Q26,9 30,2 Z" class="of"/>
+        <path d="M30,58 Q34,51 30,50 Q26,51 30,58 Z" class="of"/>
+        <path d="M2,30 Q9,34 10,30 Q9,26 2,30 Z" class="of"/>
+        <path d="M58,30 Q51,34 50,30 Q51,26 58,30 Z" class="of"/>
+
+        {/* Small diamonds between stars (at tile edges) */}
+        <path d="M30,0 L33,3 L30,6 L27,3 Z" class="of"/>
+        <path d="M30,54 L33,57 L30,60 L27,57 Z" class="of"/>
+        <path d="M0,30 L3,33 L6,30 L3,27 Z" class="of"/>
+        <path d="M54,30 L57,33 L60,30 L57,27 Z" class="of"/>
+
+        {/* Diagonal connecting straps */}
+        <path d="M13,13 L17,17" class="oc" stroke-width="3" fill="none" stroke="var(--bg,#f5f0e8)"/>
+        <path d="M43,13 L47,17" class="oc" stroke-width="3" fill="none" stroke="var(--bg,#f5f0e8)"/>
+        <path d="M13,43 L17,47" class="oc" stroke-width="3" fill="none" stroke="var(--bg,#f5f0e8)"/>
+        <path d="M43,43 L47,47" class="oc" stroke-width="3" fill="none" stroke="var(--bg,#f5f0e8)"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill={`url(#${id})`}/>
+  </svg>
+</div>
+
+<style>
+  .ornament-band-wrap {
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    line-height: 0;
+  }
+
+  .ornament-band-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .of { fill: var(--ornament); }
+  .oc { fill: var(--bg); }
+</style>

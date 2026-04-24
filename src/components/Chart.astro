@@ -12,27 +12,23 @@ const { id, code } = Astro.props
 </figure>
 
 <script define:vars={{ id, code }}>
-  const container = document.querySelector(`#${id} .chart-inner`)
-  if (container) {
+  requestAnimationFrame(() => {
+    const container = document.querySelector(`#${id} .chart-inner`)
+    if (!container) return
     try {
-      // Auto-scale: replace hardcoded W,H with container dimensions
       const _cw = container.clientWidth
+      if (_cw === 0) return
       const _dimMatch = code.match(/const W\s*=\s*(\d+),\s*H\s*=\s*(\d+)/)
-      let _scaledCode = code
-      if (_dimMatch) {
-        const _origW = parseInt(_dimMatch[1])
-        const _origH = parseInt(_dimMatch[2])
-        const _newH = Math.round(_origH * (_cw / _origW))
-        _scaledCode = code.replace(
-          /const W\s*=\s*\d+,\s*H\s*=\s*\d+/,
-          'const W = ' + _cw + ', H = ' + _newH
-        )
-      }
+      const _origW = _dimMatch ? parseInt(_dimMatch[1]) : 0
+      const _origH = _dimMatch ? parseInt(_dimMatch[2]) : 0
+      const _newH = _origW > 0 ? Math.round(_origH * (_cw / _origW)) : 0
 
-      // wrap the user code so any canvas it creates gets HiDPI scaling
       const wrappedCode = `
         const _origCreate = document.createElement.bind(document)
         const _dpr = window.devicePixelRatio || 1
+        const _cw = ${_cw}
+        const _newH = ${_newH}
+        const _origW = ${_origW}
         document.createElement = function(tag, opts) {
           const el = _origCreate(tag, opts)
           if (tag === 'canvas') {
@@ -40,21 +36,29 @@ const { id, code } = Astro.props
             let _scaled = false
             el.getContext = function(type, attrs) {
               const ctx = _origGetCtx(type, attrs)
-              if (type === '2d' && !_scaled && _dpr > 1) {
+              if (type === '2d' && !_scaled) {
                 _scaled = true
-                const w = el.width, h = el.height
-                el.width = w * _dpr
-                el.height = h * _dpr
-                el.style.width = w + 'px'
-                el.style.height = h + 'px'
-                ctx.scale(_dpr, _dpr)
+                const _dw = el.width, _dh = el.height
+                if (_origW > 0 && _cw !== _dw) {
+                  el.width = _cw * _dpr
+                  el.height = _newH * _dpr
+                  el.style.width = _cw + 'px'
+                  el.style.height = _newH + 'px'
+                  ctx.scale(_dpr * _cw / _dw, _dpr * _newH / _dh)
+                } else if (_dpr > 1) {
+                  el.width = _dw * _dpr
+                  el.height = _dh * _dpr
+                  el.style.width = _dw + 'px'
+                  el.style.height = _dh + 'px'
+                  ctx.scale(_dpr, _dpr)
+                }
               }
               return ctx
             }
           }
           return el
         }
-        ${_scaledCode}
+        ${code}
         document.createElement = _origCreate
       `
       const fn = new Function('container', wrappedCode)
@@ -62,7 +66,7 @@ const { id, code } = Astro.props
     } catch (e) {
       container.textContent = `Chart error: ${e.message}`
     }
-  }
+  })
 </script>
 
 <style>
@@ -81,8 +85,8 @@ const { id, code } = Astro.props
 
   @media (min-width: 800px) {
     .chart-container {
-      margin-left: -3rem;
-      margin-right: -3rem;
+      margin-left: -5rem;
+      margin-right: -5rem;
     }
   }
 </style>

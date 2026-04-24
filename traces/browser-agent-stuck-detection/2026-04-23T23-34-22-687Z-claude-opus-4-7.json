@@ -1,0 +1,38 @@
+{
+  "trace_id": "2026-04-23T23-34-22-687Z-claude-opus-4-7",
+  "harness": "claude-code",
+  "model": "claude-opus-4-7",
+  "started_at": "2026-04-23T23:34:22.687Z",
+  "ended_at": "2026-04-24T00:37:22.032Z",
+  "post": "browser-agent-stuck-detection",
+  "role": "polish",
+  "commit": "ff1e9a5daf77cb52416273aeb7cebb5c72e26be2",
+  "files_touched": [
+    "src/content/posts/browser-agent-stuck-detection.mdx"
+  ],
+  "summary": "captured session · 2 asst turns · 2 tool calls",
+  "turns": [
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/browser-agent-stuck-detection.mdx"
+      ],
+      "ts": "2026-04-23T23:34:22.687Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/browser-agent-stuck-detection.mdx"
+      ],
+      "ts": "2026-04-24T00:37:22.032Z"
+    }
+  ]
+}

@@ -12,23 +12,44 @@ Personal blog. Astro + MDX, static output, GitHub Pages.
 
 ## Design
 
-- **Black and white.** No color accents. Let syntax highlighting be the only color on the page.
+- **Monochrome prose, semantic color for state.** Body text, headings, narrator blocks, layout chrome stay strict B&W (`#111` fg on `#fff` bg, inverted in dark mode). Color enters only to communicate meaning, never decoration. Four semantic tokens:
+  - `--c-ok` (green) — success states, passed tests, "final" artifacts
+  - `--c-fail` (red) — failures, errors, deleted artifacts
+  - `--c-run` (amber) — running / in-progress states
+  - `--c-action` (violet) — action affordances: tool badges, thinking icons, clickable tool operations
+  - `--c-info` (blue) — modified/changed artifact lifecycle
+  Each has a matching `-bg` (tinted surface) and `-border` variant. Use for status pills, run group accents, artifact lifecycle badges, tool/thinking icon badges. Never tint body text, prose, or section chrome.
+- **No ornaments.** No `❦`, `❧`, `❀`, double rules, corner brackets, decorative drop-cap borders, manuscript chrome, small-caps-lowercase heading gimmicks. If you catch yourself reaching for a flourish, reach for whitespace instead.
 - **Bigger is better.** 19px base font. When unsure, size up.
-- **Whitespace over dividers.** Don't use horizontal rules to create structure — use spacing. Too many lines = noisy and confusing.
+- **Whitespace over dividers.** Don't use horizontal rules to create structure. Use spacing. One hairline rule max per section break, and only when whitespace alone is ambiguous.
 - **Click targets must be obvious.** Full-width hover states (background + padding shift), not subtle underline-color changes.
 - **Vertical hierarchy over grids.** Grids look empty with few items. A vertical list scales from 2 posts to 200.
-- **No template mastheads.** Personal voice > generic branding. "I'm Drew" > big "DREW" banner.
+- **No template mastheads, no page frame.** Personal voice > generic branding. No centered-serif-banner hero. No shadowed content card floating in a colored background.
 - **Code blocks: full-bleed.** Break out of the reading column on wide screens. Larger font than body. Language label top-right at low opacity.
 - **Academic serif for prose, mono for metadata.** Dates, tags, labels use mono. Body and headings use serif.
+- **Demonstrate, don't describe.** When a post is about UI, render the UI. When a post is about math, render the math. When a post is about a diagram, draw the diagram. Never ship a code block labeled "here's what it could look like" when you can render the real thing inline.
 
 ## Content
 
 - Posts live in `src/content/posts/` as `.mdx` files
 - Frontmatter: `title`, `description`, `date`, `updated?`, `tags[]`, `draft?`
-- Interactive components: `<Chart>` (inline canvas JS), `<AnimatedCanvas>` (particle system with IntersectionObserver pause/resume), `<Tweet id="..." />` (embedded X posts)
 - **Two content styles**: math/technical deep-dives (formulas, data viz, Canvas charts) and architectural/vision/product narratives (engineering problems, system design, no forced math)
 - Content comes from real projects Drew is building. Don't invent fictional projects.
 - Article length: concise introductions, not exhaustive references. Current posts are the right length.
+
+### Rich in-post components (use them)
+
+- **`<Chart>`** — inline Canvas drawing with HiDPI scaling. Reads theme CSS vars. Use for data viz, diagrams, DAGs, timelines, anything with coordinates.
+- **`<ChatMock>`** — high-fidelity shadcn-style chat rendering for agent/LLM posts. Takes a `blocks` array of typed message parts: `text`, `thinking`, `tool_call`, `tool_result`, `artifact`, `narrator`, `status`. Supports `actor` for multi-agent ensemble views, collapsible thinking/result blocks, status pills, artifact file previews. Use this whenever a post discusses agent output, chat UIs, or workflow rendering.
+- **`<Sidenote>`** — margin citations and asides. Use for tangents, definitions, source pointers without derailing the main prose.
+- **`<AnimatedCanvas>`** — particle/animation with IntersectionObserver pause. Use sparingly.
+- **`<Tweet id="..." />`** — embedded X posts.
+- **KaTeX math** — `$inline$` and `$$display$$`. Use when a formula adds clarity prose can't carry alone.
+- **Raw HTML in MDX** — when none of the components fit, write scoped HTML+CSS inline. The post IS allowed to ship a bespoke component. Polish it to production quality.
+
+### The richness bar
+
+If a post discusses a visual, rendered, or interactive thing, the post must render that thing at production fidelity. Not a sketch, not a placeholder, not a code snippet captioned "imagine this rendered." A reader who skims the post should understand the visual claim without reading a word. Expert UI/UX design in the examples themselves is the point, not decoration around them.
 
 ## Writing Style Guide
 
@@ -89,9 +110,10 @@ Both types share the rules below.
 ### Charts
 
 - Canvas charts with HiDPI scaling (handled by Chart.astro). Charts auto-fill container width.
-- Read CSS variables (`--fg`, `--bg`, `--faint`, `--ornament`) for theme-aware rendering.
+- Read CSS variables (`--fg`, `--bg`, `--fg-muted`, `--fg-faint`, `--border`) for theme-aware rendering. Do NOT hardcode colors.
 - Give diagrams generous padding (80px+ top offset for labels).
 - Prefer clean geometric shapes and typography over decoration.
+- When a chart would be clearer as a rendered component (a chat UI, a file tree, a state diagram), reach for HTML/`<ChatMock>` before Canvas. Canvas is for plots and custom geometry. Components are for structured UI.
 
 ### Voice and tone
 
@@ -139,8 +161,10 @@ Both types share the rules below.
 
 ## Don'ts
 
-- Don't add colored accents or branded elements
+- Don't add color outside the semantic vocabulary (`--c-ok` / `--c-fail` / `--c-run` / `--c-action` / `--c-info`). No sepia/cream palettes, no branded color, no color-for-color's-sake, no page-frame chrome
 - Don't use grids for post listings unless there are 6+ items
-- Don't add borders/rules between list items — hover state is enough separation
-- Don't use small font sizes for code — match or exceed body size
-- Don't justify paragraph text — left-align
+- Don't add borders/rules between list items. Hover state is enough separation
+- Don't use small font sizes for code. Match or exceed body size
+- Don't justify paragraph text. Left-align
+- Don't ship a post that describes a UI without rendering the UI. Don't ship a post that describes a diagram without drawing it. "The edit, not the log" applies to our own posts too: demonstrate, don't narrate
+- Don't reach for ornament when the problem is clarity. The fix for a mid-feeling page is almost always more whitespace and less decoration

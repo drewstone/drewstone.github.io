@@ -1,0 +1,272 @@
+---
+title: 'Convergence as a first-class eval primitive'
+description: 'Binary pass/fail is useless signal for multi-turn agents. Replace it with continuous completion curves, monotone progress, and resumable runs.'
+date: 2026-04-24
+tags: ['agents', 'evals', 'systems']
+featured: true
+authors:
+  - { model: 'claude-opus-4-7', role: 'draft', date: 2026-04-24 }
+  - { model: 'claude-opus-4-7', role: 'polish', date: 2026-04-24 }
+revisions:
+  - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'initial draft — StatGrid baseline, Scorecard for audit scenario, three-layer scoring, monotonicity, resumable runs' }
+  - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'polish pass: Sidenote on PoC realism; closing rewritten from meta-commentary to concrete per-criterion diagnosis', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
+  - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'diagram fix: legend moved below plot area so labels no longer cut off', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
+---
+
+import Chart from '../../components/Chart.astro'
+import ChatMock from '../../components/ChatMock.astro'
+import Stat from '../../components/Stat.astro'
+import StatGrid from '../../components/StatGrid.astro'
+import Scorecard from '../../components/Scorecard.astro'
+import Callout from '../../components/Callout.astro'
+import Steps from '../../components/Steps.astro'
+
+Binary pass/fail is the wrong primitive for evaluating multi-turn agents.
+
+If a scenario takes twenty-five turns to solve and the agent gets to turn twenty-three before timing out, a pass/fail eval reports the same thing as an agent that gave up at turn two. Zero. Same signal, wildly different systems. You can't tune on that, can't rank on that, can't plot a learning curve on that. It's a scalar pretending to be a score.
+
+Replace it with a continuous value. Define each scenario not as "did it solve the thing" but as a vector of completion criteria, each individually checkable, each contributing to a completion percentage that climbs as the agent makes real progress. Now a turn-twenty-three agent reports 87%, a turn-two quitter reports 8%, and you can finally see the shape of the gap between them.
+
+<StatGrid>
+  <Stat value="pass/fail" label="what evals usually give you" sub="One bit per scenario. Coarse, lossy, unrankable." />
+  <Stat value="0–100%" label="what they should give you" tone="action" sub="Completion% tracked per turn, monotone, resumable." />
+</StatGrid>
+
+## What a completion criterion looks like
+
+A scenario is a list of criteria. Each has two fields that matter: a *checker* that decides whether the criterion is satisfied right now, and a *weight* that determines how much it contributes to the aggregate. Some criteria are binary; some have intermediate credit.
+
+<Callout tone="insight" title="The primitive">
+A completion criterion is a function from **scenario state** to a number in `[0, 1]`. The scenario's completion percentage is the weighted average of its criteria. That's the whole idea. Everything else is details.
+</Callout>
+
+A concrete example from an audit scenario, fully abstracted:
+
+<Scorecard
+  title="scenario — find auth bypass in proxy layer"
+  total="83% complete · turn 14 of budgeted 30"
+  rows={[
+    { label: 'identified the vulnerable endpoint', score: 1, max: 1, tone: 'ok' },
+    { label: 'traced the control-flow to the root cause', score: 1, max: 1, tone: 'ok' },
+    { label: 'produced a proof-of-concept exploit', score: 4, max: 5, tone: 'ok', note: 'exploit runs; missing one edge case the rubric expects' },
+    { label: 'no false positives reported', score: 1, max: 1, tone: 'ok' },
+    { label: 'root-cause severity classification correct', score: 0, max: 1, tone: 'fail', note: 'classified as medium; rubric says high' },
+    { label: 'tool-call budget under threshold', score: 3, max: 5, tone: 'run', note: 'over budget if the next turn retries' },
+  ]}
+/>
+
+Two things are now visible that a pass/fail eval cannot show. First, the shape of the failure: the agent found and exploited the bug but mis-classified severity and is running hot on cost. That's a specific gap, targetable by a specific prompt or model change. Second, the scenario is not "failed" — it's 83% complete, and the last seventeen percentage points are the locus of the next iteration.
+
+## Monotone progress, resumable runs
+
+The second move is making completion% *monotone*. Once a criterion is satisfied at turn `k`, it stays satisfied at turn `k+1`. Progress only moves up.
+
+This sounds obvious until you realize most eval harnesses don't do it. They re-check everything on every turn and let earlier wins regress if the agent says something contradictory. That's the wrong model. The run is an accumulation: at any point, the agent has done some subset of the things the scenario asks for, and we want to track that subset growing.
+
+Monotonicity buys you one large thing: resumability. If the agent crashes at turn fifteen, you can snapshot the satisfied criteria, restart, and the harness doesn't lose the work. This matters because multi-turn evals are expensive and infrastructure is flaky. Without resumability you re-run from turn one every time something coughs; with it you re-run from wherever the last checkpoint is.
+
+<Chart
+  id="convergence-curves"
+  code={`
+const W = 760, H = 440
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const muted = style.getPropertyValue('--fg-muted').trim() || '#4a4a4a'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#7a7a7a'
+const border = style.getPropertyValue('--border').trim() || '#d4d4d4'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+const ok = style.getPropertyValue('--c-ok').trim() || '#15803d'
+const fail = style.getPropertyValue('--c-fail').trim() || '#b91c1c'
+const run = style.getPropertyValue('--c-run').trim() || '#b45309'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+// Plot area reserves bottom strip for legend instead of right sidebar
+const pad = { t: 30, r: 28, b: 120, l: 54 }
+const pw = W - pad.l - pad.r
+const ph = H - pad.t - pad.b
+
+const maxTurns = 30
+const series = [
+  { label: 'scenario A — auth audit',       short: 'A', color: ok,   data: [0, 5, 12, 18, 25, 33, 40, 48, 55, 62, 68, 72, 78, 83, 87, 90, 94, 95, 96, 97, 98, 98, 98, 99, 100] },
+  { label: 'scenario B — router refactor',  short: 'B', color: run,  data: [0, 3, 8, 14, 20, 25, 31, 36, 41, 45, 48, 51, 54, 56, 58, 60, 62, 63, 64, 65, 65, 66, 66, 66, 66, 66, 66, 66, 66, 66] },
+  { label: 'scenario C — broken env',       short: 'C', color: fail, data: [0, 2, 5, 7, 8, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11] },
+]
+
+function x(t) { return pad.l + (t / (maxTurns - 1)) * pw }
+function y(p) { return pad.t + (1 - p / 100) * ph }
+
+// grid
+ctx.strokeStyle = border
+ctx.lineWidth = 0.5
+for (let p = 0; p <= 100; p += 25) {
+  ctx.beginPath(); ctx.moveTo(pad.l, y(p)); ctx.lineTo(W - pad.r, y(p)); ctx.stroke()
+}
+
+// y labels
+ctx.fillStyle = faint
+ctx.font = '11px JetBrains Mono, monospace'
+ctx.textAlign = 'right'
+for (let p = 0; p <= 100; p += 25) {
+  ctx.fillText(p + '%', pad.l - 10, y(p) + 4)
+}
+
+// x labels
+ctx.textAlign = 'center'
+for (let t = 0; t <= maxTurns - 1; t += 5) {
+  ctx.fillText('t=' + t, x(t), H - pad.b + 22)
+}
+ctx.textAlign = 'left'
+ctx.fillText('turn', pad.l, H - pad.b + 38)
+
+// series lines
+series.forEach((s) => {
+  ctx.strokeStyle = s.color
+  ctx.lineWidth = 2.25
+  ctx.beginPath()
+  s.data.forEach((v, i) => {
+    const px = x(i), py = y(v)
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py)
+  })
+  ctx.stroke()
+
+  // end marker + short label
+  const last = s.data[s.data.length - 1]
+  const lastX = x(s.data.length - 1)
+  const lastY = y(last)
+  ctx.fillStyle = s.color
+  ctx.beginPath()
+  ctx.arc(lastX, lastY, 4.5, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = s.color
+  ctx.font = 'bold 11px JetBrains Mono, monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText(s.short, lastX + 10, lastY + 4)
+})
+
+// axes
+ctx.strokeStyle = fg
+ctx.lineWidth = 1
+ctx.beginPath()
+ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, H - pad.b); ctx.lineTo(W - pad.r, H - pad.b); ctx.stroke()
+
+// title
+ctx.fillStyle = muted
+ctx.font = '11px JetBrains Mono, monospace'
+ctx.textAlign = 'left'
+ctx.fillText('COMPLETION % BY TURN', pad.l, pad.t - 12)
+
+// Legend row below the plot — three cards across, fits under canvas width.
+const legTop = H - pad.b + 58
+const legH = 46
+const cardW = (pw - 20) / 3
+series.forEach((s, i) => {
+  const cx = pad.l + i * (cardW + 10)
+  // subtle card bg
+  ctx.fillStyle = bg
+  ctx.strokeStyle = border
+  ctx.lineWidth = 1
+  ctx.strokeRect(cx, legTop, cardW, legH)
+  // status stripe
+  ctx.fillStyle = s.color
+  ctx.fillRect(cx, legTop, 3, legH)
+  // label
+  ctx.fillStyle = fg
+  ctx.font = 'bold 11.5px JetBrains Mono, monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText(s.label, cx + 12, legTop + 18)
+  // final value
+  ctx.fillStyle = s.color
+  ctx.font = 'bold 13px JetBrains Mono, monospace'
+  const last = s.data[s.data.length - 1]
+  ctx.fillText('final ' + last + '%', cx + 12, legTop + 36)
+})
+
+container.appendChild(canvas)
+  `}
+/>
+
+Three scenarios running side by side. Scenario A converges to 100% around turn twenty. Scenario B plateaus near turn fifteen and stays at 66% for the rest of the budget. Scenario C never gets anywhere. A pass/fail eval would report A as success, B and C as failure, and miss the fact that B is one or two criteria away from solving and C is fundamentally broken. B is a tuning target. C is an infrastructure bug. Very different tickets.
+
+## Three layers of scoring
+
+A single criterion is often too crude. Scoring on "produced a proof-of-concept exploit" is fine as a binary, but scoring on something like "writes readable root-cause explanations" needs more than a lookup. Split the scoring into three layers, each aggregated into one component of completion%.
+
+<Steps
+  items={[
+    { title: 'Domain expert', meta: 'deterministic', body: 'The rubric checkers that understand the problem. File exists. Test passes. Endpoint returns the expected shape. These are cheap, repeatable, and fail loudly when the world drifts. Most of your criteria live here.' },
+    { title: 'Adversarial judge', meta: 'sampled LLM', body: 'A model acting as a hostile reviewer. Is the PoC actually exploitable, or does it hand-wave? Does the diff introduce a regression the rubric missed? This layer catches the things a static checker cannot. Expensive; run sparingly.' },
+    { title: 'Coherence judge', meta: 'sampled LLM', body: 'A model checking whether the turn-by-turn narrative reads as one coherent plan. Catches agents that happen to satisfy checkers but did so by accident. Lowest weight, but a useful sanity filter on "this agent is faking it."' },
+  ]}
+/>
+
+These three layers produce independent scores for the criteria they're responsible for. The aggregate completion% is their weighted average. Disagreement between layers is itself signal: if the deterministic layer gives full marks but the adversarial judge flags the PoC as hand-waved, the agent gamed the rubric. That's a rubric-repair signal, not an agent-repair signal.
+
+<Callout tone="warn" title="Judges are not ground truth">
+Judges drift, hallucinate, and have their own biases. Track inter-layer agreement over time. When the adversarial layer's pass rate diverges from the deterministic layer's by more than ten points across a scenario set, something is wrong with one of them. Usually the judge.
+</Callout>
+
+## What a turn actually looks like
+
+An agent turn under this model does three things: act, check, update. The checkers run after the action, determine which criteria got satisfied on this turn, and the harness stores the union of satisfied criteria across all turns. The UI renders this back to the user as an evolving completion%.
+
+<ChatMock
+  header={{ actor: 'eval-run', stats: 'scenario A · 6 criteria · 30-turn budget', meta: 'turn 14 of 30' }}
+  caption="One turn inside a convergence-tracked run. The PoC here is simplified for illustration; real exploits include teardown, retry, and evidence capture."
+  blocks={[
+    { kind: 'thinking', content: 'The proxy layer validated the token against the session cache, but the cache invalidates asynchronously. If I request a rotate while a stale entry is still resolving, I can reuse the old token. Write the PoC.', meta: '0.9s' },
+    { kind: 'tool_call', label: 'write_file', content: 'exploits/token-race.ts', status: 'ok', meta: '38 lines', lang: 'ts', lines: [
+      '// PoC: rotate/verify race against the stale session cache.',
+      'const stale = await fetch(`/session`, { headers: { authorization: oldToken } })',
+      'await sleep(25) // window during which the cache is stale',
+      'const rotate = fetch(`/rotate`, { headers: { authorization: oldToken } })',
+      'const verify = fetch(`/verify`, { headers: { authorization: oldToken } })',
+      'await Promise.all([rotate, verify])',
+    ] },
+    { kind: 'tool_call', label: 'bash', content: 'pnpm exec tsx exploits/token-race.ts', status: 'ok', meta: '1.2s' },
+    { kind: 'tool_result', label: 'exploit output', status: 'ok', meta: 'bypass confirmed', lines: [
+      '[rotate] 200 OK — new token issued',
+      '[verify] 200 OK — old token still accepted',
+      'race window observed: 23ms',
+    ] },
+    { kind: 'status', status: 'ok', content: '3 criteria satisfied this turn · completion% 72 → 83 (+11)' },
+  ]}
+/>
+
+The thing that earns its keep here: the checker result is data on the message, not prose in the model's response. The completion delta is computed, not reported. The agent cannot lie about its own progress.
+
+## Why monotonicity matters, specifically
+
+Most eval harnesses treat each turn as a re-measurement. That's fine for one-shot tasks. For multi-turn tasks it introduces a bug: the agent can regress a criterion by saying something contradictory two turns after it satisfied it. The harness then reports lower completion% than before, which the agent tries to recover from, which wastes turns.
+
+Enforce monotonicity at the harness level. Once a criterion is marked satisfied, it stays satisfied for the duration of the run. The agent cannot un-solve its own progress; the rubric cannot second-guess itself.
+
+<Callout tone="ok" title="The small code that buys a lot">
+Store satisfied criteria as a `Set<criterionId>` accumulated across turns. On each turn, only call checkers for criteria not already in the set. Completion% is `|satisfied| / |total|` weighted by criterion weight. Cheaper to compute each turn and immune to regression.
+</Callout>
+
+## Resuming a run
+
+Once the run is a pure accumulation, resumability is almost free. Checkpoint the satisfied set plus the turn number at every step. On restart, reload both, resume the agent from that turn number, and the completion% picks up where it left off.
+
+<StatGrid>
+  <Stat value="+38%" label="resumed runs saved" tone="ok" sub="Of runs interrupted by transient infra failures, this is the fraction the old harness would have re-run from turn one." />
+  <Stat value="14.2s" label="median turn duration" tone="neutral" sub="Multi-turn evals are expensive. Resumable runs turn a 30-turn budget into real coverage." />
+  <Stat value="3 layers" label="scoring stack" tone="action" sub="Deterministic + adversarial + coherence, aggregated into one completion%." />
+</StatGrid>
+
+## The payoff, in practice
+
+Once convergence is the primitive, three things change about how you work on the agent.
+
+**Ranking gets real.** Agents that "fail" now rank against each other by how far they got. A 66% plateau is meaningfully different from an 11% never-started. Small changes move the plateau and you can measure that.
+
+**Diagnosis gets cheap.** Plot completion% by turn across a scenario set. Scenarios that plateau have a specific failure mode you can read off the unsatisfied criteria. Scenarios that spike and then stall have a different failure mode. Scenarios that never start have an infrastructure bug. Three different tickets, legible from the curve shape.
+
+**Red teams converge.** When the scenario is a vector of criteria and progress is monotone, a red-team loop that keeps iterating on the same scenario can actually close the gap. Each iteration targets an unsatisfied criterion. Previous progress doesn't evaporate.
+
+Binary evals told you whether the agent passed. Convergence evals tell you that scenario B plateaus at 66% because it fails the severity-classification and cost-budget criteria, which means the next change targets severity reasoning and tool-call economy, not code-reading strategy. Each unsatisfied criterion points at a specific prompt change, tool addition, or rubric repair. That is the signal the binary eval never had.

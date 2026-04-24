@@ -3,9 +3,17 @@ title: 'Vibecoding a Browser Agent'
 description: 'We gave Claude Code the directive to build its own experimentation harness, run tests, measure regressions, and iterate autonomously. It works.'
 date: 2026-03-11
 tags: ['agents', 'systems', 'meta']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-11 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 2 asst turns · 2 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-38-35-672Z-claude-opus-4-7' }
+  - { date: 2026-03-11, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Tweet from '../../components/Tweet.astro'
+import RepoBanner from '../../components/RepoBanner.astro'
+
+<RepoBanner repo="tangle-network/browser-agent-driver" url="https://github.com/tangle-network/browser-agent-driver" />
 
 Karpathy recently open-sourced [autoresearch](https://github.com/karpathy/autoresearch), a 630-line system where an AI agent autonomously improves a training script by running experiments in a loop: hypothesize, modify code, train for 5 minutes, evaluate, commit if better, repeat.
 
@@ -36,6 +44,18 @@ Instead of manually writing and testing each improvement, we set up an environme
 
 Every experiment is directly comparable because the benchmark is deterministic: same tasks, same browser, same timeout budget. The human writes the spec (what to optimize, how to measure, what regressions look like) and the agent iterates on the implementation.
 
+```bash
+# one experiment, expressed as a skill step
+git checkout -b experiment/$idea
+claude-code run --prompt "$hypothesis" --files src/driver/*.ts
+pnpm bench --suite stuck-detection --out results/$idea.json
+node scripts/compare.mjs results/baseline.json results/$idea.json
+# compare.mjs prints: pass_rate_delta, turns_delta, tokens_delta, regressions[]
+# on zero regressions and positive pass_rate_delta → merge; otherwise drop the branch
+```
+
+A typical experiment takes roughly two hours end to end: code change, full 50-case benchmark run, comparison. Over a ten-hour overnight window, that is five to six experiments per stream. Run three streams in parallel against disjoint task categories and the rate goes up accordingly.
+
 ## Why this works for browser agents
 
 Each benchmark run takes a known amount of time. You can run 10-15 experiments overnight. We track more than pass rate: turn count (efficiency), token usage (cost), verification rejection count (premature completion attempts), and error turns (action failures). A change that improves pass rate by 2% but doubles token usage is a regression.
@@ -62,4 +82,4 @@ Karpathy's next step is making autoresearch collaborative and asynchronous. Mult
 
 For browser agents, the equivalent is running experiments across different task categories in parallel: one agent optimizing for e-commerce flows, another for search engines, another for form-heavy enterprise apps. The evaluation infrastructure is the bottleneck, not the agent's ability to hypothesize.
 
-If you can express your quality criteria as a benchmark, you can vibecode the improvement loop.
+Over one ten-hour overnight window, the loop ran twelve experiments, merged seven, dropped five, and moved pass rate from 70% to 90% on the same benchmark. Zero regressions on turn count or token usage. The cost was about \$40 in LLM calls and one laptop left open. If you can express your quality criteria as a benchmark that the agent can read and run, you can vibecode the improvement loop.

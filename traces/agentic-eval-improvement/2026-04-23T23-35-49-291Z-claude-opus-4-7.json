@@ -1,0 +1,49 @@
+{
+  "trace_id": "2026-04-23T23-35-49-291Z-claude-opus-4-7",
+  "harness": "claude-code",
+  "model": "claude-opus-4-7",
+  "started_at": "2026-04-23T23:35:49.291Z",
+  "ended_at": "2026-04-23T23:37:07.636Z",
+  "post": "agentic-eval-improvement",
+  "role": "polish",
+  "commit": "ff1e9a5daf77cb52416273aeb7cebb5c72e26be2",
+  "files_touched": [
+    "src/content/posts/agentic-eval-improvement.mdx"
+  ],
+  "summary": "captured session · 3 asst turns · 3 tool calls",
+  "turns": [
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/agentic-eval-improvement.mdx"
+      ],
+      "ts": "2026-04-23T23:35:49.291Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/agentic-eval-improvement.mdx"
+      ],
+      "ts": "2026-04-23T23:36:37.525Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/agentic-eval-improvement.mdx"
+      ],
+      "ts": "2026-04-23T23:37:07.636Z"
+    }
+  ]
+}

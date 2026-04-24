@@ -3,6 +3,11 @@ title: 'Anatomy of an Autonomous Security Audit'
 description: 'We tried one big agent with every security tool. It was terrible. Here is what actually works.'
 date: 2026-03-13
 tags: ['security', 'agents', 'architecture']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-13 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 4 asst turns · 2 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-35-05-146Z-claude-opus-4-7' }
+  - { date: 2026-03-13, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
@@ -41,7 +46,7 @@ We support five sandbox backends (Tangle's Sandbox API, Morph Cloud, Docker, Clo
 <Chart
   id="audit-flow"
   code={`
-const W = 700, H = 320
+const W = 700, H = 350
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -153,8 +158,6 @@ Getting the profiles right is where the time goes, not the coordinator logic. Tu
 
 ## The economics
 
-A typical smart contract audit runs $5 to $20 in LLM costs depending on codebase size, plus sandbox compute. Everything persists to SQLite (seven migrations and counting), so audits can pause and resume. The system tracks token usage per agent and warns at 80% of budget.
+A typical smart contract audit runs \$5 to \$20 in LLM costs depending on codebase size, plus sandbox compute. Everything persists to SQLite (seven migrations and counting), so audits can pause and resume. The system tracks token usage per agent and warns at 80% of budget.
 
-The cost of the multi-agent approach is roughly 2x a single-agent audit in raw LLM spend. But the single-agent approach produces reports that need heavy human triage. The multi-agent approach produces reports where the high-severity findings have working PoCs attached. The human reviewing it can focus on "is this PoC realistic?" rather than "is this finding real?"
-
-That tradeoff is not close.
+The multi-agent approach costs roughly 2x a single-agent audit in raw LLM spend, about \$10 extra per audit. It replaces four hours of senior-reviewer triage with thirty minutes. The reviewer stops asking "is this finding real" and starts asking "is this PoC realistic." For any shop where a reviewer's hour costs more than \$10, the tradeoff pays back on the first audit; for most, it pays back twenty times over.

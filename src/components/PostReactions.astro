@@ -1,0 +1,251 @@
+---
+/**
+ * PostReactions — three-emoji reactions per post.
+ * Hydrates client-side: fetches counts on load, submits with Turnstile token.
+ *
+ * Backend: see workers/reactions/ (Cloudflare Worker + D1).
+ *   GET  {API}/counts/:slug            → { like: N, insight: N, meh: N }
+ *   POST {API}/react { slug, kind, turnstile_token }
+ *
+ * Turnstile: requires PUBLIC_TURNSTILE_SITE_KEY. If not set, reactions render
+ * disabled so you can see the UI locally before deploying the worker.
+ */
+interface Props {
+  slug: string
+}
+
+const { slug } = Astro.props
+const API = import.meta.env.PUBLIC_REACTIONS_API as string | undefined
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined
+const configured = !!API
+---
+
+<section class="reactions" data-slug={slug} data-api={API ?? ''} data-site-key={TURNSTILE_SITE_KEY ?? ''}>
+  <h2 class="reactions-label">Was this useful?</h2>
+  <div class="reactions-row" role="group" aria-label="react to post">
+    <button class="rx-btn" data-kind="like" aria-label="like" disabled={!configured}>
+      <span class="rx-glyph" aria-hidden="true">✓</span>
+      <span class="rx-name">useful</span>
+      <span class="rx-count" data-count>—</span>
+    </button>
+    <button class="rx-btn" data-kind="insight" aria-label="insightful" disabled={!configured}>
+      <span class="rx-glyph" aria-hidden="true">✶</span>
+      <span class="rx-name">insight</span>
+      <span class="rx-count" data-count>—</span>
+    </button>
+    <button class="rx-btn" data-kind="meh" aria-label="meh" disabled={!configured}>
+      <span class="rx-glyph" aria-hidden="true">~</span>
+      <span class="rx-name">meh</span>
+      <span class="rx-count" data-count>—</span>
+    </button>
+  </div>
+  <div class="rx-turnstile" data-turnstile></div>
+  {!configured && (
+    <p class="rx-note">
+      Reactions go live once <code>PUBLIC_REACTIONS_API</code> and
+      <code>PUBLIC_TURNSTILE_SITE_KEY</code> are configured. See
+      <code>workers/reactions/README.md</code> for the deploy recipe.
+    </p>
+  )}
+</section>
+
+{configured && TURNSTILE_SITE_KEY && (
+  <script
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=__rxTurnstileLoaded&render=explicit"
+    is:inline
+    async
+    defer
+  />
+)}
+
+<script>
+  // Hydrate each reactions block on the page.
+  (function init() {
+    const blocks = document.querySelectorAll('.reactions[data-slug]') as NodeListOf<HTMLElement>
+    if (!blocks.length) return
+
+    for (const block of blocks) {
+      const slug = block.dataset.slug!
+      const api = block.dataset.api
+      const siteKey = block.dataset.siteKey
+      if (!api) continue
+
+      // Fetch current counts
+      fetch(`${api}/counts/${encodeURIComponent(slug)}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((counts: Record<string, number> | null) => {
+          if (!counts) return
+          for (const btn of block.querySelectorAll('.rx-btn')) {
+            const kind = (btn as HTMLElement).dataset.kind!
+            const el = btn.querySelector('[data-count]')
+            if (el) el.textContent = String(counts[kind] ?? 0)
+          }
+        })
+        .catch(() => {})
+
+      // Turnstile — render invisible widget, obtain token per click
+      const tsHost = block.querySelector('[data-turnstile]') as HTMLElement
+      const getToken = (): Promise<string> =>
+        new Promise((resolve, reject) => {
+          if (!siteKey) return reject(new Error('no site key'))
+          const ts = (window as any).turnstile
+          if (!ts) return reject(new Error('turnstile not loaded'))
+          ts.render(tsHost, {
+            sitekey: siteKey,
+            size: 'invisible',
+            callback: (token: string) => resolve(token),
+            'error-callback': () => reject(new Error('turnstile error')),
+          })
+          ts.execute(tsHost)
+        })
+
+      // Click handlers
+      let submitting = false
+      for (const btn of block.querySelectorAll<HTMLButtonElement>('.rx-btn')) {
+        btn.addEventListener('click', async () => {
+          if (submitting) return
+          submitting = true
+          btn.classList.add('pending')
+          try {
+            const token = siteKey ? await getToken() : ''
+            const res = await fetch(`${api}/react`, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ slug, kind: btn.dataset.kind, turnstile_token: token }),
+            })
+            if (res.ok) {
+              const counts = (await res.json()) as Record<string, number>
+              for (const b of block.querySelectorAll('.rx-btn')) {
+                const k = (b as HTMLElement).dataset.kind!
+                const el = b.querySelector('[data-count]')
+                if (el) el.textContent = String(counts[k] ?? 0)
+              }
+              btn.classList.add('reacted')
+            } else {
+              btn.classList.add('failed')
+              setTimeout(() => btn.classList.remove('failed'), 1500)
+            }
+          } catch {
+            btn.classList.add('failed')
+            setTimeout(() => btn.classList.remove('failed'), 1500)
+          } finally {
+            btn.classList.remove('pending')
+            submitting = false
+          }
+        })
+      }
+    }
+    ;(window as any).__rxTurnstileLoaded = () => {}
+  })()
+</script>
+
+<style>
+  .reactions {
+    margin: var(--space-2xl) 0 var(--space-xl);
+  }
+
+  .reactions-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-faint);
+    margin: 0 0 0.75rem;
+  }
+
+  .reactions-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .rx-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+  }
+
+  .rx-btn:hover:not(:disabled) {
+    background: var(--bg-alt);
+    border-color: var(--border-strong);
+  }
+
+  .rx-btn:active:not(:disabled) { transform: translateY(1px); }
+
+  .rx-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .rx-btn.pending { opacity: 0.7; }
+
+  .rx-btn.reacted {
+    background: var(--c-action-bg);
+    border-color: var(--c-action-border);
+    color: var(--c-action);
+  }
+
+  .rx-btn.failed {
+    background: var(--c-fail-bg);
+    border-color: var(--c-fail-border);
+    color: var(--c-fail);
+  }
+
+  .rx-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+    border-radius: 5px;
+    font-weight: 700;
+  }
+
+  .rx-btn.reacted .rx-glyph {
+    background: var(--c-action);
+    color: #fff;
+    border-color: var(--c-action);
+  }
+
+  .rx-name {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .rx-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-muted);
+    font-size: 12px;
+  }
+
+  .rx-turnstile { margin-top: 0.5rem; }
+
+  .rx-note {
+    margin-top: 0.7rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.82rem;
+    color: var(--fg-muted);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    background: var(--bg-alt);
+  }
+  .rx-note code {
+    font-size: 0.85em;
+    background: var(--bg);
+    padding: 0.08em 0.35em;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+</style>

@@ -1,0 +1,65 @@
+{
+  "trace_id": "2026-04-23T23-37-17-788Z-claude-opus-4-7",
+  "harness": "claude-code",
+  "model": "claude-opus-4-7",
+  "started_at": "2026-04-23T23:37:17.788Z",
+  "ended_at": "2026-04-23T23:38:02.162Z",
+  "post": "session-multiplexing",
+  "role": "polish",
+  "commit": "ff1e9a5daf77cb52416273aeb7cebb5c72e26be2",
+  "files_touched": [
+    "src/content/posts/session-multiplexing.mdx"
+  ],
+  "summary": "captured session · 5 asst turns · 5 tool calls",
+  "turns": [
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Read"
+      ],
+      "ts": "2026-04-23T23:37:17.788Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/session-multiplexing.mdx"
+      ],
+      "ts": "2026-04-23T23:37:36.799Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/session-multiplexing.mdx"
+      ],
+      "ts": "2026-04-23T23:37:42.795Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Edit"
+      ],
+      "files_touched": [
+        "src/content/posts/session-multiplexing.mdx"
+      ],
+      "ts": "2026-04-23T23:37:52.648Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "Read"
+      ],
+      "ts": "2026-04-23T23:38:02.162Z"
+    }
+  ]
+}

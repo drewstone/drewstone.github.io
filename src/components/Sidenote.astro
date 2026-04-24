@@ -1,21 +1,46 @@
 ---
 interface Props {
   side?: 'left' | 'right'
+  num?: number
 }
 
-const { side = 'right' } = Astro.props
+const { side = 'right', num } = Astro.props
 ---
 
-<span class={`sidenote sidenote-${side}`}>
-  <slot />
-</span>
+{num && <sup class="sidenote-marker">{num}</sup>}<span class={`sidenote sidenote-${side}`}>{num && <span class="sidenote-label">{num}.</span>}<slot /></span>
 
 <style>
+  .sidenote-marker {
+    font-size: 0.6em;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--fg-muted);
+    vertical-align: super;
+    line-height: 0;
+    margin-left: 1px;
+  }
+
+  .sidenote-label {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--fg);
+    margin-right: 0.3em;
+  }
+
   .sidenote {
     font-size: 0.75rem;
     font-style: italic;
-    color: var(--ornament);
+    color: var(--fg-muted);
     line-height: 1.45;
+  }
+
+  .sidenote :global(a) {
+    color: var(--fg-muted);
+    text-decoration-color: var(--ornament);
+  }
+
+  .sidenote :global(a:hover) {
+    color: var(--fg);
   }
 
   @media (min-width: 1200px) {
@@ -36,11 +61,11 @@ const { side = 'right' } = Astro.props
 
   @media (max-width: 1199px) {
     .sidenote {
-      display: block;
-      margin: var(--space-xs) 0 var(--space-sm);
-      padding-left: var(--space-md);
-      border-left: 1px solid var(--ornament);
-      font-size: 0.82rem;
+      display: none;
+    }
+
+    .sidenote-marker {
+      display: none;
     }
   }
 </style>

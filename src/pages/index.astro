@@ -1,217 +1,251 @@
 ---
 import Base from '../layouts/Base.astro'
-import { getCollection, render } from 'astro:content'
+import HomeSection from '../components/HomeSection.astro'
+import { getCollection } from 'astro:content'
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 
-const latest = posts[0]
-const rest = posts.slice(1, 8)
+type Post = (typeof posts)[number]
 
-// render first ~paragraph of the latest post as a teaser
-let teaser = ''
-if (latest) {
-  const { remarkPluginFrontmatter } = await render(latest)
-  // pull description as teaser fallback
-  teaser = latest.data.description
+// Editorial categories — kept intentionally small so sections don't repeat the
+// same posts. Each post lands in AT MOST ONE category, in priority order. A
+// post that matches none just stays in Newest / Featured.
+const CATEGORIES: { key: string; title: string; matchTags: string[] }[] = [
+  { key: 'math',    title: 'Math & Theory',    matchTags: ['math', 'algorithms', 'optimization'] },
+  { key: 'design',  title: 'Design & UI',      matchTags: ['design', 'ui'] },
+]
+
+function categoryFor(post: Post): string | null {
+  const tags = (post.data.tags ?? []).map((t) => t.toLowerCase())
+  for (const cat of CATEGORIES) {
+    if (tags.some((t) => cat.matchTags.includes(t))) return cat.key
+  }
+  return null
 }
 
-function fmtDate(d: Date) {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+const newest = posts.slice(0, 12)
+const featured = posts.filter((p) => p.data.featured)
+const byCategory = new Map<string, Post[]>()
+for (const p of posts) {
+  const key = categoryFor(p)
+  if (!key) continue
+  const arr = byCategory.get(key) ?? []
+  arr.push(p)
+  byCategory.set(key, arr)
+}
+
+function fmtMonth(d: Date) {
+  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+}
+
+const totalRevisions = posts.reduce((s, p) => s + (p.data.revisions?.length ?? 0), 0)
+const distinctModels = new Set<string>()
+for (const p of posts) {
+  for (const a of p.data.authors ?? []) if (a.model !== 'unknown') distinctModels.add(a.model)
+  for (const r of p.data.revisions ?? []) if (r.model !== 'unknown') distinctModels.add(r.model)
 }
 ---
 
-<Base title="drew">
+<Base title="drew" wide>
   <section class="intro">
-    <p>
-      I'm <strong>Drew</strong>. I build software and think about mathematics.
-      This is where I write things down.
+    <p class="intro-lead">
+      This is the blog of <strong>Drew Stone</strong>. I work on AI infrastructure at
+      <a href="https://tangle.tools">Tangle</a>: agent sandboxes, eval harnesses, a payable
+      agent registry, and the plumbing between them. Most of what's written here is a by-product
+      of that work &mdash; eval loops, convergence detection, workflow UIs, red-team
+      architecture, payment-gated agent composition.
+    </p>
+    <p class="intro-meta">
+      <span class="intro-caps">The experiment</span>: every post was drafted, edited, or revisited
+      by AI agents under my direction. Each carries a
+      <a href="/experiment">revision log</a> with the model that wrote it, and every edit links
+      to its <a href="/traces">captured session trace</a>. As of today: <strong>{posts.length} posts</strong>,
+      <strong>{totalRevisions} tracked revisions</strong>,
+      <strong>{distinctModels.size}</strong> distinct models with confirmed attribution.
+    </p>
+    <p class="intro-features">
+      <span class="intro-caps">Navigation</span>: <a href="/posts">full archive</a> ·
+      <a href="/experiment">experiment</a> · <a href="/traces">traces</a> ·
+      <a href="/about">about</a> · <a href="/rss.xml">rss</a>.
     </p>
   </section>
 
-  {latest && (
-    <section class="latest">
-      <span class="section-label">Latest</span>
-      <article class="latest-post">
-        <a href={`/posts/${latest.id}`} class="latest-link">
-          <h2>{latest.data.title}</h2>
-          <p class="latest-teaser">{teaser}</p>
-          <span class="latest-meta">{fmtDate(latest.data.date)} &middot; Read &rarr;</span>
-        </a>
-      </article>
-    </section>
-  )}
+  <div class="home-grid">
+    <HomeSection title="Newest" posts={newest} moreHref="/posts" />
+    {featured.length > 0 && <HomeSection title="Featured" posts={featured} />}
+    {CATEGORIES.filter((c) => byCategory.has(c.key)).map((c) => (
+      <HomeSection title={c.title} posts={byCategory.get(c.key)!.slice(0, 12)} />
+    ))}
+  </div>
 
-  {rest.length > 0 && (
-    <section class="more">
-      <span class="section-label">Previously</span>
-      <ul class="post-list">
-        {rest.map((post) => (
-          <li>
-            <a href={`/posts/${post.id}`}>
-              <span class="post-title">{post.data.title}</span>
-              <span class="post-date">{fmtDate(post.data.date)}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )}
-
-  {posts.length > 8 && (
-    <nav class="archive-link">
-      <a href="/posts">Full archive &rarr;</a>
-    </nav>
-  )}
+  <section class="see-more">
+    <a href="/posts">full archive &rarr;</a>
+  </section>
 </Base>
 
+{/* Local section component — inline Astro fragment via slot alternative is noisy,
+    so we use a TypeScript-as-JSX inline pattern via a helper. */}
+
+<script is:inline>
+  // noop: this homepage is entirely SSR; section rendering is below.
+</script>
+
 <style>
+  /* ===== Intro block ===== */
   .intro {
-    padding: var(--space-3xl) 0 var(--space-2xl);
+    margin: var(--space-xl) 0 var(--space-3xl);
+    max-width: 720px;
   }
-
   .intro p {
-    font-size: 1.5rem;
-    line-height: 1.5;
-    max-width: 520px;
-    margin: 0;
-    font-weight: 400;
-  }
-
-  .intro strong {
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  .section-label {
-    display: block;
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    font-variant: small-caps;
-    letter-spacing: 0.12em;
-    color: var(--ornament);
-    margin-bottom: var(--space-md);
-  }
-
-  /* Latest post */
-  .latest {
-    padding-bottom: var(--space-2xl);
-  }
-
-  .latest-link {
-    display: block;
-    text-decoration: none;
-    color: var(--fg);
-    padding: var(--space-lg) 0;
-    border-top: 3px double var(--ornament);
-    border-bottom: 1px solid var(--border);
-    transition: background 0.12s;
-  }
-
-  .latest-link:hover {
-    background: var(--bg-alt);
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-    margin-left: calc(-1 * var(--space-lg));
-    margin-right: calc(-1 * var(--space-lg));
-  }
-
-  .latest-link h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    line-height: 1.25;
-    margin: 0 0 var(--space-sm);
-    border: none;
-    padding: 0;
-    color: var(--fg);
-    font-variant: normal;
-    text-transform: none;
-    letter-spacing: -0.01em;
-  }
-
-  .latest-teaser {
-    color: var(--fg-muted);
-    font-size: 0.95rem;
+    font-size: 1.08rem;
     line-height: 1.65;
-    margin: 0 0 var(--space-sm);
-    max-width: 560px;
+    margin: 0 0 var(--space-md);
+    color: var(--fg);
   }
-
-  .latest-meta {
+  .intro-lead strong { font-weight: 700; }
+  .intro-meta {
+    color: var(--fg-muted);
+    font-size: 1rem !important;
+  }
+  .intro-meta strong {
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  .intro-features {
+    color: var(--fg-muted);
+    font-size: 0.95rem !important;
+  }
+  .intro-caps {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--ornament);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--c-action);
+    margin-right: 0.2em;
+  }
+  .intro a {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--c-action-border);
+    text-underline-offset: 3px;
+  }
+  .intro a:hover {
+    text-decoration-color: var(--c-action);
   }
 
-  /* Post list */
-  .more {
-    padding-bottom: var(--space-xl);
+  /* ===== Section grid ===== */
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
   }
 
-  .post-list {
+  .home-section { margin: 0; }
+
+  .home-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 var(--space-md);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--border);
+  }
+  .home-section-head h2 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0;
+    color: var(--fg);
+  }
+  .home-section-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+  }
+
+  .section-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    border-top: 3px double var(--ornament);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2.5rem;
+    row-gap: 0.35rem;
   }
 
-  .post-list li {
-    margin: 0;
-    border-bottom: 1px solid var(--border);
+  @media (max-width: 720px) {
+    .section-list { grid-template-columns: 1fr; }
   }
 
-  .post-list a {
+  .section-list li {
     display: flex;
-    justify-content: space-between;
     align-items: baseline;
-    gap: var(--space-lg);
-    padding: var(--space-sm) 0;
-    text-decoration: none;
+    gap: 0.65rem;
+    padding: 0.15rem 0;
+    min-width: 0;
+  }
+
+  .bullet {
+    color: var(--c-action);
+    font-size: 10px;
+    flex-shrink: 0;
+    transform: translateY(-1px);
+  }
+
+  .item-link {
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.45;
     color: var(--fg);
-    transition: background 0.12s;
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+  .item-link:hover {
+    text-decoration-color: var(--fg);
   }
 
-  .post-list a:hover {
-    background: var(--bg-alt);
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-    margin-left: calc(-1 * var(--space-lg));
-    margin-right: calc(-1 * var(--space-lg));
-  }
-
-  .post-list .post-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .post-list .post-date {
+  .item-date {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 10.5px;
     color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
     flex-shrink: 0;
   }
 
-  .archive-link {
-    padding: var(--space-md) 0;
+  .see-more {
+    margin: var(--space-3xl) 0 var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px dotted var(--border);
+    text-align: center;
   }
-
-  .archive-link a {
-    font-size: 0.85rem;
+  .see-more a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--fg-muted);
+    text-decoration: none;
   }
+  .see-more a:hover { color: var(--fg); }
+</style>
 
-  .archive-link a:hover {
-    color: var(--fg);
-  }
+{/* Inline Section macro — lives in this file to keep state local */}
 
-  @media (max-width: 640px) {
-    .intro p {
-      font-size: 1.25rem;
-    }
-
-    .latest-link h2 {
-      font-size: 1.3rem;
-    }
-  }
+<style is:global>
+  /* No-op; kept to preserve structure. */
 </style>

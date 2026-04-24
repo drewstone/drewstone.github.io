@@ -1,0 +1,139 @@
+---
+/**
+ * HomeSection — one category section on the homepage.
+ * Renders a small-caps header with dotted underline, count pill on the right,
+ * and a two-column list of posts with diamond bullets.
+ */
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  title: string
+  posts: CollectionEntry<'posts'>[]
+  moreHref?: string
+}
+
+const { title, posts, moreHref } = Astro.props
+
+function fmtMonth(d: Date) {
+  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+}
+---
+
+<section class="home-section">
+  <header class="home-section-head">
+    <h2>{title}</h2>
+    <span class="home-section-count">{posts.length}</span>
+  </header>
+  <ul class="section-list">
+    {posts.map((post) => (
+      <li>
+        <span class="bullet" aria-hidden="true">
+          <svg viewBox="0 0 10 10" width="10" height="10"><path d="M5 0l2.5 5L5 10 2.5 5z" fill="currentColor"/></svg>
+        </span>
+        <a class="item-link" href={`/posts/${post.id}`}>{post.data.title}</a>
+        <span class="item-date">{fmtMonth(post.data.date)}</span>
+      </li>
+    ))}
+  </ul>
+  {moreHref && (
+    <div class="section-more">
+      <a href={moreHref}>more &rarr;</a>
+    </div>
+  )}
+</section>
+
+<style>
+  .home-section { margin: 0; }
+
+  .home-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 var(--space-md);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--border);
+  }
+  .home-section-head h2 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0;
+    color: var(--fg);
+  }
+  .home-section-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+  }
+
+  .section-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2.5rem;
+    row-gap: 0.4rem;
+  }
+
+  @media (max-width: 720px) {
+    .section-list { grid-template-columns: 1fr; }
+  }
+
+  .section-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    padding: 0.15rem 0;
+    min-width: 0;
+  }
+
+  .bullet {
+    color: var(--c-action);
+    flex-shrink: 0;
+    transform: translateY(1px);
+  }
+  .bullet svg { display: block; }
+
+  .item-link {
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    line-height: 1.45;
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .item-link:hover { text-decoration-color: var(--fg); }
+
+  .item-date {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--fg-faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .section-more {
+    margin-top: 0.7rem;
+    text-align: right;
+  }
+  .section-more a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .section-more a:hover { color: var(--fg); }
+</style>

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Opt-in post-commit hook that captures the session trace behind the commit.
+#
+# Enable once:
+#   git config core.hooksPath .githooks
+#   chmod +x .githooks/post-commit
+#
+# The hook is tolerant: any failure is logged to stderr but never blocks the
+# commit. If the commit doesn't touch a post file, it's a no-op.
+set -uo pipefail
+
+changed=$(git show --no-renames --name-only --format='' HEAD | grep '^src/content/posts/.*\.mdx$' || true)
+if [ -z "$changed" ]; then
+  exit 0
+fi
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "[trace-capture] pnpm not on PATH, skipping" >&2
+  exit 0
+fi
+
+pnpm tsx tools/trace-capture.ts capture --auto --role=polish \
+  2> >(sed 's/^/[trace-capture] /' >&2) || true
+
+# Amend the commit to include new trace files + frontmatter updates if any.
+if ! git diff --quiet src/content/posts traces 2>/dev/null; then
+  git add src/content/posts traces 2>/dev/null
+  GIT_EDITOR=true git commit --amend --no-edit >/dev/null 2>&1 || true
+fi

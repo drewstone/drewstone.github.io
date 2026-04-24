@@ -1,0 +1,180 @@
+---
+import type { Block } from './ChatMock.astro'
+import Self from './ChatBlock.astro'
+
+interface Props {
+  block: Block
+  highlightedHtml?: string | null
+  showActor?: boolean
+}
+
+const { block: b, highlightedHtml: hl, showActor } = Astro.props
+
+const toolIcon = (label?: string): string => {
+  if (!label) return 'dot'
+  const l = label.toLowerCase()
+  if (l.includes('write') || l.includes('edit') || l.includes('patch')) return 'pencil'
+  if (l.includes('read') || l.includes('get') || l.includes('list') || l.includes('ls')) return 'doc'
+  if (l.includes('bash') || l.includes('shell') || l.includes('run') || l.includes('exec')) return 'terminal'
+  if (l.includes('search') || l.includes('grep') || l.includes('find')) return 'search'
+  if (l.includes('fetch') || l.includes('http') || l.includes('web')) return 'globe'
+  if (l.includes('test')) return 'check'
+  if (l.includes('build') || l.includes('compile')) return 'hammer'
+  return 'dot'
+}
+
+const statusSvg = (s?: string): string => {
+  if (s === 'ok') return `<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><path d="M3.5 8.3l3 3 6-6.2" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  if (s === 'fail') return `<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`
+  if (s === 'running') return `<svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-dasharray="3 3"/></svg>`
+  return ''
+}
+
+const toolSvg = (icon: string): string => {
+  switch (icon) {
+    case 'pencil':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10.5 2.5l3 3-8 8-3.5.5.5-3.5z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M9 4l3 3" stroke="currentColor" stroke-width="1.4"/></svg>`
+    case 'terminal':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M4 7l2 1.5-2 1.5M8 10.5h4" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    case 'doc':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 2h6l3 3v9h-9z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/><path d="M9.5 2v3h3" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M5.5 8h5M5.5 10.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`
+    case 'search':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M10 10l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
+    case 'globe':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M2.5 8h11M8 2.5c2 3 2 8 0 11c-2-3-2-8 0-11z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>`
+    case 'check':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 8.3l3 3 6-6.2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    case 'hammer':
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2.5 10.5l3.5-3.5 4 4-3.5 3.5zM7.5 6.5l3-3 4 4-3 3z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>`
+    default:
+      return `<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="currentColor"/></svg>`
+  }
+}
+
+const open = !(b.collapsed ?? (b.kind === 'thinking'))
+const statusCls = b.status ? `st-${b.status}` : ''
+const peek = b.content && b.content.length > 120 ? b.content.slice(0, 120) + '…' : b.content
+const icon = toolIcon(b.label)
+---
+
+{b.actor && showActor && (
+  <div class="blk-actor">
+    <span class={`actor-dot actor-${b.actor}`}></span>
+    <span>{b.actor}</span>
+    {b.meta && <span class="blk-actor-meta">{b.meta}</span>}
+  </div>
+)}
+
+{b.kind === 'text' && (
+  <div class="blk-text">{b.content}</div>
+)}
+
+{b.kind === 'narrator' && (
+  <aside class="narrator">
+    <span class="narrator-label">Narrator</span>
+    <div class="narrator-text">{b.content}</div>
+  </aside>
+)}
+
+{b.kind === 'thinking' && (
+  <details class="thinking" open={open}>
+    <summary>
+      <span class="thinking-icon">
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+          <path d="M8 3c-2 0-4 1.3-4 3.5c0 1 .4 1.8 1 2.3V10c0 .8.7 1.3 1.3 1.3h3.4c.6 0 1.3-.5 1.3-1.3V8.8c.6-.5 1-1.3 1-2.3C12 4.3 10 3 8 3z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/>
+          <path d="M6.5 12.5v.8M9.5 12.5v.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="thinking-label">Thinking</span>
+      <span class="thinking-peek">{peek}</span>
+      {b.meta && <span class="tool-meta">{b.meta}</span>}
+      <svg class="tool-chev" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </summary>
+    <div class="thinking-body">{b.content}</div>
+  </details>
+)}
+
+{b.kind === 'tool_call' && hl && (
+  <details class="tool-call" open={open} data-status={b.status}>
+    <summary>
+      <span class={`tool-badge tool-${icon}`} set:html={toolSvg(icon)} />
+      <span class="tool-fn">{b.label}</span>
+      {b.content && <span class="tool-arg">{b.content}</span>}
+      {b.status && <span class={`tool-status ${statusCls}`} set:html={statusSvg(b.status)} />}
+      {b.meta && <span class="tool-meta">{b.meta}</span>}
+      <svg class="tool-chev" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </summary>
+    <div class="tool-detail codebody" set:html={hl} />
+  </details>
+)}
+
+{b.kind === 'tool_call' && !hl && (
+  <div class="tool-pill" data-status={b.status}>
+    <span class={`tool-badge tool-${icon}`} set:html={toolSvg(icon)} />
+    <span class="tool-fn">{b.label}</span>
+    {b.content && <span class="tool-arg">{b.content}</span>}
+    {b.status && <span class={`tool-status ${statusCls}`} set:html={statusSvg(b.status)} />}
+    {b.meta && <span class="tool-meta">{b.meta}</span>}
+  </div>
+)}
+
+{b.kind === 'tool_result' && (
+  <details class="result" open={open} data-status={b.status}>
+    <summary>
+      <span class="result-label">{b.label ?? 'result'}</span>
+      {b.status && <span class={`tool-status ${statusCls}`} set:html={statusSvg(b.status)} />}
+      {b.meta && <span class="tool-meta">{b.meta}</span>}
+      <svg class="tool-chev" style="margin-left:auto" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </summary>
+    <div class="result-body codebody">
+      {hl
+        ? <div set:html={hl} />
+        : <pre class="plain">{(b.lines ?? [b.content ?? '']).join('\n')}</pre>}
+    </div>
+  </details>
+)}
+
+{b.kind === 'artifact' && (
+  <div class="artifact">
+    <div class="art-head">
+      <span class="tool-badge tool-pencil badge-action" set:html={toolSvg('pencil')} />
+      <span class="art-path">{b.label}</span>
+      {b.meta && <span class="art-meta" data-kind={b.meta?.toLowerCase()}>{b.meta}</span>}
+    </div>
+    {hl && <div class="art-body codebody" set:html={hl} />}
+    {!hl && b.content && <div class="art-text">{b.content}</div>}
+  </div>
+)}
+
+{b.kind === 'status' && (
+  <div class="status-row" data-status={b.status}>
+    {b.status && <span class={`tool-status ${statusCls}`} set:html={statusSvg(b.status)} />}
+    <span class="status-text">{b.content}</span>
+    {b.meta && <span class="tool-meta">{b.meta}</span>}
+  </div>
+)}
+
+{b.kind === 'run_group' && (
+  <details class="run-group" open={!(b.collapsed ?? false)} data-status={b.status}>
+    <summary>
+      {b.status
+        ? <span class={`run-status ${statusCls}`} set:html={statusSvg(b.status)} />
+        : <span class="run-status st-neutral"></span>}
+      <span class="rg-label">{b.label}</span>
+      {b.stats && <span class="rg-stats">{b.stats}</span>}
+      {b.meta && <span class="rg-meta">{b.meta}</span>}
+      <svg class="tool-chev rg-chev" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </summary>
+    <div class="run-group-body">
+      {b.children?.map((child) => <Self block={child} highlightedHtml={null} showActor={showActor} />)}
+    </div>
+  </details>
+)}

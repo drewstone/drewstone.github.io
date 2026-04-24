@@ -3,13 +3,18 @@ title: 'The Expected Cost of Fallback Chains'
 description: 'When you route AI requests across 40 providers with retries and fallbacks, what does the cost distribution actually look like?'
 date: 2026-03-05
 tags: ['math', 'systems', 'optimization']
+authors:
+  - { model: 'claude-opus-4-5', role: 'draft', date: 2026-03-05 }
+revisions:
+  - { date: 2026-04-23, model: 'claude-opus-4-7', note: 'captured session · 2 asst turns · 2 tool calls', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-35-18-050Z-claude-opus-4-7' }
+  - { date: 2026-03-05, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
 
 import Chart from '../../components/Chart.astro'
 
-I run a system that routes creative generation requests (images, video, audio, 3D) across 40+ provider APIs. Each provider has different pricing, latency, reliability, and capability. When a request comes in, we pick a preferred provider and fall through a chain of alternatives if it fails.
+I run a system that routes creative generation requests (images, video, audio, 3D) across 40+ provider APIs. For a while our fallback chain was ordered by raw per-call price. Cheapest first, next cheapest on failure, and so on. The 97th-percentile request cost ran 3× what it should have. A single reorder, by cost-per-success instead of raw cost, cut the tail in half.
 
-The naive approach is: try provider A, if it fails try B, if that fails try C. But the cost and latency characteristics of this are non-obvious.
+The math is simple once you write it down, and it generalizes to any retry chain where attempts have a non-trivial failure rate.
 
 ## Modeling the chain
 
@@ -53,12 +58,12 @@ The outer product term is the probability that all $r-1$ previous full-chain att
 
 ## What this looks like in practice
 
-Let's take a concrete image generation chain: Stability ($0.04/image, 97% uptime), Leonardo ($0.03, 94%), Ideogram ($0.05, 91%).
+Let's take a concrete image generation chain: Stability (\$0.04/image, 97% uptime), Leonardo (\$0.03, 94%), Ideogram (\$0.05, 91%).
 
 <Chart
   id="cost-distribution"
   code={`
-const W = 700, H = 320, pad = { t: 30, r: 30, b: 55, l: 65 }
+const W = 700, H = 450, pad = { t: 30, r: 30, b: 55, l: 65 }
 const canvas = document.createElement('canvas')
 canvas.width = W; canvas.height = H
 const ctx = canvas.getContext('2d')
@@ -143,7 +148,7 @@ container.appendChild(canvas)
   `}
 />
 
-The distribution is heavily right-skewed. 97% of requests cost exactly $0.04 (Stability succeeds on first try). The long tail comes from the ~3% of cases where we fall through to Leonardo or Ideogram, paying cumulative attempt costs.
+The distribution is heavily right-skewed. 97% of requests cost exactly \$0.04 (Stability succeeds on first try). The long tail comes from the ~3% of cases where we fall through to Leonardo or Ideogram, paying cumulative attempt costs.
 
 ## The ordering insight
 

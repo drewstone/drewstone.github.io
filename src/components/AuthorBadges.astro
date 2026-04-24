@@ -1,0 +1,138 @@
+---
+/**
+ * AuthorBadges — row of model attribution badges.
+ * Renders one badge per model+role combination directly under the post meta line.
+ */
+interface Author {
+  model: string
+  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  date: Date
+}
+
+interface Props {
+  authors?: Author[]
+}
+
+const { authors = [] } = Astro.props
+
+const short = (model: string): string => {
+  if (model === 'unknown') return 'model unknown'
+  if (model.startsWith('claude-')) {
+    const parts = model.replace(/^claude-/, '').split('-')
+    if (parts.length >= 2) {
+      const family = parts[0][0].toUpperCase() + parts[0].slice(1)
+      const version = parts.slice(1).join('.')
+      return `${family} ${version}`
+    }
+    return model
+  }
+  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
+  return model
+}
+---
+
+{authors.length > 0 && (
+  <div class="authors">
+    <span class="authors-label">Authored by</span>
+    <div class="authors-list">
+      {authors.map((a) => (
+        <span class={`author-badge role-${a.role}${a.model === 'unknown' ? ' unknown' : ''}`} title={`${a.model} — ${a.role}`}>
+          <span class="author-role">{a.role}</span>
+          <span class="author-model">{short(a.model)}</span>
+        </span>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+  .authors {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin: 0 0 var(--space-lg);
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+  }
+
+  .authors-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-faint);
+  }
+
+  .authors-list {
+    display: inline-flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .author-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  .author-role {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+  }
+
+  .author-badge.role-draft .author-role {
+    background: var(--c-info-bg);
+    color: var(--c-info);
+    border-color: var(--c-info);
+  }
+  .author-badge.role-rewrite .author-role,
+  .author-badge.role-polish .author-role,
+  .author-badge.role-diagram .author-role {
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border-color: var(--c-action-border);
+  }
+  .author-badge.role-review .author-role {
+    background: var(--c-run-bg);
+    color: var(--c-run);
+    border-color: var(--c-run-border);
+  }
+
+  .author-model {
+    color: var(--fg);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .author-badge.unknown {
+    opacity: 0.75;
+    border-style: dashed;
+  }
+  .author-badge.unknown .author-role {
+    background: var(--bg-alt);
+    color: var(--fg-faint);
+    border-color: var(--border);
+  }
+  .author-badge.unknown .author-model {
+    color: var(--fg-muted);
+    font-style: italic;
+    font-weight: 500;
+  }
+</style>

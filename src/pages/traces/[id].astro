@@ -1,0 +1,529 @@
+---
+import Base from '../../layouts/Base.astro'
+import ChatMock from '../../components/ChatMock.astro'
+import { getCollection } from 'astro:content'
+import { execSync } from 'node:child_process'
+import { readFile } from 'node:fs/promises'
+import { codeToHtml } from 'shiki'
+
+export async function getStaticPaths() {
+  const traces = await getCollection('traces')
+  return traces.map((t) => ({
+    params: { id: t.data.trace_id },
+    props: { trace: t },
+  }))
+}
+
+const { trace } = Astro.props
+const d = trace.data
+
+// Resolve the diff for the commit referenced by this trace, scoped to the
+// files it touched. If the commit is HEAD or missing, fall back to the current
+// file content rendered as a "current state" view. Everything happens at build
+// time; failures are silent and produce an empty diff string.
+let diffText = ''
+let diffKind: 'commit' | 'current' | 'none' = 'none'
+const targetFiles = (d.files_touched ?? []).filter((f: string) => f.endsWith('.mdx') || f.endsWith('.ts') || f.endsWith('.astro') || f.endsWith('.css'))
+const primaryFile = targetFiles[0] ?? `src/content/posts/${d.post}.mdx`
+
+try {
+  if (d.commit && d.commit !== 'HEAD') {
+    const cmd = `git show --no-renames --format='' ${d.commit} -- ${targetFiles.map((f: string) => `'${f}'`).join(' ')}`
+    const out = execSync(cmd, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }).toString()
+    if (out.trim()) { diffText = out; diffKind = 'commit' }
+  }
+  if (!diffText) {
+    // fallback: current file content marked as "current state"
+    const raw = await readFile(primaryFile, 'utf8')
+    const lines = raw.split('\n')
+    // Trim to a reasonable preview (first 80 lines) so the tab isn't a mile
+    const preview = lines.slice(0, 80).join('\n')
+    diffText = preview
+    diffKind = 'current'
+  }
+} catch {
+  diffText = ''
+  diffKind = 'none'
+}
+
+let diffHtml = ''
+if (diffText) {
+  try {
+    diffHtml = await codeToHtml(diffText, {
+      lang: diffKind === 'commit' ? 'diff' : (primaryFile.endsWith('.mdx') ? 'mdx' : 'ts'),
+      themes: { light: 'github-light', dark: 'github-dark' },
+    })
+    // Collapse newlines between .line spans for uniform rhythm
+    diffHtml = diffHtml.replace(/<\/span>\n(<span class="line">)/g, '</span>$1')
+  } catch {
+    diffHtml = `<pre><code>${diffText.replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'} as any)[c])}</code></pre>`
+  }
+}
+
+const posts = await getCollection('posts')
+const post = posts.find((p) => p.id === d.post)
+
+const short = (model: string | null | undefined): string => {
+  if (!model) return 'unknown'
+  if (model.startsWith('claude-')) {
+    const parts = model.replace(/^claude-/, '').split('-')
+    if (parts.length >= 2) return parts[0][0].toUpperCase() + parts[0].slice(1) + ' ' + parts.slice(1).join('.')
+  }
+  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
+  return model
+}
+
+const fmtFull = (s: string) =>
+  new Date(s).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
+
+const durationMs = d.ended_at ? new Date(d.ended_at).valueOf() - new Date(d.started_at).valueOf() : 0
+const durationMin = Math.round(durationMs / 60_000)
+
+// Render turns as ChatMock blocks.
+type Block = any
+const blocks: Block[] = d.turns.map((t: any) => {
+  if (t.role === 'user') {
+    return { kind: 'text', content: t.text ?? t.text_summary ?? '' }
+  }
+  if (t.role === 'assistant') {
+    const children: any[] = []
+    if (t.text_summary || t.text) {
+      children.push({ kind: 'text', content: t.text ?? t.text_summary })
+    }
+    if (t.had_thinking) {
+      children.push({ kind: 'thinking', content: '(thinking block — not captured in trace summary)', collapsed: true })
+    }
+    if (t.tool_names && t.tool_names.length) {
+      for (const name of t.tool_names) {
+        const label = name.toLowerCase()
+        const touched = (t.files_touched ?? []).find((f: string) => f.endsWith('.mdx') || f.endsWith('.ts') || f.endsWith('.astro'))
+        children.push({
+          kind: 'tool_call',
+          label: label.replace(/^(bash|shell)$/, 'bash'),
+          content: touched ?? label,
+          status: 'ok',
+        })
+      }
+    }
+    if (!children.length) {
+      return { kind: 'text', content: '(no extractable assistant content)' }
+    }
+    // Group this assistant turn into a run_group for visual grouping.
+    return {
+      kind: 'run_group',
+      label: 'assistant',
+      stats: `${t.tool_calls ?? 0} tool${(t.tool_calls ?? 0) === 1 ? '' : 's'}`,
+      status: 'ok',
+      meta: t.ts ? new Date(t.ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '',
+      children,
+    }
+  }
+  return { kind: 'status', status: 'ok', content: `(${t.role}) ${t.text ?? ''}` }
+})
+
+const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
+---
+
+<Base title={`trace · ${d.trace_id}`} wide>
+  <nav class="trace-nav">
+    <a href="/traces">← all traces</a>
+  </nav>
+
+  <header class="trace-header">
+    <div class="trace-meta">
+      <span class="trace-role">{d.role}</span>
+      <span class="trace-model">{short(d.model)}</span>
+      <span class="trace-harness">{d.harness}</span>
+      <time>{fmtFull(d.started_at)}</time>
+    </div>
+    <h1>
+      {post ? <a href={`/posts/${d.post}`}>{post.data.title}</a> : d.post}
+    </h1>
+    <p class="trace-summary">{d.summary}</p>
+  </header>
+
+  <section class="trace-stats">
+    <div class="ts-card"><div class="ts-v">{d.turns.length}</div><div class="ts-l">Turns</div></div>
+    <div class="ts-card"><div class="ts-v">{d.turns.reduce((s: number, t: any) => s + (t.tool_calls ?? 0), 0)}</div><div class="ts-l">Tool calls</div></div>
+    <div class="ts-card"><div class="ts-v">{d.files_touched.length}</div><div class="ts-l">Files touched</div></div>
+    {durationMin > 0 && (
+      <div class="ts-card"><div class="ts-v">{durationMin}m</div><div class="ts-l">Duration</div></div>
+    )}
+  </section>
+
+  {d.files_touched.length > 0 && (
+    <section class="trace-files">
+      <h2 class="files-label">Files</h2>
+      <ul>
+        {d.files_touched.map((f: string) => (
+          <li><code>{f}</code></li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {d.commit && repo && (
+    <section class="trace-commit">
+      <h2 class="files-label">Commit</h2>
+      <a class="commit-link" href={`https://github.com/${repo}/commit/${d.commit}`} target="_blank" rel="noopener">
+        <code>{d.commit.slice(0, 7)}</code>
+        <span>view diff on GitHub →</span>
+      </a>
+    </section>
+  )}
+
+  <section class="trace-viewer">
+    <div class="tv-tabs" role="tablist">
+      <button class="tv-tab is-active" role="tab" data-tab="conversation" aria-selected="true">
+        Conversation
+        <span class="tv-chip">{d.turns.length} turns</span>
+      </button>
+      <button class="tv-tab" role="tab" data-tab="diff" aria-selected="false">
+        {diffKind === 'commit' ? 'Diff' : diffKind === 'current' ? 'Current file' : 'Diff'}
+        {diffKind === 'commit' && <span class="tv-chip">commit {d.commit?.slice(0, 7)}</span>}
+        {diffKind === 'current' && <span class="tv-chip muted">no commit diff</span>}
+        {diffKind === 'none' && <span class="tv-chip muted">unavailable</span>}
+      </button>
+    </div>
+
+    <div class="tv-panel tv-panel-conversation is-active" role="tabpanel" data-panel="conversation">
+      <ChatMock
+        header={{ actor: d.model ?? 'session', stats: `${d.turns.length} turns`, meta: d.role }}
+        caption={`${d.harness} · ${d.trace_id}`}
+        blocks={blocks}
+      />
+    </div>
+
+    <div class="tv-panel tv-panel-diff" role="tabpanel" data-panel="diff" hidden>
+      {diffHtml ? (
+        <div class="diff-body">
+          <div class="diff-meta">
+            <span class="diff-file"><code>{primaryFile}</code></span>
+            {diffKind === 'commit' && d.commit && (
+              <span class="diff-kind-label">showing changes in <code>{d.commit.slice(0, 7)}</code></span>
+            )}
+            {diffKind === 'current' && (
+              <span class="diff-kind-label">no per-commit diff available — showing current file (first 80 lines)</span>
+            )}
+          </div>
+          <div class="diff-code" set:html={diffHtml} />
+        </div>
+      ) : (
+        <div class="diff-empty">
+          No diff available for this trace. This usually means the referenced commit no longer
+          touches the file, or the file was imported in a single bootstrap commit.
+        </div>
+      )}
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      const tabs = document.querySelectorAll<HTMLElement>('.tv-tab')
+      const panels = document.querySelectorAll<HTMLElement>('.tv-panel')
+      for (const tab of tabs) {
+        tab.addEventListener('click', () => {
+          const name = tab.dataset.tab
+          for (const t of tabs) {
+            const active = t === tab
+            t.classList.toggle('is-active', active)
+            t.setAttribute('aria-selected', String(active))
+          }
+          for (const p of panels) {
+            const active = p.dataset.panel === name
+            p.classList.toggle('is-active', active)
+            if (active) p.removeAttribute('hidden')
+            else p.setAttribute('hidden', '')
+          }
+        })
+      }
+    })()
+  </script>
+
+  <footer class="trace-footer">
+    {post && <a href={`/posts/${d.post}`}>← back to {post.data.title}</a>}
+  </footer>
+</Base>
+
+<style>
+  .trace-nav {
+    margin: var(--space-xl) 0 var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .trace-nav a {
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .trace-nav a:hover { color: var(--fg); }
+
+  .trace-header { margin: 0 0 var(--space-xl); }
+  .trace-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    margin-bottom: var(--space-md);
+  }
+  .trace-role {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+  }
+  .trace-model {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  .trace-harness {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-faint);
+  }
+  .trace-meta time {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--fg-faint);
+  }
+
+  .trace-header h1 {
+    font-size: 2.2rem;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-sm);
+    line-height: 1.15;
+  }
+  .trace-header h1 a {
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 2px solid var(--c-action-border);
+  }
+  .trace-header h1 a:hover { border-bottom-color: var(--c-action); }
+
+  .trace-summary {
+    font-size: 1.1rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    font-style: italic;
+    margin: 0;
+    max-width: 720px;
+  }
+
+  .trace-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem;
+    margin: 0 0 var(--space-xl);
+  }
+  .ts-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 0.95rem;
+    background: var(--bg);
+  }
+  .ts-v {
+    font-family: var(--font-body);
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--c-action);
+  }
+  .ts-l {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-faint);
+    margin-top: 0.25rem;
+  }
+
+  .files-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-faint);
+    margin: 0 0 var(--space-md);
+  }
+
+  .trace-files { margin: 0 0 var(--space-xl); }
+  .trace-files ul { list-style: none; padding: 0; margin: 0; }
+  .trace-files li {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .trace-files li:last-child { border-bottom: 0; }
+  .trace-files code {
+    font-size: 0.85rem;
+    background: transparent;
+    padding: 0;
+  }
+
+  .trace-commit { margin: 0 0 var(--space-xl); }
+  .commit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  .commit-link:hover { background: var(--bg-alt); }
+  .commit-link code {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c-action);
+    background: transparent;
+    padding: 0;
+  }
+  .commit-link span { font-size: 0.9rem; color: var(--fg-muted); }
+
+  .trace-viewer { margin: 0 0 var(--space-2xl); }
+
+  .tv-tabs {
+    display: flex;
+    gap: 0.35rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-lg);
+  }
+  .tv-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.95rem 0.75rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-muted);
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .tv-tab:hover { color: var(--fg); }
+  .tv-tab.is-active {
+    color: var(--c-action);
+    border-bottom-color: var(--c-action);
+  }
+  .tv-chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border: 1px solid var(--c-action-border);
+  }
+  .tv-chip.muted {
+    background: var(--bg-alt);
+    color: var(--fg-faint);
+    border-color: var(--border);
+  }
+  .tv-tab.is-active .tv-chip { background: var(--c-action); color: #fff; border-color: var(--c-action); }
+  .tv-tab.is-active .tv-chip.muted { background: var(--bg-alt); color: var(--fg-muted); border-color: var(--border); }
+
+  .tv-panel:not(.is-active) { display: none; }
+
+  .diff-body {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .diff-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    padding: 0.55rem 0.95rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+  }
+  .diff-file code {
+    font-size: 0.88rem;
+    font-weight: 700;
+    background: transparent;
+    padding: 0;
+    color: var(--fg);
+  }
+  .diff-kind-label { color: var(--fg-muted); font-size: 11px; }
+  .diff-kind-label code {
+    font-size: 0.85em;
+    background: transparent;
+    padding: 0;
+    color: var(--c-action);
+  }
+  .diff-code :global(pre) {
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.55;
+    background: transparent !important;
+  }
+  .diff-code :global(pre .line) {
+    display: block;
+    padding-left: 0.3rem;
+    min-height: 1.55em;
+  }
+  /* Diff syntax: green additions, red deletions visible even inside shiki */
+  .diff-code :global(pre .line:has(> span:first-child[style*="#22863A"])),
+  .diff-code :global(pre .line:has(> span:first-child[style*="#85E89D"])),
+  .diff-code :global(pre .line:has(> span:first-child[style*="b5f4a5"])) {
+    background: var(--c-ok-bg);
+  }
+  .diff-code :global(pre .line:has(> span:first-child[style*="B31D28"])),
+  .diff-code :global(pre .line:has(> span:first-child[style*="FDAEB7"])) {
+    background: var(--c-fail-bg);
+  }
+
+  .diff-empty {
+    padding: 1.1rem 1.2rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+    font-style: italic;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .diff-code :global(.shiki),
+    .diff-code :global(.shiki span) {
+      color: var(--shiki-dark) !important;
+      background-color: var(--shiki-dark-bg) !important;
+    }
+  }
+
+  .trace-footer {
+    margin: var(--space-2xl) 0 var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .trace-footer a { color: var(--fg-muted); text-decoration: none; }
+  .trace-footer a:hover { color: var(--fg); }
+</style>

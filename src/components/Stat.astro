@@ -1,0 +1,103 @@
+---
+/**
+ * Stat — oversized numeric display with label and optional delta.
+ * Use for "X% baseline" vs "Y% after", reading time, cost, etc.
+ *
+ * <Stat value="81%" label="F1 after" delta="+15pp" tone="ok" />
+ * <Stat value="66%" label="F1 baseline" />
+ */
+interface Props {
+  value: string
+  label?: string
+  delta?: string
+  tone?: 'ok' | 'fail' | 'run' | 'action' | 'info' | 'neutral'
+  sub?: string
+}
+
+const { value, label, delta, tone = 'neutral', sub } = Astro.props
+const toneColor: Record<string, string> = {
+  ok: 'var(--c-ok)',
+  fail: 'var(--c-fail)',
+  run: 'var(--c-run)',
+  action: 'var(--c-action)',
+  info: 'var(--c-info)',
+  neutral: 'var(--fg)',
+}
+---
+
+<div class="stat">
+  {label && <div class="stat-label">{label}</div>}
+  <div class="stat-value" style={`color: ${toneColor[tone]}`}>
+    {value}
+    {delta && <span class={`stat-delta stat-delta-${tone}`}>{delta}</span>}
+  </div>
+  {sub && <div class="stat-sub">{sub}</div>}
+</div>
+
+<style>
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 1.1rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    min-width: 0;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--fg-faint);
+  }
+
+  .stat-value {
+    font-family: var(--font-body);
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .stat-delta {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .stat-delta-ok {
+    color: var(--c-ok);
+    background: var(--c-ok-bg);
+    border: 1px solid var(--c-ok-border);
+  }
+  .stat-delta-fail {
+    color: var(--c-fail);
+    background: var(--c-fail-bg);
+    border: 1px solid var(--c-fail-border);
+  }
+  .stat-delta-run,
+  .stat-delta-action,
+  .stat-delta-info,
+  .stat-delta-neutral {
+    color: var(--fg-muted);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+  }
+
+  .stat-sub {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--fg-muted);
+    line-height: 1.45;
+  }
+</style>
