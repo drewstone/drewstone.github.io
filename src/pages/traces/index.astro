@@ -9,10 +9,15 @@ const PER_PAGE = 25
 const pageParam = Number(Astro.url.searchParams.get('page') ?? '1')
 
 const traces = await getCollection('traces')
-traces.sort((a, b) => b.data.started_at.localeCompare(a.data.started_at))
 
 const posts = await getCollection('posts', ({ data }) => !data.draft)
-const titleOf = (slug: string) => posts.find((p) => p.id === slug)?.data.title ?? slug
+const postBySlug = new Map(posts.map((p) => [p.id, p]))
+const titleOf = (slug: string) => postBySlug.get(slug)?.data.title ?? slug
+const postDateOf = (slug: string) => postBySlug.get(slug)?.data.date?.toISOString() ?? ''
+
+// Sort by post creation date (desc) — newest posts on top, regardless of
+// when the trace for them was captured.
+traces.sort((a, b) => postDateOf(b.data.post).localeCompare(postDateOf(a.data.post)))
 
 const short = (model: string | null | undefined): string => {
   if (!model) return 'unknown'
@@ -47,9 +52,11 @@ for (const t of traces) {
 const sortedModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1])
 const maxModel = sortedModels[0]?.[1] ?? 1
 
-// Build rows for the table
+// Build rows: Created = post's original publish date; Updated = last captured
+// session for that post.
 const allRows = traces.map((t) => ({
-  date: t.data.started_at,
+  created: postDateOf(t.data.post),
+  updated: t.data.started_at,
   post: titleOf(t.data.post),
   postHref: `/posts/${t.data.post}`,
   traceHref: `/traces/${t.data.trace_id}`,
@@ -57,7 +64,6 @@ const allRows = traces.map((t) => ({
   model: short(t.data.model),
   turns: t.data.turns.length,
   tools: t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
-  files: t.data.files_touched.length,
 }))
 
 const total = allRows.length
@@ -66,14 +72,14 @@ const safePage = Math.max(1, Math.min(totalPages, pageParam))
 const rows = allRows.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
 
 const columns: Col[] = [
-  { key: 'date',  label: 'Date',   type: 'date', width: '7.5rem' },
-  { key: 'post',  label: 'Post',   type: 'link', linkKey: 'postHref' },
-  { key: 'role',  label: 'Role',   type: 'pill', tone: (v) => toneForRole(String(v)) as any, width: '6rem' },
-  { key: 'model', label: 'Model',  type: 'mono', width: '8rem' },
-  { key: 'turns', label: 'Turns',  type: 'num',  align: 'right', width: '5rem' },
-  { key: 'tools', label: 'Tools',  type: 'num',  align: 'right', width: '5rem' },
-  { key: 'files', label: 'Files',  type: 'num',  align: 'right', width: '5rem' },
-  { key: 'trace', label: 'Trace',  type: 'link', linkKey: 'traceHref', format: () => 'open →', width: '5rem' },
+  { key: 'created', label: 'Created', type: 'date', width: '6.5rem' },
+  { key: 'updated', label: 'Updated', type: 'date', width: '6.5rem' },
+  { key: 'post',    label: 'Post',    type: 'link', linkKey: 'postHref' },
+  { key: 'role',    label: 'Role',    type: 'pill', tone: (v) => toneForRole(String(v)) as any, width: '5.5rem' },
+  { key: 'model',   label: 'Model',   type: 'mono', width: '7.5rem' },
+  { key: 'turns',   label: 'Turns',   type: 'num',  align: 'right', width: '4.5rem' },
+  { key: 'tools',   label: 'Tools',   type: 'num',  align: 'right', width: '4.5rem' },
+  { key: 'trace',   label: 'Trace',   type: 'link', linkKey: 'traceHref', format: () => 'open →', width: '5rem' },
 ]
 ---
 
@@ -119,7 +125,7 @@ const columns: Col[] = [
     <DataTable
       columns={columns}
       rows={rows}
-      initialSort={{ key: 'date', dir: 'desc' }}
+      initialSort={{ key: 'created', dir: 'desc' }}
     />
     <Paginator page={safePage} total={total} perPage={PER_PAGE} basePath="/traces" />
   </section>

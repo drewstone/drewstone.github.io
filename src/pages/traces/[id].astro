@@ -76,6 +76,9 @@ const short = (model: string | null | undefined): string => {
 const fmtFull = (s: string) =>
   new Date(s).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 
+const fmtShort = (d: Date | string) =>
+  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
 const durationMs = d.ended_at ? new Date(d.ended_at).valueOf() - new Date(d.started_at).valueOf() : 0
 const durationMin = Math.round(durationMs / 60_000)
 
@@ -134,12 +137,21 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
       <span class="trace-role">{d.role}</span>
       <span class="trace-model">{short(d.model)}</span>
       <span class="trace-harness">{d.harness}</span>
-      <time>{fmtFull(d.started_at)}</time>
     </div>
     <h1>
       {post ? <a href={`/posts/${d.post}`}>{post.data.title}</a> : d.post}
     </h1>
     <p class="trace-summary">{d.summary}</p>
+    <dl class="trace-dates">
+      {postCreated && (
+        <>
+          <dt>Created</dt>
+          <dd><time datetime={postCreated.toISOString()}>{fmtShort(postCreated)}</time></dd>
+        </>
+      )}
+      <dt>Updated</dt>
+      <dd><time datetime={new Date(d.started_at).toISOString()}>{fmtFull(d.started_at)}</time></dd>
+    </dl>
   </header>
 
   <section class="trace-stats">
@@ -312,8 +324,36 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
     line-height: 1.55;
     color: var(--fg-muted);
     font-style: italic;
-    margin: 0;
+    margin: 0 0 var(--space-md);
     max-width: 720px;
+  }
+
+  .trace-dates {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.2rem 0.8rem;
+    margin: 0;
+    padding: 0.55rem 0.8rem;
+    background: var(--bg-alt);
+    border-radius: 6px;
+    display: inline-grid;
+    max-width: max-content;
+  }
+  .trace-dates dt {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-faint);
+    margin: 0;
+  }
+  .trace-dates dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
   }
 
   .trace-stats {
