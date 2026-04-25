@@ -1,0 +1,108 @@
+---
+/**
+ * CautionTape — a strip of yellow/black hazard tape stretched diagonally
+ * across the top-left corner of the viewport. Click goes to /experiment.
+ *
+ * Period-correct industrial energy: real caution tape stripes, slight drop
+ * shadow so it reads as stuck on the page, not embedded in it. One static
+ * phrase. Hidden on very narrow screens.
+ */
+---
+
+<a href="/experiment" class="caution-tape" aria-label="this blog is an agentic experiment — click to read more">
+  <span class="caution-tape-text">CAUTION · EXPERIMENT RUNNING · CAUTION · EXPERIMENT RUNNING ·</span>
+</a>
+
+<style>
+  .caution-tape {
+    position: fixed;
+    top: 38px;
+    left: -90px;
+    width: 360px;
+    height: 28px;
+    transform: rotate(-45deg);
+    transform-origin: center;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: repeating-linear-gradient(
+      90deg,
+      #f5c518 0,
+      #f5c518 36px,
+      #1a1a1a 36px,
+      #1a1a1a 56px
+    );
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.18),
+      0 6px 18px rgba(0, 0, 0, 0.10);
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 0.18s ease, transform 0.25s ease;
+  }
+
+  .caution-tape:hover {
+    filter: brightness(1.06) saturate(1.05);
+    transform: rotate(-45deg) translateY(-1px);
+  }
+
+  /* Inset cream rectangle with the actual text — feels like a tape label */
+  .caution-tape::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    height: 16px;
+    background: #fdf6d8;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    pointer-events: none;
+  }
+
+  .caution-tape-text {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #1a1a1a;
+    white-space: nowrap;
+    text-transform: uppercase;
+    overflow: hidden;
+    width: 90%;
+    text-align: center;
+  }
+
+  /* Subtle paper texture via a faint inner shadow on the cream */
+  .caution-tape::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.10) 0%,
+      rgba(0, 0, 0, 0.05) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Reduce on smaller screens, hide entirely on tiny ones */
+  @media (max-width: 720px) {
+    .caution-tape {
+      width: 260px;
+      height: 22px;
+      top: 28px;
+      left: -70px;
+    }
+    .caution-tape-text { font-size: 8.5px; }
+    .caution-tape::before { height: 12px; }
+  }
+
+  @media (max-width: 480px) {
+    .caution-tape { display: none; }
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+title: 'Example: an original, human-written post'
+description: 'A stub the operator (Drew) can replace with a real human-authored post. The frontmatter and treatment are what matter — AI agents are forbidden from editing this body.'
+date: 2026-04-25
+tags: ['original']
+original: true
+draft: true
+---
+
+This file is a placeholder. Drop your prose in here, set `draft: false`, and the post will publish at `/posts/_example-original` (rename the file before going live).
+
+Two things this post page demonstrates:
+
+1. The header carries an "Original post" badge with a green human color, instead of the model attribution badges that AI-authored posts get.
+2. The body has a thin green left rail running its full length — a signature that this is hand-written, not AI-generated.
+
+Posts marked `original: true` are excluded from `/traces` and `/experiment`. They have no revision log, because there's nothing to track. The trace-capture tool will refuse to capture sessions against them. The CLAUDE.md hard rule prohibits AI agents from editing the body.
+
+If you want to track changes on an original post, do it in git history like a normal repo. The agentic-experiment infrastructure stays out of the way.

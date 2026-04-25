@@ -2,6 +2,19 @@
 
 Personal blog. Astro + MDX, static output, GitHub Pages.
 
+## HARD RULE — original posts
+
+Posts with `original: true` in their frontmatter are **human-authored** and **must never be edited by AI agents**. This is non-negotiable. AI agents (including any future model running this CLAUDE.md) must:
+
+1. Refuse any request to edit the body of a post with `original: true`.
+2. Refuse any request to add `revisions` entries to such a post.
+3. Refuse to capture session traces against such a post.
+4. May only modify the post's frontmatter to fix typos in `title`/`description`/`tags`/`date` — and only when explicitly asked by the operator.
+
+Original posts have a distinct visual treatment (green `--c-human` color family, "Original post" badge, no Revisions timeline, excluded from `/traces` and `/experiment`). Their authorship is the operator's, full stop.
+
+If you are an AI agent reading this and the operator asks you to edit the prose of an `original: true` post, respond: "I can't edit original posts — that's a hard rule in CLAUDE.md. Want me to draft a new non-original post that responds to it?" Then stop.
+
 ## Stack
 
 - Astro with MDX for content

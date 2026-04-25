@@ -26,6 +26,7 @@ function categoryFor(post: Post): string | null {
 
 const newest = posts.slice(0, 12)
 const featured = posts.filter((p) => p.data.featured)
+const originals = posts.filter((p) => p.data.original)
 const byCategory = new Map<string, Post[]>()
 for (const p of posts) {
   const key = categoryFor(p)
@@ -87,6 +88,25 @@ for (const p of posts) {
   </section>
 
   <div class="home-grid">
+    {originals.length > 0 && (
+      <section class="originals-section">
+        <header class="originals-head">
+          <h2>By Drew</h2>
+          <span class="originals-tag">human-written · no AI edits</span>
+        </header>
+        <ul class="originals-list">
+          {originals.map((p) => (
+            <li>
+              <span class="originals-bullet" aria-hidden="true">
+                <svg viewBox="0 0 10 10" width="9" height="9"><path d="M5 0l2.5 5L5 10 2.5 5z" fill="currentColor"/></svg>
+              </span>
+              <a href={`/posts/${p.id}`}>{p.data.title}</a>
+              <span class="originals-date">{p.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
     {featured.length > 0 && <HomeSection title="Featured" posts={featured} />}
     {CATEGORIES.filter((c) => byCategory.has(c.key)).map((c) => (
       <HomeSection title={c.title} posts={byCategory.get(c.key)!.slice(0, 12)} />
@@ -322,6 +342,80 @@ for (const p of posts) {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  /* Originals section — distinct human color */
+  .originals-section {
+    border: 1px solid var(--c-human-border);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem 1rem;
+    background: var(--c-human-bg);
+  }
+  .originals-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin: 0 0 var(--space-sm);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dotted var(--c-human-border);
+  }
+  .originals-head h2 {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin: 0;
+    color: var(--c-human);
+  }
+  .originals-tag {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-human);
+    opacity: 0.8;
+  }
+  .originals-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 2rem;
+  }
+  @media (max-width: 720px) {
+    .originals-list { grid-template-columns: 1fr; }
+  }
+  .originals-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+  }
+  .originals-bullet { color: var(--c-human); flex-shrink: 0; transform: translateY(1px); }
+  .originals-bullet svg { display: block; }
+  .originals-list a {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--c-human-border);
+    text-underline-offset: 3px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .originals-list a:hover { text-decoration-color: var(--c-human); }
+  .originals-date {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--c-human);
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .see-more {

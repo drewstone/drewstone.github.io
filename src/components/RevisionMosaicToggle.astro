@@ -1,0 +1,148 @@
+---
+/**
+ * RevisionMosaicToggle — a small pill button that toggles
+ * `data-mosaic="on"` on the post's <article>. Off by default. When on,
+ * paragraphs reveal a soft adjacency-aware color tint and a marginalia
+ * label fades in on hover with the post's last-edit metadata.
+ */
+interface Props {
+  lastDate?: string
+  lastModel?: string
+}
+
+const { lastDate, lastModel } = Astro.props
+---
+
+<button class="mosaic-toggle" type="button" data-mosaic-toggle aria-pressed="false">
+  <svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true">
+    <rect x="1" y="1" width="6" height="6" fill="currentColor" opacity="0.65"/>
+    <rect x="9" y="1" width="6" height="6" fill="currentColor" opacity="0.4"/>
+    <rect x="1" y="9" width="6" height="6" fill="currentColor" opacity="0.5"/>
+    <rect x="9" y="9" width="6" height="6" fill="currentColor" opacity="0.3"/>
+  </svg>
+  <span class="mosaic-toggle-label">Show edit colors</span>
+  {(lastDate || lastModel) && (
+    <span class="mosaic-toggle-meta">
+      {lastDate ? <time>{lastDate}</time> : null}
+      {lastModel ? <span>· {lastModel}</span> : null}
+    </span>
+  )}
+</button>
+
+<script>
+  (function () {
+    const btn = document.querySelector<HTMLButtonElement>('[data-mosaic-toggle]')
+    if (!btn) return
+    const article = document.querySelector('article')
+    if (!article) return
+
+    const KEY = 'mosaic-on'
+    const apply = (on: boolean) => {
+      article.dataset.mosaic = on ? 'on' : 'off'
+      btn.setAttribute('aria-pressed', String(on))
+      btn.classList.toggle('is-on', on)
+      btn.querySelector('.mosaic-toggle-label')!.textContent = on ? 'Hide edit colors' : 'Show edit colors'
+    }
+
+    const initial = localStorage.getItem(KEY) === '1'
+    apply(initial)
+
+    btn.addEventListener('click', () => {
+      const on = article.dataset.mosaic !== 'on'
+      apply(on)
+      try { localStorage.setItem(KEY, on ? '1' : '0') } catch {}
+    })
+
+    // Keyboard shortcut: 'r' toggles mosaic when not typing
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'r' || e.metaKey || e.ctrlKey || e.altKey) return
+      const tag = (document.activeElement?.tagName ?? '').toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || (document.activeElement as HTMLElement)?.isContentEditable) return
+      btn.click()
+    })
+  })()
+</script>
+
+<style>
+  .mosaic-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 var(--space-md);
+    padding: 0.35rem 0.7rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .mosaic-toggle:hover {
+    background: var(--bg-alt);
+    color: var(--fg);
+    border-color: var(--border-strong);
+  }
+  .mosaic-toggle.is-on {
+    background: var(--c-action-bg);
+    color: var(--c-action);
+    border-color: var(--c-action-border);
+  }
+  .mosaic-toggle svg {
+    color: currentColor;
+    flex-shrink: 0;
+  }
+  .mosaic-toggle-meta {
+    color: var(--fg-faint);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 10.5px;
+    margin-left: 0.4rem;
+  }
+</style>
+
+<style is:global>
+  /* Mosaic colors — applied only when article carries data-mosaic="on".
+     Four hues from the semantic palette (action, info, ok, run), all at low
+     saturation so they read as paper tints, not Christmas lights. */
+  article[data-mosaic="on"] .prose [data-rev-color] {
+    transition: background 0.18s ease, box-shadow 0.18s ease;
+    border-radius: 3px;
+    padding: 0 0.25rem;
+    margin: 0 -0.25rem;
+  }
+  article[data-mosaic="on"] .prose [data-rev-color="0"] {
+    background: var(--c-action-bg);
+    box-shadow: -2px 0 0 var(--c-action) inset;
+  }
+  article[data-mosaic="on"] .prose [data-rev-color="1"] {
+    background: var(--c-info-bg);
+    box-shadow: -2px 0 0 var(--c-info) inset;
+  }
+  article[data-mosaic="on"] .prose [data-rev-color="2"] {
+    background: var(--c-ok-bg);
+    box-shadow: -2px 0 0 var(--c-ok) inset;
+  }
+  article[data-mosaic="on"] .prose [data-rev-color="3"] {
+    background: var(--c-run-bg);
+    box-shadow: -2px 0 0 var(--c-run) inset;
+  }
+  article[data-mosaic="on"] .prose [data-rev-color]:hover {
+    filter: brightness(0.97);
+    box-shadow: -3px 0 0 currentColor inset;
+  }
+
+  /* Don't tint the first paragraph drop cap or code or chart wrappers */
+  article[data-mosaic="on"] .prose pre [data-rev-color],
+  article[data-mosaic="on"] .prose figure [data-rev-color] {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>

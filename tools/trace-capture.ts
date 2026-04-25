@@ -120,6 +120,9 @@ async function appendFrontmatterRevision(postSlug: string, entry: { date: string
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
   if (!m) throw new Error(`no frontmatter in ${postSlug}`)
   const fm = m[1]
+  if (/^original:\s*true\s*$/m.test(fm)) {
+    throw new Error(`${postSlug} is an original (human-authored) post — AI trace capture refused. See CLAUDE.md hard rule.`)
+  }
   const model = entry.model ?? 'unknown'
   const line = `  - { date: ${entry.date}, model: '${model}', note: '${entry.note.replace(/'/g, "''")}'${entry.commit ? `, commit: '${entry.commit}'` : ''}, trace_id: '${entry.trace_id}' }`
   let newFm: string

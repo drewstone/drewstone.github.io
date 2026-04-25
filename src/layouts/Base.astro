@@ -1,4 +1,6 @@
 ---
+import CautionTape from '../components/CautionTape.astro'
+
 interface Props {
   title: string
   description?: string
@@ -36,6 +38,7 @@ const year = new Date().getFullYear()
     />
   </head>
   <body>
+    <CautionTape />
     <header class="site-header">
       <div class="container-wide nav-inner">
         <a href="/" class="nav-home">drew</a>

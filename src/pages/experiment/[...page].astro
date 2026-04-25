@@ -7,7 +7,7 @@ import type { GetStaticPaths } from 'astro'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const PER_PAGE = 10
-  const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  const posts = (await getCollection('posts', ({ data }) => !data.draft && !data.original))
   let total = 0
   for (const p of posts) total += (p.data.revisions ?? []).length
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
@@ -21,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const PER_PAGE = 10
 const { page: safePage, total } = Astro.props as { page: number; totalPages: number; total: number }
 
-const posts = (await getCollection('posts', ({ data }) => !data.draft))
+const posts = (await getCollection('posts', ({ data }) => !data.draft && !data.original))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 
 type Rev = {

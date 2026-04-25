@@ -11,9 +11,10 @@ interface Author {
 
 interface Props {
   authors?: Author[]
+  original?: boolean
 }
 
-const { authors = [] } = Astro.props
+const { authors = [], original = false } = Astro.props
 
 const short = (model: string): string => {
   if (model === 'unknown') return 'model unknown'
@@ -31,7 +32,18 @@ const short = (model: string): string => {
 }
 ---
 
-{authors.length > 0 && (
+{original ? (
+  <div class="authors authors-original">
+    <span class="authors-label">Original post</span>
+    <div class="authors-list">
+      <span class="author-badge author-human" title="written entirely by Drew Stone — no AI editing">
+        <span class="author-role">human</span>
+        <span class="author-model">Drew Stone</span>
+      </span>
+    </div>
+    <span class="authors-tag" title="protected: AI agents are not permitted to edit this post">no AI edits</span>
+  </div>
+) : authors.length > 0 ? (
   <div class="authors">
     <span class="authors-label">Authored by</span>
     <div class="authors-list">
@@ -43,7 +55,7 @@ const short = (model: string): string => {
       ))}
     </div>
   </div>
-)}
+) : null}
 
 <style>
   .authors {
@@ -56,6 +68,37 @@ const short = (model: string): string => {
     border: 1px solid var(--border);
     border-radius: 8px;
     background: var(--bg-alt);
+  }
+
+  .authors.authors-original {
+    background: var(--c-human-bg);
+    border-color: var(--c-human-border);
+  }
+
+  .authors-tag {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--c-human);
+    padding: 0.15rem 0.5rem;
+    border: 1px dashed var(--c-human);
+    border-radius: 3px;
+  }
+
+  .author-badge.author-human .author-role {
+    background: var(--c-human-bg);
+    color: var(--c-human);
+    border-color: var(--c-human-border);
+  }
+  .author-badge.author-human {
+    border-color: var(--c-human-border);
+  }
+  .author-badge.author-human .author-model {
+    color: var(--c-human);
+    font-weight: 700;
   }
 
   .authors-label {

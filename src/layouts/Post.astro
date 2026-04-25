@@ -4,6 +4,7 @@ import AuthorBadges from '../components/AuthorBadges.astro'
 import Revisions from '../components/Revisions.astro'
 import PostReactions from '../components/PostReactions.astro'
 import ParagraphReactor from '../components/ParagraphReactor.astro'
+import RevisionMosaicToggle from '../components/RevisionMosaicToggle.astro'
 import Giscus from '../components/Giscus.astro'
 
 interface Author {
@@ -28,9 +29,10 @@ interface Props {
   slug?: string
   authors?: Author[]
   revisions?: Revision[]
+  original?: boolean
 }
 
-const { title, description, date, updated, tags = [], slug, authors, revisions } = Astro.props
+const { title, description, date, updated, tags = [], slug, authors, revisions, original = false } = Astro.props
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -53,12 +55,18 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
       </div>
       <h1>{title}</h1>
       <p class="post-desc">{description}</p>
-      <AuthorBadges authors={authors} />
+      <AuthorBadges authors={authors} original={original} />
+      {!original && revisions && revisions.length > 0 && (
+        <RevisionMosaicToggle
+          lastDate={revisions[revisions.length - 1].date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          lastModel={revisions[revisions.length - 1].model}
+        />
+      )}
     </header>
-    <div class="prose">
+    <div class={`prose${original ? ' prose-original' : ''}`}>
       <slot />
     </div>
-    <Revisions revisions={revisions} repo={repo} />
+    {!original && <Revisions revisions={revisions} repo={repo} />}
     {slug && <PostReactions slug={slug} />}
     {slug && <ParagraphReactor slug={slug} />}
     {slug && <Giscus term={slug} />}
@@ -115,6 +123,23 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
   .prose {
     line-height: 1.75;
     position: relative;
+  }
+
+  /* Subtle indicator on original posts: a thin colored hairline before
+     the prose so it reads as a different document type. */
+  .prose-original {
+    position: relative;
+  }
+  .prose-original::before {
+    content: '';
+    position: absolute;
+    left: -0.6rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--c-human);
+    border-radius: 1px;
+    opacity: 0.5;
   }
 
   .prose :global(h2) {

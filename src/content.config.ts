@@ -30,6 +30,12 @@ const posts = defineCollection({
     tags: z.array(z.string()).optional(),
     draft: z.boolean().optional(),
     featured: z.boolean().optional(),
+    /**
+     * `original: true` marks a human-authored post. Distinct color, distinct
+     * AuthorBadge treatment, excluded from /traces and /experiment, and
+     * AI agents are forbidden from editing it (see CLAUDE.md hard rule).
+     */
+    original: z.boolean().optional(),
     authors: z.array(authorSchema).optional(),
     revisions: z.array(revisionSchema).optional(),
   }),
