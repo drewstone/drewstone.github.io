@@ -40,12 +40,6 @@ function fmtMonth(d: Date) {
   return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
 }
 
-const totalRevisions = posts.reduce((s, p) => s + (p.data.revisions?.length ?? 0), 0)
-const distinctModels = new Set<string>()
-for (const p of posts) {
-  for (const a of p.data.authors ?? []) if (a.model !== 'unknown') distinctModels.add(a.model)
-  for (const r of p.data.revisions ?? []) if (r.model !== 'unknown') distinctModels.add(r.model)
-}
 ---
 
 <Base title="drew" wide>
@@ -78,33 +72,15 @@ for (const p of posts) {
     </aside>
   </section>
 
-  <section class="experiment">
-    <header class="experiment-head">
-      <span class="experiment-eyebrow">A live experiment</span>
-      <h2 class="experiment-title">The experiment</h2>
-    </header>
-    <div class="experiment-body">
-      <p>
-        Most posts on this blog are drafted, edited, or revisited by AI agents under my
-        direction. Each one carries a <a href="/experiment">revision log</a> with the model
-        that wrote it, and every edit links to its <a href="/traces">captured session trace</a>
-        — the prompt, the response, the tools that were called.
-      </p>
-      <p>
-        Some posts are mine alone — <strong>hand-written, never touched by AI</strong>.
-        They surface in <span class="experiment-human">green</span> with an
-        <em>Original post</em> badge, and they stay out of the trace and revision systems
-        entirely. AI agents are forbidden from editing them. That's a hard rule in this repo's
-        <code>CLAUDE.md</code>; the trace tool refuses to run against them.
-      </p>
-      <ul class="experiment-stats">
-        <li><strong>{posts.length}</strong><span>posts</span></li>
-        <li><strong>{totalRevisions}</strong><span>tracked revisions</span></li>
-        <li><strong>{distinctModels.size}</strong><span>distinct models</span></li>
-        <li class="stats-human"><strong>{originals.length}</strong><span>human-written</span></li>
-      </ul>
-    </div>
-  </section>
+  <p class="experiment-lede">
+    <span class="experiment-lede-mark">The experiment</span> is that most posts here
+    are drafted, edited, or revisited by AI agents under my direction. Each one carries
+    a <a href="/experiment">revision log</a> with the model that wrote it, and every
+    edit links to its <a href="/traces">captured session trace</a>. Some posts are mine
+    alone — <strong>hand-written, never touched by AI</strong>; they surface in
+    <span class="experiment-lede-human">green</span> with an <em>Original</em> badge,
+    and AI agents are forbidden from editing them.
+  </p>
 
   <div class="home-grid">
     {originals.length > 0 && (
@@ -204,109 +180,37 @@ for (const p of posts) {
     text-decoration-color: var(--c-action);
   }
 
-  /* ===== The Experiment — full-width chapter break ===== */
-  .experiment {
-    margin: var(--space-2xl) 0;
-    padding: var(--space-xl) 0 var(--space-2xl);
-    border-top: 1px solid var(--c-action-border);
-    border-bottom: 1px solid var(--c-action-border);
-    background:
-      linear-gradient(180deg, var(--c-action-bg) 0%, transparent 35%, transparent 65%, var(--c-action-bg) 100%);
-  }
-  .experiment-head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    margin: 0 0 var(--space-lg);
-  }
-  .experiment-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--c-action);
-  }
-  .experiment-title {
+  /* ===== Inline experiment lede — sits between hero and grid ===== */
+  .experiment-lede {
     font-family: var(--font-body);
-    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--fg);
+    margin: 0 0 var(--space-2xl);
+    max-width: 65ch;
+  }
+  .experiment-lede-mark {
     font-weight: 700;
-    line-height: 1.02;
-    letter-spacing: -0.025em;
-    color: var(--fg);
-    margin: 0;
+    font-size: 1.35em;
+    letter-spacing: 0.02em;
+    color: var(--c-action);
+    text-transform: uppercase;
+    font-variant: small-caps;
+    margin-right: 0.18em;
   }
-  .experiment-body {
-    max-width: 760px;
-  }
-  .experiment-body p {
-    font-size: 1.15rem;
-    line-height: 1.6;
-    margin: 0 0 var(--space-md);
-    color: var(--fg);
-  }
-  .experiment-body strong {
-    font-weight: 700;
-    color: var(--fg);
-  }
-  .experiment-body a {
+  .experiment-lede a {
     color: var(--fg);
     text-decoration: underline;
     text-decoration-color: var(--c-action-border);
     text-underline-offset: 3px;
   }
-  .experiment-body a:hover { text-decoration-color: var(--c-action); }
-  .experiment-body code {
-    font-family: var(--font-mono);
-    font-size: 0.85em;
-    padding: 0.08em 0.35em;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-  }
-  .experiment-human {
+  .experiment-lede a:hover { text-decoration-color: var(--c-action); }
+  .experiment-lede strong { font-weight: 700; }
+  .experiment-lede-human {
     color: var(--c-human);
     font-weight: 700;
     font-style: italic;
   }
-
-  .experiment-stats {
-    list-style: none;
-    margin: var(--space-lg) 0 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.5rem;
-  }
-  .experiment-stats li {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    padding: 0.7rem 0.95rem;
-    background: var(--bg);
-    border: 1px solid var(--c-action-border);
-    border-radius: 8px;
-  }
-  .experiment-stats strong {
-    font-family: var(--font-body);
-    font-size: 1.9rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.015em;
-    color: var(--c-action);
-  }
-  .experiment-stats span {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--fg-faint);
-  }
-  .experiment-stats .stats-human {
-    border-color: var(--c-human-border);
-    background: var(--c-human-bg);
-  }
-  .experiment-stats .stats-human strong { color: var(--c-human); }
   .experiment-stats .stats-human span { color: var(--c-human); opacity: 0.8; }
 
   /* ===== Newest side column ===== */
