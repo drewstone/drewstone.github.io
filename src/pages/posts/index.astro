@@ -1,143 +1,88 @@
 ---
 import Base from '../../layouts/Base.astro'
+import DataTable, { type Col } from '../../components/DataTable.astro'
 import { getCollection } from 'astro:content'
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 
-const grouped = posts.reduce<Record<number, typeof posts>>((acc, post) => {
-  const year = post.data.date.getFullYear()
-  ;(acc[year] ??= []).push(post)
-  return acc
-}, {})
+const short = (m: string | undefined): string => {
+  if (!m || m === 'unknown') return 'unknown'
+  if (m.startsWith('claude-')) {
+    const p = m.replace(/^claude-/, '').split('-')
+    if (p.length >= 2) return p[0][0].toUpperCase() + p[0].slice(1) + ' ' + p.slice(1).join('.')
+  }
+  if (m.startsWith('gpt-')) return 'GPT-' + m.replace(/^gpt-/, '')
+  return m
+}
 
-const years = Object.keys(grouped).map(Number).sort((a, b) => b - a)
+const rows = posts.map((post) => {
+  const revs = post.data.revisions ?? []
+  const latest = [...revs].sort((a, b) => b.date.valueOf() - a.date.valueOf())[0]
+  const updated = latest?.date ?? post.data.date
+  return {
+    date: post.data.date.toISOString(),
+    title: post.data.title,
+    href: `/posts/${post.id}`,
+    tags: (post.data.tags ?? []).slice(0, 3).join(' · '),
+    revs: revs.length || 0,
+    updated: updated.toISOString(),
+    model: short(latest?.model),
+    featured: post.data.featured ? '✦' : '',
+  }
+})
+
+const columns: Col[] = [
+  { key: 'date',     label: 'Date',     type: 'date', width: '6.5rem' },
+  { key: 'title',    label: 'Title',    type: 'link', linkKey: 'href' },
+  { key: 'tags',     label: 'Tags',     type: 'mono', width: '14rem' },
+  { key: 'revs',     label: 'Revs',     type: 'num',  align: 'right', width: '4.5rem' },
+  { key: 'updated',  label: 'Updated',  type: 'date', width: '6.5rem' },
+  { key: 'model',    label: 'Last model', type: 'mono', width: '7rem',
+    tone: (v) => v === 'unknown' ? 'neutral' : 'action' as any },
+  { key: 'featured', label: '★',        type: 'mono', width: '2.5rem', align: 'center' },
+]
+
+const totalRevs = rows.reduce((s, r) => s + r.revs, 0)
+const featuredCount = rows.filter((r) => r.featured).length
 ---
 
 <Base title="archive" wide>
-  <section class="archive-header">
+  <section class="archive-head">
     <h1>Archive</h1>
-    <p class="count">{posts.length} posts</p>
+    <p class="archive-sub">
+      Every post on the blog. Sortable. Click a column header to flip the order;
+      <strong>{posts.length}</strong> posts, <strong>{totalRevs}</strong> tracked revisions,
+      <strong>{featuredCount}</strong> marked featured.
+    </p>
   </section>
 
-  <hr class="rule" />
-
-  {years.map((year) => (
-    <section class="year-section">
-      <h2 class="year-label">{year}</h2>
-      <ul class="archive-list">
-        {grouped[year].map((post) => (
-          <li>
-            <time>{post.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</time>
-            <a href={`/posts/${post.id}`}>{post.data.title}</a>
-            <span class="desc">{post.data.description}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  ))}
+  <DataTable
+    columns={columns}
+    rows={rows}
+    initialSort={{ key: 'date', dir: 'desc' }}
+  />
 </Base>
 
 <style>
-  .archive-header {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-lg);
-    padding-bottom: var(--space-md);
+  .archive-head {
+    margin: var(--space-xl) 0 var(--space-lg);
+    max-width: 760px;
   }
-
-  .archive-header h1 {
-    margin: 0;
-    font-size: 1.6rem;
-  }
-
-  .count {
-    font-size: 0.82rem;
-    color: var(--fg-faint);
-    margin: 0;
-  }
-
-  .year-section {
-    padding: var(--space-lg) 0;
-  }
-
-  .year-label {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--fg-faint);
-    letter-spacing: 0.05em;
+  .archive-head h1 {
+    font-size: 2.2rem;
     margin: 0 0 var(--space-sm);
-    border: none;
-    padding: 0;
+    letter-spacing: -0.02em;
   }
-
-  .archive-list {
-    list-style: none;
-    padding: 0;
+  .archive-sub {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
     margin: 0;
   }
-
-  .archive-list li {
-    display: grid;
-    grid-template-columns: 5rem 1fr;
-    grid-template-rows: auto auto;
-    gap: 0 var(--space-lg);
-    padding: var(--space-sm) 0;
-    border-bottom: 1px solid var(--border);
-    align-items: baseline;
-  }
-
-  .archive-list li:last-child {
-    border-bottom: none;
-  }
-
-  .archive-list time {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--fg-faint);
-    grid-row: 1;
-  }
-
-  .archive-list a {
-    font-weight: 700;
-    font-size: 1rem;
-    text-decoration: none;
+  .archive-sub strong {
     color: var(--fg);
-    grid-row: 1;
-    grid-column: 2;
-  }
-
-  .archive-list a:hover {
-    text-decoration: underline;
-  }
-
-  .desc {
-    font-size: 0.82rem;
-    color: var(--fg-muted);
-    grid-row: 2;
-    grid-column: 2;
-    margin-top: 2px;
-  }
-
-  @media (max-width: 640px) {
-    .archive-list li {
-      grid-template-columns: 1fr;
-    }
-
-    .archive-list time {
-      grid-row: auto;
-      grid-column: auto;
-    }
-
-    .archive-list a {
-      grid-row: auto;
-      grid-column: auto;
-    }
-
-    .desc {
-      grid-row: auto;
-      grid-column: auto;
-    }
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
   }
 </style>
