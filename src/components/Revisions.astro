@@ -10,6 +10,7 @@ interface Revision {
   commit?: string
   reconstructed?: boolean
   trace_id?: string
+  author?: string
 }
 
 interface Props {
@@ -19,18 +20,22 @@ interface Props {
 
 const { revisions = [], repo } = Astro.props
 
-const short = (model: string): string => {
-  if (model.startsWith('claude-')) {
-    const parts = model.replace(/^claude-/, '').split('-')
+const isHuman = (m: string) => m === 'human' || m === 'drew-stone'
+
+const short = (r: Revision): string => {
+  if (isHuman(r.model)) return r.author || 'Drew Stone'
+  const m = r.model
+  if (m.startsWith('claude-')) {
+    const parts = m.replace(/^claude-/, '').split('-')
     if (parts.length >= 2) {
       const family = parts[0][0].toUpperCase() + parts[0].slice(1)
       const version = parts.slice(1).join('.')
       return `${family} ${version}`
     }
-    return model
+    return m
   }
-  if (model.startsWith('gpt-')) return 'GPT-' + model.replace(/^gpt-/, '')
-  return model
+  if (m.startsWith('gpt-')) return 'GPT-' + m.replace(/^gpt-/, '')
+  return m
 }
 
 const fmtDate = (d: Date) =>
@@ -52,12 +57,12 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
     </summary>
     <ol class="rev-list">
       {ordered.map((r) => (
-        <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}`}>
+        <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}${isHuman(r.model) ? ' human' : ''}`}>
           <div class="rev-head">
             <time datetime={r.date.toISOString()}>{fmtDate(r.date)}</time>
-            <span class="rev-model">{short(r.model)}</span>
+            <span class="rev-model">{short(r)}</span>
             {r.reconstructed && <span class="rev-recon">reconstructed</span>}
-            {r.trace_id && (
+            {r.trace_id && !isHuman(r.model) && (
               <a class="rev-trace" href={`/traces/${r.trace_id}`} title="view captured session">
                 view trace →
               </a>
@@ -183,6 +188,12 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
     background: var(--c-action-bg);
     color: var(--c-action);
     border: 1px solid var(--c-action-border);
+  }
+
+  .rev-item.human .rev-model {
+    background: var(--c-human-bg);
+    color: var(--c-human);
+    border-color: var(--c-human-border);
   }
 
   .rev-recon {

@@ -123,6 +123,15 @@ async function appendFrontmatterRevision(postSlug: string, entry: { date: string
   if (/^original:\s*true\s*$/m.test(fm)) {
     throw new Error(`${postSlug} is an original (human-authored) post — AI trace capture refused. See CLAUDE.md hard rule.`)
   }
+  // Dedup: skip if a revision with this commit OR trace_id already exists.
+  if (entry.commit && new RegExp(`commit:\\s*['"]${entry.commit}['"]`).test(fm)) {
+    console.log(`[${postSlug}] revision for ${entry.commit.slice(0, 7)} already logged — skip`)
+    return
+  }
+  if (new RegExp(`trace_id:\\s*['"]${entry.trace_id}['"]`).test(fm)) {
+    console.log(`[${postSlug}] trace ${entry.trace_id} already logged — skip`)
+    return
+  }
   const model = entry.model ?? 'unknown'
   const line = `  - { date: ${entry.date}, model: '${model}', note: '${entry.note.replace(/'/g, "''")}'${entry.commit ? `, commit: '${entry.commit}'` : ''}, trace_id: '${entry.trace_id}' }`
   let newFm: string

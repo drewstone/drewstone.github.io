@@ -18,6 +18,12 @@ const revisionSchema = z.object({
   commit: z.string().optional(),
   reconstructed: z.boolean().optional(),
   trace_id: z.string().optional(),
+  /**
+   * Author label for human revisions. Convention:
+   *   model: 'human' + author: 'Drew Stone'
+   * AI revisions leave this empty; UI infers author from `model`.
+   */
+  author: z.string().optional(),
 })
 
 const posts = defineCollection({

@@ -15,9 +15,12 @@ type Rev = {
   commit?: string
   reconstructed?: boolean
   trace_id?: string
+  author?: string
   postId: string
   postTitle: string
 }
+
+const isHuman = (m: string) => m === 'human' || m === 'drew-stone'
 
 const allRevisions: Rev[] = []
 const modelCounts: Record<string, number> = {}
@@ -39,7 +42,8 @@ allRevisions.sort((a, b) => b.date.valueOf() - a.date.valueOf())
 
 const totalRevisions = allRevisions.length
 const reconstructedCount = allRevisions.filter((r) => r.reconstructed).length
-const distinctModels = Object.keys(modelCounts).length
+const distinctModels = Object.keys(modelCounts).filter((m) => m !== 'unknown' && !isHuman(m)).length
+const humanRevisionCount = allRevisions.filter((r) => isHuman(r.model)).length
 const sortedModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1])
 const maxModel = sortedModels[0]?.[1] ?? 1
 
@@ -64,15 +68,26 @@ const maxTs = Math.max(...allDates, Date.now())
 const tsRange = Math.max(1, maxTs - minTs)
 const tsPos = (d: Date) => ((d.valueOf() - minTs) / tsRange) * 100
 
-// Color by model — deterministic mapping to a small palette of semantic CSS vars
-const colorPalette = ['--c-action', '--c-info', '--c-ok', '--c-run', '--c-fail']
+// Color by model — deterministic mapping. Human always renders in green;
+// other authors round-robin a small palette of semantic vars.
+const aiPalette = ['--c-action', '--c-info', '--c-run', '--c-fail']
 const colorForModel: Record<string, string> = {}
-sortedModels.forEach(([m], i) => {
-  colorForModel[m] = m === 'unknown' ? '--fg-faint' : colorPalette[i % colorPalette.length]
+let aiIdx = 0
+sortedModels.forEach(([m]) => {
+  if (m === 'unknown') colorForModel[m] = '--fg-faint'
+  else if (isHuman(m)) colorForModel[m] = '--c-human'
+  else { colorForModel[m] = aiPalette[aiIdx % aiPalette.length]; aiIdx++ }
 })
+
+// Pick a representative human revision to read its `author` for display.
+const humanAuthor = (() => {
+  for (const r of allRevisions) if (isHuman(r.model) && r.author) return r.author
+  return 'Drew Stone'
+})()
 
 const short = (model: string): string => {
   if (!model || model === 'unknown') return 'unknown'
+  if (isHuman(model)) return humanAuthor
   if (model.startsWith('claude-')) {
     const parts = model.replace(/^claude-/, '').split('-')
     if (parts.length >= 2) return parts[0][0].toUpperCase() + parts[0].slice(1) + ' ' + parts.slice(1).join('.')
@@ -94,7 +109,7 @@ const human = originals.length
 const sections = [
   { id: 'premise',  label: 'Premise' },
   { id: 'glance',   label: 'At a glance' },
-  { id: 'models',   label: 'Models' },
+  { id: 'models',   label: 'Authors' },
   { id: 'posts',    label: 'Most edited posts' },
   { id: 'activity', label: 'Recent activity' },
   { id: 'rules',    label: 'The rules' },
@@ -155,14 +170,14 @@ const sections = [
           <div class="card card-human" data-card>
             <div class="card-v">{human}</div>
             <div class="card-l">Human originals</div>
-            <div class="card-tip">marked <em>no AI edits</em></div>
+            <div class="card-tip">{humanRevisionCount} human edit{humanRevisionCount === 1 ? '' : 's'} on AI posts</div>
           </div>
         </div>
       </section>
 
       <section id="models" class="block">
-        <h2 class="block-h">Models</h2>
-        <p class="block-sub">Every model that has touched a post. Hover a row to see which posts it edited and when.</p>
+        <h2 class="block-h">Authors</h2>
+        <p class="block-sub">Every author who has touched a post — humans in green, models in violet/blue. Hover a row to see which posts they edited and when.</p>
         <ul class="models">
           {sortedModels.map(([m, n]) => {
             const cv = colorForModel[m]

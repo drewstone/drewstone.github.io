@@ -15,6 +15,17 @@ Original posts have a distinct visual treatment (green `--c-human` color family,
 
 If you are an AI agent reading this and the operator asks you to edit the prose of an `original: true` post, respond: "I can't edit original posts — that's a hard rule in CLAUDE.md. Want me to draft a new non-original post that responds to it?" Then stop.
 
+## Unified revision log
+
+Both AI edits and human edits land in the same `revisions[]` array in a post's frontmatter. AI revisions use the model id (`'claude-opus-4-7'`, etc.) and link a `trace_id`. Human revisions use `model: 'human'` with an optional `author: 'Drew Stone'` and no trace.
+
+The post-commit hook (installed via `pnpm install:hooks`) auto-logs every commit that touches an MDX post:
+
+- If a recent agent session is detected, runs `tools/trace-capture.ts --auto` (records the AI revision + saves the trace).
+- Otherwise, runs `tools/log-edit.mjs --auto` (records a human revision with the commit message as the note).
+
+Both paths dedup by commit SHA, so the same edit is never logged twice. The asymmetric rule still holds: AI cannot edit `original: true` posts, but humans can edit any post — including AI-authored ones — and those edits show up in the same timeline rendered with the green `--c-human` family.
+
 ## Stack
 
 - Astro with MDX for content

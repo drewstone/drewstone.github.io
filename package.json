@@ -9,7 +9,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "new": "node tools/new-post.mjs",
-    "gen:graphics": "node tools/gen-graphics.mjs"
+    "gen:graphics": "node tools/gen-graphics.mjs",
+    "log-edit": "node tools/log-edit.mjs",
+    "install:hooks": "node tools/install-hooks.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
