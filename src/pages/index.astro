@@ -49,9 +49,9 @@ function fmtMonth(d: Date) {
         Hi, I'm <strong>Drew</strong>. I work on AI and autoresearch infrastructure at
         <a href="https://tangle.tools">Tangle</a>: <strong>sandboxes for agents</strong>,
         <strong>eval harnesses</strong>, and <strong>loops that automatically build
-        autoresearch pipelines</strong> and run the optimization against them. Also crypto
-        &mdash; specifically <strong>stablecoin payments</strong> and <strong>privacy</strong>.
-        Most of what's written here is a by-product of that work.
+        autoresearch pipelines</strong> and run the optimization against them. The crypto
+        half is narrower: <strong>stablecoin payments</strong> and <strong>privacy</strong>.
+        Posts here are what falls out of doing that.
       </p>
       <p class="experiment-lede">
         <span class="experiment-lede-mark">The experiment</span> is that most posts here
@@ -205,9 +205,15 @@ function fmtMonth(d: Date) {
   .experiment-lede a:hover { text-decoration-color: var(--c-action); }
   .experiment-lede strong { font-weight: 700; }
   .experiment-lede-human {
-    color: var(--c-human);
+    color: #00b347;
     font-weight: 700;
     font-style: italic;
+  }
+  @media (prefers-color-scheme: dark) {
+    .experiment-lede-human {
+      color: #39ff88;
+      text-shadow: 0 0 12px rgba(57, 255, 136, 0.45);
+    }
   }
   .experiment-stats .stats-human span { color: var(--c-human); opacity: 0.8; }
 
