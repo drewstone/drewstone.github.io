@@ -53,6 +53,15 @@ function fmtMonth(d: Date) {
         &mdash; specifically <strong>stablecoin payments</strong> and <strong>privacy</strong>.
         Most of what's written here is a by-product of that work.
       </p>
+      <p class="experiment-lede">
+        <span class="experiment-lede-mark">The experiment</span> is that most posts here
+        are drafted, edited, or revisited by AI agents under my direction. Each one carries
+        a <a href="/experiment">revision log</a> with the model that wrote it, and every
+        edit links to its <a href="/traces">captured session trace</a>. Some posts are mine
+        alone — <strong class="experiment-lede-human">hand-written, never touched by AI</strong>;
+        they surface with an <em>Original</em> badge, and AI agents are forbidden from
+        editing them.
+      </p>
     </div>
     <aside class="hero-side">
       <div class="hero-side-head">
@@ -71,16 +80,6 @@ function fmtMonth(d: Date) {
       </ol>
     </aside>
   </section>
-
-  <p class="experiment-lede">
-    <span class="experiment-lede-mark">The experiment</span> is that most posts here
-    are drafted, edited, or revisited by AI agents under my direction. Each one carries
-    a <a href="/experiment">revision log</a> with the model that wrote it, and every
-    edit links to its <a href="/traces">captured session trace</a>. Some posts are mine
-    alone — <strong class="experiment-lede-human">hand-written, never touched by AI</strong>;
-    they surface with an <em>Original</em> badge, and AI agents are forbidden from
-    editing them.
-  </p>
 
   <div class="home-grid">
     {originals.length > 0 && (
@@ -180,14 +179,13 @@ function fmtMonth(d: Date) {
     text-decoration-color: var(--c-action);
   }
 
-  /* ===== Inline experiment lede — sits between hero and grid ===== */
+  /* ===== Inline experiment lede — second paragraph in the intro column ===== */
   .experiment-lede {
     font-family: var(--font-body);
     font-size: 1.08rem;
     line-height: 1.65;
     color: var(--fg);
-    margin: 0 0 var(--space-2xl);
-    max-width: 65ch;
+    margin: var(--space-md) 0 0;
   }
   .experiment-lede-mark {
     font-weight: 700;
