@@ -5,13 +5,16 @@
  * Hits the OpenAI-compatible /v1/images/generations endpoint on the
  * Tangle router, which proxies to gpt-image-1 / flux-1.1-pro / flux-1.1-pro-ultra.
  *
- * Auth: reads TCLOUD_API_KEY env var, or ~/.tcloud/config.json.
+ * Auth:
+ *   --via=router (default) → TCLOUD_API_KEY  or  ~/.tcloud/config.json
+ *   --via=openai           → OPENAI_API_KEY
  *
  * Usage:
  *   pnpm gen:graphics                            # all prompts in this file
  *   pnpm gen:graphics --post=autonomous-autoresearch
  *   pnpm gen:graphics --only=01,03,10            # subset
  *   pnpm gen:graphics --model=flux-1.1-pro-ultra # default: gpt-image-1
+ *   pnpm gen:graphics --via=openai               # bypass the router
  *
  * Output:
  *   public/posts/<post>/<id>.png  (web-ready, full-bleed)
@@ -39,12 +42,12 @@ const POSTS = {
   'autonomous-autoresearch': [
     {
       id: '01-recursive-ouroboros',
-      size: '1792x1024',
+      size: '1536x1024',
       prompt: 'A recursive ouroboros: a sleek figure-eight loop assembled from circuit traces, code-like glyphs, and thin geometric arrows. The loop turns back on itself, where its own output becomes its own input. Centerpiece subject. Dark void around it, single small accent of violet light at the crossing point.',
     },
     {
       id: '02-higher-d-lattice',
-      size: '1792x1024',
+      size: '1536x1024',
       prompt: 'A faceless slender silhouette of a humanoid agent reaches one outstretched hand into a vast 3D wireframe lattice that extends into the depth of the frame. The lattice is white pin-prick nodes connected by faint white edges; some nodes glow softly in violet. The agent is partially translucent, integrated with the lattice. The lattice represents a high-dimensional state space.',
     },
     {
@@ -64,12 +67,12 @@ const POSTS = {
     },
     {
       id: '06-generalization-triptych',
-      size: '1792x1024',
+      size: '1536x1024',
       prompt: 'An ultrawide triptych. Three side-by-side panels, separated by thin vertical white rules. LEFT panel: the same agent silhouette typing at a terminal, faint code streams. MIDDLE panel: the same silhouette gesturing toward a browser-window grid of UI rectangles. RIGHT panel: the same silhouette with hand outstretched toward an industrial robotic arm. Identical figure across all three panels to show the same pattern generalizes across substrates. Black background, white linework, one tiny violet accent per panel.',
     },
     {
       id: '07-robot-in-feedback',
-      size: '1792x1024',
+      size: '1536x1024',
       prompt: 'An industrial robotic arm, drawn as clean white technical lineart, mid-action picking up a small geometric block. Above and around the arm: a constellation of small white nodes connected by thin lines, suggesting an external coding agent overlaid like an aura, rewriting the arm in motion. A few nodes pulse in violet. The composition: arm grounded in the lower third, constellation filling the upper two-thirds.',
     },
     {
@@ -79,7 +82,7 @@ const POSTS = {
     },
     {
       id: '09-data-plume',
-      size: '1792x1024',
+      size: '1536x1024',
       prompt: 'A robotic arm in the lower-left foreground, frozen mid-action. Out of and around the arm: a vast diffuse plume of fine white particles and faint geometric glyphs, expanding outward and upward, suggesting millions of generated training samples. The plume occupies most of the canvas. A handful of particles glow violet. Black void background. Restrained, sparse density at the edges.',
     },
     {
@@ -93,16 +96,23 @@ const POSTS = {
 // ─── CLI ──────────────────────────────────────────────────
 
 function parseArgs(argv) {
-  const args = { post: 'autonomous-autoresearch', only: null, model: DEFAULT_MODEL }
+  const args = { post: 'autonomous-autoresearch', only: null, model: DEFAULT_MODEL, via: 'router' }
   for (const a of argv) {
     if (a.startsWith('--post=')) args.post = a.slice('--post='.length)
     else if (a.startsWith('--only=')) args.only = new Set(a.slice('--only='.length).split(',').map((s) => s.trim()))
     else if (a.startsWith('--model=')) args.model = a.slice('--model='.length)
+    else if (a.startsWith('--via=')) args.via = a.slice('--via='.length)
   }
   return args
 }
 
-async function loadAuth() {
+async function loadAuth(via) {
+  if (via === 'openai') {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('--via=openai requires OPENAI_API_KEY in env. Decrypt with:\n  export OPENAI_API_KEY=$(cd ~/company/devops/secrets && dotenvx get OPENAI_API_KEY -f agent-state.env)')
+    }
+    return { apiKey: process.env.OPENAI_API_KEY, baseURL: 'https://api.openai.com' }
+  }
   if (process.env.TCLOUD_API_KEY) return { apiKey: process.env.TCLOUD_API_KEY, baseURL: process.env.TCLOUD_BASE_URL || DEFAULT_BASE_URL }
   const cfgPath = join(homedir(), '.tcloud', 'config.json')
   if (existsSync(cfgPath)) {
@@ -116,27 +126,32 @@ async function loadAuth() {
       'Options:',
       '  1. Run:    tcloud login    (saves to ~/.tcloud/config.json)',
       '  2. Or:     export TCLOUD_API_KEY=sk-tan-...',
+      '  3. Or:     pnpm gen:graphics --via=openai  (uses OPENAI_API_KEY)',
       '',
-      'Get a key at https://router.tangle.tools or via your tcloud account.',
+      'Router source: https://router.tangle.tools',
     ].join('\n'),
   )
 }
 
 async function generate({ apiKey, baseURL }, { model, prompt, size, id }) {
   const url = `${baseURL.replace(/\/$/, '')}/v1/images/generations`
+  const isGptImage = model.startsWith('gpt-image')
+  const body = {
+    model,
+    prompt: `${STYLE_PREAMBLE}\n\nSubject: ${prompt}`,
+    size,
+    n: 1,
+  }
+  // gpt-image-1 returns b64_json by default and rejects response_format.
+  // Other models (dall-e-3, flux) need it set explicitly.
+  if (!isGptImage) body.response_format = 'b64_json'
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model,
-      prompt: `${STYLE_PREAMBLE}\n\nSubject: ${prompt}`,
-      size,
-      n: 1,
-      response_format: 'b64_json',
-    }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const text = await res.text()
@@ -163,12 +178,13 @@ async function main() {
     process.exit(2)
   }
 
-  const auth = await loadAuth()
+  const auth = await loadAuth(args.via)
   const outDir = join(repoRoot, 'public', 'posts', args.post)
   await mkdir(outDir, { recursive: true })
 
   const targets = list.filter((p) => !args.only || args.only.has(p.id.split('-')[0]))
   console.log(`gen-graphics → ${args.post}`)
+  console.log(`  via:   ${args.via}`)
   console.log(`  base:  ${auth.baseURL}`)
   console.log(`  model: ${args.model}`)
   console.log(`  count: ${targets.length}`)
