@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(167,139,250,0.07)" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="vignette" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.5)"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0d0d0d"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+
+  <!-- caution-tape mark, top-left, smaller and angled -->
+  <g transform="translate(-40, 80) rotate(-12)">
+    <rect x="0" y="0" width="280" height="22" fill="#f5c518"/>
+    <g fill="#1a1a1a">
+      <rect x="40" y="0" width="20" height="22"/>
+      <rect x="100" y="0" width="20" height="22"/>
+      <rect x="160" y="0" width="20" height="22"/>
+      <rect x="220" y="0" width="20" height="22"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="80" y="340" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="180" fill="#eaeaea" letter-spacing="-6">drew</text>
+
+  <!-- Tagline -->
+  <text x="84" y="410" font-family="Georgia, 'Times New Roman', serif" font-size="38" fill="#b0b0b0" font-style="italic">notes on systems, agents, and math</text>
+
+  <!-- Eyebrow -->
+  <text x="84" y="490" font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, monospace" font-size="22" fill="#a78bfa" letter-spacing="6">A · LIVE · EXPERIMENT</text>
+
+  <!-- URL -->
+  <text x="84" y="560" font-family="ui-monospace, 'JetBrains Mono', SFMono-Regular, monospace" font-size="20" fill="#7a7a7a">drewstone.github.io</text>
+
+  <!-- corner marks -->
+  <g stroke="#a78bfa" stroke-width="2" fill="none" opacity="0.6">
+    <path d="M 1140 50 L 1140 90 L 1180 90"/>
+    <path d="M 1140 580 L 1140 540 L 1180 540"/>
+  </g>
+</svg>

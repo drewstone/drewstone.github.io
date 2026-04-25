@@ -128,7 +128,7 @@ const blocks: Block[] = d.turns.map((t: any) => {
 const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
 ---
 
-<Base title={`trace · ${d.trace_id}`} wide>
+<Base title={`Trace · ${d.trace_id}`} description={`Captured agent session for "${post?.data.title ?? d.post}". Model: ${d.model}, ${d.turns?.length ?? 0} turns.`} wide>
   <nav class="trace-nav">
     <a href="/traces">← all traces</a>
   </nav>
