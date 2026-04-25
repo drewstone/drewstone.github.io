@@ -37,11 +37,32 @@ const { lastDate, lastModel } = Astro.props
     if (!article) return
 
     const KEY = 'mosaic-on'
+
+    // Greedy adjacency pass: walk every prose chunk with a data-rev-color and
+    // bump the slot if it matches its previous sibling's. With 4 slots and
+    // only one neighbor to avoid, a single pass always succeeds.
+    const adjacencyPass = () => {
+      const groups = document.querySelectorAll<HTMLElement>('.prose')
+      for (const group of groups) {
+        const chunks = Array.from(group.children) as HTMLElement[]
+        let prev = -1
+        for (const c of chunks) {
+          const raw = c.getAttribute('data-rev-color')
+          if (raw == null) continue
+          let slot = Number(raw)
+          if (prev !== -1 && slot === prev) slot = (slot + 1) % 4
+          c.setAttribute('data-rev-color', String(slot))
+          prev = slot
+        }
+      }
+    }
+
     const apply = (on: boolean) => {
       article.dataset.mosaic = on ? 'on' : 'off'
       btn.setAttribute('aria-pressed', String(on))
       btn.classList.toggle('is-on', on)
       btn.querySelector('.mosaic-toggle-label')!.textContent = on ? 'Hide edit colors' : 'Show edit colors'
+      if (on) adjacencyPass()
     }
 
     const initial = localStorage.getItem(KEY) === '1'

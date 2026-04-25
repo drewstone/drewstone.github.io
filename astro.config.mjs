@@ -5,14 +5,13 @@ import sitemap from '@astrojs/sitemap'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeParagraphIds from './src/lib/rehype-paragraph-ids.ts'
-import rehypeParagraphHistory from './src/lib/rehype-paragraph-history.ts'
 
 export default defineConfig({
   site: 'https://drewstone.github.io',
   integrations: [mdx(), sitemap()],
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeParagraphIds, rehypeParagraphHistory, rehypeKatex],
+    rehypePlugins: [rehypeParagraphIds, rehypeKatex],
     shikiConfig: {
       themes: {
         light: 'github-light',

@@ -1,10 +1,9 @@
 /**
- * rehype plugin — stamp every <p>, <li>, and heading inside the post prose
- * with a deterministic `data-pid` attribute derived from the normalized text.
- *
- * IDs are stable across builds as long as the text is stable. That's what lets
- * the reactions backend key paragraph-level aggregates without us having to
- * maintain an authorial index.
+ * rehype plugin — stamp every <p>, <li>, h2, h3 with:
+ *   data-pid       deterministic text hash
+ *   data-rev-color slot 0..3 derived from the pid (per-element so adjacent
+ *                  siblings often differ; full adjacency-pass is done at
+ *                  render time via CSS sibling selectors and JS).
  */
 import type { Root, Element, ElementContent } from 'hast'
 import { visit } from 'unist-util-visit'
@@ -31,6 +30,12 @@ function pid(text: string): string {
   return crypto.createHash('sha1').update(norm).digest('hex').slice(0, 10)
 }
 
+function colorSlot(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
+  return h % 4
+}
+
 export default function rehypeParagraphIds() {
   return (tree: Root) => {
     visit(tree, 'element', (node: Element) => {
@@ -40,6 +45,7 @@ export default function rehypeParagraphIds() {
       const id = pid(textOf(node))
       if (!id) return
       node.properties['data-pid'] = id
+      node.properties['data-rev-color'] = String(colorSlot(id))
     })
   }
 }
