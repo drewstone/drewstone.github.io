@@ -16,10 +16,10 @@
 <style>
   .caution-tape {
     position: fixed;
-    top: 38px;
-    left: -90px;
-    width: 360px;
-    height: 28px;
+    top: 64px;
+    left: -130px;
+    width: 520px;
+    height: 42px;
     transform: rotate(-45deg);
     transform-origin: center;
     z-index: 100;
@@ -30,13 +30,13 @@
     background: repeating-linear-gradient(
       90deg,
       #f5c518 0,
-      #f5c518 36px,
-      #1a1a1a 36px,
-      #1a1a1a 56px
+      #f5c518 52px,
+      #1a1a1a 52px,
+      #1a1a1a 80px
     );
     box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.18),
-      0 6px 18px rgba(0, 0, 0, 0.10);
+      0 2px 4px rgba(0, 0, 0, 0.18),
+      0 10px 28px rgba(0, 0, 0, 0.12);
     text-decoration: none;
     cursor: pointer;
     transition: filter 0.18s ease, transform 0.25s ease;
@@ -44,7 +44,7 @@
 
   .caution-tape:hover {
     filter: brightness(1.06) saturate(1.05);
-    transform: rotate(-45deg) translateY(-1px);
+    transform: rotate(-45deg) translateY(-2px);
   }
 
   /* Inset cream rectangle with the actual text — feels like a tape label */
@@ -55,7 +55,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 92%;
-    height: 16px;
+    height: 24px;
     background: #fdf6d8;
     border-top: 1px solid rgba(0, 0, 0, 0.12);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -66,9 +66,9 @@
     position: relative;
     z-index: 1;
     font-family: var(--font-mono);
-    font-size: 9.5px;
+    font-size: 13px;
     font-weight: 800;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     color: #1a1a1a;
     white-space: nowrap;
     text-transform: uppercase;
@@ -91,15 +91,26 @@
   }
 
   /* Reduce on smaller screens, hide entirely on tiny ones */
-  @media (max-width: 720px) {
+  @media (max-width: 880px) {
     .caution-tape {
-      width: 260px;
-      height: 22px;
-      top: 28px;
-      left: -70px;
+      width: 380px;
+      height: 32px;
+      top: 44px;
+      left: -100px;
     }
-    .caution-tape-text { font-size: 8.5px; }
-    .caution-tape::before { height: 12px; }
+    .caution-tape-text { font-size: 10.5px; }
+    .caution-tape::before { height: 18px; }
+  }
+
+  @media (max-width: 600px) {
+    .caution-tape {
+      width: 280px;
+      height: 24px;
+      top: 28px;
+      left: -78px;
+    }
+    .caution-tape-text { font-size: 9px; }
+    .caution-tape::before { height: 13px; }
   }
 
   @media (max-width: 480px) {
