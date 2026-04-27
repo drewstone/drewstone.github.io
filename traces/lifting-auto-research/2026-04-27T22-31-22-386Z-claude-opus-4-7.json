@@ -5,15 +5,25 @@
   "started_at": "2026-04-27T22:31:22.386Z",
   "ended_at": "2026-04-27T22:32:45.228Z",
   "post": "lifting-auto-research",
-  "role": "polish",
-  "commit": "a32598ceaf2434ee46a2663388a1e85490044cc9",
+  "role": "draft",
+  "commit": "a32598c",
+  "commit_subject": "post: lifting auto-research — categorical view of recursive auto-research, grounding rule",
+  "commit_message": "post: lifting auto-research — categorical view of recursive auto-research, grounding rule",
   "files_touched": [
     "src/content/posts/lifting-auto-research.mdx"
+  ],
+  "diffstat": [
+    {
+      "path": "src/content/posts/lifting-auto-research.mdx",
+      "additions": 290,
+      "deletions": 0
+    }
   ],
   "summary": "captured session · 2 asst turns · 1 tool calls",
   "turns": [
     {
       "role": "assistant",
+      "text": "Now I understand the style. Let me draft the post.",
       "text_summary": "Now I understand the style. Let me draft the post.",
       "ts": "2026-04-27T22:31:22.386Z"
     },
@@ -22,6 +32,13 @@
       "tool_calls": 1,
       "tool_names": [
         "Write"
+      ],
+      "tool_call_details": [
+        {
+          "name": "Write",
+          "input_preview": "--- title: 'Lifting Auto-Research' description: 'Auto-research is a loop. Letting an agent optimize that loop lifts it one level up. Doing this recursively builds a tower. Whether the tower ascends or just spins depends on a single property: grounding.' date: 2026-04-27 tags: ['agents', 'math', 'systems'] authors:",
+          "file_path": "src/content/posts/lifting-auto-research.mdx"
+        }
       ],
       "files_touched": [
         "src/content/posts/lifting-auto-research.mdx"

@@ -62,6 +62,37 @@ function toolSummary(ev: any): { count: number; names: string[] } {
   return { count: names.length, names: names.slice(0, 6) }
 }
 
+function toolDetails(ev: any): { name: string; input_preview?: string; file_path?: string }[] {
+  const content = ev?.message?.content
+  if (!Array.isArray(content)) return []
+  const out: { name: string; input_preview?: string; file_path?: string }[] = []
+  for (const block of content) {
+    if (block?.type !== 'tool_use' || typeof block.name !== 'string') continue
+    const input = block.input ?? {}
+    const file_path: string | undefined = input.file_path || input.notebook_path || input.path
+    let preview = ''
+    if (block.name === 'Bash' && typeof input.command === 'string') preview = input.command
+    else if (block.name === 'Edit' && typeof input.old_string === 'string') {
+      const head = (s: string) => s.split('\n').slice(0, 3).join('\n')
+      preview = `- ${head(input.old_string)}\n+ ${head(input.new_string ?? '')}`
+    } else if (block.name === 'Write' && typeof input.content === 'string') {
+      preview = input.content.split('\n').slice(0, 6).join('\n')
+    } else if (block.name === 'Read' && typeof input.file_path === 'string') {
+      preview = input.file_path
+    } else if (block.name === 'Grep' && typeof input.pattern === 'string') {
+      preview = `${input.pattern}${input.path ? '  in  ' + input.path : ''}`
+    } else {
+      try { preview = JSON.stringify(input) } catch { preview = '' }
+    }
+    out.push({
+      name: block.name,
+      input_preview: preview ? summarize(preview, 600) : undefined,
+      file_path,
+    })
+  }
+  return out
+}
+
 function assistantText(ev: any): string {
   const content = ev?.message?.content
   if (typeof content === 'string') return content
@@ -188,19 +219,25 @@ export class ClaudeCodeHarness implements TraceHarness {
         if (e?.type === 'user') {
           const txt = userText(e)
           if (!txt) continue
-          turns.push({ role: 'user', text: summarize(txt, 600), ts })
+          turns.push({ role: 'user', text: txt.length > 8000 ? summarize(txt, 8000) : txt, ts })
         } else if (e?.type === 'assistant') {
           const txt = assistantText(e)
           const { count, names } = toolSummary(e)
+          const details = toolDetails(e).map((d) => ({
+            ...d,
+            file_path: d.file_path ? relativize(d.file_path) : undefined,
+          }))
           const files = touchedFiles(e).map(relativize)
           const hasText = !!txt
           const hasTools = count > 0
           if (!hasText && !hasTools) continue
           turns.push({
             role: 'assistant',
+            text: hasText ? (txt.length > 8000 ? summarize(txt, 8000) : txt) : undefined,
             text_summary: hasText ? summarize(txt, 280) : undefined,
             tool_calls: count || undefined,
             tool_names: names.length ? names : undefined,
+            tool_call_details: details.length ? details : undefined,
             files_touched: files.length ? files : undefined,
             had_thinking: hadThinking(e) || undefined,
             ts,

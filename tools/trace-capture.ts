@@ -230,6 +230,29 @@ async function capture(flags: Args): Promise<void> {
     }
     if (!seen.size) seen.add(`src/content/posts/${postSlug}.mdx`)
 
+    // Pull commit subject + body and per-file diffstat when commit is real.
+    let commit_subject: string | undefined
+    let commit_message: string | undefined
+    let diffstat: { path: string; additions: number; deletions: number }[] | undefined
+    if (commit && commit !== 'HEAD') {
+      try {
+        commit_subject = execSync(`git log -1 --format=%s ${commit}`, { stdio: ['ignore', 'pipe', 'ignore'] })
+          .toString().trim() || undefined
+      } catch {}
+      try {
+        commit_message = execSync(`git log -1 --format=%B ${commit}`, { stdio: ['ignore', 'pipe', 'ignore'] })
+          .toString().trim() || undefined
+      } catch {}
+      try {
+        const out = execSync(`git show --no-renames --numstat --format='' ${commit}`, { stdio: ['ignore', 'pipe', 'ignore'] }).toString()
+        const stats = out.split('\n').map((l) => l.trim()).filter(Boolean).map((line) => {
+          const [a, d, p] = line.split('\t')
+          return { path: p, additions: Number(a) || 0, deletions: Number(d) || 0 }
+        }).filter((x) => x.path)
+        if (stats.length) diffstat = stats
+      } catch {}
+    }
+
     const trace: TraceFile = {
       trace_id,
       harness: harness.name,
@@ -239,7 +262,10 @@ async function capture(flags: Args): Promise<void> {
       post: postSlug,
       role: role as TraceFile['role'],
       commit,
+      commit_subject,
+      commit_message,
       files_touched: [...seen],
+      diffstat,
       summary,
       turns,
     }

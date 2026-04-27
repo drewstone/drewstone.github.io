@@ -11,6 +11,14 @@ const authorSchema = z.object({
   date: z.coerce.date(),
 })
 
+const judgeScoreSchema = z.object({
+  judge: z.string(),
+  scored_at: z.string().optional(),
+  overall: z.number().optional(),
+  dimensions: z.record(z.number()).optional(),
+  notes: z.string().optional(),
+})
+
 const revisionSchema = z.object({
   date: z.coerce.date(),
   model: z.string(),
@@ -24,6 +32,10 @@ const revisionSchema = z.object({
    * AI revisions leave this empty; UI infers author from `model`.
    */
   author: z.string().optional(),
+  /** Optional intent ("why I made this edit"). */
+  intent: z.string().optional(),
+  /** Optional judge/eval scores attached to this revision. */
+  scores: z.array(judgeScoreSchema).optional(),
 })
 
 const posts = defineCollection({
@@ -47,15 +59,37 @@ const posts = defineCollection({
   }),
 })
 
+const toolCallDetailSchema = z.object({
+  name: z.string(),
+  input_preview: z.string().optional(),
+  file_path: z.string().optional(),
+  result_preview: z.string().optional(),
+})
+
 const turnSchema = z.object({
   role: z.enum(['user', 'assistant', 'system', 'tool']),
   text: z.string().optional(),
   text_summary: z.string().optional(),
   tool_calls: z.number().optional(),
   tool_names: z.array(z.string()).optional(),
+  tool_call_details: z.array(toolCallDetailSchema).optional(),
   files_touched: z.array(z.string()).optional(),
   had_thinking: z.boolean().optional(),
   ts: z.string().optional(),
+})
+
+const fileDiffStatSchema = z.object({
+  path: z.string(),
+  additions: z.number(),
+  deletions: z.number(),
+})
+
+const traceJudgeScoreSchema = z.object({
+  judge: z.string(),
+  scored_at: z.string().optional(),
+  overall: z.number().optional(),
+  dimensions: z.record(z.number()).optional(),
+  notes: z.string().optional(),
 })
 
 /**
@@ -104,9 +138,14 @@ const traces = defineCollection({
     post: z.string(),
     role: z.enum(['draft', 'rewrite', 'polish', 'diagram', 'review']),
     commit: z.string().optional(),
+    commit_subject: z.string().optional(),
+    commit_message: z.string().optional(),
     files_touched: z.array(z.string()).default([]),
+    diffstat: z.array(fileDiffStatSchema).optional(),
     summary: z.string(),
+    intent: z.string().optional(),
     turns: z.array(turnSchema),
+    scores: z.array(traceJudgeScoreSchema).optional(),
     raw_uri: z.string().optional(),
   }),
 })
