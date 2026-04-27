@@ -74,6 +74,18 @@ function changedPostsAtHead(): string[] {
     .map((l) => l.replace('src/content/posts/', '').replace(/\.mdx$/, ''))
 }
 
+/** True iff the only change to this post in `commit` is additions to the
+ *  frontmatter `revisions:` array (a phantom edit caused by the post-commit
+ *  hook's prior write being dragged in by the next `git add -A`). */
+function isPhantomEdit(commit: string, slug: string): boolean {
+  const path = `src/content/posts/${slug}.mdx`
+  const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
+  if (!diff) return false
+  const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
+  if (!lines.length) return false
+  return lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))
+}
+
 function harnessByName(name: string, input?: string): TraceHarness {
   switch (name) {
     case 'claude-code': return new ClaudeCodeHarness()
@@ -170,6 +182,10 @@ async function capture(flags: Args): Promise<void> {
   }
 
   for (const postSlug of posts) {
+    if (commit && commit !== 'HEAD' && isPhantomEdit(commit, postSlug)) {
+      console.log(`[${postSlug}] phantom edit (revisions-only) — skip`)
+      continue
+    }
     const harnessName = (flags.harness as string) ?? (await autoDetectHarness(postSlug))?.name
     if (!harnessName) {
       console.error(`[${postSlug}] no harness detected — skip`)

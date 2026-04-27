@@ -52,6 +52,22 @@ function changedPostsAt(commit) {
   )
 }
 
+/**
+ * Detect a "phantom" revision: a commit whose only change to a post is
+ * additions inside the frontmatter `revisions:` array. This happens when
+ * the post-commit hook appends a revision line that gets dragged into the
+ * NEXT commit's `git add -A`. Logging those would cascade forever.
+ */
+function isPhantomEdit(commit, slug) {
+  const path = `src/content/posts/${slug}.mdx`
+  const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
+  if (!diff) return false
+  const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
+  if (!lines.length) return false
+  // Every changed line must look like a revision array entry to count as phantom.
+  return lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))
+}
+
 function parseArgs(argv) {
   const args = { post: null, note: null, commit: null, author: 'Drew Stone', auto: false }
   for (const a of argv) {
@@ -135,6 +151,10 @@ async function main() {
   }
 
   for (const slug of posts) {
+    if (commit && isPhantomEdit(commit, slug)) {
+      console.log(`  [${slug}] phantom edit (revisions-only) — skip`)
+      continue
+    }
     const status = await appendRevision(slug, {
       date: todayStr(),
       model: 'human',
