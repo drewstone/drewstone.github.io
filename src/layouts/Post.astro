@@ -63,6 +63,7 @@ const articleJsonLd = {
   title={title}
   description={description}
   type="article"
+  image={slug ? `/og/${slug}.png` : undefined}
   publishedTime={date}
   modifiedTime={updated}
   tags={tags}
