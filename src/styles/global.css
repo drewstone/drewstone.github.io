@@ -293,8 +293,8 @@ th {
   color: var(--fg-muted);
 }
 
-/* Asides */
-aside, .note {
+/* Inline prose callouts — scope to .prose so layout asides (sidebars, toc) are unaffected */
+.prose aside, .note {
   border-left: 2px solid var(--fg);
   padding: 0 var(--space-lg);
   margin: var(--space-lg) 0;

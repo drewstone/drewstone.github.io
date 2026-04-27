@@ -362,12 +362,18 @@ const sections = [
     align-items: start;
   }
 
-  /* Sticky ToC — quiet sidebar, no pills, no numbering, hairline accent on active */
+  /* Sticky ToC — quiet sidebar, no pills, no numbering, hairline accent on active.
+     Override the global `aside { border-left, padding, margin }` rule that's
+     intended for inline prose asides — this is a layout aside, not a callout. */
   .toc {
     position: sticky;
     top: var(--space-lg);
     align-self: start;
     padding: var(--space-md) 0;
+    border-left: 0;
+    margin: 0;
+    color: inherit;
+    font-size: inherit;
   }
   .toc-eyebrow {
     font-family: var(--font-mono);

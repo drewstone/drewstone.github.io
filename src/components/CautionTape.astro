@@ -116,10 +116,4 @@
   @media (max-width: 480px) {
     .caution-tape { display: none; }
   }
-
-  /* Don't show the tape on pages it links to (it's redundant + overlaps content) */
-  body[data-route="/experiment"] .caution-tape,
-  body[data-route="/experiment/"] .caution-tape {
-    display: none;
-  }
 </style>
