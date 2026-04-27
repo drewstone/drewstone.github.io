@@ -115,7 +115,7 @@ const websiteJsonLd = isHome
     {websiteJsonLd && <script type="application/ld+json" set:html={JSON.stringify(websiteJsonLd)} />}
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
-  <body>
+  <body data-route={Astro.url.pathname}>
     <CautionTape />
     <header class="site-header">
       <div class="container-wide nav-inner">
