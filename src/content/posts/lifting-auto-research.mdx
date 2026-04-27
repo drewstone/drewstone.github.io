@@ -1,0 +1,290 @@
+---
+title: 'Lifting Auto-Research'
+description: 'Auto-research is a loop. Letting an agent optimize that loop lifts it one level up. Doing this recursively builds a tower. Whether the tower ascends or just spins depends on a single property: grounding.'
+date: 2026-04-27
+tags: ['agents', 'math', 'systems']
+authors:
+  - { model: 'claude-opus-4-7', role: 'draft', date: 2026-04-27 }
+---
+
+import Chart from '../../components/Chart.astro'
+import Sidenote from '../../components/Sidenote.astro'
+
+Auto-research is the loop where a coding agent edits the code that trains another model, runs the benchmark, reads the result, and edits again. It works. The interesting question is not whether it works. The interesting question is what happens when you let an agent edit the loop itself: choose the objective, generate the data, swap the optimizer, rewrite the evaluator. That move is a *lift*. You can do it again. You can keep doing it.
+
+The natural worry is that this becomes self-licking ice cream. The natural hope is that it becomes a self-improving research engine. Both happen. Which one you get depends on a single property, and the property is not intelligence.
+
+## The base loop
+
+Define a research process as a tuple:
+
+$$
+R_0 = (H, E, D, O, U)
+$$
+
+where $H$ is the hypothesis space, $E$ is the experiment operator (the thing that takes a hypothesis and returns observations), $D$ is the data distribution, $O$ is the objective, and $U$ is the update rule. The loop is:
+
+$$
+h_{t+1} = U(h_t, E(h_t), D, O)
+$$
+
+This is the GEPA-shaped loop, the nanochat-tuning loop, the eval-improvement loop, the prompt-evolution loop. It is the level everyone is shipping right now. It already works.
+
+## The first lift
+
+Now stop optimizing $h$ and start optimizing $R_0$. Promote the optimizer to operate on the tuple:
+
+$$
+R_0^{t+1} = U_1(R_0^t, \operatorname{Eval}(R_0^t))
+$$
+
+The agent now picks the objective. It picks the data. It picks which experiments to run. It picks which optimizer to use inside $R_0$. This is what people mean when they say "automating auto-research." It is a level up.
+
+You can lift again:
+
+$$
+R_2 = \operatorname{Optimize}(R_1), \quad R_3 = \operatorname{Optimize}(R_2), \quad \ldots
+$$
+
+A tower:
+
+$$
+R_0 \to R_1 \to R_2 \to R_3 \to \cdots
+$$
+
+The right framing is category-theoretic. Define a category $\mathcal{R}$ whose objects are research systems and whose morphisms are transformations: objective refinement, data augmentation, evaluator replacement, optimizer swap, agent-graph rewrite. Auto-research is an endofunctor:
+
+$$
+A : \mathcal{R} \to \mathcal{R}
+$$
+
+The tower is the orbit of $A$ on a starting object:
+
+$$
+R, A(R), A^2(R), A^3(R), \ldots
+$$
+
+The question becomes: what is the long-run behavior of this orbit? Does it converge to a fixed point? Does it cycle? Does it diverge? Does it just produce nicer-looking versions of the same research system without ever cashing out?
+
+## The tower, drawn
+
+<Chart
+  id="auto-research-tower"
+  code={`
+const W = 780, H = 460
+const canvas = document.createElement('canvas')
+canvas.width = W; canvas.height = H
+const ctx = canvas.getContext('2d')
+
+const style = getComputedStyle(document.documentElement)
+const fg = style.getPropertyValue('--fg').trim() || '#111'
+const muted = style.getPropertyValue('--fg-muted').trim() || '#4a4a4a'
+const faint = style.getPropertyValue('--fg-faint').trim() || '#7a7a7a'
+const border = style.getPropertyValue('--border').trim() || '#d4d4d4'
+const bg = style.getPropertyValue('--bg').trim() || '#fff'
+const action = style.getPropertyValue('--c-action').trim() || '#6d28d9'
+const ok = style.getPropertyValue('--c-ok').trim() || '#15803d'
+
+ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+const levels = [
+  { y: 380, label: 'R₀', sub: 'object: optimize hypothesis h', detail: '(H, E, D, O, U)' },
+  { y: 290, label: 'R₁', sub: 'optimize the loop itself', detail: 'pick O, D, E, U' },
+  { y: 200, label: 'R₂', sub: 'optimize how loops are optimized', detail: 'pick the meta-rule' },
+  { y: 110, label: 'R₃', sub: 'optimize objective formation', detail: 'pick what counts' },
+]
+
+const cx = 200
+const boxW = 280, boxH = 64
+
+ctx.font = '13px JetBrains Mono, monospace'
+ctx.textBaseline = 'middle'
+
+for (const lvl of levels) {
+  ctx.strokeStyle = fg
+  ctx.lineWidth = 1
+  ctx.strokeRect(cx - boxW / 2, lvl.y - boxH / 2, boxW, boxH)
+  ctx.fillStyle = fg
+  ctx.font = 'bold 15px JetBrains Mono, monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText(lvl.label, cx - boxW / 2 + 14, lvl.y - 14)
+  ctx.fillStyle = muted
+  ctx.font = '12px JetBrains Mono, monospace'
+  ctx.fillText(lvl.sub, cx - boxW / 2 + 14, lvl.y + 4)
+  ctx.fillStyle = faint
+  ctx.font = '11px JetBrains Mono, monospace'
+  ctx.fillText(lvl.detail, cx - boxW / 2 + 14, lvl.y + 20)
+}
+
+// up arrows: A
+ctx.strokeStyle = action
+ctx.fillStyle = action
+ctx.lineWidth = 1.5
+for (let i = 0; i < levels.length - 1; i++) {
+  const y0 = levels[i].y - boxH / 2
+  const y1 = levels[i + 1].y + boxH / 2
+  ctx.beginPath()
+  ctx.moveTo(cx, y0)
+  ctx.lineTo(cx, y1 + 6)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(cx, y1)
+  ctx.lineTo(cx - 5, y1 + 9)
+  ctx.lineTo(cx + 5, y1 + 9)
+  ctx.closePath()
+  ctx.fill()
+  ctx.font = 'italic 13px Computer Modern, serif'
+  ctx.textAlign = 'left'
+  ctx.fillText('A', cx + 10, (y0 + y1) / 2)
+}
+
+// projections π down the right side
+const px = cx + boxW / 2 + 90
+ctx.strokeStyle = ok
+ctx.fillStyle = ok
+ctx.lineWidth = 1.5
+const baseY = levels[0].y
+for (let i = 1; i < levels.length; i++) {
+  const top = levels[i].y
+  ctx.beginPath()
+  ctx.moveTo(px, top)
+  ctx.bezierCurveTo(px + 70, top, px + 70, baseY, px, baseY)
+  ctx.stroke()
+  // arrowhead at base
+  ctx.beginPath()
+  ctx.moveTo(px, baseY)
+  ctx.lineTo(px + 7, baseY - 4)
+  ctx.lineTo(px + 7, baseY + 4)
+  ctx.closePath()
+  ctx.fill()
+  // tap point on the box
+  ctx.fillStyle = ok
+  ctx.beginPath(); ctx.arc(px, top, 2.5, 0, Math.PI * 2); ctx.fill()
+  ctx.fillStyle = ok
+  ctx.font = 'italic 12px Computer Modern, serif'
+  ctx.textAlign = 'left'
+  ctx.fillText('π' + i, px + 78, (top + baseY) / 2 - 4)
+  ctx.fillStyle = ok
+}
+
+// legend
+ctx.fillStyle = action
+ctx.font = '11px JetBrains Mono, monospace'
+ctx.textAlign = 'left'
+ctx.fillText('A = lift (auto-research applied to the loop)', 30, 36)
+ctx.fillStyle = ok
+ctx.fillText('πₙ = projection back to object-level performance', 30, 54)
+ctx.fillStyle = faint
+ctx.fillText('the lift is admissible only when πₙ ∘ A ≈ A₀ ∘ πₙ', 30, 72)
+
+container.appendChild(canvas)
+  `}
+/>
+
+The vertical arrows are the lifts. Each $A$ takes a research system and returns one whose components have been edited by an agent. The curved arrows on the right are the projections $\pi_n$ that send a meta-level system back to its object-level performance. The whole structure only ascends if those arrows commute: improving the loop at level $n$ has to improve the thing the loop at level $0$ is supposed to solve. Otherwise the upper boxes drift.
+
+## When induction works
+
+You can prove the tower ascends only if you have a well-founded progress measure. Call it $V(R)$. If $V$ is a number you read off the system itself, the agent will hack it. So $V$ has to come from outside. Stable. Externally validated. Not writable by the loop.
+
+The induction shape is:
+
+$$
+V(A(R)) \geq V(R) + \epsilon
+$$
+
+under bounded cost, with high probability, against a held-out validation distribution the system cannot edit. That is a Lyapunov argument for research systems. It is not magic and it is not AGI. It is the same shape as a convergence proof for SGD: you need a potential function and you need it to descend (or here, ascend) in expectation.
+
+The clean theorem statement:
+
+> Given a sequence $R_{n+1} = A(R_n)$ where each lift preserves external validity, increases expected score on a held-out task distribution, controls evaluator drift, and is bounded by a cost regularizer, the tower admits monotonic improvement up to a local optimum or resource bound.
+
+Every clause is load-bearing. Drop any one and the bound disappears.
+
+## When it fails
+
+The tower fails the moment the higher-order loop optimizes the machinery of validation faster than the machinery of truth. The failure modes are not exotic. They are the same five things every reward-shaping paper warns about, just lifted one or two levels:
+
+1. **Objective drift.** The agent edits the objective until the task becomes easier but less real. The numbers go up; the thing they were measuring is gone.
+2. **Evaluator capture.** The agent learns the shape of what the evaluator likes. It produces artifacts that satisfy the rubric without solving the problem the rubric was a proxy for.
+3. **Synthetic data collapse.** The system trains and evaluates on data generated by its own current worldview. Variance shrinks. So does coverage. The model gets confident about a smaller world.
+4. **Search over abstractions without grounding.** The meta-agent invents better frameworks for thinking about the problem. None of them touch a real experiment. The blog post writes itself; the codebase does not improve.
+5. **Cost explosion.** Each meta-level multiplies the experiment space. Without a budget, the tower becomes a way to spend infinite compute producing finite progress.
+
+Five failure modes, one underlying cause: the system optimized something it could write to.
+
+## Lifting, properly
+
+This is where the category theory earns its keep. A lift in the categorical sense is not "do the same thing one level up." A lift is a structure-preserving move: you have something downstairs, you build something upstairs that respects the structure of the thing downstairs.
+
+For auto-research, the structure to preserve is the connection to reality. Every lifted system needs a projection back to the base:
+
+$$
+\pi_n : R_n \to R_0
+$$
+
+And the projection has to commute with the optimizer:
+
+$$
+\pi(A(R)) \approx A_0(\pi(R))
+$$
+
+In words: improving the research process should improve the thing the research process is supposed to solve. A lift that does not satisfy this is not a lift. It is a change of subject.
+
+This gives a single, sharp principle for designing recursive auto-research systems:
+
+> Every abstraction must pay rent at the object level.
+
+If the meta-loop cannot point to a measurable improvement in object-level performance after $k$ steps, the meta-loop is doing something other than research.
+
+## The fixed point
+
+If the tower does converge, it converges to a system $R^*$ with:
+
+$$
+R^* \cong A(R^*)
+$$
+
+The auto-research operator no longer changes the system in a meaningful way. It has internalized its own meta-optimizer. This is what people are pointing at when they say "self-improving agents." It is the right object to want.
+
+But fixed points come in flavors. You can converge to a robust scientific engine. You can also converge to a self-confirming delusion, a reward-hacked evaluator, or a bureaucracy of agents reviewing each other's research proposals. Existence is not enough. The fixed point has to satisfy the projection condition. Otherwise it is a stable hallucination.
+
+## What this looks like for an agent platform
+
+For a sandboxed agent platform, the levels map cleanly to capabilities the platform either has or needs:
+
+| Level | What gets optimized | Concrete artifact |
+|-------|---------------------|--------------------|
+| $R_0$ | The task | App built, bug fixed, blueprint shipped |
+| $R_1$ | The agent | Prompt, tool order, memory policy, model routing, retry rule |
+| $R_2$ | The data | Adversarial repos, harder tasks, failure-mined regression suites |
+| $R_3$ | The objective | Not just "tests pass" but minimal diff, no dep bloat, latency, cost, human approval |
+| $R_4$ | The research process | Which experiment to run next, when to run a canary, when to stop |
+
+GEPA-style reflective evolution<Sidenote num={1}>GEPA: Reflective Prompt Evolution. Uses execution traces and language reflections rather than scalar rewards. Reports outperforming GRPO by ~6% on average with up to 35× fewer rollouts.</Sidenote> sits at $R_1$ and $R_2$. It is the thing that already works. Each level above is harder because the thing being optimized is less concrete and the projection back to $R_0$ is longer.
+
+The mistake is to skip levels. Going from $R_0$ to $R_3$ in one move means the agent is editing the objective without anyone checking that the new objective predicts object-level success. That is the architecture for fooling yourself at speed.
+
+The right move is to climb one level at a time, and at every step verify that the projection commutes. Run the lifted loop. Sample $k$ snapshots of $R_n$. Project each one back to $R_0$ and run it on the held-out task suite. If the projected performance went up, the lift was real. If it went sideways, the lift was decorative and you stop.
+
+## The grounding rule
+
+Two loops, identical except for one step:
+
+**Loop A.**
+
+$$
+\text{Agent} \to \text{invent objective} \to \text{generate data} \to \text{score itself} \to \text{declare progress}
+$$
+
+**Loop B.**
+
+$$
+\text{Agent} \to \text{propose objective} \to \text{generate data} \to \text{run executable experiment} \to \text{evaluate on external holdout} \to \text{update only if validated}
+$$
+
+Loop A produces a system that gets better at telling you it is better. Loop B produces a system that gets better. The difference is one step: an external holdout the system cannot edit. That is the entire grounding rule.
+
+The reason recursive auto-research is hard is not that agents cannot generate hypotheses. They can. The reason it is hard is that the system has to decide which abstractions are valid without letting those abstractions detach from reality. Lifting is only meaningful when structure is preserved across levels. The structure to preserve is the answer to one question: did the object-level thing actually get better.
+
+If the answer is yes, the tower is a research engine. If the answer is no, the tower is a regress. Same architecture, opposite outcome, decided by what you let the system write to.
