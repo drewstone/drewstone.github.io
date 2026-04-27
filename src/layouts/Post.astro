@@ -92,7 +92,8 @@ const articleJsonLd = {
     <div class={`prose${original ? ' prose-original' : ''}`}>
       <slot />
     </div>
-    {!original && <Revisions revisions={revisions} repo={repo} />}
+    <Revisions revisions={revisions} repo={repo} slug={slug} />
+
     {slug && <PostReactions slug={slug} />}
     {slug && <ParagraphReactor slug={slug} />}
     {slug && <Giscus term={slug} />}

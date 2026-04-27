@@ -6,14 +6,69 @@
   "ended_at": "2026-04-27T22:36:00.176Z",
   "post": "autonomous-autoreserach",
   "role": "polish",
-  "commit": "898f831f612ddb3ac13f21971ac0b348a281265b",
+  "commit": "bba20f6b87e4beffc6991237ba2844af7cf12201",
+  "commit_subject": "feat(traces): full text + tool args + diffstat + commit message + scorecard schema",
+  "commit_message": "feat(traces): full text + tool args + diffstat + commit message + scorecard schema",
   "files_touched": [
     "src/content/posts/autonomous-autoreserach.mdx"
+  ],
+  "diffstat": [
+    {
+      "path": "src/content.config.ts",
+      "additions": 39,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/autonomous-autoreserach.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/how-i-rebuilt-the-blog.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/lifting-auto-research.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/pages/traces/[id].astro",
+      "additions": 487,
+      "deletions": 149
+    },
+    {
+      "path": "tools/harness/claude-code.ts",
+      "additions": 38,
+      "deletions": 1
+    },
+    {
+      "path": "tools/harness/types.ts",
+      "additions": 42,
+      "deletions": 2
+    },
+    {
+      "path": "tools/trace-capture.ts",
+      "additions": 26,
+      "deletions": 0
+    },
+    {
+      "path": "traces/autonomous-autoreserach/2026-04-27T22-35-59-001Z-claude-opus-4-7.json",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "path": "traces/lifting-auto-research/2026-04-27T22-31-22-386Z-claude-opus-4-7.json",
+      "additions": 19,
+      "deletions": 2
+    }
   ],
   "summary": "captured session · 2 asst turns · 1 tool calls",
   "turns": [
     {
       "role": "assistant",
+      "text": "Flipping draft flags first.",
       "text_summary": "Flipping draft flags first.",
       "ts": "2026-04-27T22:35:59.001Z"
     },
@@ -22,6 +77,13 @@
       "tool_calls": 1,
       "tool_names": [
         "Edit"
+      ],
+      "tool_call_details": [
+        {
+          "name": "Edit",
+          "input_preview": "- draft: true + draft: false",
+          "file_path": "src/content/posts/autonomous-autoreserach.mdx"
+        }
       ],
       "files_touched": [
         "src/content/posts/autonomous-autoreserach.mdx"

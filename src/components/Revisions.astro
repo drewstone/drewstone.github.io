@@ -2,7 +2,14 @@
 /**
  * Revisions — collapsible timeline of real edits on a post.
  * Pairs with the agentic-experiment framing: every edit is a datapoint.
+ *
+ * For every revision that carries a `commit`, we resolve the unified diff
+ * scoped to the post's MDX file at build time and render it expandable
+ * inline. AI revisions render in `--c-action`; human revisions in `--c-human`.
  */
+import { execSync } from 'node:child_process'
+import { codeToHtml } from 'shiki'
+
 interface Revision {
   date: Date
   model: string
@@ -16,11 +23,47 @@ interface Revision {
 interface Props {
   revisions?: Revision[]
   repo?: string // e.g. "drewstone/blog" — used to link commit SHAs
+  slug?: string // post slug — used to scope the diff to the right MDX file
 }
 
-const { revisions = [], repo } = Astro.props
+const { revisions = [], repo, slug } = Astro.props
 
 const isHuman = (m: string) => m === 'human' || m === 'drew-stone'
+
+const postPath = slug ? `src/content/posts/${slug}.mdx` : null
+
+type DiffData = { html: string; additions: number; deletions: number } | null
+
+async function resolveDiff(commit: string): Promise<DiffData> {
+  if (!postPath) return null
+  try {
+    const cmd = `git show --no-renames --format='' ${commit} -- '${postPath}'`
+    const raw = execSync(cmd, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }).toString()
+    if (!raw.trim()) return null
+    let additions = 0, deletions = 0
+    for (const line of raw.split('\n')) {
+      if (line.startsWith('+') && !line.startsWith('+++')) additions++
+      else if (line.startsWith('-') && !line.startsWith('---')) deletions++
+    }
+    let html = ''
+    try {
+      html = await codeToHtml(raw, { lang: 'diff', themes: { light: 'github-light', dark: 'github-dark' } })
+      html = html.replace(/<\/span>\n(<span class="line">)/g, '</span>$1')
+    } catch {
+      html = `<pre><code>${raw.replace(/[<>&]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;'} as any)[c])}</code></pre>`
+    }
+    return { html, additions, deletions }
+  } catch {
+    return null
+  }
+}
+
+const diffByCommit = new Map<string, DiffData>()
+for (const r of revisions) {
+  if (r.commit && !diffByCommit.has(r.commit)) {
+    diffByCommit.set(r.commit, await resolveDiff(r.commit))
+  }
+}
 
 const short = (r: Revision): string => {
   if (isHuman(r.model)) return r.author || 'Drew Stone'
@@ -56,26 +99,41 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
       <svg class="rev-chev" viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </summary>
     <ol class="rev-list">
-      {ordered.map((r) => (
-        <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}${isHuman(r.model) ? ' human' : ''}`}>
-          <div class="rev-head">
-            <time datetime={r.date.toISOString()}>{fmtDate(r.date)}</time>
-            <span class="rev-model">{short(r)}</span>
-            {r.reconstructed && <span class="rev-recon">reconstructed</span>}
-            {r.trace_id && !isHuman(r.model) && (
-              <a class="rev-trace" href={`/traces/${r.trace_id}`} title="view captured session">
-                view trace →
-              </a>
+      {ordered.map((r) => {
+        const diff = r.commit ? diffByCommit.get(r.commit) ?? null : null
+        return (
+          <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}${isHuman(r.model) ? ' human' : ''}`}>
+            <div class="rev-head">
+              <time datetime={r.date.toISOString()}>{fmtDate(r.date)}</time>
+              <span class="rev-model">{short(r)}</span>
+              {r.reconstructed && <span class="rev-recon">reconstructed</span>}
+              {diff && (diff.additions + diff.deletions) > 0 && (
+                <span class="rev-numstat">
+                  <span class="rs-add">+{diff.additions}</span>
+                  <span class="rs-del">−{diff.deletions}</span>
+                </span>
+              )}
+              {r.trace_id && !isHuman(r.model) && (
+                <a class="rev-trace" href={`/traces/${r.trace_id}`} title="view captured session">
+                  view trace →
+                </a>
+              )}
+              {r.commit && repo && (
+                <a class="rev-commit" href={`https://github.com/${repo}/commit/${r.commit}`} target="_blank" rel="noopener">
+                  {r.commit.slice(0, 7)}
+                </a>
+              )}
+            </div>
+            <div class="rev-note">{r.note}</div>
+            {diff && (
+              <details class="rev-diff">
+                <summary>show diff</summary>
+                <div class="rev-diff-code" set:html={diff.html} />
+              </details>
             )}
-            {r.commit && repo && (
-              <a class="rev-commit" href={`https://github.com/${repo}/commit/${r.commit}`} target="_blank" rel="noopener">
-                {r.commit.slice(0, 7)}
-              </a>
-            )}
-          </div>
-          <div class="rev-note">{r.note}</div>
-        </li>
-      ))}
+          </li>
+        )
+      })}
     </ol>
   </details>
 )}
@@ -239,5 +297,73 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
   .rev-item.reconstructed .rev-note {
     color: var(--fg-muted);
     font-style: italic;
+  }
+
+  .rev-numstat {
+    display: inline-flex;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+  .rs-add { color: var(--c-ok); font-weight: 700; }
+  .rs-del { color: var(--c-fail); font-weight: 700; }
+
+  .rev-diff {
+    margin-top: 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .rev-diff > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.4rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-muted);
+    background: var(--bg-alt);
+    user-select: none;
+    transition: color 0.12s, background 0.12s;
+  }
+  .rev-diff > summary:hover { color: var(--fg); background: var(--bg-sink); }
+  .rev-diff > summary::-webkit-details-marker { display: none; }
+  .rev-diff > summary::before {
+    content: '▸';
+    margin-right: 0.45rem;
+    color: var(--fg-faint);
+    transition: transform 0.12s;
+    display: inline-block;
+  }
+  .rev-diff[open] > summary::before { transform: rotate(90deg); }
+  .rev-diff[open] > summary { border-bottom: 1px solid var(--border); }
+
+  .rev-item.human .rev-diff > summary { color: var(--c-human); }
+  .rev-item:not(.human) .rev-diff > summary { color: var(--c-action); }
+
+  .rev-diff-code :global(pre) {
+    margin: 0;
+    padding: 0.65rem 0.85rem;
+    overflow-x: auto;
+    font-size: 12px;
+    line-height: 1.55;
+    background: transparent !important;
+  }
+  .rev-diff-code :global(pre .line) {
+    display: block;
+    padding-left: 0.3rem;
+    min-height: 1.55em;
+  }
+  .rev-diff-code :global(pre .line:has(> span:first-child[style*="#22863A"])),
+  .rev-diff-code :global(pre .line:has(> span:first-child[style*="#85E89D"])),
+  .rev-diff-code :global(pre .line:has(> span:first-child[style*="b5f4a5"])) {
+    background: var(--c-ok-bg);
+  }
+  .rev-diff-code :global(pre .line:has(> span:first-child[style*="B31D28"])),
+  .rev-diff-code :global(pre .line:has(> span:first-child[style*="FDAEB7"])) {
+    background: var(--c-fail-bg);
   }
 </style>
