@@ -20,34 +20,29 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string |
 const configured = !!API
 ---
 
-<section class="reactions" data-slug={slug} data-api={API ?? ''} data-site-key={TURNSTILE_SITE_KEY ?? ''}>
-  <h2 class="reactions-label">Was this useful?</h2>
-  <div class="reactions-row" role="group" aria-label="react to post">
-    <button class="rx-btn" data-kind="like" aria-label="like" disabled={!configured}>
-      <span class="rx-glyph" aria-hidden="true">✓</span>
-      <span class="rx-name">useful</span>
-      <span class="rx-count" data-count>—</span>
-    </button>
-    <button class="rx-btn" data-kind="insight" aria-label="insightful" disabled={!configured}>
-      <span class="rx-glyph" aria-hidden="true">✶</span>
-      <span class="rx-name">insight</span>
-      <span class="rx-count" data-count>—</span>
-    </button>
-    <button class="rx-btn" data-kind="meh" aria-label="meh" disabled={!configured}>
-      <span class="rx-glyph" aria-hidden="true">~</span>
-      <span class="rx-name">meh</span>
-      <span class="rx-count" data-count>—</span>
-    </button>
-  </div>
-  <div class="rx-turnstile" data-turnstile></div>
-  {!configured && (
-    <p class="rx-note">
-      Reactions go live once <code>PUBLIC_REACTIONS_API</code> and
-      <code>PUBLIC_TURNSTILE_SITE_KEY</code> are configured. See
-      <code>workers/reactions/README.md</code> for the deploy recipe.
-    </p>
-  )}
-</section>
+{configured && (
+  <section class="reactions" data-slug={slug} data-api={API} data-site-key={TURNSTILE_SITE_KEY ?? ''}>
+    <h2 class="reactions-label">Was this useful?</h2>
+    <div class="reactions-row" role="group" aria-label="react to post">
+      <button class="rx-btn" data-kind="like" aria-label="like">
+        <span class="rx-glyph" aria-hidden="true">✓</span>
+        <span class="rx-name">useful</span>
+        <span class="rx-count" data-count>—</span>
+      </button>
+      <button class="rx-btn" data-kind="insight" aria-label="insightful">
+        <span class="rx-glyph" aria-hidden="true">✶</span>
+        <span class="rx-name">insight</span>
+        <span class="rx-count" data-count>—</span>
+      </button>
+      <button class="rx-btn" data-kind="meh" aria-label="meh">
+        <span class="rx-glyph" aria-hidden="true">~</span>
+        <span class="rx-name">meh</span>
+        <span class="rx-count" data-count>—</span>
+      </button>
+    </div>
+    <div class="rx-turnstile" data-turnstile></div>
+  </section>
+)}
 
 {configured && TURNSTILE_SITE_KEY && (
   <script
