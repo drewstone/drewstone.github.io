@@ -13,6 +13,7 @@ import { codeToHtml } from 'shiki'
 interface Revision {
   date: Date
   model: string
+  role?: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'publish' | 'research'
   note: string
   commit?: string
   reconstructed?: boolean
@@ -29,6 +30,7 @@ interface Props {
 const { revisions = [], repo, slug } = Astro.props
 
 const isHuman = (m: string) => m === 'human' || m === 'drew-stone'
+const isOutline = (r: Revision) => r.role === 'outline'
 
 const postPath = slug ? `src/content/posts/${slug}.mdx` : null
 
@@ -102,10 +104,11 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
       {ordered.map((r) => {
         const diff = r.commit ? diffByCommit.get(r.commit) ?? null : null
         return (
-          <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}${isHuman(r.model) ? ' human' : ''}`}>
+          <li class={`rev-item${r.reconstructed ? ' reconstructed' : ''}${isHuman(r.model) ? ' human' : ''}${isOutline(r) ? ' outline' : ''}`}>
             <div class="rev-head">
               <time datetime={r.date.toISOString()}>{fmtDate(r.date)}</time>
               <span class="rev-model">{short(r)}</span>
+              {r.role && <span class="rev-role">{r.role}</span>}
               {r.reconstructed && <span class="rev-recon">reconstructed</span>}
               {diff && (diff.additions + diff.deletions) > 0 && (
                 <span class="rev-numstat">
@@ -252,6 +255,26 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
     background: var(--c-human-bg);
     color: var(--c-human);
     border-color: var(--c-human-border);
+  }
+
+  .rev-item.outline .rev-model,
+  .rev-item.outline .rev-role {
+    background: var(--c-human-bg);
+    color: var(--c-human);
+    border-color: var(--c-human-border);
+  }
+
+  .rev-role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: var(--bg-alt);
+    color: var(--fg-muted);
+    border: 1px solid var(--border);
   }
 
   .rev-recon {

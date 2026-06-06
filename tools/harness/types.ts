@@ -97,7 +97,13 @@ export type TraceFile = {
   started_at: string
   ended_at?: string
   post: string
-  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  role: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'publish' | 'research'
+  /** `series-outline` traces can produce multiple post artifacts. */
+  kind?: 'post' | 'series-outline' | 'supporting-research'
+  /** Series slug when a trace belongs to a multi-post project. */
+  series?: string
+  /** Post slugs produced or seeded by this trace. */
+  posts?: string[]
   commit?: string
   /** First line of the commit message (the commit subject). */
   commit_subject?: string

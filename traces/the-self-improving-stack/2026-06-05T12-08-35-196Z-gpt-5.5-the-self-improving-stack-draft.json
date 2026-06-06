@@ -1,0 +1,338 @@
+{
+  "trace_id": "2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-draft",
+  "harness": "codex",
+  "model": "gpt-5.5",
+  "started_at": "2026-06-05T12:08:35.196Z",
+  "ended_at": "2026-06-06T13:46:54.546Z",
+  "post": "the-self-improving-stack",
+  "role": "draft",
+  "kind": "post",
+  "commit": "b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69",
+  "commit_subject": "fix(layout): scope global 'aside' rule to .prose — was bleeding the prose-callout border-left into the experiment toc; restore caution tape on /experiment",
+  "commit_message": "fix(layout): scope global 'aside' rule to .prose — was bleeding the prose-callout border-left into the experiment toc; restore caution tape on /experiment",
+  "files_touched": [
+    "src/content/posts/the-self-improving-stack.mdx",
+    "../../components/OutlineHandoff.astro",
+    "/Users/drew/webb/agent-runtime",
+    "/Users/drew/webb/agent-eval",
+    "/Users/drew/webb/agent-knowledge",
+    "research/self-improving-agent-systems/00-series-overview.md",
+    "research/self-improving-agent-systems/README.md",
+    "/Users/drew/code/blog",
+    "tools/trace-capture.ts"
+  ],
+  "diffstat": [
+    {
+      "path": "src/components/CautionTape.astro",
+      "additions": 0,
+      "deletions": 6
+    },
+    {
+      "path": "src/pages/experiment/index.astro",
+      "additions": 7,
+      "deletions": 1
+    },
+    {
+      "path": "src/styles/global.css",
+      "additions": 2,
+      "deletions": 2
+    }
+  ],
+  "summary": "Drafted the umbrella series article with the closed-loop formalism, layer table, practical test, and full series map; removed scaffold handoff prose and synced the research overview/status map.",
+  "turns": [
+    {
+      "role": "user",
+      "text": "# AGENTS.md instructions for /Users/drew/code/blog <INSTRUCTIONS> ## Shared Agent Defaults Provider-agnostic. Synced to Claude, Codex, and OpenCode installs. ## Repos are alive Multiple agents (Claude, Codex, others) work the same branches and PRs in parallel. Unfamiliar branches, commits you didn't make, in-flight PRs — normal state, not errors. **Orient first, every session:** ``` git status; git log --oneline -10; git reflog | head -20 gh pr list --state open ``` Commit messages tell you what other agents shipped. Five seconds saves a rebase. **Don't ask permission for unexpected state.** …",
+      "ts": "2026-06-05T12:08:35.196Z"
+    },
+    {
+      "role": "user",
+      "text": "I want you to reserach the following and their interplay - hillclimbing msft recent mai work - gepa, dspy, axllm, mipro prompt optimization - skill-opt skill optimization - meta-harness Basically all these things use techqniesu to optimize and hill climb in diff ways, are they doing the same thing? And then hwo does this work across multi agent multi episodic maxTurns=0 agentic flowS? like presumably personas for drivers and supervisors/coordinators of multi agent setups cant simply be so easily gepa optimized without intelligent personification or things like directives that tell subworks to…",
+      "ts": "2026-06-05T12:08:35.210Z"
+    },
+    {
+      "role": "user",
+      "text": "I want you to reserach the following and their interplay - hillclimbing msft recent mai work - gepa, dspy, axllm, mipro prompt optimization - skill-opt skill optimization - meta-harness Basically all these things use techqniesu to optimize and hill climb in diff ways, are they doing the same thing? And then hwo does this work across multi agent multi episodic maxTurns=0 agentic flowS? like presumably personas for drivers and supervisors/coordinators of multi agent setups cant simply be so easily gepa optimized without intelligent personification or things like directives that tell subworks to…",
+      "ts": "2026-06-05T12:08:35.210Z"
+    },
+    {
+      "role": "user",
+      "text": "<turn_aborted> The user interrupted the previous turn on purpose. Any running unified exec processes may still be running in the background. If any tools/commands were aborted, they may have partially executed. </turn_aborted>",
+      "ts": "2026-06-05T12:08:37.453Z"
+    },
+    {
+      "role": "user",
+      "text": "And I want you to track this as a block post trace here in this blog",
+      "ts": "2026-06-05T12:08:44.415Z"
+    },
+    {
+      "role": "user",
+      "text": "And I want you to track this as a block post trace here in this blog",
+      "ts": "2026-06-05T12:08:44.415Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "text_summary": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "ts": "2026-06-05T12:09:05.896Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "text_summary": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "ts": "2026-06-05T12:09:05.923Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "text_summary": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "ts": "2026-06-05T12:09:15.274Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "text_summary": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "ts": "2026-06-05T12:09:15.288Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "text_summary": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "ts": "2026-06-05T12:09:27.076Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "text_summary": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "ts": "2026-06-05T12:09:27.080Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post body.",
+      "text_summary": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post bod…",
+      "ts": "2026-06-05T12:09:31.330Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post body.",
+      "text_summary": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post bod…",
+      "ts": "2026-06-05T12:09:31.330Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "text_summary": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "ts": "2026-06-05T12:10:43.114Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "text_summary": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "ts": "2026-06-05T12:10:43.117Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping source notes.",
+      "text_summary": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping so…",
+      "ts": "2026-06-05T12:10:57.627Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping source notes.",
+      "text_summary": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping so…",
+      "ts": "2026-06-05T12:10:57.634Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "text_summary": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "ts": "2026-06-05T12:11:38.955Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "text_summary": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "ts": "2026-06-05T12:11:38.965Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The tooling bug is clear enough: `trace-capture` dedupes any reused trace ID, so a draft or polish from the same long session gets skipped because the outline/supporting trace already exists. I’ll fix that after the umbrella/status pass by deduping on role plus trace ID and making the finish hook write both `authors` and `revisions` entries.",
+      "text_summary": "The tooling bug is clear enough: `trace-capture` dedupes any reused trace ID, so a draft or polish from the same long session gets skipped because the outline/supporting trace already exists. I’ll fix that after the umbrella/status pass by deduping on role plus trace ID and maki…",
+      "ts": "2026-06-06T13:43:03.577Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The tooling bug is clear enough: `trace-capture` dedupes any reused trace ID, so a draft or polish from the same long session gets skipped because the outline/supporting trace already exists. I’ll fix that after the umbrella/status pass by deduping on role plus trace ID and making the finish hook write both `authors` and `revisions` entries.",
+      "text_summary": "The tooling bug is clear enough: `trace-capture` dedupes any reused trace ID, so a draft or polish from the same long session gets skipped because the outline/supporting trace already exists. I’ll fix that after the umbrella/status pass by deduping on role plus trace ID and maki…",
+      "ts": "2026-06-06T13:43:03.579Z"
+    },
+    {
+      "role": "assistant",
+      "text": "**Problem**: the series spine is good, but the public umbrella article and research status map still advertise scaffold state, and the finish hook can silently skip same-session draft/polish provenance. **Change**: write the umbrella article, update the overview and README status map, and harden `trace-capture` so revision attachment is role-aware and also records authors. **Why long-term right**: this makes the series coherent as a package and removes the provenance footgun that forced manual metadata patches across the last several posts. **Cost**: one post, two research docs, one small tooling change, plus build/tool verification; rollback is restoring those files from this turn’s diff.",
+      "text_summary": "**Problem**: the series spine is good, but the public umbrella article and research status map still advertise scaffold state, and the finish hook can silently skip same-session draft/polish provenance. **Change**: write the umbrella article, update the overview and README statu…",
+      "ts": "2026-06-06T13:43:14.020Z"
+    },
+    {
+      "role": "assistant",
+      "text": "**Problem**: the series spine is good, but the public umbrella article and research status map still advertise scaffold state, and the finish hook can silently skip same-session draft/polish provenance. **Change**: write the umbrella article, update the overview and README status map, and harden `trace-capture` so revision attachment is role-aware and also records authors. **Why long-term right**: this makes the series coherent as a package and removes the provenance footgun that forced manual metadata patches across the last several posts. **Cost**: one post, two research docs, one small tooling change, plus build/tool verification; rollback is restoring those files from this turn’s diff.",
+      "text_summary": "**Problem**: the series spine is good, but the public umbrella article and research status map still advertise scaffold state, and the finish hook can silently skip same-session draft/polish provenance. **Change**: write the umbrella article, update the overview and README statu…",
+      "ts": "2026-06-06T13:43:14.020Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’m fixing the provenance tool first so the umbrella draft/polish rows can be attached by the normal lifecycle instead of another manual patch. The change is narrow: unique trace IDs per post/role, role-aware revision dedupe, and author-row attachment.",
+      "text_summary": "I’m fixing the provenance tool first so the umbrella draft/polish rows can be attached by the normal lifecycle instead of another manual patch. The change is narrow: unique trace IDs per post/role, role-aware revision dedupe, and author-row attachment.",
+      "ts": "2026-06-06T13:43:31.996Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’m fixing the provenance tool first so the umbrella draft/polish rows can be attached by the normal lifecycle instead of another manual patch. The change is narrow: unique trace IDs per post/role, role-aware revision dedupe, and author-row attachment.",
+      "text_summary": "I’m fixing the provenance tool first so the umbrella draft/polish rows can be attached by the normal lifecycle instead of another manual patch. The change is narrow: unique trace IDs per post/role, role-aware revision dedupe, and author-row attachment.",
+      "ts": "2026-06-06T13:43:31.996Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I caught a portability issue in my own patch before running it: JavaScript regex does not have the end-anchor I wrote. I’m replacing that with a small line-based frontmatter section parser.",
+      "text_summary": "I caught a portability issue in my own patch before running it: JavaScript regex does not have the end-anchor I wrote. I’m replacing that with a small line-based frontmatter section parser.",
+      "ts": "2026-06-06T13:44:07.729Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I caught a portability issue in my own patch before running it: JavaScript regex does not have the end-anchor I wrote. I’m replacing that with a small line-based frontmatter section parser.",
+      "text_summary": "I caught a portability issue in my own patch before running it: JavaScript regex does not have the end-anchor I wrote. I’m replacing that with a small line-based frontmatter section parser.",
+      "ts": "2026-06-06T13:44:07.730Z"
+    },
+    {
+      "role": "assistant",
+      "text": "With the provenance hook hardened, I’m replacing the umbrella scaffold with a real series synthesis. It will not duplicate all 12 articles; it will give the reader the stack model and route them to the right layer.",
+      "text_summary": "With the provenance hook hardened, I’m replacing the umbrella scaffold with a real series synthesis. It will not duplicate all 12 articles; it will give the reader the stack model and route them to the right layer.",
+      "ts": "2026-06-06T13:44:26.326Z"
+    },
+    {
+      "role": "assistant",
+      "text": "With the provenance hook hardened, I’m replacing the umbrella scaffold with a real series synthesis. It will not duplicate all 12 articles; it will give the reader the stack model and route them to the right layer.",
+      "text_summary": "With the provenance hook hardened, I’m replacing the umbrella scaffold with a real series synthesis. It will not duplicate all 12 articles; it will give the reader the stack model and route them to the right layer.",
+      "ts": "2026-06-06T13:44:26.326Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "apply_patch"
+      ],
+      "tool_call_details": [
+        {
+          "name": "apply_patch",
+          "input_preview": "*** Begin Patch *** Update File: /Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx @@ revisions: - date: 2026-06-05 model: 'gpt-5.5' role: 'outline' - note: 'AI-generated series scaffold from a traced research session; awaiting human rewrite.' + note: 'Research planning pass from a traced session.' trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5' supporting_trace_ids: - '2026-06-05T12-08-35-196Z-gpt-5.5' --- -import OutlineHandoff from '../../components/OutlineHandoff.astro' +Self-improvement is not a model property. -<OutlineHandoff traceId=\"2026-06-05T12-08-35-196Z-gpt-5.5\" s…",
+          "file_path": "/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx",
+        "../../components/OutlineHandoff.astro",
+        "/Users/drew/webb/agent-runtime",
+        "/Users/drew/webb/agent-eval",
+        "/Users/drew/webb/agent-knowledge"
+      ],
+      "ts": "2026-06-06T13:45:46.051Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The umbrella article is now a proper synthesis. I’m syncing the research overview and status map so the checkpoint corpus no longer contradicts the public posts.",
+      "text_summary": "The umbrella article is now a proper synthesis. I’m syncing the research overview and status map so the checkpoint corpus no longer contradicts the public posts.",
+      "ts": "2026-06-06T13:45:53.500Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The umbrella article is now a proper synthesis. I’m syncing the research overview and status map so the checkpoint corpus no longer contradicts the public posts.",
+      "text_summary": "The umbrella article is now a proper synthesis. I’m syncing the research overview and status map so the checkpoint corpus no longer contradicts the public posts.",
+      "ts": "2026-06-06T13:45:53.501Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "apply_patch"
+      ],
+      "tool_call_details": [
+        {
+          "name": "apply_patch",
+          "input_preview": "*** Begin Patch *** Update File: /Users/drew/code/blog/research/self-improving-agent-systems/00-series-overview.md @@ # 00 Series Overview Post: `src/content/posts/the-self-improving-stack.mdx` -Status: scaffold -Last updated: 2026-06-05 +Status: drafted +Last updated: 2026-06-06 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5` @@ ## Claim To Test Self-improvement is not a property of a model. It is a property of a closed loop: -run, observe, diagnose, propose, validate, promote, and remember. The system is -only as real as its feedback signal and promotion gate. +run, observe, diagnose, …",
+          "file_path": "/Users/drew/code/blog/research/self-improving-agent-systems/00-series-overview.md"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog/research/self-improving-agent-systems/00-series-overview.md",
+        "src/content/posts/the-self-improving-stack.mdx"
+      ],
+      "ts": "2026-06-06T13:46:15.031Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The overview now has the same formal spine as the umbrella article. I’m updating the directory README next so future agents see the real state instead of 13 rows of `scaffold`.",
+      "text_summary": "The overview now has the same formal spine as the umbrella article. I’m updating the directory README next so future agents see the real state instead of 13 rows of `scaffold`.",
+      "ts": "2026-06-06T13:46:22.937Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The overview now has the same formal spine as the umbrella article. I’m updating the directory README next so future agents see the real state instead of 13 rows of `scaffold`.",
+      "text_summary": "The overview now has the same formal spine as the umbrella article. I’m updating the directory README next so future agents see the real state instead of 13 rows of `scaffold`.",
+      "ts": "2026-06-06T13:46:22.937Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The status map is now consistent. I’m running the style and provenance scans before recording the draft trace for the umbrella post.",
+      "text_summary": "The status map is now consistent. I’m running the style and provenance scans before recording the draft trace for the umbrella post.",
+      "ts": "2026-06-06T13:46:54.538Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The status map is now consistent. I’m running the style and provenance scans before recording the draft trace for the umbrella post.",
+      "text_summary": "The status map is now consistent. I’m running the style and provenance scans before recording the draft trace for the umbrella post.",
+      "ts": "2026-06-06T13:46:54.540Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"rg -n \\\"—|–|First post|first post|Outline Notes|Working Thesis|Drew Angle|AI-generated|reader hook|target audience|the article should|article should|keep this compact|cookbook|recipe|scaffold|this post|the article|should not|Drew Angle|raccoon|goblin|gremlin|Article\\\" src/content/posts/the-self-improving-stack.mdx research/self-improving-agent-systems/00-series-overview.md research/self-improving-agent-systems/README.md\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":1000,\"max_output_tokens\":16000}",
+          "file_path": "src/content/posts/the-self-improving-stack.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/the-self-improving-stack.mdx",
+        "research/self-improving-agent-systems/00-series-overview.md",
+        "research/self-improving-agent-systems/README.md",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T13:46:54.543Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"rg -n \\\"[ \\\\t]+$\\\" src/content/posts/the-self-improving-stack.mdx research/self-improving-agent-systems/00-series-overview.md research/self-improving-agent-systems/README.md tools/trace-capture.ts\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":1000,\"max_output_tokens\":12000}",
+          "file_path": "src/content/posts/the-self-improving-stack.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/the-self-improving-stack.mdx",
+        "research/self-improving-agent-systems/00-series-overview.md",
+        "research/self-improving-agent-systems/README.md",
+        "tools/trace-capture.ts",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T13:46:54.546Z"
+    }
+  ]
+}

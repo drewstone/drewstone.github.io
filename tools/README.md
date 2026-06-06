@@ -2,6 +2,57 @@
 
 Scripts that capture, shape, and evaluate the blog's agentic data.
 
+## `new-post.mjs` / `edit-post.mjs` — draft and human edit helpers
+
+```bash
+# Create a human-authored draft and open it.
+pnpm new "Post title" --tags=agents,systems
+
+# Create an AI-assisted draft.
+pnpm new "Post title" --ai --tags=agents,systems
+
+# Open an existing post by slug or title substring.
+pnpm write long-running-task-systems
+
+# After editing, commit and let the post-commit hook record the green human revision.
+pnpm write long-running-task-systems --commit --note="rewrote the outline into a first human draft"
+
+# Mark an AI-outline handoff as complete and publish.
+pnpm write long-running-task-systems --done --publish --commit --note="publish human rewrite"
+```
+
+## `blog-loop.mjs` — traced AI lifecycle
+
+Use this when starting a clean AI thread.
+
+```bash
+# Print the exact prompt to paste into a clean research thread.
+pnpm blog research long-running-task-systems --harness=codex
+
+# In that thread, the agent does not edit the post. At the end it runs:
+pnpm blog finish long-running-task-systems --research --harness=codex --note="surveyed long-horizon benchmarks"
+
+# Print the exact prompt to paste into a thread that may write/edit the post.
+pnpm blog write long-running-task-systems --harness=codex --role=draft
+
+# In that thread, the agent may edit the post and then records an authorship trace:
+pnpm blog finish long-running-task-systems --write --harness=codex --role=draft --note="drafted benchmark section"
+```
+
+Research traces go into `supporting_trace_ids`. They are rendered as "Supporting research" and do not imply authorship. Writing traces go into `revisions[]` and do imply AI authorship/editing.
+
+If a thread started before you decided the target post, tell the agent:
+
+```text
+This thread is supporting research for <post-slug>. Do not mark it as authorship. Attach this session as supporting research using the blog lifecycle.
+```
+
+Then the agent should run:
+
+```bash
+pnpm blog finish <post-slug> --research --harness=codex --note="supporting research"
+```
+
 ## `trace-capture.ts` — harness-agnostic session capture
 
 Extracts the agent session behind a revision and writes it to `traces/<slug>/<trace_id>.json`. Appends a revisions entry to the post's frontmatter that links back.

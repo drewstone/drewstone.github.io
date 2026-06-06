@@ -91,6 +91,12 @@ const anyCommitDiff = fileDiffs.some((x) => x.kind === 'commit')
 const posts = await getCollection('posts')
 const post = posts.find((p) => p.id === d.post)
 const postCreated = post?.data.date
+const linkedPosts = Array.isArray((d as any).posts)
+  ? (d as any).posts
+    .map((slug: string) => posts.find((p) => p.id === slug))
+    .filter(Boolean)
+  : []
+const traceTitle = post?.data.title ?? ((d as any).series ? `Series outline: ${(d as any).series}` : d.post)
 
 const short = (model: string | null | undefined): string => {
   if (!model) return 'unknown'
@@ -163,7 +169,7 @@ for (const t of d.turns as any[]) {
 const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
 ---
 
-<Base title={`Trace · ${d.trace_id}`} description={`Captured agent session for "${post?.data.title ?? d.post}". Model: ${d.model}, ${d.turns?.length ?? 0} turns.`} wide>
+<Base title={`Trace · ${d.trace_id}`} description={`Captured agent session for "${traceTitle}". Model: ${d.model}, ${d.turns?.length ?? 0} turns.`} wide>
   <nav class="trace-nav">
     <a href="/traces">← all traces</a>
   </nav>
@@ -174,7 +180,7 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
       <span class="trace-harness">{d.harness}</span>
     </div>
     <h1>
-      {post ? <a href={`/posts/${d.post}`}>{post.data.title}</a> : d.post}
+      {post ? <a href={`/posts/${d.post}`}>{post.data.title}</a> : traceTitle}
     </h1>
     <p class="trace-summary">{d.summary}</p>
     <dl class="trace-dates">
@@ -197,6 +203,20 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
       <div class="ts-card"><div class="ts-v">{durationMin}m</div><div class="ts-l">Duration</div></div>
     )}
   </section>
+
+  {linkedPosts.length > 0 && (
+    <section class="trace-artifacts">
+      <h2 class="files-label">Outline artifacts</h2>
+      <ul>
+        {linkedPosts.map((p: any) => (
+          <li>
+            <a href={`/posts/${p.id}`}>{p.data.title}</a>
+            <span>{p.data.human_takeover ?? 'pending'}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 
   {d.files_touched.length > 0 && (
     <section class="trace-files">
@@ -496,17 +516,44 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
     margin: 0 0 var(--space-md);
   }
 
-  .trace-files { margin: 0 0 var(--space-xl); }
-  .trace-files ul { list-style: none; padding: 0; margin: 0; }
-  .trace-files li {
+  .trace-files, .trace-artifacts { margin: 0 0 var(--space-xl); }
+  .trace-files ul, .trace-artifacts ul { list-style: none; padding: 0; margin: 0; }
+  .trace-files li,
+  .trace-artifacts li {
     padding: 0.4rem 0.6rem;
     border-bottom: 1px solid var(--border);
   }
-  .trace-files li:last-child { border-bottom: 0; }
+  .trace-files li:last-child,
+  .trace-artifacts li:last-child { border-bottom: 0; }
   .trace-files code {
     font-size: 0.85rem;
     background: transparent;
     padding: 0;
+  }
+  .trace-artifacts li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    justify-content: space-between;
+  }
+  .trace-artifacts a {
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 1px solid var(--c-human-border);
+  }
+  .trace-artifacts a:hover { border-bottom-color: var(--c-human); }
+  .trace-artifacts span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-human);
+    background: var(--c-human-bg);
+    border: 1px solid var(--c-human-border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    white-space: nowrap;
   }
 
   .trace-commit, .trace-intent, .trace-scores { margin: 0 0 var(--space-xl); }

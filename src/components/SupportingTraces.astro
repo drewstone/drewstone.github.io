@@ -1,0 +1,62 @@
+---
+interface Props {
+  traceIds?: string[]
+}
+
+const { traceIds = [] } = Astro.props
+---
+
+{traceIds.length > 0 && (
+  <aside class="supporting-traces">
+    <span class="supporting-label">Supporting research</span>
+    <ul>
+      {traceIds.map((id) => (
+        <li><a href={`/traces/${id}`}>{id}</a></li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .supporting-traces {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin: 0 0 var(--space-lg);
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--c-info);
+    border-radius: 8px;
+    background: var(--c-info-bg);
+  }
+
+  .supporting-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--c-info);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.8rem;
+  }
+
+  a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 1px solid var(--c-info);
+  }
+
+  a:hover {
+    color: var(--c-info);
+  }
+</style>

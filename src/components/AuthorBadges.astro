@@ -5,7 +5,7 @@
  */
 interface Author {
   model: string
-  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  role: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'publish' | 'research'
   date: Date
 }
 
@@ -140,6 +140,11 @@ const short = (model: string): string => {
     border: 1px solid var(--c-action-border);
   }
 
+  .author-badge.role-outline .author-role {
+    background: var(--c-human-bg);
+    color: var(--c-human);
+    border-color: var(--c-human-border);
+  }
   .author-badge.role-draft .author-role {
     background: var(--c-info-bg);
     color: var(--c-info);
@@ -156,6 +161,16 @@ const short = (model: string): string => {
     background: var(--c-run-bg);
     color: var(--c-run);
     border-color: var(--c-run-border);
+  }
+  .author-badge.role-publish .author-role {
+    background: var(--c-ok-bg);
+    color: var(--c-ok);
+    border-color: var(--c-ok-border);
+  }
+  .author-badge.role-research .author-role {
+    background: var(--c-info-bg);
+    color: var(--c-info);
+    border-color: var(--c-info);
   }
 
   .author-model {

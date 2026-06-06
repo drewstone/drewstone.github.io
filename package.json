@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "blog": "node tools/blog-loop.mjs",
     "new": "node tools/new-post.mjs",
+    "write": "node tools/edit-post.mjs",
     "gen:graphics": "node tools/gen-graphics.mjs",
     "log-edit": "node tools/log-edit.mjs",
     "install:hooks": "node tools/install-hooks.mjs"

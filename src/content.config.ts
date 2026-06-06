@@ -7,7 +7,7 @@ import { join } from 'node:path'
 // Author / revision schema — the "agentic experiment" metadata.
 const authorSchema = z.object({
   model: z.string(),
-  role: z.enum(['draft', 'rewrite', 'polish', 'diagram', 'review']),
+  role: z.enum(['outline', 'draft', 'rewrite', 'polish', 'diagram', 'review', 'publish', 'research']),
   date: z.coerce.date(),
 })
 
@@ -22,6 +22,7 @@ const judgeScoreSchema = z.object({
 const revisionSchema = z.object({
   date: z.coerce.date(),
   model: z.string(),
+  role: z.enum(['outline', 'draft', 'rewrite', 'polish', 'diagram', 'review', 'publish', 'research']).optional(),
   note: z.string(),
   commit: z.string().optional(),
   reconstructed: z.boolean().optional(),
@@ -56,6 +57,14 @@ const posts = defineCollection({
     original: z.boolean().optional(),
     authors: z.array(authorSchema).optional(),
     revisions: z.array(revisionSchema).optional(),
+    /** Optional series slug for multi-post projects. */
+    series: z.string().optional(),
+    /** Shared trace that produced the initial AI outline for this post. */
+    outline_trace_id: z.string().optional(),
+    /** Research traces used as source material, not authorship/prose traces. */
+    supporting_trace_ids: z.array(z.string()).optional(),
+    /** Human handoff state for AI-outlined drafts. */
+    human_takeover: z.enum(['pending', 'in-progress', 'complete']).optional(),
   }),
 })
 
@@ -136,7 +145,10 @@ const traces = defineCollection({
     started_at: z.string(),
     ended_at: z.string().optional(),
     post: z.string(),
-    role: z.enum(['draft', 'rewrite', 'polish', 'diagram', 'review']),
+    role: z.enum(['outline', 'draft', 'rewrite', 'polish', 'diagram', 'review', 'publish', 'research']),
+    kind: z.enum(['post', 'series-outline', 'supporting-research']).optional(),
+    series: z.string().optional(),
+    posts: z.array(z.string()).optional(),
     commit: z.string().optional(),
     commit_subject: z.string().optional(),
     commit_message: z.string().optional(),
