@@ -19,7 +19,9 @@ authors:
     date: 2026-06-05
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-review' }
   - date: 2026-06-05
@@ -41,9 +43,9 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-"Parallelize the work" is not a style preference.
+When I tell a coding agent to "parallelize the work," I am not asking for a different tone.
 
-For a human operator talking to a coding agent, it is a request for a different execution graph: spawn independent executions, cap concurrency, isolate state, collect traces, score results, select or merge outputs, cancel losers, and account for cost. If the runtime cannot express those moves, a prompt can only ask the model to simulate the shape.
+I am asking for a different execution graph: spawn independent executions, cap concurrency, isolate state, collect traces, score results, select or merge outputs, cancel losers, and account for cost. If the runtime cannot express those moves, a prompt can only ask the model to simulate the shape.
 
 This is the missing action space in many agent systems.
 
@@ -335,7 +337,7 @@ The trace must show:
 
 Without that trace, you cannot tell whether the topology helped, whether one branch got lucky, or whether the selector quietly ignored the evidence.
 
-## Evaluation Protocol
+## The Topology Test
 
 A serious runtime topology eval should treat topology changes as architecture changes.
 
@@ -366,7 +368,7 @@ promote(g_new) if:
 
 For topology, `trace_integrity` is not optional. A candidate that wins while losing branch traces, skipping validator spans, or hiding failed children is not a better runtime. It is an unobservable runtime.
 
-## Failure Modes
+## How Topology Lies
 
 Runtime topology fails in recognizable ways.
 
@@ -394,7 +396,7 @@ promotion report says "better"
 
 That is not necessarily wrong. It is incomplete. The product decision depends on whether the gain is worth the compute, latency, and operational complexity.
 
-## A Working Rule
+## When Topology Is The Right Surface
 
 Use prompt optimization when the failure is wording.
 

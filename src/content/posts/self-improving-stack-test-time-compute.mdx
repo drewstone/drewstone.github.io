@@ -19,7 +19,9 @@ authors:
     date: 2026-06-06
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-review' }
   - date: 2026-06-05
@@ -41,11 +43,9 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-More agents is not a strategy.
+I do not trust a multi-agent system until it beats the boring baseline. More agents is not a strategy. It is a cost increase until it beats blind extra compute.
 
-It is a cost increase until it beats blind extra compute.
-
-That is the baseline every agent topology has to face. If a supervisor, debate loop, reflection loop, or specialist fanout wins only because it spent more samples, more tokens, more wall-clock, or more tool calls, the structure has not yet earned its complexity.
+That is the baseline every agent topology has to face. If a supervisor, debate loop, reflection loop, or specialist fanout wins only because it spent more samples, more tokens, more wall-clock, or more tool calls, the structure has not yet earned its complexity. It spent more budget and mislabeled the budget as architecture.
 
 The first gate is simple:
 
@@ -394,7 +394,7 @@ at a measured budget `B`.
 
 That is why the previous post insisted that role names are not enough. The role structure matters only if it improves allocation, evidence, selection, or verification under budget.
 
-## Tangle Placement
+## Where The Local Stack Fits
 
 The refreshed Tangle runtime map makes this concrete.
 
@@ -432,7 +432,7 @@ runtime spends compute
 eval proves whether the spend was worth it
 ```
 
-## Evaluation Protocol
+## The Equal-Compute Test
 
 A serious test-time compute eval starts with a budget table.
 
@@ -504,7 +504,7 @@ promote(strategy_new) if:
 
 The baseline should be the strongest simple strategy the product could actually deploy, not a strawman.
 
-## Failure Modes
+## How More Compute Lies
 
 Test-time compute fails in predictable ways.
 
@@ -540,7 +540,7 @@ The token budget is matched, but one strategy uses much more sandbox time, brows
 
 The system reports that one candidate succeeded somewhere in the batch but cannot select it reliably.
 
-## Working Rule
+## When More Compute Is Evidence
 
 Do not evaluate an agent topology against one sample.
 

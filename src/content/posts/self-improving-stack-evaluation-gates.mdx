@@ -19,7 +19,9 @@ authors:
     date: 2026-06-06
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-review' }
   - date: 2026-06-05
@@ -41,15 +43,11 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-An optimizer can propose forever.
+A green score is not a release decision. It is evidence entering a release policy, and in self-improving loops that distinction matters more than the optimizer.
 
-The gate decides what becomes the system.
+GEPA, MIPRO, SkillOpt, topology search, and meta-harness can all generate candidates forever. The gate decides which candidate becomes the system future agents inherit. If the gate is weak, the optimizer learns the gate. If the gate is honest, the optimizer has to improve the product.
 
-That is why the gate is not an administrative detail after the interesting work. It is the objective boundary. GEPA, MIPRO, SkillOpt, runtime topology search, and meta-harness can all generate candidates. The gate decides which candidate is allowed to replace the baseline.
-
-If the gate is weak, every optimizer learns the gate.
-
-If the gate is honest, every optimizer has to improve the product.
+This is why the gate is not an administrative detail after the interesting work. It is the objective boundary.
 
 ## What A Gate Is
 
@@ -574,7 +572,7 @@ The final output is scored, but the branch, tool, verifier, and selector evidenc
 
 All failures collapse into one scalar, so the next optimizer has no diagnostic direction.
 
-## Working Rule
+## When A Candidate Can Ship
 
 The optimizer proposes.
 

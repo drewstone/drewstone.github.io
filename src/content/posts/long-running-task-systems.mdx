@@ -1,0 +1,80 @@
+---
+title: 'The Agent Marathon'
+description: 'Outline notes for a post on long-running task systems, benchmarks, and the state of agent reliability.'
+date: 2026-05-25
+tags: ['agents', 'benchmarks', 'systems']
+draft: true
+series: 'the-long-horizon'
+outline_trace_id: '2026-05-25T11-23-22-617Z-gpt-5.5-series-outline'
+human_takeover: 'pending'
+authors:
+  - model: 'gpt-5.5'
+    role: 'outline'
+    date: 2026-05-25
+revisions:
+  - date: 2026-05-25
+    model: 'gpt-5.5'
+    role: 'outline'
+    note: 'AI-generated series outline from a traced planning session; awaiting human rewrite.'
+    trace_id: '2026-05-25T11-23-22-617Z-gpt-5.5-series-outline'
+---
+
+import OutlineHandoff from '../../components/OutlineHandoff.astro'
+
+<OutlineHandoff traceId="2026-05-25T11-23-22-617Z-gpt-5.5-series-outline" series="The Long Horizon" status="pending">
+  This is an AI-edited outline extracted from a traced planning session. Drew takes over below.
+</OutlineHandoff>
+
+## Working Thesis
+
+The industry has moved from "can the model answer?" to "can an agent stay coherent across hours, tools, state, failures, and changing goals?" Current benchmarks show progress, but also expose that long-horizon autonomy is still brittle.
+
+The connective series thesis: we keep talking about "agents" and "superintelligence," but the real substrate is long-horizon reliability plus closed-loop improvement in the real world.
+
+## Outline Notes
+
+### What Counts As Long-Running?
+
+- Not just long context.
+- Tasks with compounding state, partial observability, delayed reward, tool errors, and recovery.
+- Tie to METR's "task-completion time horizon" framing: human-time duration at which agents succeed reliably.
+
+### Benchmark Landscape
+
+- Software: SWE-Marathon, RALPHBench, SWE-EVO, RoadmapBench, LongCLI-Bench.
+- Terminal / ops: Terminal-Bench 2.0, LongCLI-Bench.
+- Web / open-world: Odysseys, WebArena lineage.
+- Business simulation: YC-Bench, Vending-Bench.
+- Memory: Agent Memory Benchmark.
+
+### What The Benchmarks Agree On
+
+- Models fail by losing state, over-parallelizing, misreading environment feedback, stopping early, or optimizing the wrong artifact.
+- Long-horizon success is less about one brilliant answer and more about repair loops.
+
+### Open-Source Systems And Tools
+
+- OpenHands for software agents.
+- LangGraph / CrewAI / AutoGen / Microsoft Agent Framework / Pydantic AI / Mastra / Agno for orchestration.
+- OpenEvolve / CodeEvolve as algorithm-improvement agents.
+- Claude Code / Codex / OpenClaw style systems as practical long-session products.
+
+### Industry State
+
+- Frontier labs and coding products are pushing persistent sessions, skills, terminals, browser control, and issue-to-PR workflows.
+- But true "leave it alone for a day" reliability is still rare.
+
+### Drew Angle To Rewrite Around
+
+"Long-running agents don't need bigger prompts. They need black-box traces, resumable state, failure taxonomies, and proof protocols."
+
+## Source Trail From The Trace
+
+- METR time horizons: https://metr.org/time-horizons/
+- RALPHBench: https://www.ralphbench.org/
+- SWE-Marathon: https://swe-marathon.vercel.app/
+- YC-Bench: https://collinear-ai.github.io/yc-bench/
+- Odysseys: https://odysseys-website.pages.dev/
+- LongCLI-Bench: https://arxiv.org/abs/2602.14337
+- OpenHands paper: https://arxiv.org/abs/2407.16741
+- AlphaEvolve: https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/

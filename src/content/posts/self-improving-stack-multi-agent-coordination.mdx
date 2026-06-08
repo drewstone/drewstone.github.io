@@ -19,7 +19,9 @@ authors:
     date: 2026-06-06
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-review' }
   - date: 2026-06-05
@@ -41,17 +43,17 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-The hard part is not naming the agents.
+I can give five agents five names and still have one mind making one mistake.
 
-The hard part is making their disagreement useful.
+"Researcher," "critic," "architect," "driver," and "supervisor" are not coordination by themselves. They can be the same model, with the same blind spot, reading the same context, under the same budget, producing five paraphrases of the same failure. The cast list changed. The information structure did not.
 
-A "researcher," "critic," "architect," "driver," and "supervisor" can all be the same model, with the same blind spot, reading the same context, under the same budget, producing five versions of one mistake. That is not a multi-agent system in the meaningful sense. It is a single correlated policy wearing role labels.
+Multi-agent work becomes real when disagreement becomes useful. That requires separate contracts, state boundaries, tool permissions, selection rules, budgets, and traces.
 
-Multi-agent coordination becomes real when roles have separate contracts, state boundaries, tool permissions, selection rules, budgets, and traces.
+The persona is content.
 
-The persona is content. Coordination is structure.
+Coordination is structure.
 
-## The Object Being Optimized
+## The Coordination Surface
 
 The previous post made runtime topology explicit:
 
@@ -90,7 +92,7 @@ J(s | m, h) =
   - lambda * E[C(run(m, h, s, x))]
 ```
 
-The important part is not the notation. It is the coordinate system.
+The notation is only useful because it exposes the coordinate system.
 
 If only `p` changes, the optimizer is tuning role descriptions. If `k` changes, it is tuning durable role procedure. If `g`, `sigma`, `c`, `b`, or `tau` change, it is tuning coordination structure.
 
@@ -314,7 +316,7 @@ LangChain and LangGraph documentation describes multi-agent systems as coordinat
 
 The shared direction is not "more personas." It is explicit control over routing, handoff, state, context, and observability.
 
-## The Tangle Placement
+## Where The Local Stack Fits
 
 In the local `@tangle-network/agent-runtime@0.26.0` source, the surface separates three coordination shapes.
 
@@ -442,7 +444,7 @@ The final answer looks good, but the system cannot show which child saw which co
 
 These are not edge cases. They are the default unless the coordination structure prevents them.
 
-## Evaluation Protocol
+## The Coordination Test
 
 Do not ask whether a multi-agent system "feels smarter." Ask whether it beats the right baseline.
 
@@ -531,7 +533,7 @@ This is where GEPA, MIPRO, SkillOpt, agent-runtime, agent-eval, and meta-harness
 
 The mistake is asking one optimizer to search a surface it cannot execute.
 
-## Working Rule
+## When More Agents Are Worth It
 
 Use multiple agents when the work needs at least one of these:
 

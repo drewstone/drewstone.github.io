@@ -19,7 +19,9 @@ authors:
     date: 2026-06-06
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-review' }
   - date: 2026-06-05
@@ -41,15 +43,9 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-Most self-improving agent systems that product teams can ship without model-training infrastructure do not change model weights.
+Most self-improving agent systems that product teams can actually ship do not change model weights. They change prompts, skills, tools, traces, memory, runtime topology, harness code, and promotion gates. That is external-state self-improvement: legible, reversible, and usually cheap enough to iterate.
 
-They change prompts, skills, tools, traces, memory, runtime topology, harness code, and promotion gates.
-
-That is external-state self-improvement.
-
-Post-training changes the model itself.
-
-That is a different power level.
+Post-training changes the model itself, which means it changes the power level and the burden of proof.
 
 The loop looks familiar:
 
@@ -66,7 +62,7 @@ But the mutable surface is no longer a prompt file or a worktree. It is `theta`,
 
 Once `theta` moves, the boundary changes. The behavior becomes harder to inspect, harder to patch locally, harder to roll back partially, and harder to explain from a single trace. It can also generalize better than any prompt edit when the signal is strong enough.
 
-That is the point of this layer.
+That is why this layer deserves separate treatment.
 
 ## The Mutable Variable
 

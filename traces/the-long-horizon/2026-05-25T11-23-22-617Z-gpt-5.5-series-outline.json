@@ -1,0 +1,81 @@
+{
+  "trace_id": "2026-05-25T11-23-22-617Z-gpt-5.5-series-outline",
+  "harness": "codex",
+  "model": "gpt-5.5",
+  "started_at": "2026-05-25T11:23:22.617Z",
+  "ended_at": "2026-05-25T11:27:06.070Z",
+  "post": "the-long-horizon",
+  "role": "outline",
+  "kind": "series-outline",
+  "series": "the-long-horizon",
+  "posts": [
+    "long-running-task-systems",
+    "self-improving-ai-systems",
+    "superintelligence-in-the-wild"
+  ],
+  "files_touched": [
+    "src/content/posts/long-running-task-systems.mdx",
+    "src/content/posts/self-improving-ai-systems.mdx",
+    "src/content/posts/superintelligence-in-the-wild.mdx"
+  ],
+  "summary": "Series outline request: long-running task systems, self-improvement, and superintelligence in the wild.",
+  "intent": "Extract only the part of the current Codex chat where Drew asked for blog outlines and Codex completed the outline, then attach that single trace to the resulting draft posts.",
+  "raw_uri": "/Users/drew/.codex/sessions/2026/05/25/rollout-2026-05-25T12-15-08-019e5e6a-a607-7be1-aedd-64097a430ab5.jsonl#L1126-L1156",
+  "turns": [
+    {
+      "role": "user",
+      "ts": "2026-05-25T11:23:22.617Z",
+      "text": "i want to write some blog outlines and plans for topics. I want to investiagte\n- A survey of long running task systems, long running task benchmarks, tools open source, what is the state of the art and state of the industry\n- A survey similarly of self improvement, what does it mean, what is the SOTA, is this something only frontier labs do, is it secrets only they have\n- What is superintelligence, what does it look like, is it around us now? SSI / Ilya said its important to get AI into the wild in the real world, does that mean SSI has SSI in live runs somehwer, if nothing is announced what could that look like?"
+    },
+    {
+      "role": "assistant",
+      "ts": "2026-05-25T11:23:31.060Z",
+      "text": "I’ll use the `research` skill for this because you’re asking for source-grounded investigation and blog plans, not just brainstormed angles. I’ll check current public sources for each topic, then turn that into outlines with claims, open questions, and source trails."
+    },
+    {
+      "role": "assistant",
+      "ts": "2026-05-25T11:23:32.509Z",
+      "tool_calls": 1,
+      "tool_names": ["exec_command"],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "sed -n '1,220p' /Users/drew/dotfiles/claude/skills/research/SKILL.md",
+          "file_path": "/Users/drew/dotfiles/claude/skills/research/SKILL.md",
+          "result_preview": "Loaded the research skill instructions for source-grounded investigation, competitive landscape, hypotheses, source trails, and honest reporting."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "ts": "2026-05-25T11:23:55.596Z",
+      "tool_calls": 1,
+      "tool_names": ["web.search"],
+      "tool_call_details": [
+        {
+          "name": "web.search",
+          "input_preview": "[\"long running agent task benchmark OSWorld SWE-bench Terminal-Bench current agent benchmarks 2025\", \"AI agents long-horizon tasks benchmark open source long running task systems 2025\", \"self improving AI agents benchmark self improvement systems Reflexion Voyager SEAL 2025 survey\", \"Ilya Sutskever SSI get AI into the wild real world quote\"]",
+          "result_preview": "Search batch covering long-horizon agent benchmarks, open-source agent systems, self-improvement systems, and Ilya/SSI references."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "ts": "2026-05-25T11:24:20.621Z",
+      "tool_calls": 1,
+      "tool_names": ["web.search"],
+      "tool_call_details": [
+        {
+          "name": "web.search",
+          "input_preview": "[\"Safe Superintelligence official announcement safe superintelligence one goal one product\", \"Ilya Sutskever Dwarkesh podcast AI in the real world get AI into the wild\", \"OpenAI preparednes framework superintelligence definition AGI ASI\", \"Anthropic frontier red team responsible scaling policy AI agents long horizon tasks\"]",
+          "result_preview": "Search batch covering SSI public positioning, Ilya interviews, AGI/superintelligence definitions, and frontier safety framing."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "ts": "2026-05-25T11:27:05.971Z",
+      "text": "I’d structure this as a 3-post research series, not one mega-post. The connective thesis is: **we keep talking about “agents” and “superintelligence,” but the real substrate is long-horizon reliability plus closed-loop improvement in the real world.**\n\n**Post 1: Long-Running Task Systems**\nWorking title: **“The Agent Marathon: Why Long-Running Tasks Are Still Mostly Unsolved”**\n\nCore thesis: The industry has moved from “can the model answer?” to “can an agent stay coherent across hours, tools, state, failures, and changing goals?” Current benchmarks show progress, but also expose that long-horizon autonomy is still brittle.\n\nOutline:\n1. **What counts as long-running?**\n   - Not just long context.\n   - Tasks with compounding state, partial observability, delayed reward, tool errors, and recovery.\n   - Tie to METR’s “task-completion time horizon” framing: human-time duration at which agents succeed reliably.\n\n2. **Benchmark landscape**\n   - Software: SWE-Marathon, RALPHBench, SWE-EVO, RoadmapBench, LongCLI-Bench.\n   - Terminal / ops: Terminal-Bench 2.0, LongCLI-Bench.\n   - Web / open-world: Odysseys, WebArena lineage.\n   - Business simulation: YC-Bench, Vending-Bench.\n   - Memory: Agent Memory Benchmark.\n\n3. **What the benchmarks agree on**\n   - Models fail by losing state, over-parallelizing, misreading environment feedback, stopping early, or optimizing the wrong artifact.\n   - Long-horizon success is less about one brilliant answer and more about repair loops.\n\n4. **Open-source systems and tools**\n   - OpenHands for software agents.\n   - LangGraph / CrewAI / AutoGen / Microsoft Agent Framework / Pydantic AI / Mastra / Agno for orchestration.\n   - OpenEvolve / CodeEvolve as algorithm-improvement agents.\n   - Claude Code / Codex / OpenClaw style systems as practical long-session products.\n\n5. **Industry state**\n   - Frontier labs and coding products are pushing persistent sessions, skills, terminals, browser control, and issue-to-PR workflows.\n   - But true “leave it alone for a day” reliability is still rare.\n\n6. **Your angle**\n   - “Long-running agents don’t need bigger prompts. They need black-box traces, resumable state, failure taxonomies, and proof protocols.”\n\nGood source trail:\n- METR time horizons: https://metr.org/time-horizons/\n- RALPHBench: https://www.ralphbench.org/\n- SWE-Marathon: https://swe-marathon.vercel.app/\n- YC-Bench: https://collinear-ai.github.io/yc-bench/\n- Odysseys: https://odysseys-website.pages.dev/\n- LongCLI-Bench: https://arxiv.org/abs/2602.14337\n- OpenHands paper: https://arxiv.org/abs/2407.16741\n- AlphaEvolve: https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/\n\n**Post 2: Self-Improvement**\nWorking title: **“Self-Improving AI Is Real, But Not the Way People Mean It”**\n\nCore thesis: Public self-improvement is not recursive god-mode. It is a stack of increasingly strong loops: reflection, memory, prompt evolution, test-time correction, generated training data, evolutionary search, and production trace mining.\n\nOutline:\n1. **Define the ladder**\n   - Level 0: retry / self-critique.\n   - Level 1: reflection memory, e.g. Reflexion.\n   - Level 2: skill libraries, e.g. Voyager.\n   - Level 3: prompt/program optimization, e.g. GEPA, DSPy/MIPRO.\n   - Level 4: test-time self-correction trained by RL, e.g. SCoRe.\n   - Level 5: self-generated fine-tuning/update directives, e.g. SEAL.\n   - Level 6: algorithm discovery loops, e.g. AlphaEvolve/OpenEvolve.\n   - Level 7: lab-scale closed loops using proprietary traces, evals, synthetic data, and deployment feedback.\n\n2. **What’s actually open**\n   - Reflexion is old but still conceptually important.\n   - GEPA is a strong public example of trace/reflection-driven prompt evolution.\n   - SEAL is closer to weight-level adaptation, but still bounded research.\n   - OpenEvolve shows the AlphaEvolve pattern is not conceptually secret, though frontier-scale execution may be.\n\n3. **What frontier labs likely have that open source doesn’t**\n   - Massive private trajectory corpora.\n   - Reliable reward models / graders.\n   - Production traces.\n   - Secure sandboxes.\n   - Human expert labels.\n   - Compute for repeated rollouts.\n   - Deployment feedback loops.\n\n4. **Is self-improvement only frontier-lab magic?**\n   - No for prompt/tool/system improvement.\n   - Mostly yes for model-weight improvement at frontier scale.\n   - The interesting middle ground is product teams that use traces → evals → prompt/runtime changes → held-out gates.\n\n5. **Your angle**\n   - “The self-improving system is not the model. It’s the harness.”\n\nGood source trail:\n- Reflexion: https://arxiv.org/abs/2303.11366\n- GEPA: https://arxiv.org/abs/2507.19457\n- SEAL: https://arxiv.org/abs/2506.10943\n- AlphaEvolve: https://arxiv.org/abs/2506.13131\n- OpenEvolve: https://github.com/algorithmicsuperintelligence/openevolve\n- SCoRe: https://arxiv.org/abs/2409.12917\n- Voyager: https://voyager.minedojo.org/\n\n**Post 3: Superintelligence In The Wild**\nWorking title: **“If Superintelligence Arrives Quietly, What Would It Look Like First?”**\n\nCore thesis: Superintelligence probably would not first look like a chatbot declaring itself. It would look like closed-loop systems that compress research, engineering, evaluation, and deployment cycles faster than institutions can observe.\n\nOutline:\n1. **Define the terms carefully**\n   - OpenAI’s AGI definition: highly autonomous systems outperforming humans at most economically valuable work.\n   - Bostrom-style superintelligence: greatly exceeding humans across virtually all domains of interest.\n   - SSI’s public position: one goal, one product, safe superintelligence.\n\n2. **Is superintelligence around us now?**\n   - In the strong definition: no public evidence.\n   - In narrow pockets: yes, we have superhuman systems in coding subproblems, protein/design/search/math fragments, retrieval, and optimization.\n   - In organizational form: maybe the closest thing today is human+AI+eval+tooling loops compounding faster than competitors.\n\n3. **The Ilya / SSI question**\n   - SSI publicly says it has no product cycle distraction and is focused on safe superintelligence.\n   - There is no public evidence that SSI has deployed “SSI” into live runs.\n   - The responsible framing: “If SSI believes real-world interaction matters, what kind of non-public real-world loop would be consistent with its mission?”\n\n4. **What “AI in the wild” could mean without a public product**\n   - Internal research agents running experiments.\n   - Closed sandboxes with real toolchains.\n   - Synthetic companies / simulated labs / long-horizon environments.\n   - Algorithm discovery loops.\n   - Agent teams doing literature review, proof search, code optimization, red-teaming.\n   - Private deployment to trusted researchers, not consumers.\n\n5. **The real tell**\n   - Not benchmark score.\n   - Sustained autonomous research throughput.\n   - Novel validated discoveries.\n   - Ability to improve its own evals/tools safely.\n   - Reliable transfer from sandbox to messy reality.\n\n6. **Your angle**\n   - “Superintelligence may first appear as an operating cadence, not a product.”\n\nGood source trail:\n- SSI official: https://ssi.inc/\n- Axios on SSI funding / no product plan: https://www.axios.com/2024/09/05/ilya-sutskevers-ai-startup-raise\n- OpenAI Charter AGI definition: https://openai.com/charter/\n- Bostrom definition: https://nickbostrom.com/superintelligence\n- Dwarkesh/Ilya episode summary: https://www.tapesearch.com/episode/dwarkesh-and-ilya-sutskever-on-what-comes-after-scaling/9H4vn7L2gPKLaenJWdWnM4\n- Anthropic RSP / frontier safety framing: https://www.anthropic.com/news/responsible-scaling-policy-v3\n\n**Best Series Framing**\nTitle: **“The Long Horizon”**\n\nSubtitle: **Agents, self-improvement, and the quiet path to superintelligence.**\n\nThe throughline:\n1. Long-running tasks are the empirical bottleneck.\n2. Self-improvement is the mechanism for crossing it.\n3. Superintelligence, if it arrives, may look first like a closed-loop institution that learns faster than humans can audit."
+    }
+  ]
+}

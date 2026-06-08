@@ -15,7 +15,9 @@ authors:
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Reviewed and dated the source trail, removed remaining temporal language, and marked the source-freshness checkpoint complete.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-review' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'Polished the umbrella article with a layer-confusion diagnostic, tightened promotion-gate phrasing, and verified role-scoped trace capture for separate draft and polish provenance.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-polish' }
@@ -29,21 +31,23 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-Self-improvement is not a model property.
+I can tell a coding agent to parallelize work, and it will often agree with me while still doing one thing at a time.
 
-It is a system property.
+That failure looks like a prompting problem until you inspect the trace. The sentence "fan out independent subtasks" changed the model's intention, but it did not create a worker pool, a scheduler, a merge rule, a verifier, or a budget policy. The prompt moved. The action space did not.
 
-A model can sit inside a self-improving system, but the loop usually lives around it: prompts, skills, tools, traces, memory, evaluators, runtimes, harnesses, and release gates.
-
-That distinction matters because a lot of AI discourse collapses very different loops into one phrase:
+That is the category error hiding inside a lot of talk about self-improving agents. We say:
 
 ```text
 the system optimizes itself
 ```
 
-That sentence is too vague.
+as if there were one surface called "the system."
 
-The useful questions are:
+There is not.
+
+There are prompts, skills, tools, traces, memory stores, evaluators, runtime graphs, harnesses, model weights, and release gates. Each one can be optimized. Each one needs a different kind of evidence. Each one can fail in a different way.
+
+The useful questions are more concrete:
 
 ```text
 what is allowed to change?
@@ -53,9 +57,9 @@ what gate decides promotion?
 what can go wrong when that layer changes?
 ```
 
-Those five questions define the self-improving stack.
+Those five questions are the self-improving stack.
 
-## The Loop
+## The Loop Behind The Word
 
 A self-improving agent system has a closed loop:
 

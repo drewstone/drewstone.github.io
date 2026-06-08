@@ -2,6 +2,10 @@
 
 This repo distinguishes authorship traces from supporting research traces.
 
+## Voice
+
+Before drafting, rewriting, or polishing any non-original post, read `VOICE.md`. It is the Drew-specific voice checkpoint. `AGENTS.md` defines hard repo rules; `VOICE.md` defines the style constraints that keep AI-assisted posts from drifting into generic research-wiki prose.
+
 ## Human-only originals
 
 Never edit the body, add revisions, or capture AI traces for a post with `original: true`.

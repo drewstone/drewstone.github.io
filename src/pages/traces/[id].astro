@@ -135,7 +135,27 @@ function langForTool(name: string, file_path?: string) {
 }
 
 const renderedTurns: RenderedTurn[] = []
-for (const t of d.turns as any[]) {
+const orderedTurns = [...(d.turns as any[])]
+  .map((turn, index) => {
+    const seq = typeof turn.seq === 'number' ? turn.seq : Number.NaN
+    const ts = typeof turn.ts === 'string' ? new Date(turn.ts).valueOf() : Number.NaN
+    return { turn, index, seq, ts }
+  })
+  .sort((a, b) => {
+    const aHasSeq = Number.isFinite(a.seq)
+    const bHasSeq = Number.isFinite(b.seq)
+    if (aHasSeq && bHasSeq) return a.seq - b.seq
+    if (aHasSeq) return -1
+    if (bHasSeq) return 1
+    const aHasTs = Number.isFinite(a.ts)
+    const bHasTs = Number.isFinite(b.ts)
+    if (aHasTs && bHasTs) return a.ts - b.ts
+    if (aHasTs) return -1
+    if (bHasTs) return 1
+    return a.index - b.index
+  })
+
+for (const { turn: t } of orderedTurns) {
   const body = t.text ?? t.text_summary ?? ''
   const truncated = !!(t.text_summary && !t.text)
   const tools: RenderedTurn['tools'] = []
