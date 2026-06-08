@@ -83,8 +83,8 @@ function parseTurns(raw: string): Turn[] {
 function selectFromMarker(turns: Turn[], marker?: string): Turn[] {
   const token = (marker ?? '').trim()
   if (!token) return turns
-  const start = turns.findIndex((turn) => turn.role === 'user' && (turn.text?.includes(token) || false))
-  if (start < 0) return turns
+  const start = turns.findIndex((turn) => turn.text?.includes(token) || false)
+  if (start < 0) return []
   return turns.slice(Math.max(start - 1, 0))
 }
 

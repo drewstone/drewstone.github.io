@@ -92,9 +92,8 @@ function roleOf(ev: any): Turn['role'] | null {
   return null
 }
 
-function markerInUserTurn(ev: any, marker: string): boolean {
+function markerInEvent(ev: any, marker: string): boolean {
   if (!marker) return false
-  if (roleOf(ev) !== 'user') return false
   return textOf(ev).includes(marker)
 }
 
@@ -256,7 +255,7 @@ export class CodexHarness implements TraceHarness {
     }
 
     const markerWindowIndexes = windows
-      .map((w, i) => ({ i, hit: w.events.some((e) => markerInUserTurn(e, marker)) }))
+      .map((w, i) => ({ i, hit: w.events.some((e) => markerInEvent(e, marker)) }))
       .filter((x) => x.hit)
       .map((x) => x.i)
 
@@ -270,8 +269,8 @@ export class CodexHarness implements TraceHarness {
     if (marker && markerWindowIndexes.length) {
       const cutoff = Math.max(markerWindowIndexes[markerWindowIndexes.length - 1] - 1, 0)
       finalWindowIndexes = selectedIndexes.filter((i) => i >= cutoff)
-    } else if (marker && selectedIndexes.length) {
-      finalWindowIndexes = selectedIndexes.slice(-2)
+    } else if (marker) {
+      return []
     }
 
     const windowsToUse = finalWindowIndexes
