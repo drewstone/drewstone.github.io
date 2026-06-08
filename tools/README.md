@@ -35,8 +35,14 @@ pnpm blog finish long-running-task-systems --research --harness=codex --note="su
 # Print the exact prompt to paste into a thread that may write/edit the post.
 pnpm blog write long-running-task-systems --harness=codex --role=draft
 
+# Optionally tag a single phase in a single session.
+pnpm blog write long-running-task-systems --harness=codex --role=publish --marker="[BLOG_TRACE_MARKER:publish]"
+
 # In that thread, the agent may edit the post and then records an authorship trace:
 pnpm blog finish long-running-task-systems --write --harness=codex --role=draft --note="drafted benchmark section"
+
+# For a final publish phase in the same session:
+pnpm blog finish long-running-task-systems --write --harness=codex --role=publish --marker="[BLOG_TRACE_MARKER:publish]" --note="published by toggling draft=false"
 ```
 
 Research traces go into `supporting_trace_ids`. They are rendered as "Supporting research" and do not imply authorship. Writing traces go into `revisions[]` and do imply AI authorship/editing.
@@ -64,6 +70,7 @@ Extracts the agent session behind a revision and writes it to `traces/<slug>/<tr
 pnpm tsx tools/trace-capture.ts capture \
   --harness=claude-code \
   --post=convergence-as-eval-primitive \
+  --marker="[BLOG_TRACE_MARKER:publish]" \
   --role=polish
 
 # Auto-detect from the latest commit: finds changed posts, matches sessions
@@ -94,6 +101,27 @@ chmod +x .githooks/post-commit
 ```
 
 After that, every commit that touches a post under `src/content/posts/` triggers `trace-capture.ts capture --auto`, appends the revision entry, adds the new trace file, and amends the commit. Failures are non-blocking and logged to stderr.
+
+### Session directive path for AI phase marking
+
+For a publish/review/finalization phase in one AI session, set hook directives so capture is pinned to a specific phase token.
+
+```bash
+BLOG_TRACE_POSTS=long-running-task-systems \
+BLOG_TRACE_ROLE=publish \
+BLOG_TRACE_KIND=post \
+BLOG_TRACE_MARKER="[BLOG_TRACE_MARKER:publish]" \
+BLOG_TRACE_NOTE="published with AI-assisted finalization" \
+git commit -am "publish final copy"
+```
+
+Hook variables:
+- `BLOG_TRACE_POSTS`: comma-separated slugs (required for forced capture)
+- `BLOG_TRACE_ROLE`: `draft`, `publish`, `polish`, etc.
+- `BLOG_TRACE_KIND`: `post` or `series-outline`
+- `BLOG_TRACE_MARKER`: token expected in the final user turn
+- `BLOG_TRACE_NOTE`: optional revision note
+- `BLOG_TRACE_HARNESS`: optional `codex` or `claude-code`
 
 ## `feedback-eval.ts` — content scorecard
 

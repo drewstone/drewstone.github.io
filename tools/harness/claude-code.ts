@@ -52,6 +52,12 @@ function touchedFiles(ev: any): string[] {
   return [...out]
 }
 
+function markerInUserEvent(ev: any, marker: string): boolean {
+  if (!marker) return false
+  if (ev?.type !== 'user') return false
+  return userText(ev).includes(marker)
+}
+
 function toolSummary(ev: any): { count: number; names: string[] } {
   const content = ev?.message?.content
   if (!Array.isArray(content)) return { count: 0, names: [] }
@@ -180,6 +186,7 @@ export class ClaudeCodeHarness implements TraceHarness {
     const raw = await readFile(ref.path, 'utf8')
     const events = parseJsonl(raw)
     const wantedFiles = (filter.files ?? []).map((f) => f.replace(/^\.\//, ''))
+    const wantedTokens = wantedFiles.map((f) => f.replace(/\.mdx$/, '').replace(/\.tsx?$/, '').replace(/\.astro$/, ''))
 
     // Segment the session into user-turn windows: each window starts with a
     // user message and includes all assistant activity until the next user
@@ -201,25 +208,65 @@ export class ClaudeCodeHarness implements TraceHarness {
     }
     if (cur) windows.push(cur)
 
+    const marker = (filter.marker ?? '').trim()
     const relevant = wantedFiles.length
-      ? windows.filter((w) =>
-          w.events.some((e) =>
-            touchedFiles(e).some((t) => wantedFiles.some((wf) => t.endsWith(wf)))
-          )
-        )
-      : windows
+      ? windows
+          .map((w, i) => {
+            let related = false
+            const hasTouchedFiles = w.events.some((e) =>
+              touchedFiles(e).some((t) => wantedFiles.some((wf) => t.endsWith(wf))),
+            )
+            const mention = w.events.some((e) => {
+              if (e?.type !== 'user') return false
+              const txt = userText(e)
+              return wantedTokens.some((wf) => wf && txt.includes(wf))
+            })
+            if (hasTouchedFiles || mention) related = true
+            return { index: i, related }
+          })
+          .filter((x) => x.related)
+      : windows.map((_, i) => ({ index: i, related: true }))
+
+    const selected = new Set<number>()
+    for (const r of relevant) {
+      if (r.index > 0) selected.add(r.index - 1)
+      selected.add(r.index)
+      selected.add(r.index + 1)
+    }
+
+    const relevantWindowIndexes = [...selected]
+      .filter((i) => i >= 0 && i < windows.length)
+      .sort((a, b) => a - b)
+
+    const markerHits = windows
+      .map((w, i) => ({ i, hit: w.events.some((e) => markerInUserEvent(e, marker)) }))
+      .filter((x) => x.hit)
+      .map((x) => x.i)
+
+    let finalWindowIndexes = relevantWindowIndexes
+    if (marker && markerHits.length) {
+      const cutoff = Math.max(markerHits[markerHits.length - 1] - 1, 0)
+      finalWindowIndexes = relevantWindowIndexes.filter((i) => i >= cutoff)
+    } else if (marker && relevantWindowIndexes.length) {
+      finalWindowIndexes = relevantWindowIndexes.slice(-2)
+    }
+
+    const relevantWindows = finalWindowIndexes.map((i) => windows[i])
+
+    let seq = 0
 
     const projectRoot = (ref.cwd ?? process.cwd()).replace(/\/$/, '') + '/'
     const relativize = (p: string) => p.startsWith(projectRoot) ? p.slice(projectRoot.length) : p
 
     const turns: Turn[] = []
-    for (const w of relevant) {
+    for (const w of relevantWindows) {
       for (const e of w.events) {
         const ts: string = e?.timestamp ?? ''
         if (e?.type === 'user') {
           const txt = userText(e)
           if (!txt) continue
-          turns.push({ role: 'user', text: txt.length > 8000 ? summarize(txt, 8000) : txt, ts })
+          turns.push({ role: 'user', seq, text: txt.length > 8000 ? summarize(txt, 8000) : txt, ts })
+          seq++
         } else if (e?.type === 'assistant') {
           const txt = assistantText(e)
           const { count, names } = toolSummary(e)
@@ -232,6 +279,7 @@ export class ClaudeCodeHarness implements TraceHarness {
           const hasTools = count > 0
           if (!hasText && !hasTools) continue
           turns.push({
+            seq,
             role: 'assistant',
             text: hasText ? (txt.length > 8000 ? summarize(txt, 8000) : txt) : undefined,
             text_summary: hasText ? summarize(txt, 280) : undefined,
@@ -242,6 +290,7 @@ export class ClaudeCodeHarness implements TraceHarness {
             had_thinking: hadThinking(e) || undefined,
             ts,
           })
+          seq++
         }
       }
     }

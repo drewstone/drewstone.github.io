@@ -20,6 +20,8 @@ export type ToolCallDetail = {
 /** A single turn of agent activity, lossy-summarized for repo storage. */
 export type Turn = {
   role: 'user' | 'assistant' | 'system' | 'tool'
+  /** Stable sequence index in the source session (0-based, when available). */
+  seq?: number
   /** Full text (no truncation). For very long content (>8k) the harness may still trim. */
   text?: string
   /** First ~280 chars of assistant prose — kept for compact list views. */
@@ -61,6 +63,8 @@ export type FindOpts = {
 export type Filter = {
   /** Only include turns that touched these files (or surrounding turns). */
   files?: string[]
+  /** Optional marker that must appear in a user turn to delimit the captured block. */
+  marker?: string
   /** Include at most this many turns; head and tail preserved. */
   maxTurns?: number
 }
