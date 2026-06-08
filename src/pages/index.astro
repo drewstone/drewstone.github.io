@@ -45,6 +45,7 @@ function fmtMonth(d: Date) {
 <Base title="drew" description="Drew Stone's blog. AI and autoresearch infrastructure: sandboxes for agents, eval harnesses, optimization loops. Plus crypto: stablecoin payments and privacy. A live experiment in human–AI co-authorship." wide>
   <section class="hero">
     <div class="intro">
+      <p class="intro-kicker">AI infrastructure, crypto, and experiment-led research</p>
       <p class="intro-lead">
         Hi, I'm <strong>Drew</strong>. I work on AI and autoresearch infrastructure at
         <a href="https://tangle.tools">Tangle</a>: <strong>sandboxes for agents</strong>,
@@ -65,6 +66,11 @@ function fmtMonth(d: Date) {
         they surface with an <em>Original</em> badge, and AI agents are forbidden from
         editing them.
       </p>
+      <div class="intro-actions">
+        <a class="intro-chip" href="/posts">Read latest posts</a>
+        <a class="intro-chip" href="/traces">Inspect traces</a>
+        <a class="intro-chip" href="/experiment">Experiment log</a>
+      </div>
     </div>
     <aside class="hero-side">
       <div class="hero-side-head">
@@ -123,25 +129,36 @@ function fmtMonth(d: Date) {
 </script>
 
 <style>
-  /* ===== Hero: side-by-side intro + newest ===== */
+  /* ===== Hero: narrative + compact newest rail ===== */
   .hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    gap: 3rem;
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
     align-items: start;
     margin: var(--space-lg) 0 var(--space-2xl);
     padding-bottom: var(--space-xl);
     border-bottom: 1px dotted var(--border);
   }
 
-  @media (max-width: 880px) {
-    .hero { grid-template-columns: 1fr; gap: 1.8rem; }
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 2.2rem;
+    }
   }
 
   /* ===== Intro block ===== */
   .intro {
     margin: 0;
     max-width: none;
+  }
+  .intro-kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--fg-faint);
+    margin-bottom: 0.7rem;
   }
   .intro p {
     font-size: 1.08rem;
@@ -181,6 +198,28 @@ function fmtMonth(d: Date) {
   .intro a:hover {
     text-decoration-color: var(--c-action);
   }
+  .intro-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 var(--space-md);
+  }
+  .intro-chip {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.33rem 0.72rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-faint);
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .intro-chip:hover {
+    border-color: var(--fg-faint);
+    color: var(--fg);
+  }
 
   /* ===== Inline experiment lede — second paragraph in the intro column ===== */
   .experiment-lede {
@@ -208,14 +247,14 @@ function fmtMonth(d: Date) {
   .experiment-lede a:hover { text-decoration-color: var(--c-action); }
   .experiment-lede strong { font-weight: 700; }
   .experiment-lede-human {
-    color: #00b347;
+    color: var(--c-human);
     font-weight: 700;
     font-style: italic;
   }
   @media (prefers-color-scheme: dark) {
     .experiment-lede-human {
-      color: #39ff88;
-      text-shadow: 0 0 12px rgba(57, 255, 136, 0.45);
+      color: #68f5b6;
+      opacity: 0.95;
     }
   }
   .experiment-stats .stats-human span { color: var(--c-human); opacity: 0.8; }
@@ -223,7 +262,11 @@ function fmtMonth(d: Date) {
   /* ===== Newest side column ===== */
   .hero-side {
     min-width: 0;
-    padding-top: 0.25rem;
+    padding-top: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.95rem 1rem 1rem;
+    background: color-mix(in srgb, var(--bg-alt) 72%, transparent);
   }
   .hero-side-head {
     display: flex;

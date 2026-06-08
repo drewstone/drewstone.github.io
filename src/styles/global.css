@@ -50,16 +50,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d0d0d;
-    --bg-alt: #1f1f1f;
-    --bg-sink: #050505;
-    --fg: #eaeaea;
-    --fg-muted: #b0b0b0;
+    --bg: #131120;
+    --bg-alt: #1e1a2d;
+    --bg-sink: #0c0a16;
+    --fg: #ece8f7;
+    --fg-muted: #b4adca;
     --fg-faint: #7a7a7a;
-    --border: #333333;
-    --border-strong: #555555;
-    --rule: #eaeaea;
-    --accent: #eaeaea;
+    --border: #2f2a44;
+    --border-strong: #4f4768;
+    --rule: #9f97b6;
+    --accent: #ece8f7;
 
     --c-ok: #4ade80;
     --c-ok-bg: rgba(74, 222, 128, 0.12);
@@ -78,6 +78,15 @@
     --c-human: #34d399;
     --c-human-bg: rgba(52, 211, 153, 0.12);
     --c-human-border: rgba(52, 211, 153, 0.35);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background:
+      radial-gradient(circle at 7% -10%, rgba(76, 68, 113, 0.2), transparent 35%),
+      radial-gradient(circle at 93% 8%, rgba(63, 55, 102, 0.18), transparent 38%),
+      var(--bg);
   }
 }
 
