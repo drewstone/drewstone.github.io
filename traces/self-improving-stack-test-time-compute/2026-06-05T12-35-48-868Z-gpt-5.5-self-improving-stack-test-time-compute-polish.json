@@ -6,9 +6,9 @@
   "ended_at": "2026-06-08T09:56:48.048Z",
   "post": "self-improving-stack-test-time-compute",
   "role": "polish",
-  "commit": "fb31e1c764d9711386702764aaf1c2c5cf9886aa",
-  "commit_subject": "chore(workspace): cleanup merged in-progress content and trace artifacts",
-  "commit_message": "chore(workspace): cleanup merged in-progress content and trace artifacts",
+  "commit": "fa32d84c8519aa44965fe45a3491898c14ae5b1b",
+  "commit_subject": "chore(traces): include session-polish captures for merged content series",
+  "commit_message": "chore(traces): include session-polish captures for merged content series",
   "files_touched": [
     "/Users/drew/code/blog",
     "src/content.config.ts",
@@ -31,213 +31,183 @@
   ],
   "diffstat": [
     {
-      "path": ".evolve/skill-runs.jsonl",
-      "additions": 1,
-      "deletions": 0
-    },
-    {
-      "path": "AGENTS.md",
-      "additions": 4,
-      "deletions": 0
-    },
-    {
-      "path": "CLAUDE.md",
-      "additions": 4,
-      "deletions": 0
-    },
-    {
-      "path": "SECONDARY_VOICE.md",
-      "additions": 288,
-      "deletions": 0
-    },
-    {
-      "path": "VOICE.md",
-      "additions": 190,
-      "deletions": 0
-    },
-    {
-      "path": "research/self-improving-agent-systems/voice-blend-eval.md",
-      "additions": 78,
-      "deletions": 0
-    },
-    {
-      "path": "src/components/OutlineHandoff.astro",
-      "additions": 146,
-      "deletions": 0
-    },
-    {
-      "path": "src/content.config.ts",
-      "additions": 1,
-      "deletions": 0
-    },
-    {
       "path": "src/content/posts/long-running-task-systems.mdx",
-      "additions": 80,
+      "additions": 2,
       "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-ai-systems.mdx",
-      "additions": 85,
+      "additions": 2,
       "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-agent-runtime-topology.mdx",
-      "additions": 7,
-      "deletions": 5
+      "additions": 1,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-evaluation-gates.mdx",
-      "additions": 6,
-      "deletions": 8
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-governance.mdx",
-      "additions": 7,
-      "deletions": 13
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-harness-evolution.mdx",
-      "additions": 7,
-      "deletions": 13
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-memory-flywheels.mdx",
-      "additions": 3,
-      "deletions": 1
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-multi-agent-coordination.mdx",
-      "additions": 12,
-      "deletions": 10
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-optimization-theory.mdx",
-      "additions": 15,
-      "deletions": 7
+      "additions": 1,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-post-training.mdx",
-      "additions": 5,
-      "deletions": 9
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-prompt-optimization.mdx",
-      "additions": 14,
-      "deletions": 12
+      "additions": 1,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-skill-optimization.mdx",
-      "additions": 14,
-      "deletions": 10
+      "additions": 1,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-test-time-compute.mdx",
-      "additions": 8,
-      "deletions": 8
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/self-improving-stack-trace-systems.mdx",
-      "additions": 6,
-      "deletions": 8
+      "additions": 2,
+      "deletions": 0
     },
     {
       "path": "src/content/posts/superintelligence-in-the-wild.mdx",
-      "additions": 82,
+      "additions": 2,
       "deletions": 0
     },
     {
       "path": "src/content/posts/the-self-improving-stack.mdx",
-      "additions": 13,
-      "deletions": 9
-    },
-    {
-      "path": "src/layouts/Post.astro",
-      "additions": 133,
-      "deletions": 1
-    },
-    {
-      "path": "src/pages/posts/[...slug].astro",
-      "additions": 23,
+      "additions": 1,
       "deletions": 0
     },
     {
-      "path": "src/pages/traces/[id].astro",
-      "additions": 21,
-      "deletions": 1
+      "path": "tools/blog-loop.mjs",
+      "additions": 42,
+      "deletions": 8
     },
     {
-      "path": "traces/self-improving-ai-systems/2026-06-05T12-08-35-196Z-gpt-5.5.json",
-      "additions": 449,
+      "path": "tools/harness/claude-code.ts",
+      "additions": 7,
+      "deletions": 6
+    },
+    {
+      "path": "tools/harness/codex.ts",
+      "additions": 4,
+      "deletions": 5
+    },
+    {
+      "path": "tools/harness/manual.ts",
+      "additions": 2,
+      "deletions": 2
+    },
+    {
+      "path": "traces/long-running-task-systems/2026-06-05T12-08-44-415Z-gpt-5.5-long-running-task-systems-polish.json",
+      "additions": 760,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-agent-runtime-topology/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-rewrite.json",
-      "additions": 629,
+      "path": "traces/self-improving-ai-systems/2026-06-08T08-32-11-493Z-gpt-5.3-codex-spark-self-improving-ai-systems-polish.json",
+      "additions": 853,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-evaluation-gates/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-rewrite.json",
-      "additions": 623,
+      "path": "traces/self-improving-stack-agent-runtime-topology/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-polish.json",
+      "additions": 819,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-governance/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-rewrite.json",
-      "additions": 593,
+      "path": "traces/self-improving-stack-evaluation-gates/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-polish.json",
+      "additions": 819,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-harness-evolution/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-rewrite.json",
-      "additions": 677,
+      "path": "traces/self-improving-stack-governance/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-memory-flywheels/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-rewrite.json",
-      "additions": 593,
+      "path": "traces/self-improving-stack-harness-evolution/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish.json",
+      "additions": 841,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-multi-agent-coordination/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite.json",
-      "additions": 629,
+      "path": "traces/self-improving-stack-memory-flywheels/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-optimization-theory/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-rewrite.json",
-      "additions": 644,
+      "path": "traces/self-improving-stack-multi-agent-coordination/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-post-training/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite.json",
-      "additions": 623,
+      "path": "traces/self-improving-stack-optimization-theory/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-prompt-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-rewrite.json",
-      "additions": 644,
+      "path": "traces/self-improving-stack-post-training/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-skill-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-rewrite.json",
-      "additions": 644,
+      "path": "traces/self-improving-stack-prompt-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-test-time-compute/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-rewrite.json",
-      "additions": 629,
+      "path": "traces/self-improving-stack-skill-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-polish.json",
+      "additions": 808,
       "deletions": 0
     },
     {
-      "path": "traces/self-improving-stack-trace-systems/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-rewrite.json",
-      "additions": 623,
+      "path": "traces/self-improving-stack-test-time-compute/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-polish.json",
+      "additions": 819,
       "deletions": 0
     },
     {
-      "path": "traces/the-long-horizon/2026-05-25T11-23-22-617Z-gpt-5.5-series-outline.json",
-      "additions": 81,
+      "path": "traces/self-improving-stack-trace-systems/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-polish.json",
+      "additions": 819,
       "deletions": 0
     },
     {
-      "path": "traces/the-self-improving-stack/2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-rewrite.json",
-      "additions": 644,
+      "path": "traces/superintelligence-in-the-wild/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-superintelligence-in-the-wild-polish.json",
+      "additions": 846,
+      "deletions": 0
+    },
+    {
+      "path": "traces/the-self-improving-stack/2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-polish.json",
+      "additions": 819,
       "deletions": 0
     }
   ],

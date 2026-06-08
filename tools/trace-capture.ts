@@ -298,6 +298,9 @@ async function capture(flags: Args): Promise<void> {
     process.exit(2)
   }
 
+  let wrote = 0
+  let failures = 0
+
   for (const postSlug of posts) {
     if (commit && commit !== 'HEAD' && isPhantomEdit(commit, postSlug)) {
       console.log(`[${postSlug}] phantom edit (revisions-only); skip`)
@@ -306,6 +309,7 @@ async function capture(flags: Args): Promise<void> {
     const harnessName = (flags.harness as string) ?? (latest ? undefined : (await autoDetectHarness(postSlug))?.name)
     if (!harnessName) {
       console.error(`[${postSlug}] no harness detected; pass --harness=claude-code|codex or use --auto after an edit commit`)
+      failures++
       continue
     }
     let input: string | undefined
@@ -319,6 +323,7 @@ async function capture(flags: Args): Promise<void> {
         : await chooseSession(harness, postSlug, sessionId)
     } catch (e) {
       console.error(`[${postSlug}] ${(e as Error).message}`)
+      failures++
       continue
     }
 
@@ -328,7 +333,8 @@ async function capture(flags: Args): Promise<void> {
       maxTurns: 40,
     })
     if (!turns.length) {
-      console.error(`[${postSlug}] no turns extracted; skip`)
+      console.error(`[${postSlug}] no turns extracted${marker ? ` after marker filter (${marker})` : ''}; skip`)
+      failures++
       continue
     }
     const model = await harness.detectModel(session)
@@ -408,6 +414,7 @@ async function capture(flags: Args): Promise<void> {
     }
 
     const path = await saveTrace(trace)
+    wrote++
     console.log(`wrote ${path} (${turns.length} turns, ${trace.files_touched.length} files)`)
 
     if (attach === 'supporting') {
@@ -427,6 +434,8 @@ async function capture(flags: Args): Promise<void> {
       throw new Error(`unknown --attach=${attach}`)
     }
   }
+
+  if (!wrote && failures > 0) process.exitCode = 1
 }
 
 async function list(): Promise<void> {

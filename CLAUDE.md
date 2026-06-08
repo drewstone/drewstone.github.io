@@ -25,7 +25,9 @@ Both AI edits and human edits land in the same `revisions[]` array in a post's f
 
 Supporting research is separate from authorship. If a clean AI thread researches sources, claims, questions, or counterarguments for a post but does not write the post, capture it with `pnpm blog finish <post> --research --harness=codex|claude-code --note="..."`. That trace belongs in `supporting_trace_ids`, not `revisions[]`.
 
-If an AI thread writes or edits prose in a non-original post, capture it with `pnpm blog finish <post> --write --harness=codex|claude-code --role=draft|rewrite|polish|outline|review|publish --note="..."`. That trace belongs in `revisions[]`.
+If an AI thread writes or edits prose in a non-original post, start with `pnpm blog write <post> --harness=codex|claude-code --role=draft|rewrite|polish|outline|review|publish`. The command prints a unique trace marker, voice checklist, anti-pattern gates, and the exact finish command. Capture authorship with the marked finish command it prints, normally `pnpm blog finish <post> --write --harness=codex|claude-code --role=... --marker="..." --note="..."`. That trace belongs in `revisions[]`.
+
+Do not run an unmarked AI write finish unless you are doing an audited recovery capture with `--session=<id>` or `--allow-unmarked`. Unmarked captures can attach stale long-session traces to fresh edits.
 
 The post-commit hook (installed via `pnpm install:hooks`) auto-logs every commit that touches an MDX post:
 

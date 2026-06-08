@@ -35,17 +35,18 @@ pnpm blog finish long-running-task-systems --research --harness=codex --note="su
 # Print the exact prompt to paste into a thread that may write/edit the post.
 pnpm blog write long-running-task-systems --harness=codex --role=draft
 
-# Optionally tag a single phase in a single session.
-pnpm blog write long-running-task-systems --harness=codex --role=publish --marker="[BLOG_TRACE_MARKER:publish]"
+# The generated prompt includes a trace marker, voice checklist, anti-pattern gates,
+# and the exact finish command. Keep the marker in the first assistant update and
+# in the final response so trace capture can isolate the current phase.
 
 # In that thread, the agent may edit the post and then records an authorship trace:
-pnpm blog finish long-running-task-systems --write --harness=codex --role=draft --note="drafted benchmark section"
+pnpm blog finish long-running-task-systems --write --harness=codex --role=draft --marker="BLOGTRACE-..." --note="drafted benchmark section"
 
 # For a final publish phase in the same session:
 pnpm blog finish long-running-task-systems --write --harness=codex --role=publish --marker="[BLOG_TRACE_MARKER:publish]" --note="published by toggling draft=false"
 ```
 
-Research traces go into `supporting_trace_ids`. They are rendered as "Supporting research" and do not imply authorship. Writing traces go into `revisions[]` and do imply AI authorship/editing.
+Research traces go into `supporting_trace_ids`. They are rendered as "Supporting research" and do not imply authorship. Writing traces go into `revisions[]` and do imply AI authorship/editing. Unmarked write finishes are refused by `pnpm blog finish`; use `--session=<id>` or `--allow-unmarked` only for audited recovery captures.
 
 If a thread started before you decided the target post, tell the agent:
 
@@ -119,7 +120,7 @@ Hook variables:
 - `BLOG_TRACE_POSTS`: comma-separated slugs (required for forced capture)
 - `BLOG_TRACE_ROLE`: `draft`, `publish`, `polish`, etc.
 - `BLOG_TRACE_KIND`: `post` or `series-outline`
-- `BLOG_TRACE_MARKER`: token expected in the final user turn
+- `BLOG_TRACE_MARKER`: token expected in the marked phase
 - `BLOG_TRACE_NOTE`: optional revision note
 - `BLOG_TRACE_HARNESS`: optional `codex` or `claude-code`
 

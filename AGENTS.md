@@ -13,10 +13,11 @@ Never edit the body, add revisions, or capture AI traces for a post with `origin
 ## Trace lifecycle
 
 - Supporting research: use `pnpm blog research <post> --harness=codex|claude-code` to get the prompt. Do not edit the post. Finish with `pnpm blog finish <post> --research --harness=... --note="..."`. This attaches the trace to `supporting_trace_ids`.
-- AI authorship/editing: use `pnpm blog write <post> --harness=codex|claude-code --role=draft|rewrite|polish|outline` to get the prompt. Edit only non-original posts. Finish with `pnpm blog finish <post> --write --harness=... --role=... --note="..."`. This appends to `revisions[]`.
+- AI authorship/editing: use `pnpm blog write <post> --harness=codex|claude-code --role=draft|rewrite|polish|outline` to get the prompt. The command prints a unique trace marker, voice checklist, anti-pattern gates, and the exact finish command. Edit only non-original posts. Finish with the marked command it printed, normally `pnpm blog finish <post> --write --harness=... --role=... --marker="..." --note="..."`. This appends to `revisions[]`.
 - Human editing: Drew uses `pnpm write <post>` and then `pnpm write <post> --commit --note="..."`. Human revisions use `model: 'human'` and render green.
 
 Do not put supporting research traces in `revisions[]`. Do not put authorship traces only in `supporting_trace_ids`.
+Do not run an unmarked AI write finish unless you are doing an audited recovery capture with `--session=<id>` or `--allow-unmarked`. Unmarked captures can attach stale long-session traces to fresh edits.
 
 ## Writing Anti-Patterns
 
