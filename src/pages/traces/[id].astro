@@ -134,6 +134,31 @@ function langForTool(name: string, file_path?: string) {
   return 'json'
 }
 
+function stableTurnPayload(turn: any) {
+  return JSON.stringify({
+    role: turn.role,
+    text: turn.text ?? '',
+    text_summary: turn.text_summary ?? '',
+    tool_names: turn.tool_names ?? [],
+    tool_call_details: turn.tool_call_details ?? [],
+    files_touched: turn.files_touched ?? [],
+    had_thinking: !!turn.had_thinking,
+  })
+}
+
+function timestampMs(turn: any) {
+  return typeof turn.ts === 'string' ? new Date(turn.ts).valueOf() : Number.NaN
+}
+
+function isDuplicateAdjacentTurn(prev: any | undefined, next: any) {
+  if (!prev) return false
+  if (stableTurnPayload(prev) !== stableTurnPayload(next)) return false
+  const a = timestampMs(prev)
+  const b = timestampMs(next)
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return true
+  return Math.abs(a - b) <= 1000
+}
+
 const renderedTurns: RenderedTurn[] = []
 const orderedTurns = [...(d.turns as any[])]
   .map((turn, index) => {
@@ -154,8 +179,13 @@ const orderedTurns = [...(d.turns as any[])]
     if (bHasTs) return 1
     return a.index - b.index
   })
+  .map((x) => x.turn)
+  .reduce((out: any[], turn) => {
+    if (!isDuplicateAdjacentTurn(out[out.length - 1], turn)) out.push(turn)
+    return out
+  }, [])
 
-for (const { turn: t } of orderedTurns) {
+for (const t of orderedTurns) {
   const body = t.text ?? t.text_summary ?? ''
   const truncated = !!(t.text_summary && !t.text)
   const tools: RenderedTurn['tools'] = []
@@ -187,9 +217,11 @@ for (const { turn: t } of orderedTurns) {
 }
 
 const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
+const visibleTurnCount = renderedTurns.length
+const visibleToolCallCount = orderedTurns.reduce((s: number, t: any) => s + (t.tool_calls ?? 0), 0)
 ---
 
-<Base title={`Trace · ${d.trace_id}`} description={`Captured agent session for "${traceTitle}". Model: ${d.model}, ${d.turns?.length ?? 0} turns.`} wide>
+<Base title={`Trace · ${d.trace_id}`} description={`Captured agent session for "${traceTitle}". Model: ${d.model}, ${visibleTurnCount} turns.`} wide>
   <nav class="trace-nav">
     <a href="/traces">← all traces</a>
   </nav>
@@ -216,8 +248,8 @@ const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
   </header>
 
   <section class="trace-stats">
-    <div class="ts-card"><div class="ts-v">{d.turns.length}</div><div class="ts-l">Turns</div></div>
-    <div class="ts-card"><div class="ts-v">{d.turns.reduce((s: number, t: any) => s + (t.tool_calls ?? 0), 0)}</div><div class="ts-l">Tool calls</div></div>
+    <div class="ts-card"><div class="ts-v">{visibleTurnCount}</div><div class="ts-l">Turns</div></div>
+    <div class="ts-card"><div class="ts-v">{visibleToolCallCount}</div><div class="ts-l">Tool calls</div></div>
     <div class="ts-card"><div class="ts-v">{d.files_touched.length}</div><div class="ts-l">Files touched</div></div>
     {durationMin > 0 && (
       <div class="ts-card"><div class="ts-v">{durationMin}m</div><div class="ts-l">Duration</div></div>

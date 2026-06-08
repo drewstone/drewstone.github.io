@@ -15,7 +15,7 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import type { FindOpts, Filter, SessionRef, ToolCallDetail, Turn, TraceHarness } from './types.js'
-import { summarize } from './types.js'
+import { dedupeAdjacentTurns, summarize } from './types.js'
 
 const PATH_RE = /(?:\/Users\/[^\s"'`]+|\.?\/?[\w@.-]+(?:\/[\w@.-]+)+\.(?:mdx|ts|tsx|js|jsx|astro|py|rs|go|sh|yaml|yml|toml|md|json|css|mjs))/g
 
@@ -313,12 +313,14 @@ export class CodexHarness implements TraceHarness {
       }
     }
 
-    if (filter.maxTurns && turns.length > filter.maxTurns) {
+    const normalizedTurns = dedupeAdjacentTurns(turns)
+
+    if (filter.maxTurns && normalizedTurns.length > filter.maxTurns) {
       const head = Math.ceil(filter.maxTurns / 2)
       const tail = filter.maxTurns - head
-      return [...turns.slice(0, head), ...turns.slice(-tail)]
+      return [...normalizedTurns.slice(0, head), ...normalizedTurns.slice(-tail)]
     }
-    return turns
+    return normalizedTurns
   }
 
   async detectModel(ref: SessionRef): Promise<string | null> {

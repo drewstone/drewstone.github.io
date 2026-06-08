@@ -129,3 +129,35 @@ export function summarize(text: string, n = 280): string {
   const t = text.replace(/\s+/g, ' ').trim()
   return t.length <= n ? t : t.slice(0, n - 1) + '…'
 }
+
+function stableTurnPayload(turn: Turn): string {
+  return JSON.stringify({
+    role: turn.role,
+    text: turn.text ?? '',
+    text_summary: turn.text_summary ?? '',
+    tool_names: turn.tool_names ?? [],
+    tool_call_details: turn.tool_call_details ?? [],
+    files_touched: turn.files_touched ?? [],
+    had_thinking: !!turn.had_thinking,
+  })
+}
+
+function timestampMs(turn: Turn): number {
+  return typeof turn.ts === 'string' ? new Date(turn.ts).valueOf() : Number.NaN
+}
+
+export function dedupeAdjacentTurns(turns: Turn[]): Turn[] {
+  const out: Turn[] = []
+  for (const turn of turns) {
+    const prev = out[out.length - 1]
+    if (prev && stableTurnPayload(prev) === stableTurnPayload(turn)) {
+      const a = timestampMs(prev)
+      const b = timestampMs(turn)
+      if (!Number.isFinite(a) || !Number.isFinite(b) || Math.abs(a - b) <= 1000) {
+        continue
+      }
+    }
+    out.push(turn)
+  }
+  return out
+}

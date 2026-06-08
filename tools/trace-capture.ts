@@ -34,7 +34,7 @@ import { join } from 'node:path'
 import ClaudeCodeHarness from './harness/claude-code.js'
 import CodexHarness from './harness/codex.js'
 import ManualHarness from './harness/manual.js'
-import type { TraceFile, TraceHarness, Turn } from './harness/types.js'
+import { dedupeAdjacentTurns, type TraceFile, type TraceHarness, type Turn } from './harness/types.js'
 
 const ROOT = process.cwd()
 const POSTS_DIR = join(ROOT, 'src/content/posts')
@@ -327,11 +327,11 @@ async function capture(flags: Args): Promise<void> {
       continue
     }
 
-    const turns = await harness.extractTurns(session, {
+    const turns = dedupeAdjacentTurns(await harness.extractTurns(session, {
       files: latest ? [] : [`${postSlug}.mdx`],
       marker,
       maxTurns: 40,
-    })
+    }))
     if (!turns.length) {
       console.error(`[${postSlug}] no turns extracted${marker ? ` after marker filter (${marker})` : ''}; skip`)
       failures++

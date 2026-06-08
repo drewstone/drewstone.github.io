@@ -213,6 +213,12 @@ code {
 }
 
 /* Code blocks */
+ .prose pre {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
 pre {
   font-family: var(--font-mono);
   font-size: 0.95rem;
@@ -230,6 +236,10 @@ pre {
   .astro-code span {
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
+  }
+
+  .prose pre {
+    border-color: var(--border-strong);
   }
 }
 
