@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro'
 import AuthorBadges from '../components/AuthorBadges.astro'
+import SupportingTraces from '../components/SupportingTraces.astro'
 import Revisions from '../components/Revisions.astro'
 import PostReactions from '../components/PostReactions.astro'
 import ParagraphReactor from '../components/ParagraphReactor.astro'
@@ -9,12 +10,13 @@ import Giscus from '../components/Giscus.astro'
 
 interface Author {
   model: string
-  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  role: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'research'
   date: Date
 }
 interface Revision {
   date: Date
   model: string
+  role?: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'research'
   note: string
   commit?: string
   reconstructed?: boolean
@@ -29,10 +31,11 @@ interface Props {
   slug?: string
   authors?: Author[]
   revisions?: Revision[]
+  supportingTraceIds?: string[]
   original?: boolean
 }
 
-const { title, description, date, updated, tags = [], slug, authors, revisions, original = false } = Astro.props
+const { title, description, date, updated, tags = [], slug, authors, revisions, supportingTraceIds = [], original = false } = Astro.props
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -83,6 +86,7 @@ const articleJsonLd = {
       <h1>{title}</h1>
       <p class="post-desc">{description}</p>
       <AuthorBadges authors={authors} original={original} />
+      <SupportingTraces traceIds={supportingTraceIds} />
       {!original && revisions && revisions.length > 0 && (
         <RevisionMosaicToggle
           lastDate={revisions[revisions.length - 1].date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

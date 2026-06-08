@@ -1,0 +1,353 @@
+{
+  "trace_id": "2026-06-05T12-08-35-196Z-gpt-5.5",
+  "harness": "codex",
+  "model": "gpt-5.5",
+  "started_at": "2026-06-05T12:08:35.196Z",
+  "ended_at": "2026-06-05T22:01:33.589Z",
+  "post": "self-improving-stack-evaluation-gates",
+  "role": "polish",
+  "kind": "post",
+  "commit": "b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69",
+  "commit_subject": "fix(layout): scope global 'aside' rule to .prose — was bleeding the prose-callout border-left into the experiment toc; restore caution tape on /experiment",
+  "commit_message": "fix(layout): scope global 'aside' rule to .prose — was bleeding the prose-callout border-left into the experiment toc; restore caution tape on /experiment",
+  "files_touched": [
+    "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+    "research/self-improving-agent-systems/07-evaluation-and-gates.md",
+    "/Users/drew/code/blog"
+  ],
+  "diffstat": [
+    {
+      "path": "src/components/CautionTape.astro",
+      "additions": 0,
+      "deletions": 6
+    },
+    {
+      "path": "src/pages/experiment/index.astro",
+      "additions": 7,
+      "deletions": 1
+    },
+    {
+      "path": "src/styles/global.css",
+      "additions": 2,
+      "deletions": 2
+    }
+  ],
+  "summary": "Polished the evaluation-gates post by tightening profile-cell claims against the local AgentProfileCell schema, adding gate pre-registration invariants, clarifying bootstrap interval wording, and preserving the fail-closed promotion model.",
+  "turns": [
+    {
+      "role": "user",
+      "text": "# AGENTS.md instructions for /Users/drew/code/blog <INSTRUCTIONS> ## Shared Agent Defaults Provider-agnostic. Synced to Claude, Codex, and OpenCode installs. ## Repos are alive Multiple agents (Claude, Codex, others) work the same branches and PRs in parallel. Unfamiliar branches, commits you didn't make, in-flight PRs — normal state, not errors. **Orient first, every session:** ``` git status; git log --oneline -10; git reflog | head -20 gh pr list --state open ``` Commit messages tell you what other agents shipped. Five seconds saves a rebase. **Don't ask permission for unexpected state.** …",
+      "ts": "2026-06-05T12:08:35.196Z"
+    },
+    {
+      "role": "user",
+      "text": "I want you to reserach the following and their interplay - hillclimbing msft recent mai work - gepa, dspy, axllm, mipro prompt optimization - skill-opt skill optimization - meta-harness Basically all these things use techqniesu to optimize and hill climb in diff ways, are they doing the same thing? And then hwo does this work across multi agent multi episodic maxTurns=0 agentic flowS? like presumably personas for drivers and supervisors/coordinators of multi agent setups cant simply be so easily gepa optimized without intelligent personification or things like directives that tell subworks to…",
+      "ts": "2026-06-05T12:08:35.210Z"
+    },
+    {
+      "role": "user",
+      "text": "I want you to reserach the following and their interplay - hillclimbing msft recent mai work - gepa, dspy, axllm, mipro prompt optimization - skill-opt skill optimization - meta-harness Basically all these things use techqniesu to optimize and hill climb in diff ways, are they doing the same thing? And then hwo does this work across multi agent multi episodic maxTurns=0 agentic flowS? like presumably personas for drivers and supervisors/coordinators of multi agent setups cant simply be so easily gepa optimized without intelligent personification or things like directives that tell subworks to…",
+      "ts": "2026-06-05T12:08:35.210Z"
+    },
+    {
+      "role": "user",
+      "text": "<turn_aborted> The user interrupted the previous turn on purpose. Any running unified exec processes may still be running in the background. If any tools/commands were aborted, they may have partially executed. </turn_aborted>",
+      "ts": "2026-06-05T12:08:37.453Z"
+    },
+    {
+      "role": "user",
+      "text": "And I want you to track this as a block post trace here in this blog",
+      "ts": "2026-06-05T12:08:44.415Z"
+    },
+    {
+      "role": "user",
+      "text": "And I want you to track this as a block post trace here in this blog",
+      "ts": "2026-06-05T12:08:44.415Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "text_summary": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "ts": "2026-06-05T12:09:05.896Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "text_summary": "I’ll treat this as supporting research for the blog, not authorship/editing. First I’m orienting the repo state and loading the research workflow so the trace lands in the right place.",
+      "ts": "2026-06-05T12:09:05.923Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "text_summary": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "ts": "2026-06-05T12:09:15.274Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "text_summary": "Repo is dirty with existing in-flight changes and two Dependabot PRs; nothing looks like a merge/rebase blocker. The relevant repo rule is the blog trace path, so next I’m finding the right post slug and the `pnpm blog research` contract before I start browsing.",
+      "ts": "2026-06-05T12:09:15.288Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "text_summary": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "ts": "2026-06-05T12:09:27.076Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "text_summary": "The trace command requires a post slug. I’m checking the nearby post titles/frontmatter now; if there’s an obvious draft about self-improving or convergence systems, I’ll attach this research there rather than interrupting you for a slug.",
+      "ts": "2026-06-05T12:09:27.080Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post body.",
+      "text_summary": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post bod…",
+      "ts": "2026-06-05T12:09:31.330Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post body.",
+      "text_summary": "The best fit is `self-improving-ai-systems`: it is a draft explicitly about GEPA/DSPy-style prompt evolution, trace-driven improvement, and where the harness ends and the model begins. I’m starting a supporting-research trace against that slug and will avoid editing the post bod…",
+      "ts": "2026-06-05T12:09:31.330Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "text_summary": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "ts": "2026-06-05T12:10:43.114Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "text_summary": "Local search hit a huge Codex cache file; I’m stopping that scan and narrowing it to skills/repos instead of searching the whole home cache.",
+      "ts": "2026-06-05T12:10:43.117Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping source notes.",
+      "text_summary": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping so…",
+      "ts": "2026-06-05T12:10:57.627Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping source notes.",
+      "text_summary": "The local side is clear enough for `meta-harness`: it is architecture evolution over a measured harness, with trace-reading proposers and Pareto frontier tracking. I’m doing a narrower pass for `skill-opt` specifically, then I’ll synthesize the distinctions instead of dumping so…",
+      "ts": "2026-06-05T12:10:57.634Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "text_summary": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "ts": "2026-06-05T12:11:38.955Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "text_summary": "`skill-opt` appears to be a Microsoft SkillOpt project rather than a local repo skill. I found the public project page and am now tying it to the local `meta-harness` concept plus the agent-runtime pattern around `maxTurns` so the answer matches your stack, not just the papers.",
+      "ts": "2026-06-05T12:11:38.965Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’m making the standards read as standards: less advisory language, more explicit pass/fail policy.",
+      "text_summary": "I’m making the standards read as standards: less advisory language, more explicit pass/fail policy.",
+      "ts": "2026-06-05T21:59:49.099Z"
+    },
+    {
+      "role": "assistant",
+      "text": "I’m making the standards read as standards: less advisory language, more explicit pass/fail policy.",
+      "text_summary": "I’m making the standards read as standards: less advisory language, more explicit pass/fail policy.",
+      "ts": "2026-06-05T21:59:49.099Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "apply_patch"
+      ],
+      "tool_call_details": [
+        {
+          "name": "apply_patch",
+          "input_preview": "*** Begin Patch *** Update File: /Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx @@ -Gate precedence should look like this: +Gate precedence is: @@ -A scorecard cell should be keyed by: +A scorecard cell is keyed by: @@ -The profile hash should cover: +The profile hash covers: @@ A useful release confidence scorecard has five axes: @@ The important phrase is fail closed. Missing corpus, missing holdout, missing traces, missing backend evidence, or missing diagnostics is not neutral. It is a reason to reject promotion until the evidence exists. + +In compact f…",
+          "file_path": "/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "/Users/drew/code/blog/research/self-improving-agent-systems/07-evaluation-and-gates.md"
+      ],
+      "ts": "2026-06-05T21:59:56.713Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The draft is ready for trace registration. I’m finishing the blog lifecycle hook now, then I’ll build and run the final style checks.",
+      "text_summary": "The draft is ready for trace registration. I’m finishing the blog lifecycle hook now, then I’ll build and run the final style checks.",
+      "ts": "2026-06-05T22:00:02.465Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The draft is ready for trace registration. I’m finishing the blog lifecycle hook now, then I’ll build and run the final style checks.",
+      "text_summary": "The draft is ready for trace registration. I’m finishing the blog lifecycle hook now, then I’ll build and run the final style checks.",
+      "ts": "2026-06-05T22:00:02.466Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The finish hook wrote the trace. I’m checking frontmatter because this repo’s hook can report an append even when the trace id was already present.",
+      "text_summary": "The finish hook wrote the trace. I’m checking frontmatter because this repo’s hook can report an append even when the trace id was already present.",
+      "ts": "2026-06-05T22:00:18.686Z"
+    },
+    {
+      "role": "assistant",
+      "text": "The finish hook wrote the trace. I’m checking frontmatter because this repo’s hook can report an append even when the trace id was already present.",
+      "text_summary": "The finish hook wrote the trace. I’m checking frontmatter because this repo’s hook can report an append even when the trace id was already present.",
+      "ts": "2026-06-05T22:00:18.688Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"sed -n '1,70p' src/content/posts/self-improving-stack-evaluation-gates.mdx\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":10000,\"max_output_tokens\":12000}",
+          "file_path": "src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-05T22:00:18.720Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"rg -n \\\"release_promote|Gate precedence|scorecard cell|profile hash\\\" src/content/posts/self-improving-stack-evaluation-gates.mdx research/self-improving-agent-systems/07-evaluation-and-gates.md\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":10000,\"max_output_tokens\":12000}",
+          "file_path": "src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "research/self-improving-agent-systems/07-evaluation-and-gates.md",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-05T22:00:18.792Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Frontmatter has one draft row and the trace exists. I’m running the final checks now.",
+      "text_summary": "Frontmatter has one draft row and the trace exists. I’m running the final checks now.",
+      "ts": "2026-06-05T22:00:29.163Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Frontmatter has one draft row and the trace exists. I’m running the final checks now.",
+      "text_summary": "Frontmatter has one draft row and the trace exists. I’m running the final checks now.",
+      "ts": "2026-06-05T22:00:29.166Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"rg -n \\\"—|–|First post|first post|Outline Notes|Working Thesis|Drew Angle|AI-generated|reader hook|target audience|the article should|article should|keep this compact|cookbook|recipe|pile of tool names|rhyme|whole post|blog prose|scaffold|this post|the article|should not|audit changes|work log|Drew\\\" src/content/posts/self-improving-stack-evaluation-gates.mdx research/self-improving-agent-systems/07-evaluation-and-gates.md\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":10000,\"max_output_tokens\":12000}",
+          "file_path": "src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "research/self-improving-agent-systems/07-evaluation-and-gates.md",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-05T22:00:29.166Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"rg -n \\\"[ \\\\t]+$\\\" src/content/posts/self-improving-stack-evaluation-gates.mdx research/self-improving-agent-systems/07-evaluation-and-gates.md\",\"workdir\":\"/Users/drew/code/blog\",\"yield_time_ms\":10000,\"max_output_tokens\":12000}",
+          "file_path": "src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "research/self-improving-agent-systems/07-evaluation-and-gates.md",
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-05T22:00:29.229Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Build passed. The draft is coherent, but I’m not stopping at a first pass. I’m running a polish pass now to check claims against the actual `AgentProfileCell` schema and tighten any overclaims before we call it ready.",
+      "text_summary": "Build passed. The draft is coherent, but I’m not stopping at a first pass. I’m running a polish pass now to check claims against the actual `AgentProfileCell` schema and tighten any overclaims before we call it ready.",
+      "ts": "2026-06-05T22:00:56.799Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Build passed. The draft is coherent, but I’m not stopping at a first pass. I’m running a polish pass now to check claims against the actual `AgentProfileCell` schema and tighten any overclaims before we call it ready.",
+      "text_summary": "Build passed. The draft is coherent, but I’m not stopping at a first pass. I’m running a polish pass now to check claims against the actual `AgentProfileCell` schema and tighten any overclaims before we call it ready.",
+      "ts": "2026-06-05T22:00:56.801Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Polish finding: I overcompressed the profile identity layer. The current `AgentProfileCell` schema has `profileId`, `sourceProfile`, `harness`, `model`, `promptHash`, and `dimensions`; tool, skill, runtime, judge, and backend identity belong in the source profile or dimensions, not as guaranteed top-level fields. I’m correcting that.",
+      "text_summary": "Polish finding: I overcompressed the profile identity layer. The current `AgentProfileCell` schema has `profileId`, `sourceProfile`, `harness`, `model`, `promptHash`, and `dimensions`; tool, skill, runtime, judge, and backend identity belong in the source profile or dimensions, …",
+      "ts": "2026-06-05T22:01:15.553Z"
+    },
+    {
+      "role": "assistant",
+      "text": "Polish finding: I overcompressed the profile identity layer. The current `AgentProfileCell` schema has `profileId`, `sourceProfile`, `harness`, `model`, `promptHash`, and `dimensions`; tool, skill, runtime, judge, and backend identity belong in the source profile or dimensions, not as guaranteed top-level fields. I’m correcting that.",
+      "text_summary": "Polish finding: I overcompressed the profile identity layer. The current `AgentProfileCell` schema has `profileId`, `sourceProfile`, `harness`, `model`, `promptHash`, and `dimensions`; tool, skill, runtime, judge, and backend identity belong in the source profile or dimensions, …",
+      "ts": "2026-06-05T22:01:15.553Z"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": 1,
+      "tool_names": [
+        "apply_patch"
+      ],
+      "tool_call_details": [
+        {
+          "name": "apply_patch",
+          "input_preview": "*** Begin Patch *** Update File: /Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx @@ This is where bootstrap confidence intervals are useful. You resample paired deltas, compute the median for each resample, and inspect the lower quantile: @@ -LCB_95 = quantile({m_r}, 0.025) +LCB_95 = quantile({m_r}, 0.025) // two-sided 95 interval ``` The gate promotes only when the pessimistic estimate is still good enough. @@ This says the candidate may look better on the search split, but it cannot be much more search-specialized than the baseline. `tau` is slack, not forg…",
+          "file_path": "/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx",
+        "/Users/drew/code/blog/research/self-improving-agent-systems/07-evaluation-and-gates.md"
+      ],
+      "ts": "2026-06-05T22:01:28.524Z"
+    },
+    {
+      "role": "assistant",
+      "text": "That correction makes the Tangle mapping more exact. I’m registering the polish revision now, then final checks.",
+      "text_summary": "That correction makes the Tangle mapping more exact. I’m registering the polish revision now, then final checks.",
+      "ts": "2026-06-05T22:01:33.585Z"
+    },
+    {
+      "role": "assistant",
+      "text": "That correction makes the Tangle mapping more exact. I’m registering the polish revision now, then final checks.",
+      "text_summary": "That correction makes the Tangle mapping more exact. I’m registering the polish revision now, then final checks.",
+      "ts": "2026-06-05T22:01:33.589Z"
+    }
+  ]
+}

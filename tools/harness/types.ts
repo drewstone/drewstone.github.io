@@ -20,6 +20,8 @@ export type ToolCallDetail = {
 /** A single turn of agent activity, lossy-summarized for repo storage. */
 export type Turn = {
   role: 'user' | 'assistant' | 'system' | 'tool'
+  /** Stable sequence index in the source session (0-based, when available). */
+  seq?: number
   /** Full text (no truncation). For very long content (>8k) the harness may still trim. */
   text?: string
   /** First ~280 chars of assistant prose — kept for compact list views. */
@@ -61,6 +63,8 @@ export type FindOpts = {
 export type Filter = {
   /** Only include turns that touched these files (or surrounding turns). */
   files?: string[]
+  /** Optional marker that must appear in a user turn to delimit the captured block. */
+  marker?: string
   /** Include at most this many turns; head and tail preserved. */
   maxTurns?: number
 }
@@ -97,7 +101,13 @@ export type TraceFile = {
   started_at: string
   ended_at?: string
   post: string
-  role: 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review'
+  role: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'publish' | 'research'
+  /** `series-outline` traces can produce multiple post artifacts. */
+  kind?: 'post' | 'series-outline' | 'supporting-research'
+  /** Series slug when a trace belongs to a multi-post project. */
+  series?: string
+  /** Post slugs produced or seeded by this trace. */
+  posts?: string[]
   commit?: string
   /** First line of the commit message (the commit subject). */
   commit_subject?: string

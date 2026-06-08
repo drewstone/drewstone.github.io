@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 /**
- * trace-capture — harness-agnostic session capture for blog revisions.
+ * trace-capture: harness-agnostic session capture for blog revisions.
  *
  * Usage:
  *   pnpm tsx tools/trace-capture.ts capture \
  *     [--harness=claude-code|codex|manual] \
  *     [--post=<slug>] \
- *     [--role=draft|rewrite|polish|diagram|review] \
+ *     [--role=outline|draft|rewrite|polish|diagram|review|publish|research] \
  *     [--session=<session-id>] \
+ *     [--marker="<token>"] \
  *     [--note=<one-line>] \
  *     [--commit=<sha>] \
  *     [--input=<path>]            # manual harness only
+ *     [--kind=post|series-outline|supporting-research]
+ *     [--attach=supporting|revision|none]
+ *     [--latest]                  # choose latest session without requiring post file touch
  *
  *   pnpm tsx tools/trace-capture.ts capture --auto
  *     # detects from the latest git commit: finds changed posts, matches a
@@ -120,32 +124,119 @@ async function chooseSession(harness: TraceHarness, postSlug: string, sessionId?
   return sessions[0] // most recent
 }
 
-function buildTraceId(startedAt: string | undefined, model: string | null): string {
-  const stamp = (startedAt ?? new Date().toISOString()).replace(/[:.]/g, '-').replace(/Z$/, 'Z')
-  const tag = (model ?? 'unknown').replace(/[^\w.\-]/g, '-')
-  return `${stamp}-${tag}`
+async function chooseLatestSession(harness: TraceHarness, sessionId?: string) {
+  const since = new Date(Date.now() - 48 * 60 * 60 * 1000)
+  const sessions = await harness.findSessions({ since, cwd: ROOT, limit: 20 })
+  if (sessionId) {
+    const match = sessions.find((s) => s.id === sessionId || s.id.startsWith(sessionId))
+    if (!match) throw new Error(`session ${sessionId} not found in ${harness.name}`)
+    return match
+  }
+  if (!sessions.length) throw new Error(`no ${harness.name} sessions found in the last 48h`)
+  return sessions[0]
 }
 
-async function appendFrontmatterRevision(postSlug: string, entry: { date: string; model: string | null; note: string; commit?: string; trace_id: string }) {
+function traceTag(value: string): string {
+  return value.replace(/[^\w.\-]/g, '-')
+}
+
+function buildTraceId(
+  startedAt: string | undefined,
+  model: string | null,
+  postSlug: string,
+  role: string,
+): string {
+  const stamp = (startedAt ?? new Date().toISOString()).replace(/[:.]/g, '-').replace(/Z$/, 'Z')
+  const tag = traceTag(model ?? 'unknown')
+  return `${stamp}-${tag}-${traceTag(postSlug)}-${traceTag(role)}`
+}
+
+function blockHas(block: string, key: string, value: string): boolean {
+  const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`${key}:\\s*['"]?${escaped}['"]?`).test(block)
+}
+
+function frontmatterSection(fm: string, name: string): string {
+  const lines = fm.split('\n')
+  const start = lines.findIndex((line) => line.trim() === `${name}:`)
+  if (start < 0) return ''
+  let end = lines.length
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^[A-Za-z_][\w-]*:/.test(lines[i] ?? '')) {
+      end = i
+      break
+    }
+  }
+  return lines.slice(start, end).join('\n')
+}
+
+function hasRevision(
+  fm: string,
+  entry: { role: string; commit?: string; trace_id: string },
+): boolean {
+  const revisions = frontmatterSection(fm, 'revisions')
+  if (!revisions) return false
+  const blocks = revisions
+    .split(/\n(?=\s*-\s*)/)
+    .map((b) => b.trim())
+    .filter((b) => b.startsWith('-'))
+  return blocks.some((block) => {
+    if (!blockHas(block, 'role', entry.role)) return false
+    if (blockHas(block, 'trace_id', entry.trace_id)) return true
+    return Boolean(entry.commit && blockHas(block, 'commit', entry.commit))
+  })
+}
+
+function hasAuthor(fm: string, entry: { date: string; model: string; role: string }): boolean {
+  const authors = frontmatterSection(fm, 'authors')
+  if (!authors) return false
+  const blocks = authors
+    .split(/\n(?=\s*-\s*)/)
+    .map((b) => b.trim())
+    .filter((b) => b.startsWith('-'))
+  return blocks.some(
+    (block) =>
+      blockHas(block, 'model', entry.model) &&
+      blockHas(block, 'role', entry.role) &&
+      blockHas(block, 'date', entry.date),
+  )
+}
+
+function appendAuthorToFrontmatter(
+  fm: string,
+  entry: { date: string; model: string; role: string },
+): string {
+  if (hasAuthor(fm, entry)) return fm
+  const line = `  - { model: '${entry.model.replace(/'/g, "''")}', role: '${entry.role}', date: ${entry.date} }`
+  const lines = fm.split('\n')
+  const start = lines.findIndex((candidate) => candidate.trim() === 'authors:')
+  if (start < 0) return `${fm}\nauthors:\n${line}\n`
+  let end = lines.length
+  for (let i = start + 1; i < lines.length; i++) {
+    if (/^[A-Za-z_][\w-]*:/.test(lines[i] ?? '')) {
+      end = i
+      break
+    }
+  }
+  lines.splice(end, 0, line)
+  return lines.join('\n')
+}
+
+async function appendFrontmatterRevision(postSlug: string, entry: { date: string; model: string | null; role: string; note: string; commit?: string; trace_id: string }) {
   const path = join(POSTS_DIR, `${postSlug}.mdx`)
   const raw = await readFile(path, 'utf8')
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
   if (!m) throw new Error(`no frontmatter in ${postSlug}`)
   const fm = m[1]
   if (/^original:\s*true\s*$/m.test(fm)) {
-    throw new Error(`${postSlug} is an original (human-authored) post — AI trace capture refused. See CLAUDE.md hard rule.`)
+    throw new Error(`${postSlug} is an original (human-authored) post; AI trace capture refused. See CLAUDE.md hard rule.`)
   }
-  // Dedup: skip if a revision with this commit OR trace_id already exists.
-  if (entry.commit && new RegExp(`commit:\\s*['"]${entry.commit}['"]`).test(fm)) {
-    console.log(`[${postSlug}] revision for ${entry.commit.slice(0, 7)} already logged — skip`)
-    return
-  }
-  if (new RegExp(`trace_id:\\s*['"]${entry.trace_id}['"]`).test(fm)) {
-    console.log(`[${postSlug}] trace ${entry.trace_id} already logged — skip`)
+  if (hasRevision(fm, entry)) {
+    console.log(`[${postSlug}] ${entry.role} revision ${entry.trace_id} already logged; skip`)
     return
   }
   const model = entry.model ?? 'unknown'
-  const line = `  - { date: ${entry.date}, model: '${model}', note: '${entry.note.replace(/'/g, "''")}'${entry.commit ? `, commit: '${entry.commit}'` : ''}, trace_id: '${entry.trace_id}' }`
+  const line = `  - { date: ${entry.date}, model: '${model}', role: '${entry.role}', note: '${entry.note.replace(/'/g, "''")}'${entry.commit ? `, commit: '${entry.commit}'` : ''}, trace_id: '${entry.trace_id}' }`
   let newFm: string
   if (/^revisions:[ \t]*\n/m.test(fm)) {
     // Anchor only on the `revisions:\n` line itself (do not consume the
@@ -153,6 +244,28 @@ async function appendFrontmatterRevision(postSlug: string, entry: { date: string
     newFm = fm.replace(/^revisions:[ \t]*\n/m, `revisions:\n${line}\n`)
   } else {
     newFm = fm + `\nrevisions:\n${line}\n`
+  }
+  newFm = appendAuthorToFrontmatter(newFm, { date: entry.date, model, role: entry.role })
+  const out = `---\n${newFm}\n---\n` + raw.slice(m[0].length)
+  await writeFile(path, out, 'utf8')
+}
+
+async function appendSupportingTrace(postSlug: string, traceId: string) {
+  const path = join(POSTS_DIR, `${postSlug}.mdx`)
+  const raw = await readFile(path, 'utf8')
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
+  if (!m) throw new Error(`no frontmatter in ${postSlug}`)
+  const fm = m[1]
+  if (new RegExp(`['"]${traceId}['"]`).test(fm)) {
+    console.log(`[${postSlug}] supporting trace ${traceId} already attached; skip`)
+    return
+  }
+
+  let newFm: string
+  if (/^supporting_trace_ids:[ \t]*\n/m.test(fm)) {
+    newFm = fm.replace(/^supporting_trace_ids:[ \t]*\n/m, `supporting_trace_ids:\n  - '${traceId}'\n`)
+  } else {
+    newFm = fm + `\nsupporting_trace_ids:\n  - '${traceId}'\n`
   }
   const out = `---\n${newFm}\n---\n` + raw.slice(m[0].length)
   await writeFile(path, out, 'utf8')
@@ -168,27 +281,31 @@ async function saveTrace(trace: TraceFile) {
 
 async function capture(flags: Args): Promise<void> {
   const role = (flags.role as string) ?? 'polish'
+  const kind = flags.kind as TraceFile['kind'] | undefined
+  const attach = (flags.attach as string | undefined) ?? (kind === 'supporting-research' || role === 'research' ? 'supporting' : 'revision')
+  const latest = Boolean(flags.latest)
   const sessionId = flags.session as string | undefined
+  const marker = typeof flags.marker === 'string' ? flags.marker.trim() : undefined
   const noteArg = flags.note as string | undefined
-  const commit = (flags.commit as string) ?? headCommit() ?? undefined
+  const commit = (flags.commit as string | undefined) ?? (attach === 'revision' ? headCommit() ?? undefined : undefined)
 
   const posts: string[] = flags.post
     ? [flags.post as string]
     : flags.auto ? changedPostsAtHead() : []
 
   if (!posts.length) {
-    console.error('no post specified — pass --post=<slug> or --auto')
+    console.error('no post specified; pass --post=<slug> or --auto')
     process.exit(2)
   }
 
   for (const postSlug of posts) {
     if (commit && commit !== 'HEAD' && isPhantomEdit(commit, postSlug)) {
-      console.log(`[${postSlug}] phantom edit (revisions-only) — skip`)
+      console.log(`[${postSlug}] phantom edit (revisions-only); skip`)
       continue
     }
-    const harnessName = (flags.harness as string) ?? (await autoDetectHarness(postSlug))?.name
+    const harnessName = (flags.harness as string) ?? (latest ? undefined : (await autoDetectHarness(postSlug))?.name)
     if (!harnessName) {
-      console.error(`[${postSlug}] no harness detected — skip`)
+      console.error(`[${postSlug}] no harness detected; pass --harness=claude-code|codex or use --auto after an edit commit`)
       continue
     }
     let input: string | undefined
@@ -197,18 +314,21 @@ async function capture(flags: Args): Promise<void> {
 
     let session
     try {
-      session = await chooseSession(harness, postSlug, sessionId)
+      session = latest
+        ? await chooseLatestSession(harness, sessionId)
+        : await chooseSession(harness, postSlug, sessionId)
     } catch (e) {
       console.error(`[${postSlug}] ${(e as Error).message}`)
       continue
     }
 
     const turns = await harness.extractTurns(session, {
-      files: [`${postSlug}.mdx`],
+      files: latest ? [] : [`${postSlug}.mdx`],
+      marker,
       maxTurns: 40,
     })
     if (!turns.length) {
-      console.error(`[${postSlug}] no turns extracted — skip`)
+      console.error(`[${postSlug}] no turns extracted; skip`)
       continue
     }
     const model = await harness.detectModel(session)
@@ -220,7 +340,7 @@ async function capture(flags: Args): Promise<void> {
     const started_at = firstTurnTs || session.started_at || new Date().toISOString()
     const lastTurnTs = [...turns].reverse().find((t) => t.ts)?.ts
     const ended_at = lastTurnTs || session.ended_at
-    const trace_id = buildTraceId(started_at, model)
+    const trace_id = buildTraceId(started_at, model, postSlug, role)
 
     const summary = noteArg ?? (() => {
       // Use the first user prompt in a window that actually touched this post.
@@ -277,6 +397,7 @@ async function capture(flags: Args): Promise<void> {
       ended_at,
       post: postSlug,
       role: role as TraceFile['role'],
+      kind,
       commit,
       commit_subject,
       commit_message,
@@ -289,25 +410,34 @@ async function capture(flags: Args): Promise<void> {
     const path = await saveTrace(trace)
     console.log(`wrote ${path} (${turns.length} turns, ${trace.files_touched.length} files)`)
 
-    await appendFrontmatterRevision(postSlug, {
-      date: started_at.slice(0, 10),
-      model,
-      note: summary,
-      commit,
-      trace_id,
-    })
-    console.log(`appended revision entry to src/content/posts/${postSlug}.mdx`)
+    if (attach === 'supporting') {
+      await appendSupportingTrace(postSlug, trace_id)
+      console.log(`attached supporting trace to src/content/posts/${postSlug}.mdx`)
+    } else if (attach === 'revision') {
+      await appendFrontmatterRevision(postSlug, {
+        date: started_at.slice(0, 10),
+        model,
+        role,
+        note: summary,
+        commit,
+        trace_id,
+      })
+      console.log(`appended revision entry to src/content/posts/${postSlug}.mdx`)
+    } else if (attach !== 'none') {
+      throw new Error(`unknown --attach=${attach}`)
+    }
   }
 }
 
 async function list(): Promise<void> {
-  let dirs: string[]
-  try { dirs = await readdir(TRACES_DIR) } catch { dirs = [] }
-  if (!dirs.length) {
+  let entries
+  try { entries = await readdir(TRACES_DIR, { withFileTypes: true }) } catch { entries = [] }
+  const posts = entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()
+  if (!posts.length) {
     console.log('(no traces yet)')
     return
   }
-  for (const post of dirs.sort()) {
+  for (const post of posts) {
     console.log(`\n${post}`)
     const files = (await readdir(join(TRACES_DIR, post))).filter((f) => f.endsWith('.json')).sort()
     for (const f of files) {
@@ -323,9 +453,9 @@ async function list(): Promise<void> {
 }
 
 async function show(id: string): Promise<void> {
-  let dirs: string[]
-  try { dirs = await readdir(TRACES_DIR) } catch { dirs = [] }
-  for (const d of dirs) {
+  let entries
+  try { entries = await readdir(TRACES_DIR, { withFileTypes: true }) } catch { entries = [] }
+  for (const d of entries.filter((e) => e.isDirectory()).map((e) => e.name)) {
     const files = await readdir(join(TRACES_DIR, d))
     const hit = files.find((f) => f.replace(/\.json$/, '') === id || f.startsWith(id))
     if (hit) {

@@ -19,6 +19,10 @@ If you are an AI agent reading this and the operator asks you to edit the prose 
 
 Both AI edits and human edits land in the same `revisions[]` array in a post's frontmatter. AI revisions use the model id (`'claude-opus-4-7'`, etc.) and link a `trace_id`. Human revisions use `model: 'human'` with an optional `author: 'Drew Stone'` and no trace.
 
+Supporting research is separate from authorship. If a clean AI thread researches sources, claims, questions, or counterarguments for a post but does not write the post, capture it with `pnpm blog finish <post> --research --harness=codex|claude-code --note="..."`. That trace belongs in `supporting_trace_ids`, not `revisions[]`.
+
+If an AI thread writes or edits prose in a non-original post, capture it with `pnpm blog finish <post> --write --harness=codex|claude-code --role=draft|rewrite|polish|outline|review|publish --note="..."`. That trace belongs in `revisions[]`.
+
 The post-commit hook (installed via `pnpm install:hooks`) auto-logs every commit that touches an MDX post:
 
 - If a recent agent session is detected, runs `tools/trace-capture.ts --auto` (records the AI revision + saves the trace).
