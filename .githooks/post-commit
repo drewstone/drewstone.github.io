@@ -7,6 +7,12 @@
 #
 # The hook is tolerant: any failure is logged to stderr but never blocks the
 # commit. If the commit doesn't touch a post file, it's a no-op.
+#
+# Phase hook:
+# Set BLOG_TRACE_POSTS to a comma-separated post list and optionally set:
+# BLOG_TRACE_ROLE (default polish), BLOG_TRACE_HARNESS, BLOG_TRACE_KIND,
+# BLOG_TRACE_MARKER, BLOG_TRACE_NOTE to run a forced capture pass with this
+# metadata.
 set -uo pipefail
 
 changed=$(git show --no-renames --name-only --format='' HEAD | grep '^src/content/posts/.*\.mdx$' || true)
@@ -19,8 +25,50 @@ if ! command -v pnpm >/dev/null 2>&1; then
   exit 0
 fi
 
-pnpm tsx tools/trace-capture.ts capture --auto --role=polish \
-  2> >(sed 's/^/[trace-capture] /' >&2) || true
+BLOG_TRACE_POSTS="${BLOG_TRACE_POSTS:-}"
+BLOG_TRACE_HARNESS="${BLOG_TRACE_HARNESS:-}"
+BLOG_TRACE_ROLE="${BLOG_TRACE_ROLE:-polish}"
+BLOG_TRACE_KIND="${BLOG_TRACE_KIND:-post}"
+BLOG_TRACE_MARKER="${BLOG_TRACE_MARKER:-}"
+BLOG_TRACE_NOTE="${BLOG_TRACE_NOTE:-}"
+
+if [ -n "$BLOG_TRACE_POSTS" ]; then
+  IFS=',' read -r -a BLOG_POSTS <<< "$BLOG_TRACE_POSTS"
+  for post in "${BLOG_POSTS[@]}"; do
+    cmd=(pnpm tsx tools/trace-capture.ts capture --post="$post" --role="$BLOG_TRACE_ROLE" --kind="$BLOG_TRACE_KIND" --attach=revision --commit=HEAD)
+    if [ -n "$BLOG_TRACE_HARNESS" ]; then cmd+=(--harness="$BLOG_TRACE_HARNESS"); fi
+    if [ -n "$BLOG_TRACE_MARKER" ]; then cmd+=(--marker="$BLOG_TRACE_MARKER"); fi
+    if [ -n "$BLOG_TRACE_NOTE" ]; then cmd+=(--note="$BLOG_TRACE_NOTE"); fi
+    "${cmd[@]}" 2> >(sed 's/^/[trace-capture] /' >&2) || true
+  done
+fi
+
+if [ -n "$BLOG_TRACE_POSTS" ]; then
+  # Forced capture handled this commit.
+  exit 0
+fi
+
+# Decide path: agent vs human.
+# Heuristic: if the env signals an active agent (CLAUDECODE, CLAUDE_PROJECT_DIR,
+# CODEX_HOME, or a recent ~/.claude/projects session within 10min), prefer
+# trace-capture. Otherwise, log a human revision.
+AGENT=0
+if [ -n "${CLAUDECODE:-}" ] || [ -n "${CLAUDE_PROJECT_DIR:-}" ] || [ -n "${CODEX_HOME:-}" ]; then
+  AGENT=1
+fi
+
+# Recent claude-code session within 10 minutes also counts.
+if [ "$AGENT" = "0" ] && [ -d "$HOME/.claude/projects" ]; then
+  if find "$HOME/.claude/projects" -name '*.jsonl' -mmin -10 2>/dev/null | grep -q .; then
+    AGENT=1
+  fi
+fi
+
+if [ "$AGENT" = "1" ]; then
+  pnpm tsx tools/trace-capture.ts capture --auto --role=polish --kind=post --attach=revision 2> >(sed 's/^/[trace-capture] /' >&2) || true
+else
+  node tools/log-edit.mjs --auto || true
+fi
 
 # Amend the commit to include new trace files + frontmatter updates if any.
 if ! git diff --quiet src/content/posts traces 2>/dev/null; then

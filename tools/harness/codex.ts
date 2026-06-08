@@ -92,6 +92,12 @@ function roleOf(ev: any): Turn['role'] | null {
   return null
 }
 
+function markerInUserTurn(ev: any, marker: string): boolean {
+  if (!marker) return false
+  if (roleOf(ev) !== 'user') return false
+  return textOf(ev).includes(marker)
+}
+
 function textOf(ev: any): string {
   const p = payloadOf(ev)
   if (ev?.type === 'event_msg' && typeof p?.message === 'string') return p.message
@@ -200,33 +206,111 @@ export class CodexHarness implements TraceHarness {
     const raw = await readFile(ref.path, 'utf8')
     const events = parseJsonl(raw)
     const wanted = (filter.files ?? []).map((f) => f.replace(/^\.\//, ''))
-    const turns: Turn[] = []
+    const marker = (filter.marker ?? '').trim()
+
+    type Window = { events: any[]; relevant: boolean }
+    const windows: Window[] = []
+    let cur: { events: any[] } | null = null
 
     for (const ev of events) {
-      const role = roleOf(ev)
-      if (!role) continue
-      const ts = timestampOf(ev)
-      if (role === 'user') {
-        const text = textOf(ev)
-        if (!text.trim()) continue
-        turns.push({ role: 'user', text: summarize(text, 600), ts })
-      } else if (role === 'assistant') {
-        const text = textOf(ev)
-        const tools = toolCallInfo(ev)
-        if (wanted.length) {
-          const hit = tools.files.some((t) => wanted.some((w) => t.endsWith(w)))
-          if (!hit && tools.count > 0) continue
+      if (roleOf(ev) === 'user') {
+        if (cur) windows.push({ ...cur, relevant: false })
+        cur = { events: [] }
+      } else if (!cur) {
+        cur = { events: [] }
+      }
+      cur.events.push(ev)
+    }
+
+    if (cur) windows.push({ ...cur, relevant: false })
+
+    if (wanted.length) {
+      for (const w of windows) {
+        let related = false
+        for (const ev of w.events) {
+          const role = roleOf(ev)
+          if (!role) continue
+          const text = textOf(ev)
+          const tools = toolCallInfo(ev)
+          if (role === 'user' && text && wanted.some((w) => text.includes(w))) {
+            related = true
+            break
+          }
+          if (role === 'assistant' && tools.files.some((t) => wanted.some((w) => t.endsWith(w)))) {
+            related = true
+            break
+          }
         }
-        turns.push({
-          role: 'assistant',
-          text: text ? summarize(text, 8000) : undefined,
-          text_summary: text ? summarize(text, 280) : undefined,
-          tool_calls: tools.count || undefined,
-          tool_names: tools.names.length ? tools.names : undefined,
-          tool_call_details: tools.details.length ? tools.details : undefined,
-          files_touched: tools.files.length ? Array.from(new Set(tools.files)) : undefined,
-          ts,
-        })
+        w.relevant = related
+      }
+    } else {
+      for (const w of windows) w.relevant = true
+    }
+
+    const selected = new Set<number>()
+    for (let i = 0; i < windows.length; i++) {
+      if (!windows[i].relevant) continue
+      if (i > 0) selected.add(i - 1)
+      selected.add(i)
+      if (i + 1 < windows.length) selected.add(i + 1)
+    }
+
+    const markerWindowIndexes = windows
+      .map((w, i) => ({ i, hit: w.events.some((e) => markerInUserTurn(e, marker)) }))
+      .filter((x) => x.hit)
+      .map((x) => x.i)
+
+    const selectedIndexes = selected.size > 0
+      ? [...selected]
+          .filter((i) => i >= 0 && i < windows.length)
+          .sort((a, b) => a - b)
+      : windows.map((_, i) => i)
+
+    let finalWindowIndexes = selectedIndexes
+    if (marker && markerWindowIndexes.length) {
+      const cutoff = Math.max(markerWindowIndexes[markerWindowIndexes.length - 1] - 1, 0)
+      finalWindowIndexes = selectedIndexes.filter((i) => i >= cutoff)
+    } else if (marker && selectedIndexes.length) {
+      finalWindowIndexes = selectedIndexes.slice(-2)
+    }
+
+    const windowsToUse = finalWindowIndexes
+      .filter((i) => i >= 0 && i < windows.length)
+      .map((i) => windows[i])
+    const turns: Turn[] = []
+    let seq = 0
+
+    for (const w of windowsToUse) {
+      for (const ev of w.events) {
+        const role = roleOf(ev)
+        if (!role) continue
+        const ts = timestampOf(ev)
+        if (role === 'user') {
+          const text = textOf(ev)
+          if (!text.trim()) continue
+          turns.push({ role: 'user', text: summarize(text, 600), ts, seq })
+          seq++
+        } else if (role === 'assistant') {
+          const text = textOf(ev)
+          const tools = toolCallInfo(ev)
+          if (wanted.length) {
+            const hit = tools.files.some((t) => wanted.some((w) => t.endsWith(w)))
+            const wasInRelevantWindow = w.relevant
+            if (!hit && tools.count > 0 && !wasInRelevantWindow) continue
+          }
+          turns.push({
+            role: 'assistant',
+            seq,
+            text: text ? summarize(text, 8000) : undefined,
+            text_summary: text ? summarize(text, 280) : undefined,
+            tool_calls: tools.count || undefined,
+            tool_names: tools.names.length ? tools.names : undefined,
+            tool_call_details: tools.details.length ? tools.details : undefined,
+            files_touched: tools.files.length ? Array.from(new Set(tools.files)) : undefined,
+            ts,
+          })
+          seq++
+        }
       }
     }
 

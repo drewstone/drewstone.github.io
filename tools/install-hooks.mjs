@@ -5,6 +5,8 @@
  * The hook runs after every commit. If MDX posts changed:
  *   - If there's a recent agent session (Claude Code / Codex), the existing
  *     trace-capture --auto path runs (records AI revision + saves trace).
+ *   - If BLOG_TRACE_POSTS is set, a forced capture run executes that target post
+ *     list with the supplied phase token.
  *   - Otherwise, the log-edit --auto path records a human revision.
  *
  * Idempotent: re-running the hook on the same commit dedups by SHA.
@@ -25,6 +27,34 @@ cd "$(git rev-parse --show-toplevel)"
 
 # Bail if HEAD didn't touch any post.
 if ! git show --name-only --pretty=format: HEAD | grep -qE '^src/content/posts/.*\\.mdx$'; then
+  exit 0
+fi
+
+# Forced trace capture via environment directive.
+BLOG_TRACE_POSTS="${BLOG_TRACE_POSTS:-}"
+BLOG_TRACE_HARNESS="${BLOG_TRACE_HARNESS:-}"
+BLOG_TRACE_ROLE="${BLOG_TRACE_ROLE:-polish}"
+BLOG_TRACE_KIND="${BLOG_TRACE_KIND:-post}"
+BLOG_TRACE_MARKER="${BLOG_TRACE_MARKER:-}"
+BLOG_TRACE_NOTE="${BLOG_TRACE_NOTE:-}"
+
+if [ -n "$BLOG_TRACE_POSTS" ]; then
+  IFS=',' read -r -a BLOG_POSTS <<< "$BLOG_TRACE_POSTS"
+  for post in "${BLOG_POSTS[@]}"; do
+    if command -v pnpm >/dev/null 2>&1; then
+      cmd=(pnpm tsx tools/trace-capture.ts capture --post="$post" --role="$BLOG_TRACE_ROLE" --kind="$BLOG_TRACE_KIND" --attach=revision --commit=HEAD)
+      if [ -n "$BLOG_TRACE_HARNESS" ]; then
+        cmd+=(--harness="$BLOG_TRACE_HARNESS")
+      fi
+      if [ -n "$BLOG_TRACE_MARKER" ]; then
+        cmd+=(--marker="$BLOG_TRACE_MARKER")
+      fi
+      if [ -n "$BLOG_TRACE_NOTE" ]; then
+        cmd+=(--note="$BLOG_TRACE_NOTE")
+      fi
+      "${cmd[@]}" 2>/dev/null || true
+    fi
+  done
   exit 0
 fi
 

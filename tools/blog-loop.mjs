@@ -4,7 +4,7 @@
  *
  * Usage:
  *   pnpm blog research <post> [--harness=codex|claude-code]
- *   pnpm blog write <post> [--harness=codex|claude-code] [--role=draft|rewrite|polish|outline|review|publish]
+ *   pnpm blog write <post> [--harness=codex|claude-code] [--role=draft|rewrite|polish|outline|review|publish] [--marker=<token>]
  *   pnpm blog finish <post> --research --harness=codex --note="source scan"
  *   pnpm blog finish <post> --write --harness=codex --note="drafted section"
  */
@@ -68,16 +68,34 @@ function resolvePost(all, query) {
   return null
 }
 
-function printPrompt(mode, post, harness, role) {
+function printPrompt(mode, post, harness, role, marker) {
   const finish = mode === 'research'
     ? `pnpm blog finish ${post.slug} --research --harness=${harness} --note="<what this research covered>"`
-    : `pnpm blog finish ${post.slug} --write --harness=${harness} --role=${role} --note="<what changed>"`
+    : `pnpm blog finish ${post.slug} --write --harness=${harness} --role=${role} --note="<what changed>"${marker ? ` --marker="${marker}"` : ''}`
 
   const prompt = mode === 'research'
     ? `This is supporting research for the blog post "${post.title}" (${post.slug}). Do not edit the post. Do not write prose for publication. Mine sources, claims, open questions, counterarguments, and useful Q/A. At the end, run: ${finish}`
     : `This is authorship work for the blog post "${post.title}" (${post.slug}). You may edit src/content/posts/${post.slug}.mdx unless it has original: true. Preserve provenance fields. At the end, run: ${finish}`
 
-  console.log(prompt)
+  const markerLine = marker
+    ? `\nFinal phase marker: include this exact token in the final user message before finishing: ${marker}`
+    : ''
+
+  if (marker) {
+    const shellToken = marker.replace(/"/g, '\\"')
+    const directive = [
+      `BLOG_TRACE_POSTS=${post.slug}`,
+      `BLOG_TRACE_ROLE=${role}`,
+      `BLOG_TRACE_MARKER="${shellToken}"`,
+      'BLOG_TRACE_KIND=post',
+      `BLOG_TRACE_NOTE="session ${role} marker"`,
+    ].join(' ')
+    const directiveLine = `\nHook directive (paste before commit): ${directive}`
+    console.log(prompt + markerLine + directiveLine)
+    return
+  }
+
+  console.log(prompt + markerLine)
 }
 
 function run(args) {
@@ -109,7 +127,7 @@ async function main() {
   const role = flags.role || (cmd === 'write' ? 'draft' : 'research')
 
   if (cmd === 'research' || cmd === 'write') {
-    printPrompt(cmd, post, harness, role)
+    printPrompt(cmd, post, harness, role, flags.marker)
     return
   }
 
@@ -152,8 +170,9 @@ async function main() {
       `--role=${role}`,
       '--kind=post',
       '--attach=revision',
+      flags.marker ? `--marker=${flags.marker}` : '',
       `--note=${flags.note}`,
-    ])
+    ].filter(Boolean))
     return
   }
 

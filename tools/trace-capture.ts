@@ -8,6 +8,7 @@
  *     [--post=<slug>] \
  *     [--role=outline|draft|rewrite|polish|diagram|review|publish|research] \
  *     [--session=<session-id>] \
+ *     [--marker="<token>"] \
  *     [--note=<one-line>] \
  *     [--commit=<sha>] \
  *     [--input=<path>]            # manual harness only
@@ -284,6 +285,7 @@ async function capture(flags: Args): Promise<void> {
   const attach = (flags.attach as string | undefined) ?? (kind === 'supporting-research' || role === 'research' ? 'supporting' : 'revision')
   const latest = Boolean(flags.latest)
   const sessionId = flags.session as string | undefined
+  const marker = typeof flags.marker === 'string' ? flags.marker.trim() : undefined
   const noteArg = flags.note as string | undefined
   const commit = (flags.commit as string | undefined) ?? (attach === 'revision' ? headCommit() ?? undefined : undefined)
 
@@ -322,6 +324,7 @@ async function capture(flags: Args): Promise<void> {
 
     const turns = await harness.extractTurns(session, {
       files: latest ? [] : [`${postSlug}.mdx`],
+      marker,
       maxTurns: 40,
     })
     if (!turns.length) {
