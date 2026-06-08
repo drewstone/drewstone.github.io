@@ -19,7 +19,10 @@ authors:
     date: 2026-06-05
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-polish' }
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-review' }
   - date: 2026-06-05
@@ -41,15 +44,17 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-A prompt steers an agent inside the current context.
+A prompt can rescue one run.
 
-A skill records procedure the agent can reactivate in future contexts.
+A skill can change the next hundred.
 
-Prompt optimization searches over text that steers a run. Skill optimization searches over external procedural state that survives across runs. It is closer to training a reusable policy artifact than improving one instruction block.
+That is the opportunity and the danger. A prompt lives in the current context. A skill is procedural state that an agent can reactivate later, possibly across tasks, models, and sessions. If the skill teaches the agent the right repair routine, the system compounds. If it teaches a bad habit, the system inherits it.
 
-SkillOpt is important because it operationalizes that distinction. It takes a natural-language skill document, treats it as the trainable state of a frozen agent, runs tasks, reflects on scored trajectories, proposes bounded edits, accepts only validation-improving updates, and exports a deployable `best_skill.md`.
+SkillOpt matters because it treats that procedural state as trainable. It takes a natural-language skill document, runs tasks, reflects on scored trajectories, proposes bounded edits, accepts only validation-improving updates, and exports a deployable `best_skill.md`.
 
-The model weights do not move. The agent's procedure does.
+The model weights do not move.
+
+The agent's operating procedure does.
 
 ## What Counts As A Skill?
 
@@ -79,7 +84,7 @@ skill = persistent procedure + activation condition + operational scope
 
 If the procedure does not persist, it is a prompt. If it persists but only stores observations, it is memory. If it can directly act on the world, it is a tool. If it controls the loop that invokes tools and agents, it is runtime.
 
-That middle layer is why skill optimization deserves its own post.
+That middle layer is where a lot of real agent learning will happen, because it is cheaper than weight updates and more durable than one more reminder in the prompt.
 
 ## The Optimization Problem
 
@@ -218,7 +223,7 @@ This is where skill optimization differs from skill generation. Generating a use
 
 Ecosystem data points in the same direction. A 2026 data-driven analysis of 40,285 publicly listed skills found rapid publication bursts, redundancy, heavy concentration in software workflows, and safety risks around state-changing or system-level actions. A world with thousands of skills needs selection and governance, not only more skill files.
 
-## The Tangle Placement
+## Where The Local Stack Fits
 
 In the Tangle stack, skills belong in the behavior profile and in the improvement surface.
 
@@ -281,7 +286,7 @@ Is the failure caused by missing procedure, missing activation, missing affordan
 
 Only the first two are skill optimization problems.
 
-## Evaluation Protocol
+## The Transfer Test
 
 A serious skill optimization protocol should treat a skill change like a behavior-bearing release.
 
@@ -327,7 +332,7 @@ promote(k_new) if:
 
 A skill that improves its target task but triggers on unrelated work is not a clean win. A skill that improves a benchmark but requires a 3x token load every turn may not be deployable. A skill that improves one model while harming another may still be useful, but it needs model-specific scoping.
 
-## Failure Modes
+## How Skills Go Bad
 
 Skill systems fail differently from prompt systems.
 
@@ -349,7 +354,7 @@ skill description becomes broad -> skill loads often -> eval improves on benchma
 
 This is why the activation policy `a` belongs in the objective. Optimizing only the body `k` is incomplete.
 
-## A Working Rule
+## When Skills Are The Right Surface
 
 Use skill optimization when traces show a recurring procedural failure:
 

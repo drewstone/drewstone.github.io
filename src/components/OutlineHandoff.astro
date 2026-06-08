@@ -1,0 +1,146 @@
+---
+interface LinkedPost {
+  slug: string
+  title: string
+}
+
+interface Props {
+  traceId: string
+  series?: string
+  status?: 'pending' | 'in-progress' | 'complete'
+  posts?: LinkedPost[]
+}
+
+const { traceId, series, status = 'pending', posts = [] } = Astro.props
+
+const statusLabel = status === 'in-progress'
+  ? 'human edit in progress'
+  : status === 'complete'
+    ? 'human rewrite complete'
+    : 'awaiting human rewrite'
+---
+
+<aside class="outline-handoff">
+  <div class="handoff-main">
+    <div class="handoff-kicker">
+      <span class="handoff-pill">outline trace</span>
+      <span>{statusLabel}</span>
+    </div>
+    {series && <h2>{series}</h2>}
+    <div class="handoff-copy">
+      <slot />
+    </div>
+    {posts.length > 0 && (
+      <ul class="handoff-posts">
+        {posts.map((post) => (
+          <li><a href={`/posts/${post.slug}`}>{post.title}</a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+  <a class="handoff-trace" href={`/traces/${traceId}`}>view source trace →</a>
+</aside>
+
+<style>
+  .outline-handoff {
+    margin: var(--space-xl) 0 var(--space-2xl);
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--c-human-border);
+    border-left: 4px solid var(--c-human);
+    border-radius: 8px;
+    background: var(--c-human-bg);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .handoff-main {
+    min-width: 0;
+  }
+
+  .handoff-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    color: var(--c-human);
+    margin-bottom: 0.45rem;
+  }
+
+  .handoff-pill {
+    padding: 0.12rem 0.45rem;
+    border: 1px solid var(--c-human-border);
+    border-radius: 4px;
+    background: var(--bg);
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+    margin: 0 0 0.35rem;
+    color: var(--fg);
+  }
+
+  .handoff-copy {
+    color: var(--fg-muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  .handoff-copy :global(p) {
+    margin: 0;
+  }
+
+  .handoff-posts {
+    list-style: none;
+    padding: 0;
+    margin: 0.65rem 0 0;
+    display: flex;
+    gap: 0.45rem 0.9rem;
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .handoff-posts a {
+    color: var(--c-human);
+    text-decoration: none;
+    border-bottom: 1px solid var(--c-human-border);
+  }
+
+  .handoff-posts a:hover {
+    border-bottom-color: var(--c-human);
+  }
+
+  .handoff-trace {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--c-human);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--c-human-border);
+  }
+
+  .handoff-trace:hover {
+    border-bottom-color: var(--c-human);
+  }
+
+  @media (max-width: 720px) {
+    .outline-handoff {
+      display: block;
+    }
+
+    .handoff-trace {
+      display: inline-flex;
+      margin-top: 0.75rem;
+    }
+  }
+</style>

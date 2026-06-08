@@ -76,6 +76,7 @@ const toolCallDetailSchema = z.object({
 })
 
 const turnSchema = z.object({
+  seq: z.number().optional(),
   role: z.enum(['user', 'assistant', 'system', 'tool']),
   text: z.string().optional(),
   text_summary: z.string().optional(),

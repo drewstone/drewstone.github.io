@@ -19,7 +19,10 @@ authors:
     date: 2026-06-05
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish' }
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-review' }
   - date: 2026-06-05
@@ -41,23 +44,29 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-Every self-improving agent pitch eventually reduces to three questions.
+Every self-improving agent pitch eventually reduces to three questions:
 
-What can change? What gets scored? What is allowed to ship?
+```text
+what can change?
+what gets scored?
+what is allowed to ship?
+```
 
-GEPA evolves prompts. MIPRO searches over instructions and demonstrations. Ax brings those ideas into a TypeScript agent framework. SkillOpt trains a skill file as if it were an external parameter of a frozen agent. AlphaEvolve mutates code and keeps the versions that pass executable tests. Microsoft describes MAI and Frontier Tuning as a hill-climbing machine built around reinforcement learning environments, workflow traces, and model/runtime adaptation.
+GEPA evolves prompts. MIPRO searches instructions and demonstrations. Ax brings those ideas into a TypeScript agent framework. SkillOpt trains a skill file as if it were an external parameter of a frozen agent. AlphaEvolve mutates code and keeps versions that pass executable tests. Microsoft describes MAI and Frontier Tuning as a hill-climbing machine built around reinforcement learning environments, workflow traces, and model/runtime adaptation.
 
-So are these all doing the same thing?
+The temptation is to collapse all of that into one phrase: hill climbing.
 
-Yes at the skeleton level. No at the systems level.
+That is half right and half useless.
 
-They do not touch the same artifact, require the same evaluator, or carry the same safety risk. But they share a loop:
+Yes, they share a skeleton:
 
 ```text
 candidate -> rollout -> score -> compare -> keep, reject, or mutate
 ```
 
-That is the useful mental model. Self-improvement is search under a budget, with a noisy objective, over a chosen surface.
+No, they are not the same system. They touch different artifacts, trust different evaluators, and carry different safety risks.
+
+Self-improvement is search under a budget, with a noisy objective, over a chosen surface. The surface is the part people keep hand-waving away.
 
 The better question is not "is this hill climbing?" It is:
 

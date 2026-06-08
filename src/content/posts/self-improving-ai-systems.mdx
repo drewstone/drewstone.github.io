@@ -1,0 +1,87 @@
+---
+title: 'Self-Improving AI Is Real, But Not the Way People Mean It'
+description: 'Outline notes for a post on self-improvement loops, public systems, frontier-lab advantages, and trace-driven improvement.'
+date: 2026-05-25
+tags: ['agents', 'evals', 'systems']
+draft: true
+series: 'the-long-horizon'
+outline_trace_id: '2026-05-25T11-23-22-617Z-gpt-5.5-series-outline'
+human_takeover: 'pending'
+authors:
+  - model: 'gpt-5.5'
+    role: 'outline'
+    date: 2026-05-25
+  - { model: 'gpt-5.3-codex-spark', role: 'polish', date: 2026-06-08 }
+revisions:
+  - { date: 2026-06-08, model: 'gpt-5.3-codex-spark', role: 'polish', note: 'also the trace here is not interleaved? is that intentional? https://drewstone.github.io/traces/2026-06-05T12-08-35-196Z-gpt-5.5/, its all u · 37 asst turns · 27 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-08T08-32-11-493Z-gpt-5.3-codex-spark-self-improving-ai-systems-polish' }
+  - date: 2026-05-25
+    model: 'gpt-5.5'
+    role: 'outline'
+    note: 'AI-generated series outline from a traced planning session; awaiting human rewrite.'
+    trace_id: '2026-05-25T11-23-22-617Z-gpt-5.5-series-outline'
+supporting_trace_ids:
+  - '2026-06-05T12-08-35-196Z-gpt-5.5'
+
+---
+
+import OutlineHandoff from '../../components/OutlineHandoff.astro'
+
+<OutlineHandoff traceId="2026-05-25T11-23-22-617Z-gpt-5.5-series-outline" series="The Long Horizon" status="pending">
+  This is an AI-edited outline extracted from a traced planning session. Drew takes over below.
+</OutlineHandoff>
+
+## Working Thesis
+
+Public self-improvement is not recursive god-mode. It is a stack of increasingly strong loops: reflection, memory, prompt evolution, test-time correction, generated training data, evolutionary search, and production trace mining.
+
+The connective series thesis: long-running tasks are the empirical bottleneck, and self-improvement is the mechanism for crossing it.
+
+## Outline Notes
+
+### Define The Ladder
+
+- Level 0: retry / self-critique.
+- Level 1: reflection memory, e.g. Reflexion.
+- Level 2: skill libraries, e.g. Voyager.
+- Level 3: prompt/program optimization, e.g. GEPA, DSPy/MIPRO.
+- Level 4: test-time self-correction trained by RL, e.g. SCoRe.
+- Level 5: self-generated fine-tuning/update directives, e.g. SEAL.
+- Level 6: algorithm discovery loops, e.g. AlphaEvolve/OpenEvolve.
+- Level 7: lab-scale closed loops using proprietary traces, evals, synthetic data, and deployment feedback.
+
+### What's Actually Open
+
+- Reflexion is old but still conceptually important.
+- GEPA is a strong public example of trace/reflection-driven prompt evolution.
+- SEAL is closer to weight-level adaptation, but still bounded research.
+- OpenEvolve shows the AlphaEvolve pattern is not conceptually secret, though frontier-scale execution may be.
+
+### What Frontier Labs Likely Have That Open Source Doesn't
+
+- Massive private trajectory corpora.
+- Reliable reward models / graders.
+- Production traces.
+- Secure sandboxes.
+- Human expert labels.
+- Compute for repeated rollouts.
+- Deployment feedback loops.
+
+### Is Self-Improvement Only Frontier-Lab Magic?
+
+- No for prompt/tool/system improvement.
+- Mostly yes for model-weight improvement at frontier scale.
+- The interesting middle ground is product teams that use traces -> evals -> prompt/runtime changes -> held-out gates.
+
+### Drew Angle To Rewrite Around
+
+"The self-improving system is not the model. It's the harness."
+
+## Source Trail From The Trace
+
+- Reflexion: https://arxiv.org/abs/2303.11366
+- GEPA: https://arxiv.org/abs/2507.19457
+- SEAL: https://arxiv.org/abs/2506.10943
+- AlphaEvolve: https://arxiv.org/abs/2506.13131
+- OpenEvolve: https://github.com/algorithmicsuperintelligence/openevolve
+- SCoRe: https://arxiv.org/abs/2409.12917
+- Voyager: https://voyager.minedojo.org/

@@ -19,7 +19,10 @@ authors:
     date: 2026-06-05
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
 revisions:
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-polish' }
+  - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-review' }
   - date: 2026-06-05
@@ -41,25 +44,25 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-Prompt optimization is a real optimization discipline, not a theory of the whole agent.
+The first time prompt optimization feels magical is also the moment it starts lying to you.
 
-GEPA, MIPRO, DSPy, AxLLM, TextGrad, OPRO, and APE all search through language-shaped control surfaces. They can improve instructions, demonstrations, field descriptions, tool docs, judge rubrics, and the prompts embedded inside multi-stage LM programs.
+You change a sentence, run the benchmark, and the score moves. GEPA reflects over traces. MIPRO searches instructions and demonstrations. DSPy compiles an LM program. AxLLM packages the optimizer into a TypeScript surface. The intervention is small, the evidence is numeric, and the temptation is to say the agent improved.
 
-They are not automatically searching the full agent system.
+Sometimes it did.
 
-That distinction matters because modern agents do not fail only because the prompt is poorly worded. They fail because the tool surface is wrong, the retrieval policy is stale, the runtime cannot express fanout, the evaluator rewards the wrong behavior, the model is underpowered, the trace is incomplete, the budget is too tight, or the coordinator is operating with the wrong topology.
+Sometimes the prompt merely learned the evaluator, or found a better wording inside a fixed runtime, or exposed that the real bottleneck was not text at all. The agent might be failing because the tool surface is wrong, retrieval is stale, fanout is unavailable, the judge rewards the wrong behavior, the model is underpowered, the trace is incomplete, or the coordinator is operating with the wrong topology.
 
-Prompt optimization is the right layer when a text surface has causal leverage over the failure. It is the wrong layer when the missing capability lives outside text.
+Prompt optimization is powerful when a text surface has causal leverage over the failure. It is a confound when the missing capability lives outside text.
 
-The serious version of the question is:
+So the question is not "which prompt optimizer is best?" The question is:
 
 ```text
 Which factors are mutable, which factors are held fixed, and which evaluator is trusted enough to promote a candidate?
 ```
 
-Answer that and the ecosystem becomes legible as a set of search problems over different coordinate systems.
+Answer that and the ecosystem stops looking like magic. It becomes experimental design.
 
-## The Object Being Optimized
+## The Confound
 
 Let:
 
@@ -80,7 +83,7 @@ A prompt optimizer is usually solving:
 J(p, d | m, h) = E_{x ~ D}[R(run(m, h, p, d, x))] - lambda * E[C(run(m, h, p, d, x))]
 ```
 
-The conditional bar matters. It says the optimizer is improving `p` and maybe `d` while model `m` and runtime `h` are treated as fixed. If the model, toolset, router, memory, worker count, turn budget, or evaluator also changes, the experiment no longer estimates a pure prompt effect. It estimates a confounded system effect.
+The conditional bar is the whole argument. It says the optimizer is improving `p` and maybe `d` while model `m` and runtime `h` are treated as fixed. If the model, toolset, router, memory, worker count, turn budget, or evaluator also changes, the experiment no longer estimates a pure prompt effect. It estimates a confounded system effect.
 
 This is experimental design, not pedantry. A candidate prompt can look better because the model changed. A model can look better because the prompt changed. A workflow can look better because the judge prompt became easier. A multi-agent coordinator can look better because a runtime silently raised its turn budget.
 
@@ -257,7 +260,7 @@ Now the loop is no longer pure prompt optimization. It is system optimization. G
 
 This is where meta-harnesses enter. A meta-harness does not merely tune wording inside one harness. It searches over code, architecture, eval plumbing, candidate generators, and workflow topology. Its failure mode is also larger: it can improve the harness while weakening the real product task. That is why trace integrity and held-out promotion become stricter as the mutable surface expands.
 
-## The Tangle Placement
+## Where The Local Stack Fits
 
 The Tangle packages fit as substrate, not as another prompt optimizer.
 
@@ -327,7 +330,7 @@ cells = model x prompt x topology x scenario x seed
 
 If the candidate wins, you want to know why. Was the lift from prompt wording, model choice, topology, scenario mix, or an interaction? `agent-eval` has a local causal attribution primitive for exactly this style of factorial decomposition. The point is not academic neatness. It prevents the team from shipping a prompt change while the actual effect came from a model swap or runtime setting.
 
-## Failure Modes
+## How Prompt Search Lies
 
 Prompt optimizers fail in predictable ways.
 
@@ -354,7 +357,7 @@ This is why high-stakes surfaces need multiple evaluators: deterministic checks 
 
 Prompt optimization is not unsafe because text is weak. It is unsafe when text is the only thing being measured.
 
-## A Working Rule
+## When Prompt Search Is The Right Tool
 
 Use prompt or LM-program optimization when the traces show a representational failure:
 

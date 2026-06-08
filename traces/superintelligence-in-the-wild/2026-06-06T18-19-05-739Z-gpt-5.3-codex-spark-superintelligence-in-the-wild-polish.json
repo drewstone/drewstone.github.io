@@ -1,0 +1,816 @@
+{
+  "trace_id": "2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-superintelligence-in-the-wild-polish",
+  "harness": "codex",
+  "model": "gpt-5.3-codex-spark",
+  "started_at": "2026-06-06T18:19:05.739Z",
+  "ended_at": "2026-06-06T21:16:05.035Z",
+  "post": "superintelligence-in-the-wild",
+  "role": "polish",
+  "commit": "fa32d84c8519aa44965fe45a3491898c14ae5b1b",
+  "commit_subject": "chore(traces): include session-polish captures for merged content series",
+  "commit_message": "chore(traces): include session-polish captures for merged content series",
+  "files_touched": [
+    "/Users/drew/code/blog",
+    "src/content/posts/self-improving-stack-harness-evolution.mdx",
+    "src/content/posts/superintelligence-in-the-wild.mdx",
+    "/Users/drew",
+    "/Users/drew/webb/tangle-website",
+    "src/content/blog/building-ai-services-on-tangle.mdx",
+    "src/pages/blog/index.astro",
+    "src/content/posts/redteam-architecture.mdx",
+    "src/content/posts/autonomous-autoreserach.mdx"
+  ],
+  "diffstat": [
+    {
+      "path": "src/content/posts/long-running-task-systems.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-ai-systems.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-agent-runtime-topology.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-evaluation-gates.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-governance.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-harness-evolution.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-memory-flywheels.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-multi-agent-coordination.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-optimization-theory.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-post-training.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-prompt-optimization.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-skill-optimization.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-test-time-compute.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/self-improving-stack-trace-systems.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/superintelligence-in-the-wild.mdx",
+      "additions": 2,
+      "deletions": 0
+    },
+    {
+      "path": "src/content/posts/the-self-improving-stack.mdx",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "tools/blog-loop.mjs",
+      "additions": 42,
+      "deletions": 8
+    },
+    {
+      "path": "tools/harness/claude-code.ts",
+      "additions": 7,
+      "deletions": 6
+    },
+    {
+      "path": "tools/harness/codex.ts",
+      "additions": 4,
+      "deletions": 5
+    },
+    {
+      "path": "tools/harness/manual.ts",
+      "additions": 2,
+      "deletions": 2
+    },
+    {
+      "path": "traces/long-running-task-systems/2026-06-05T12-08-44-415Z-gpt-5.5-long-running-task-systems-polish.json",
+      "additions": 760,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-ai-systems/2026-06-08T08-32-11-493Z-gpt-5.3-codex-spark-self-improving-ai-systems-polish.json",
+      "additions": 853,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-agent-runtime-topology/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-polish.json",
+      "additions": 819,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-evaluation-gates/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-polish.json",
+      "additions": 819,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-governance/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-harness-evolution/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish.json",
+      "additions": 841,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-memory-flywheels/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-multi-agent-coordination/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-optimization-theory/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-post-training/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-prompt-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-skill-optimization/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-polish.json",
+      "additions": 808,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-test-time-compute/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-polish.json",
+      "additions": 819,
+      "deletions": 0
+    },
+    {
+      "path": "traces/self-improving-stack-trace-systems/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-polish.json",
+      "additions": 819,
+      "deletions": 0
+    },
+    {
+      "path": "traces/superintelligence-in-the-wild/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-superintelligence-in-the-wild-polish.json",
+      "additions": 846,
+      "deletions": 0
+    },
+    {
+      "path": "traces/the-self-improving-stack/2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-polish.json",
+      "additions": 819,
+      "deletions": 0
+    }
+  ],
+  "summary": "we have a company website in ~/webb/tangle-website maybe? I want to evaluate which blog posts from this blog we can mirror on that website s · 37 asst turns · 27 tool calls",
+  "turns": [
+    {
+      "role": "user",
+      "text": "we have a company website in ~/webb/tangle-website maybe? I want to evaluate which blog posts from this blog we can mirror on that website so I can post them under the company. They should be related to AI topics, crypto topics, and everything here. I bet the most recent blog series we wrote is all relevant. I want to do it so that we can also get some pretty good SEO visibility, etc., and try to SEO optimize this stuff.",
+      "ts": "2026-06-06T18:19:05.739Z",
+      "seq": 0
+    },
+    {
+      "role": "user",
+      "text": "we have a company website in ~/webb/tangle-website maybe? I want to evaluate which blog posts from this blog we can mirror on that website so I can post them under the company. They should be related to AI topics, crypto topics, and everything here. I bet the most recent blog series we wrote is all relevant. I want to do it so that we can also get some pretty good SEO visibility, etc., and try to SEO optimize this stuff.",
+      "ts": "2026-06-06T18:19:05.739Z",
+      "seq": 1
+    },
+    {
+      "role": "assistant",
+      "seq": 2,
+      "text": "Got it. I’ll first map the blog repo structure, extract recent posts and their metadata/tags, then cross-check which ones are AI/crypto-relevant and highest-value for SEO re-posting to the company site. After that I’ll give you a ranked mirror list with rationale and a lightweight migration/SEO plan.",
+      "text_summary": "Got it. I’ll first map the blog repo structure, extract recent posts and their metadata/tags, then cross-check which ones are AI/crypto-relevant and highest-value for SEO re-posting to the company site. After that I’ll give you a ranked mirror list with rationale and a lightweig…",
+      "ts": "2026-06-06T18:19:10.984Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 3,
+      "text": "Got it. I’ll first map the blog repo structure, extract recent posts and their metadata/tags, then cross-check which ones are AI/crypto-relevant and highest-value for SEO re-posting to the company site. After that I’ll give you a ranked mirror list with rationale and a lightweight migration/SEO plan.",
+      "text_summary": "Got it. I’ll first map the blog repo structure, extract recent posts and their metadata/tags, then cross-check which ones are AI/crypto-relevant and highest-value for SEO re-posting to the company site. After that I’ll give you a ranked mirror list with rationale and a lightweig…",
+      "ts": "2026-06-06T18:19:10.985Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 4,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && git status --short && git log --oneline -10 && git reflog --oneline | head -20 && gh pr list --state open\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:11.292Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 5,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && rg --files src/content/posts | sed -n '1,260p'\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:17.465Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 6,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in src/content/posts/*.mdx src/content/posts/*.md; do echo \\\"### $f\\\"; awk 'BEGIN{in=0} NR==1{if($0 ~ /^---$/){in=1;next}} in{ if($0 ~ /^---$/){print; in=0; next} print }' \\\"$f\\\" | sed -n '1,80p'; echo; done\",\"max_output_tokens\":20000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:23.277Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 7,
+      "text": "I found the post set; next I’m extracting post metadata (date, tags, series, original/revision status) and then I’ll rank by AI/crypto relevance plus recency so you can decide what to mirror first.",
+      "text_summary": "I found the post set; next I’m extracting post metadata (date, tags, series, original/revision status) and then I’ll rank by AI/crypto relevance plus recency so you can decide what to mirror first.",
+      "ts": "2026-06-06T18:19:26.966Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 8,
+      "text": "I found the post set; next I’m extracting post metadata (date, tags, series, original/revision status) and then I’ll rank by AI/crypto relevance plus recency so you can decide what to mirror first.",
+      "text_summary": "I found the post set; next I’m extracting post metadata (date, tags, series, original/revision status) and then I’ll rank by AI/crypto relevance plus recency so you can decide what to mirror first.",
+      "ts": "2026-06-06T18:19:26.966Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 9,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx'); do echo \\\"### $(basename \\\"$f\\\")\\\"; awk 'BEGIN{in=0; lines=0} /^---$/ {if(!in){in=1; next} else {in=0; exit}} in{print; lines++} NR<=90' \\\"$f\\\"; echo; done\",\"max_output_tokens\":60000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:27.108Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 10,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx'); do echo \\\"### $(basename \\\"$f\\\")\\\"; awk 'BEGIN{f=0} /^---$/{f++; if(f==1){next} else if(f==2){exit}} f==1' \\\"$f\\\"; echo; done\",\"max_output_tokens\":70000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:32.078Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 11,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && rg -n \\\"crypto|tangle|blockchain|chain|web3|onchain|wallet|defi|solana|ethereum|zk|rollup\\\" src/content/posts/*.mdx\"}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:37.235Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 12,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && rg -n \\\"^tags:|^title:|^description:|^date:|^series:|^draft:\\\" src/content/posts/self-improving-stack-harness-evolution.mdx src/content/posts/superintelligence-in-the-wild.mdx src/content/posts/self-improving-stack*.mdx\"}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog",
+        "src/content/posts/self-improving-stack-harness-evolution.mdx",
+        "src/content/posts/superintelligence-in-the-wild.mdx"
+      ],
+      "ts": "2026-06-06T18:19:37.258Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 13,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do awk 'BEGIN{fs=0; title=\\\"\\\"; date=\\\"\\\"; draft=\\\"false\\\"; series=\\\"\\\"; tags=\\\"\\\"; original=\\\"false\\\";} /^---$/{fs++; if(fs==1)next; if(fs==2)exit;} fs==1{if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0); title=$0} else if($0 ~ /^date:/){sub(/^date: /,\\\"\\\",$0); date=$0} else if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0); draft=$0} else if($0 ~ /^series:/){sub(/^series: /,\\\"\\\",$0); series=$0} else if($0 ~ /^tags:/){sub(/^tags: /,\\\"\\\",$0); tags=$0} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0); origi…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:19:42.085Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 14,
+      "text": "I now have a clean candidate set and the publishing status. Next I’ll check the company site’s content model (taxonomies/collections) so I can tell you exactly which posts map cleanly and what SEO edits would give each post a high chance of discoverability.",
+      "text_summary": "I now have a clean candidate set and the publishing status. Next I’ll check the company site’s content model (taxonomies/collections) so I can tell you exactly which posts map cleanly and what SEO edits would give each post a high chance of discoverability.",
+      "ts": "2026-06-06T18:19:49.677Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 15,
+      "text": "I now have a clean candidate set and the publishing status. Next I’ll check the company site’s content model (taxonomies/collections) so I can tell you exactly which posts map cleanly and what SEO edits would give each post a high chance of discoverability.",
+      "text_summary": "I now have a clean candidate set and the publishing status. Next I’ll check the company site’s content model (taxonomies/collections) so I can tell you exactly which posts map cleanly and what SEO edits would give each post a high chance of discoverability.",
+      "ts": "2026-06-06T18:19:49.678Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 16,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew && ls -1d webb 2>/dev/null; cd /Users/drew/webb/tangle-website && git status --short\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew",
+        "/Users/drew/webb/tangle-website"
+      ],
+      "ts": "2026-06-06T18:19:49.806Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 17,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/webb/tangle-website && rg --files -g '*.mdx' -g '*.md' -g '*.astro' src | sed -n '1,200p'\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/webb/tangle-website"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/webb/tangle-website"
+      ],
+      "ts": "2026-06-06T18:19:54.657Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 18,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/webb/tangle-website && sed -n '1,80p' src/content/blog/building-ai-services-on-tangle.mdx\"}",
+          "file_path": "/Users/drew/webb/tangle-website"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/webb/tangle-website",
+        "src/content/blog/building-ai-services-on-tangle.mdx"
+      ],
+      "ts": "2026-06-06T18:19:59.381Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 19,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/webb/tangle-website && sed -n '1,120p' src/pages/blog/index.astro\"}",
+          "file_path": "/Users/drew/webb/tangle-website"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/webb/tangle-website",
+        "src/pages/blog/index.astro"
+      ],
+      "ts": "2026-06-06T18:19:59.382Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 33,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do ai=$(awk '/^---$/{if(++n==1)next; if(n==2)exit} /^---$/{next} n==1&&/\\\\b(ai|agents|tangle|model|models|llm|large language|crypto|blockchain|evm|solana|defi|zk|on-chain|chain|x402)\\\\b/' \\\"$f\\\" | wc -l); if [ \\\"$ai\\\" -gt 0 ]; then printf '%s\\\\n' \\\"$(basename \\\"$f\\\")\\\"; fi; done\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:20:47.336Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 34,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for term in \\\"\\\\bai\\\\b|\\\\bagents\\\\b|\\\\btangle\\\\b|\\\\bcrypto\\\\b|\\\\bblockchain\\\\b|\\\\bagent\\\\b|\\\\bllm\\\\b|\\\\bmodel\\\\b|\\\\bmodels\\\\b|\\\\bEVM\\\\b|\\\\bevm\\\\b|\\\\bzk\\\\b|\\\\bchain\\\\b|\\\\bon-chain\\\\b|\\\\bx402\\\\b\\\"; do :; done; rg -n \\\"(ai|agents|llm|tangle|crypto|blockchain|evm|zk|on-chain|chain|model|models)\\\" src/content/posts/*.mdx | head -n 200\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:20:52.898Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 35,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do tags=''; found=0; while IFS= read -r line; do\\n if [[ \\\"$line\\\" == '---' ]]; then\\n d=$((d+1)); continue\\n fi\\n if [[ $d -eq 1 ]]; then\\n if [[ \\\"$line\\\" == tags:* ]]; then\\n tags=\\\"$line\\\"\\n while IFS= read -r next && [[ \\\"$next\\\" == ' '*\\\"-\\\"* || \\\"$next\\\" == \\\" \\\"* ]]; do\\n tags=\\\"$tags\\\\n$next\\\"\\n done\\n if printf '%s' \\\"$tags\\\" | rg -q \\\"(\\\\\\\"ai\\\\\\\"|'ai'|\\\\\\\"agents\\\\\\\"|'agents'|\\\\\\\"crypto\\\\\\\"|'crypto'|\\\\\\\"blockchain\\\\\\\"|'blockchain'|\\\\\\\"tangle\\\\\\\"|'tangle'|\\\\\\\"llm\\\\\\\"|'llm'|\\\\\\\"models\\\\\\\"|'…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:20:59.775Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 36,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do tags=$(awk 'BEGIN{d=0;p=0} /^---$/{d++; next} d==1{if($0 ~ /^tags:/){p=1; print substr($0,1)} else if(p==1){if($0 ~ /^[[:space:]]*-[[:space:]]*/){print substr($0,1)} else {exit}}} ' \\\"$f\\\"); if printf '%s' \\\"$tags\\\" | rg -q \\\"(ai|agents|llm|model|models|tangle|crypto|blockchain)\\\"; then echo \\\"### $(basename \\\"$f\\\")\\\"; echo \\\"$tags\\\"; echo; fi; done\",\"max_output_tokens\":20000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:05.778Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 37,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && rg -l \\\"\\\\b(crypto|blockchain|evm|solana|defi|defi|x402|on-?chain|smart contract|smart-contract|contract|wei|EVM|zk|zkp|eip|USDC|token|slashing|onchain|validator|attest|TEE|trusted execution)\\\\b\\\" src/content/posts/*.mdx\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:14.774Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 38,
+      "text": "I’ve narrowed the data to AI-relevant publishable posts and now I’ll produce a short, prioritized mirror matrix (immediate vs optional) plus the exact remapping needed so the posts fit the company blog schema cleanly.",
+      "text_summary": "I’ve narrowed the data to AI-relevant publishable posts and now I’ll produce a short, prioritized mirror matrix (immediate vs optional) plus the exact remapping needed so the posts fit the company blog schema cleanly.",
+      "ts": "2026-06-06T18:21:22.943Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 39,
+      "text": "I’ve narrowed the data to AI-relevant publishable posts and now I’ll produce a short, prioritized mirror matrix (immediate vs optional) plus the exact remapping needed so the posts fit the company blog schema cleanly.",
+      "text_summary": "I’ve narrowed the data to AI-relevant publishable posts and now I’ll produce a short, prioritized mirror matrix (immediate vs optional) plus the exact remapping needed so the posts fit the company blog schema cleanly.",
+      "ts": "2026-06-06T18:21:22.945Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 40,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do awk 'BEGIN{fs=0;title=\\\"\\\";date=\\\"\\\";draft=\\\"false\\\";series=\\\"\\\";tags=\\\"\\\";summary=\\\"\\\";orig=\\\"false\\\";slug=\\\"\\\"} /^---$/{fs++; if(fs==2)exit; next} fs==1{if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0);title=$0} else if($0 ~ /^date:/){sub(/^date: /,\\\"\\\",$0);date=$0} else if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^series:/){sub(/^series: /,\\\"\\\",$0);series=$0} else if($0 ~ /^tags:/){tags=substr($0,7)} else if($0 ~ /^description:/ && summary==\\\"\\\"){sub(/^description: /,\\\"\\\",$0)…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:23.285Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 41,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do awk 'BEGIN{fs=0;title=\\\"\\\";date=\\\"\\\";draft=\\\"false\\\";series=\\\"\\\";tags=\\\"\\\";orig=\\\"false\\\"} /^---$/{fs++; if(fs==2)exit; next} fs==1{if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0);title=$0} else if($0 ~ /^date:/){sub(/^date: /,\\\"\\\",$0);date=$0} else if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^series:/){sub(/^series: /,\\\"\\\",$0);series=$0} else if($0 ~ /^tags:/){tags=substr($0,7)} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0);orig=$0}} END{if(title==\\\"\\\") next; if(draft=…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:29.507Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 42,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do awk 'BEGIN{d=0;title=\\\"\\\";date=\\\"\\\";draft=\\\"false\\\";series=\\\"\\\";tags=\\\"\\\";orig=\\\"false\\\"} /^---$/{d++; if(d==2)exit; next} d==1{if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0);title=$0} else if($0 ~ /^date:/){sub(/^date: /,\\\"\\\",$0);date=$0} else if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^series:/){sub(/^series: /,\\\"\\\",$0);series=$0} else if($0 ~ /^tags:/){tags=substr($0,7)} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0);orig=$0}} END{if(title==\\\"\\\") next; if(draft==\\\"\\…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:38.528Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 43,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx' | sort); do awk 'BEGIN{d=0;title=\\\"\\\";date=\\\"\\\";draft=\\\"false\\\";series=\\\"\\\";tags=\\\"\\\";orig=\\\"false\\\"} /^---$/{d++; if(d==2)exit; next} d==1{if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0);title=$0} else if($0 ~ /^date:/){sub(/^date: /,\\\"\\\",$0);date=$0} else if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^series:/){sub(/^series: /,\\\"\\\",$0);series=$0} else if($0 ~ /^tags:/){tags=substr($0,7)} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0);orig=$0}} END{if(title==\\\"\\\") next; if(draft==\\\"f…",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:21:43.228Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 44,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && awk 'BEGIN{d=0} /^---$/{d++; if(d==1)next; if(d==2)exit} d==1 && /^title:|^date:|^draft:|^tags:|^original:/ {print}' src/content/posts/redteam-architecture.mdx\",\"max_output_tokens\":8000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog",
+        "src/content/posts/redteam-architecture.mdx"
+      ],
+      "ts": "2026-06-06T18:21:51.751Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 45,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/webb/tangle-website && for t in 'Self-Improving|AI|agent|browser agent|security'; do :; done; rg -n \\\"Self-Improving|RL Without Gradients|Browser Agent|Sandbox|AI Services|x402|Tangle\\\" src/content/blog/*.mdx\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/webb/tangle-website"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/webb/tangle-website"
+      ],
+      "ts": "2026-06-06T18:21:56.747Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 46,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && sed -n '1,40p' src/content/posts/autonomous-autoreserach.mdx\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog",
+        "src/content/posts/autonomous-autoreserach.mdx"
+      ],
+      "ts": "2026-06-06T18:22:03.566Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 47,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && wc -l < <(rg --files src/content/posts -g '*.mdx')\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:22:11.345Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 48,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx'); do awk 'BEGIN{d=0;draft=\\\"false\\\";orig=\\\"false\\\"} /^---$/{d++; if(d==2)exit; next} d==1{if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0);orig=$0}} END{if(draft==\\\"\\\" )draft=\\\"false\\\"; if(orig==\\\"\\\" )orig=\\\"false\\\"; printf \\\"%s\\\\n\\\", (draft==\\\"true\\\"?\\\"draft\\\":(orig==\\\"true\\\"?\\\"original\\\":\\\"publishable\\\"))}' \\\"$f\\\"; done | sort | uniq -c\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:22:19.752Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 49,
+      "tool_calls": 1,
+      "tool_names": [
+        "exec_command"
+      ],
+      "tool_call_details": [
+        {
+          "name": "exec_command",
+          "input_preview": "{\"cmd\":\"cd /Users/drew/code/blog && for f in $(rg --files src/content/posts -g '*.mdx'); do awk 'BEGIN{d=0;draft=\\\"false\\\";orig=\\\"false\\\";title=\\\"\\\"} /^---$/{d++; if(d==2)exit; next} d==1{if($0 ~ /^draft:/){sub(/^draft: /,\\\"\\\",$0);draft=$0} else if($0 ~ /^original:/){sub(/^original: /,\\\"\\\",$0);orig=$0} else if($0 ~ /^title:/){sub(/^title: /,\\\"\\\",$0);title=$0}} END{if(draft==\\\"true\\\" || orig==\\\"true\\\") printf \\\"%s | title=%s | draft=%s | original=%s\\\\n\\\", f,title,draft,orig}' \\\"$f\\\"; done\",\"max_output_tokens\":12000}",
+          "file_path": "/Users/drew/code/blog"
+        }
+      ],
+      "files_touched": [
+        "/Users/drew/code/blog"
+      ],
+      "ts": "2026-06-06T18:22:31.795Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 50,
+      "text": "You can mirror a lot, and it’s already in good shape. I checked both repos and the current blog schema constraints. In the company site, a blog post requires frontmatter like this in [`/Users/drew/webb/tangle-website/src/content.config.ts`] and body rendering in [`/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro`] with the required `title/slug/summary/date/author/tags` fields and optional `series/seriesOrder`. ### Publishable now (non-draft, non-original) from `/Users/drew/code/blog` - There are 27 publishable posts available to mirror. - There are 4 drafts and 2 original-only posts you should skip for this wave. ## Wave 1 (highest SEO impact, AI-focused, coherent cluster) This is your strongest \"recent series all relevant\" set: - [/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx](/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-optimization-theory.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-optimization-theory.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-skill-optimization.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-skill-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-topology?](/Users/drew/code/blog/src/content/posts/self-improving-stack-agent-runtime-topology.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-multi-agent-coordination.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-multi-agent-coordination.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-trace-systems.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-trace-systems.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-test-time-compute.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-test-time-compute.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-post-training.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-post-training.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-governance.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-governance.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-memory-flywheels.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-memory-flywheels.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-harness-evolution.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-harness-evolution.mdx) ## Wave 2 (AI-adjacent, high support value) - [/Users/drew/code/blog/src/content/posts/convergence-as-eval-primitive.mdx](/Users/drew/code/blog/src/content/posts/convergence-as-eval-primitive.mdx) - [/Users/drew/code/blog/src/content/posts/convergence-loops.mdx](/Users/drew/code/blog/src/content/posts/convergence-loops.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-agents.mdx](/Users/drew/code/blog/src/content/posts/self-improving-agents.mdx) - [/Users/drew/code/blog/src/content/posts/agentic-eval-improvement.mdx](/Users/drew/code/blog/src/content/posts/agentic-eval-improvement.mdx) - [/Users/drew/code/blog/src/content/posts/rl? Actually not present as file name](/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/lifting-auto-research.mdx](/Users/drew/code/blog/src/content/posts/lifting-auto-research.mdx) - [/Users/drew/code/blog/src/content/posts/provider-fallback-chains.mdx](/Users/drew/code/blog/src/content/posts/provider-fallback-chains.mdx) - [/Users/drew/code/blog/src/content/posts/browser-agent-stuck-detection.mdx](/Users/drew/code/blog/src/content/posts/browser-agent-stuck-detection.mdx) - [/Users/drew/code/blog/src/content/posts/vibecoding-a-browser-agent.mdx](/Users/drew/code/blog/src/content/posts/vibecoding-a-browser-agent.mdx) - [/Users/drew/code/blog/src/content/posts/deepwork-orchestrator.mdx](/Users/drew/code/blog/src/content/posts/deepwork-orchestrator.mdx) - [/Users/drew/code/blog/src/content/posts/the-ensemble-and-the-edit.mdx](/Users/drew/code/blog/src/content/posts/the-ensemble-and-the-edit.mdx) - [/Users/drew/code/blog/src/content/posts/session-multiplexing.mdx](/Users/drew/code/blog/src/content/posts/session-multiplexing.mdx) - [/Users/drew/code/blog/src/content/posts/one-api for eight browser backends.mdx](/Users/drew/code/blog/src/content/posts/one-api-for-eight-browser-backends?not-needed) (That list is the non-draft, non-original AI/infra pool by this repo’s metadata and tags. It can be split cleanly into `the-self-improving-stack` series + standalones.) ## Crypto-adjacent set Crypto-specific content in this repo is lighter, so mirror after the AI cluster: - [/Users/drew/code/blog/src/content/posts/building-on-tangle.mdx](/Users/drew/code/blog/src/content/posts/building-on-tangle.mdx) - [/Users/drew/code/blog/src/content/posts/exploit-or-disprove.mdx](/Users/drew/code/blog/src/content/posts/exploit-or-disprove.mdx) - [/Users/drew/code/blog/src/content/posts/redteam-architecture.mdx](/Users/drew/code/blog/src/content/posts/redteam-architecture.mdx) ## Not mirror yet - [/Users/drew/code/blog/src/content/posts/long-running-task-systems.mdx](/Users/drew/code/blog/src/content/posts/long-running-task-systems.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/self-improving-ai-systems.mdx](/Users/drew/code/blog/src/content/posts/self-improving-ai-systems.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/superintelligence-in-the-wild.mdx](/Users/drew/code/blog/src/content/posts/superintelligence-in-the-wild.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/how-i-rebuilt-the-blog.mdx](/Users/drew/code/blog/src/content/posts/how-i-rebuilt-the-blog.mdx) (original) - [/Users/drew/code/blog/src/content/posts/autonomous-autoreserach.mdx](/Users/drew/code/blog/src/content/posts/autonomous-autoreserach.mdx) (original) - [/Users/drew/code/blog/src/content/posts/_example-original.mdx](/Users/drew/code/blog/src/content/posts/_example-original.mdx) (original placeholder) ## SEO optimization moves (important) 1. Keep all summaries under ~155 chars for SERP snippets. 2. Set `series` + `seriesOrder` for the self-improving stack so the list page renders a coherent sequence. 3. Use consistent tags such as `ai`, `agents`, `agentic-systems`, plus one domain tag each (`self-improvement`, `crypto`, `tangle`) so topic clusters stabilize. 4. Add FAQ-style sections (`## FAQ` + `###` questions) in the copied markdown if you want the company page JSON-LD FAQ schema to light up via [`/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro`](/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro). 5. Add 1–2 relevant internal links per post to existing company pages (verification, paid execution, TEE, x402) to increase topical authority. If you want, next I can generate the exact migration mapping table (source file → target slug/title/summary/tags/seriesOrder) ready for a bulk import.",
+      "text_summary": "You can mirror a lot, and it’s already in good shape. I checked both repos and the current blog schema constraints. In the company site, a blog post requires frontmatter like this in [`/Users/drew/webb/tangle-website/src/content.config.ts`] and body rendering in [`/Users/drew/we…",
+      "ts": "2026-06-06T18:23:14.628Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 51,
+      "text": "You can mirror a lot, and it’s already in good shape. I checked both repos and the current blog schema constraints. In the company site, a blog post requires frontmatter like this in [`/Users/drew/webb/tangle-website/src/content.config.ts`] and body rendering in [`/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro`] with the required `title/slug/summary/date/author/tags` fields and optional `series/seriesOrder`. ### Publishable now (non-draft, non-original) from `/Users/drew/code/blog` - There are 27 publishable posts available to mirror. - There are 4 drafts and 2 original-only posts you should skip for this wave. ## Wave 1 (highest SEO impact, AI-focused, coherent cluster) This is your strongest \"recent series all relevant\" set: - [/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx](/Users/drew/code/blog/src/content/posts/the-self-improving-stack.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-optimization-theory.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-optimization-theory.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-skill-optimization.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-skill-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-topology?](/Users/drew/code/blog/src/content/posts/self-improving-stack-agent-runtime-topology.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-multi-agent-coordination.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-multi-agent-coordination.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-trace-systems.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-trace-systems.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-test-time-compute.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-test-time-compute.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-post-training.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-post-training.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-evaluation-gates.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-governance.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-governance.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-memory-flywheels.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-memory-flywheels.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-stack-harness-evolution.mdx](/Users/drew/code/blog/src/content/posts/self-improving-stack-harness-evolution.mdx) ## Wave 2 (AI-adjacent, high support value) - [/Users/drew/code/blog/src/content/posts/convergence-as-eval-primitive.mdx](/Users/drew/code/blog/src/content/posts/convergence-as-eval-primitive.mdx) - [/Users/drew/code/blog/src/content/posts/convergence-loops.mdx](/Users/drew/code/blog/src/content/posts/convergence-loops.mdx) - [/Users/drew/code/blog/src/content/posts/self-improving-agents.mdx](/Users/drew/code/blog/src/content/posts/self-improving-agents.mdx) - [/Users/drew/code/blog/src/content/posts/agentic-eval-improvement.mdx](/Users/drew/code/blog/src/content/posts/agentic-eval-improvement.mdx) - [/Users/drew/code/blog/src/content/posts/rl? Actually not present as file name](/Users/drew/code/blog/src/content/posts/self-improving-stack-prompt-optimization.mdx) - [/Users/drew/code/blog/src/content/posts/lifting-auto-research.mdx](/Users/drew/code/blog/src/content/posts/lifting-auto-research.mdx) - [/Users/drew/code/blog/src/content/posts/provider-fallback-chains.mdx](/Users/drew/code/blog/src/content/posts/provider-fallback-chains.mdx) - [/Users/drew/code/blog/src/content/posts/browser-agent-stuck-detection.mdx](/Users/drew/code/blog/src/content/posts/browser-agent-stuck-detection.mdx) - [/Users/drew/code/blog/src/content/posts/vibecoding-a-browser-agent.mdx](/Users/drew/code/blog/src/content/posts/vibecoding-a-browser-agent.mdx) - [/Users/drew/code/blog/src/content/posts/deepwork-orchestrator.mdx](/Users/drew/code/blog/src/content/posts/deepwork-orchestrator.mdx) - [/Users/drew/code/blog/src/content/posts/the-ensemble-and-the-edit.mdx](/Users/drew/code/blog/src/content/posts/the-ensemble-and-the-edit.mdx) - [/Users/drew/code/blog/src/content/posts/session-multiplexing.mdx](/Users/drew/code/blog/src/content/posts/session-multiplexing.mdx) - [/Users/drew/code/blog/src/content/posts/one-api for eight browser backends.mdx](/Users/drew/code/blog/src/content/posts/one-api-for-eight-browser-backends?not-needed) (That list is the non-draft, non-original AI/infra pool by this repo’s metadata and tags. It can be split cleanly into `the-self-improving-stack` series + standalones.) ## Crypto-adjacent set Crypto-specific content in this repo is lighter, so mirror after the AI cluster: - [/Users/drew/code/blog/src/content/posts/building-on-tangle.mdx](/Users/drew/code/blog/src/content/posts/building-on-tangle.mdx) - [/Users/drew/code/blog/src/content/posts/exploit-or-disprove.mdx](/Users/drew/code/blog/src/content/posts/exploit-or-disprove.mdx) - [/Users/drew/code/blog/src/content/posts/redteam-architecture.mdx](/Users/drew/code/blog/src/content/posts/redteam-architecture.mdx) ## Not mirror yet - [/Users/drew/code/blog/src/content/posts/long-running-task-systems.mdx](/Users/drew/code/blog/src/content/posts/long-running-task-systems.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/self-improving-ai-systems.mdx](/Users/drew/code/blog/src/content/posts/self-improving-ai-systems.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/superintelligence-in-the-wild.mdx](/Users/drew/code/blog/src/content/posts/superintelligence-in-the-wild.mdx) (draft) - [/Users/drew/code/blog/src/content/posts/how-i-rebuilt-the-blog.mdx](/Users/drew/code/blog/src/content/posts/how-i-rebuilt-the-blog.mdx) (original) - [/Users/drew/code/blog/src/content/posts/autonomous-autoreserach.mdx](/Users/drew/code/blog/src/content/posts/autonomous-autoreserach.mdx) (original) - [/Users/drew/code/blog/src/content/posts/_example-original.mdx](/Users/drew/code/blog/src/content/posts/_example-original.mdx) (original placeholder) ## SEO optimization moves (important) 1. Keep all summaries under ~155 chars for SERP snippets. 2. Set `series` + `seriesOrder` for the self-improving stack so the list page renders a coherent sequence. 3. Use consistent tags such as `ai`, `agents`, `agentic-systems`, plus one domain tag each (`self-improvement`, `crypto`, `tangle`) so topic clusters stabilize. 4. Add FAQ-style sections (`## FAQ` + `###` questions) in the copied markdown if you want the company page JSON-LD FAQ schema to light up via [`/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro`](/Users/drew/webb/tangle-website/src/pages/blog/[...slug].astro). 5. Add 1–2 relevant internal links per post to existing company pages (verification, paid execution, TEE, x402) to increase topical authority. If you want, next I can generate the exact migration mapping table (source file → target slug/title/summary/tags/seriesOrder) ready for a bulk import.",
+      "text_summary": "You can mirror a lot, and it’s already in good shape. I checked both repos and the current blog schema constraints. In the company site, a blog post requires frontmatter like this in [`/Users/drew/webb/tangle-website/src/content.config.ts`] and body rendering in [`/Users/drew/we…",
+      "ts": "2026-06-06T18:23:14.630Z"
+    },
+    {
+      "role": "user",
+      "text": "<environment_context> <current_date>2026-06-07</current_date> <timezone>Asia/Jerusalem</timezone> <filesystem><workspace_roots><root>/Users/drew/code/blog</root></workspace_roots><permission_profile type=\"disabled\"><file_system type=\"unrestricted\" /></permission_profile></filesystem> </environment_context>",
+      "ts": "2026-06-06T21:16:05.035Z",
+      "seq": 52
+    }
+  ]
+}

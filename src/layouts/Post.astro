@@ -8,6 +8,12 @@ import ParagraphReactor from '../components/ParagraphReactor.astro'
 import RevisionMosaicToggle from '../components/RevisionMosaicToggle.astro'
 import Giscus from '../components/Giscus.astro'
 
+interface SeriesPost {
+  slug: string
+  title: string
+  date: string
+}
+
 interface Author {
   model: string
   role: 'outline' | 'draft' | 'rewrite' | 'polish' | 'diagram' | 'review' | 'research'
@@ -32,14 +38,40 @@ interface Props {
   authors?: Author[]
   revisions?: Revision[]
   supportingTraceIds?: string[]
+  seriesLabel?: string
+  seriesPosts?: SeriesPost[]
   original?: boolean
 }
 
-const { title, description, date, updated, tags = [], slug, authors, revisions, supportingTraceIds = [], original = false } = Astro.props
+const {
+  title,
+  description,
+  date,
+  updated,
+  tags = [],
+  slug,
+  authors,
+  revisions,
+  supportingTraceIds = [],
+  seriesLabel,
+  seriesPosts = [],
+  original = false,
+} = Astro.props
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
+
+const orderedSeriesPosts = [...seriesPosts]
+const seriesIndex = slug ? orderedSeriesPosts.findIndex((p) => p.slug === slug) : -1
+const hasSeriesBlock = orderedSeriesPosts.length > 1
+const prevInSeries = hasSeriesBlock && seriesIndex > 0 ? orderedSeriesPosts[seriesIndex - 1] : null
+const nextInSeries = hasSeriesBlock && seriesIndex >= 0 && seriesIndex < orderedSeriesPosts.length - 1
+  ? orderedSeriesPosts[seriesIndex + 1]
+  : null
+
+const formatSeriesDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
 
 const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
 
@@ -85,6 +117,29 @@ const articleJsonLd = {
       </div>
       <h1>{title}</h1>
       <p class="post-desc">{description}</p>
+      {hasSeriesBlock && (
+        <section class="post-series">
+          <div class="post-series-head">
+            <h2>{seriesLabel ? `${seriesLabel} series` : 'Series'}</h2>
+            <div class="post-series-nav">
+              {prevInSeries && <a href={`/posts/${prevInSeries.slug}`} class="series-nav-link">← {prevInSeries.title}</a>}
+              {nextInSeries && <a href={`/posts/${nextInSeries.slug}`} class="series-nav-link">Next → {nextInSeries.title}</a>}
+            </div>
+          </div>
+          <ol class="post-series-list">
+            {orderedSeriesPosts.map((entry) => (
+              <li class={`series-item ${entry.slug === slug ? 'is-current' : ''}`}>
+                <span class="series-meta">{formatSeriesDate(entry.date)}</span>
+                {entry.slug === slug ? (
+                  <span class="series-current">{entry.title}</span>
+                ) : (
+                  <a href={`/posts/${entry.slug}`}>{entry.title}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
       <AuthorBadges authors={authors} original={original} />
       <SupportingTraces traceIds={supportingTraceIds} />
       {!original && revisions && revisions.length > 0 && (
@@ -147,6 +202,83 @@ const articleJsonLd = {
     line-height: 1.55;
     max-width: 640px;
   }
+  .post-series {
+    margin: 0 0 var(--space-lg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem 1rem;
+    background: var(--bg-alt);
+  }
+  .post-series-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin: 0 0 0.6rem;
+  }
+  .post-series-head h2 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+    margin: 0;
+    color: var(--fg);
+    white-space: nowrap;
+  }
+  .post-series-nav {
+    display: flex;
+    gap: 0.7rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .series-nav-link {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .series-nav-link:hover { color: var(--fg); }
+  .post-series-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  .series-item {
+    display: flex;
+    gap: 0.55rem;
+    align-items: baseline;
+  }
+  .series-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-faint);
+    white-space: nowrap;
+  }
+  .series-item a,
+  .series-current {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+  .series-current {
+    color: var(--fg);
+    font-weight: 700;
+  }
+  .is-current .series-current,
+  .is-current .series-meta {
+    color: var(--c-action);
+  }
+  .series-item a {
+    color: var(--fg);
+    text-decoration: underline;
+    text-decoration-color: var(--fg-faint);
+    text-underline-offset: 2px;
+  }
+  .series-item a:hover { text-decoration-color: var(--fg); }
 
   .updated {
     color: var(--fg-faint);

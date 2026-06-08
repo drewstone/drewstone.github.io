@@ -12,6 +12,27 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props
 const { Content } = await render(post)
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft)
+
+const orderedSeriesPosts =
+  post.data.series
+    ? allPosts
+        .filter((p) => p.data.series === post.data.series)
+        .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())
+    : []
+
+const seriesPosts = orderedSeriesPosts.map((s) => ({
+  slug: s.id,
+  title: s.data.title,
+  date: s.data.date.toISOString(),
+}))
+
+const seriesLabel = post.data.series
+  ? post.data.series
+      .replace(/[_-]/g, ' ')
+      .replace(/\b\w/g, (m) => m.toUpperCase())
+  : undefined
 ---
 
 <Post
@@ -24,6 +45,8 @@ const { Content } = await render(post)
   authors={post.data.authors}
   revisions={post.data.revisions}
   supportingTraceIds={post.data.supporting_trace_ids}
+  seriesLabel={seriesLabel}
+  seriesPosts={seriesPosts}
   original={post.data.original}
 >
   <Content />

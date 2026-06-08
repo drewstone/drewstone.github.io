@@ -19,7 +19,11 @@ authors:
     date: 2026-06-06
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
+  - { model: 'gpt-5.3-codex-spark', role: 'rewrite', date: 2026-06-06 }
+  - { model: 'gpt-5.3-codex-spark', role: 'polish', date: 2026-06-06 }
 revisions:
+  - { date: 2026-06-06, model: 'gpt-5.3-codex-spark', role: 'polish', note: 'we have a company website in ~/webb/tangle-website maybe? I want to evaluate which blog posts from this blog we can mirror on that website s · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish' }
+  - { date: 2026-06-06, model: 'gpt-5.3-codex-spark', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-publish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'review', note: 'Standardized the source-trail section, dated source freshness, and removed remaining temporal or process wording from publication-visible text.', commit: 'b8fd3dbe812dd9ddd73865ae65fcc0d381b59d69', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-review' }
   - date: 2026-06-05
@@ -41,21 +45,15 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
-When the prompt keeps asking for a capability the runtime cannot express, stop optimizing the prompt and change the machine.
+When the prompt keeps asking for a capability the runtime cannot express, the next improvement is not a better sentence. It is a different machine.
 
-That is the harness-evolution moment.
+That is the harness-evolution moment. Prompt optimizers can discover better wording, examples, instructions, rubrics, and sometimes better high-level tactics. Skill optimizers can discover reusable procedures. Runtime topology can change how many workers act, who reviews them, and what gets selected.
 
-Prompt optimizers can discover better wording, examples, instructions, rubrics, and sometimes better high-level tactics. Skill optimizers can discover reusable procedures. Runtime topology can change how many workers act, who reviews them, and what gets selected.
-
-Harness evolution goes one layer higher.
-
-It changes the code that defines the agent's reachable behavior.
+Harness evolution goes one layer higher: it changes the code that defines the agent's reachable behavior.
 
 That code might be a planner contract, a driver, a verifier, a budget policy, a benchmark adapter, a trace schema, a replay layer, a selector, a persona manifest, a tool router, or a worktree candidate lifecycle. The harness is not the model. It is the machine around the model that determines which actions exist, which observations are visible, which branches can run, which artifacts count, and which candidate is allowed to become production.
 
-So no, GEPA, SkillOpt, AlphaEvolve-style code search, and meta-harness are not all "doing the same thing" in the strong sense.
-
-They share an outer loop:
+So no, GEPA, SkillOpt, AlphaEvolve-style code search, and meta-harness are not all "doing the same thing" in the strong sense. They share an outer loop:
 
 ```text
 propose candidate
@@ -65,9 +63,7 @@ select survivor
 repeat
 ```
 
-They differ in the mutable surface.
-
-That distinction is everything.
+They differ in the mutable surface. That distinction is everything.
 
 | Optimizer family | Mutable candidate | Reachable change | Hard limit |
 |---|---|---|---|

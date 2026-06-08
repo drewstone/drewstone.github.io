@@ -52,10 +52,11 @@ function touchedFiles(ev: any): string[] {
   return [...out]
 }
 
-function markerInUserEvent(ev: any, marker: string): boolean {
+function markerInEvent(ev: any, marker: string): boolean {
   if (!marker) return false
-  if (ev?.type !== 'user') return false
-  return userText(ev).includes(marker)
+  if (ev?.type === 'user') return userText(ev).includes(marker)
+  if (ev?.type === 'assistant') return assistantText(ev).includes(marker)
+  return false
 }
 
 function toolSummary(ev: any): { count: number; names: string[] } {
@@ -239,7 +240,7 @@ export class ClaudeCodeHarness implements TraceHarness {
       .sort((a, b) => a - b)
 
     const markerHits = windows
-      .map((w, i) => ({ i, hit: w.events.some((e) => markerInUserEvent(e, marker)) }))
+      .map((w, i) => ({ i, hit: w.events.some((e) => markerInEvent(e, marker)) }))
       .filter((x) => x.hit)
       .map((x) => x.i)
 
@@ -247,8 +248,8 @@ export class ClaudeCodeHarness implements TraceHarness {
     if (marker && markerHits.length) {
       const cutoff = Math.max(markerHits[markerHits.length - 1] - 1, 0)
       finalWindowIndexes = relevantWindowIndexes.filter((i) => i >= cutoff)
-    } else if (marker && relevantWindowIndexes.length) {
-      finalWindowIndexes = relevantWindowIndexes.slice(-2)
+    } else if (marker) {
+      return []
     }
 
     const relevantWindows = finalWindowIndexes.map((i) => windows[i])
