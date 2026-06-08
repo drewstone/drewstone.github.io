@@ -16,7 +16,9 @@ authors:
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
+  - { model: 'gpt-5.5', role: 'polish', date: 2026-06-08 }
 revisions:
+  - { date: 2026-06-08, model: 'gpt-5.5', role: 'polish', note: 'clarified that self-improvement targets the user-task distribution, tightened the loop equation, and tied evidence to task outcomes', commit: '9ea5c8de9b516ce903023be5a14a8098076ddf59', trace_id: '2026-06-08T10-10-44-256Z-gpt-5.5-the-self-improving-stack-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-publish' }
@@ -48,17 +50,20 @@ There is not.
 
 There are prompts, skills, tools, traces, memory stores, evaluators, runtime graphs, harnesses, model weights, and release gates. Each one can be optimized. Each one needs a different kind of evidence. Each one can fail in a different way.
 
+Self-improvement only has content after you name the task class. The target is better execution of the work the user is trying to get done: the code change, research answer, design review, deployment, diagnosis, or decision that caused the agent to be invoked in the first place. A system that improves a judge score while making that work slower, less faithful to intent, or harder to audit has optimized a proxy, not the task.
+
 The useful questions are more concrete:
 
 ```text
+what user task distribution is being improved?
 what is allowed to change?
-what evidence says it improved?
+what evidence says it improved that task?
 how are candidates generated?
 what gate decides promotion?
 what can go wrong when that layer changes?
 ```
 
-Those five questions are the self-improving stack.
+Those six questions are the self-improving stack.
 
 ## The Loop Behind The Word
 
@@ -78,7 +83,7 @@ govern
 The loop is only real when each verb has a concrete implementation.
 
 ```text
-run: execute the agent under a scenario
+run: execute the agent under a sampled user-task scenario
 observe: capture a full trace, not only a score
 diagnose: identify failure modes and missing knowledge
 propose: generate a candidate change
@@ -88,14 +93,16 @@ remember: persist the right lesson for future runs
 govern: keep the optimizer inside its authority and evidence boundary
 ```
 
-The system is not self-improving because it says "reflect." It is self-improving when a future run changes in the right direction because a previous run produced admissible evidence.
+The system is not self-improving because it says "reflect." It is self-improving when a future run gets better at the class of user tasks it is meant to serve because a previous run produced admissible evidence.
 
 The compact equation is:
 
 ```text
+Delta_t = E_{x ~ D_task}[Eval(Run(c_t, x), Run(s_t, x))]
+
 s_{t+1} =
   Promote(s_t, c_t)
-  if Gate(Eval(Run(c_t), Run(s_t)), policy) passes
+  if Gate(Delta_t, policy) passes
   else s_t
 ```
 
@@ -104,16 +111,17 @@ where:
 ```text
 s_t = current system state
 c_t = candidate state
-Run(.) = full agent trajectory under scenarios
-Eval(.) = measured evidence
+x ~ D_task = a user task drawn from the task distribution the system is meant to serve
+Run(.) = full agent trajectory under sampled user-task scenarios
+Eval(.) = measured evidence on task outcomes and trace behavior
 Gate(.) = promotion rule under policy
 ```
 
-The system improves only when the promoted state performs better on the right distribution while staying inside cost, safety, integrity, and governance constraints.
+The system improves only when the promoted state performs better on the user-task distribution while staying inside cost, safety, integrity, and governance constraints.
 
 ## The Stack
 
-The stack has layers because "candidate" can mean many different things.
+The stack has layers because "candidate" can mean many different things, and because every candidate is supposed to improve some named task class.
 
 | Layer | Mutable surface | Search operator | Trusted feedback | Gate |
 |---|---|---|---|---|
