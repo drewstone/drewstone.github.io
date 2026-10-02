@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.3-codex-spark', role: 'rewrite', date: 2026-06-06 }
   - { model: 'gpt-5.3-codex-spark', role: 'polish', date: 2026-06-06 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-harness-evolution-polish' }
   - { date: 2026-06-06, model: 'gpt-5.3-codex-spark', role: 'polish', note: 'we have a company website in ~/webb/tangle-website maybe? I want to evaluate which blog posts from this blog we can mirror on that website s · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish' }
   - { date: 2026-06-06, model: 'gpt-5.3-codex-spark', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-publish' }
@@ -74,16 +76,18 @@ They differ in the mutable surface. That distinction is everything.
 
 ## The Reachable Set
 
-Let a system have a mutable surface `s`.
+Let a system have a mutable surface $s$.
 
 The surface might be:
 
-```text
-s_prompt = prompt text
-s_skill = procedural memory
-s_runtime = driver topology
-s_harness = source code around the agent
-```
+$$
+\begin{aligned}
+s_{\text{prompt}} &= \text{prompt text} \\
+s_{\text{skill}} &= \text{procedural memory} \\
+s_{\text{runtime}} &= \text{driver topology} \\
+s_{\text{harness}} &= \text{source code around the agent}
+\end{aligned}
+$$
 
 An optimizer has a mutation operator:
 
@@ -91,39 +95,41 @@ An optimizer has a mutation operator:
 M_s(candidate, evidence) -> candidate'
 ```
 
-The set of systems it can reach after `k` mutations is:
+The set of systems it can reach after $k$ mutations is:
 
-```text
-Reach(s_0, M_s, k)
-```
+$$
+\operatorname{Reach}(s_0,M_s,k)
+$$
 
-If `M_s` only edits prompt text, the reachable set does not contain a new worktree isolation protocol, a new fanout scheduler, a new raw-provider capture sink, or a new verifier layer. The prompt can ask for those things. It cannot instantiate them if the runtime has no action that does so.
+If $M_s$ only edits prompt text, the reachable set does not contain a new worktree isolation protocol, a new fanout scheduler, a new raw-provider capture sink, or a new verifier layer. The prompt can ask for those things. It cannot instantiate them if the runtime has no action that does so.
 
 This is the simplest mathematical reason prompt hill climbing plateaus:
 
-```text
-best_prompt = argmax_p E[R(run(h_fixed, p, x))]
-```
+$$
+p_{\text{best}}=\operatorname*{argmax}_p\mathbb{E}[R(\operatorname{run}(h_{\text{fixed}},p,x))]
+$$
 
-The harness `h_fixed` is fixed. The optimizer is searching inside the behavior allowed by that harness.
+The harness $h_{\text{fixed}}$ is fixed. The optimizer is searching inside the behavior allowed by that harness.
 
 Harness evolution changes the outer variable:
 
-```text
-h* = argmax_h E_{x ~ D_holdout, z ~ Z}[R(tau(h, x, z))] - lambda^T C(tau(h, x, z))
-```
+$$
+h^*=\operatorname*{argmax}_h\mathbb{E}_{x\sim D_{\text{holdout}},\,z\sim Z}[R(\tau(h,x,z))]-\lambda^\top C(\tau(h,x,z))
+$$
 
 where:
 
-```text
-h = harness candidate
-x = task or scenario
-z = seed, replicate, or profile cell
-tau = full trace trajectory
-R = reward, score, or verifier result
-C = cost vector
-lambda = cost weights
-```
+$$
+\begin{aligned}
+  h &= \text{harness candidate} \\
+  x &= \text{task or scenario} \\
+  z &= \text{seed, replicate, or profile cell} \\
+  \tau &= \text{full trace trajectory} \\
+  R &= \text{reward, score, or verifier result} \\
+  C &= \text{cost vector} \\
+  \lambda &= \text{cost weights}
+\end{aligned}
+$$
 
 The promotion rule is not just the objective. It is a gate:
 
@@ -288,7 +294,7 @@ promote or reject
 
 The important word is structural.
 
-Changing `n = 8` to `n = 16` is not harness evolution. Changing a threshold is not harness evolution. Adding another sentence to a prompt is not harness evolution.
+Changing $n=8$ to $n=16$ is not harness evolution. Changing a threshold is not harness evolution. Adding another sentence to a prompt is not harness evolution.
 
 Structural variants change mechanism:
 
@@ -328,9 +334,9 @@ candidate_delta = median(candidate_runs - paired_baseline_runs)
 
 The strongest comparison is paired:
 
-```text
-delta_i = R(h_candidate, x_i, z_i) - R(h_baseline, x_i, z_i)
-```
+$$
+\Delta_i=R(h_{\text{candidate}},x_i,z_i)-R(h_{\text{baseline}},x_i,z_i)
+$$
 
 A candidate deserves promotion only when the paired evidence survives uncertainty, cost, deterministic checks, and holdout.
 
@@ -342,7 +348,7 @@ One candidate may improve correctness and increase cost. Another may reduce late
 
 So meta-harness tracks a Pareto frontier.
 
-Candidate `a` dominates candidate `b` when:
+Candidate $a$ dominates candidate $b$ when:
 
 ```text
 quality_a >= quality_b

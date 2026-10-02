@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-governance-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-governance-publish' }
@@ -95,35 +97,40 @@ If any part of that trajectory can mutate future behavior, it belongs in the saf
 
 Let:
 
-```text
-h = harness and runtime
-s = mutable surface
-c = candidate change
-tau(c) = trace produced by candidate c
-R(tau) = utility or quality score
-K(tau) = risk vector
-A(tau) = authority exercised by the agent
-G = promotion gate
-```
+$$
+\begin{aligned}
+  h &= \text{harness and runtime} \\
+  s &= \text{mutable surface} \\
+  c &= \text{candidate change} \\
+  \tau(c) &= \text{trace produced by candidate }c \\
+  R(\tau) &= \text{utility or quality score} \\
+  K(\tau) &= \text{risk vector} \\
+  A(\tau) &= \text{authority exercised by the agent} \\
+  G &= \text{promotion gate}
+\end{aligned}
+$$
 
 The naive optimizer wants:
 
-```text
-c* = argmax_c E[R(tau(c))]
-```
+$$
+c^*=\operatorname*{argmax}_c\mathbb{E}[R(\tau(c))]
+$$
 
 The governed optimizer has a constrained objective:
 
-```text
-c* = argmax_c E[R(tau(c))] - lambda^T Cost(tau(c))
+$$
+c^*=\operatorname*{argmax}_c\left(\mathbb{E}[R(\tau(c))]-\lambda^\top\operatorname{Cost}(\tau(c))\right)
+$$
 
 subject to:
-  K_i(tau(c)) <= risk_limit_i
-  A(tau(c)) <= authority_cap
-  trace_integrity(tau(c)) passes
-  eval_integrity(tau(c)) passes
-  data_boundary(tau(c)) passes
-  release_gate(c) passes
+
+```text
+K_i(tau(c)) <= risk_limit_i
+A(tau(c)) <= authority_cap
+trace_integrity(tau(c)) passes
+eval_integrity(tau(c)) passes
+data_boundary(tau(c)) passes
+release_gate(c) passes
 ```
 
 Promotion is not a single score:

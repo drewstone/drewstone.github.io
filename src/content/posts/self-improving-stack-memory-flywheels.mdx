@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-memory-flywheels-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-memory-flywheels-publish' }
@@ -73,12 +75,14 @@ The clean way to think about memory is as mutable external state.
 
 Let:
 
-```text
-M_t = memory state before episode t
-tau_t = full trace from episode t
-u_t = proposed memory write after episode t
-G_mem = memory write gate
-```
+$$
+\begin{aligned}
+  M_t &= \text{memory state before episode }t \\
+  \tau_t &= \text{full trace from episode }t \\
+  u_t &= \text{proposed memory write after episode }t \\
+  G_{\text{mem}} &= \text{memory write gate}
+\end{aligned}
+$$
 
 Write candidates need structure:
 
@@ -96,38 +100,42 @@ u_t =
 
 The update rule is:
 
-```text
-M_{t+1} =
-  Apply(M_t, u_t) if G_mem(u_t, tau_t, policy) passes
-  M_t             otherwise
-```
+$$
+M_{t+1}=\begin{cases}
+  \operatorname{Apply}(M_t,u_t),&\text{if }G_{\text{mem}}(u_t,\tau_t,\text{policy})\text{ passes}, \\
+  M_t,&\text{otherwise.}
+\end{cases}
+$$
 
 At inference time, the memory layer changes the context seen by the policy:
 
-```text
-c_t = Retrieve(M_t, q_t, k, policy)
-y_t = pi_theta(x_t, c_t, tools)
-```
+$$
+\begin{aligned}
+  c_t &= \operatorname{Retrieve}(M_t,q_t,k,\text{policy}) \\
+  y_t &= \pi_\theta(x_t,c_t,\text{tools})
+\end{aligned}
+$$
 
 where:
 
-```text
-x_t = task input
-q_t = retrieval query or retrieval plan
-k = retrieval budget
-c_t = retrieved context
-pi_theta = model policy with fixed weights theta
-y_t = output or next action
-```
+$$
+\begin{aligned}
+  x_t &= \text{task input} \\
+  q_t &= \text{retrieval query or retrieval plan} \\
+  k &= \text{retrieval budget} \\
+  c_t &= \text{retrieved context} \\
+  \pi_\theta &= \text{model policy with fixed weights }\theta \\
+  y_t &= \text{output or next action}
+\end{aligned}
+$$
 
 Memory is not magic. It is an intervention on the policy's input distribution.
 
 That gives us a measurable target:
 
-```text
-Delta_memory =
-  E[Score(pi_theta with M)] - E[Score(pi_theta without M)]
-```
+$$
+\Delta_{\text{memory}}=\mathbb{E}[\operatorname{Score}(\pi_\theta\text{ with }M)]-\mathbb{E}[\operatorname{Score}(\pi_\theta\text{ without }M)]
+$$
 
 The unit test for memory is not "did retrieval return something?"
 
@@ -212,9 +220,9 @@ tau_t =
 
 The extractor turns trace evidence into proposed writes:
 
-```text
-tau_t -> {u_1, u_2, ..., u_n}
-```
+$$
+\tau_t\longrightarrow\{u_1,u_2,\ldots,u_n\}
+$$
 
 The gate decides whether each write is safe, scoped, supported, and useful:
 
@@ -318,7 +326,7 @@ becomes:
 pi_theta(y | x, c)
 ```
 
-where `c` is retrieved context.
+where $c$ is retrieved context.
 
 That context can help, do nothing, or harm. It can help by supplying missing facts, preserving user preferences, recalling a successful procedure, or warning against a repeated mistake. It can harm by anchoring the model on irrelevant facts, stale procedures, false summaries, or over-broad preferences.
 

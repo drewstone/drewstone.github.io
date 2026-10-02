@@ -21,8 +21,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       '@drewstone/agent-record':
-        specifier: https://github.com/drewstone/agent-record/releases/download/v0.1.0/drewstone-agent-record-0.1.0.tgz
-        version: https://github.com/drewstone/agent-record/releases/download/v0.1.0/drewstone-agent-record-0.1.0.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz
+        version: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       astro:
         specifier: ^6.1.10
         version: 6.1.10(@types/node@22.20.5)(rollup@4.61.1)(tsx@4.20.6)(typescript@5.9.3)
@@ -227,9 +227,10 @@ packages:
     resolution: {integrity: sha512-zccHj2z2oCCO4yrDiRSlFOxWerGqRiysP7a5jPK6uoI9URKAquwY42Dd/iUP8JWHxEzdRe4TlbvZCo8z1/mhrw==}
     engines: {node: '>= 20.12.0'}
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.1.0/drewstone-agent-record-0.1.0.tgz':
-    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.1.0/drewstone-agent-record-0.1.0.tgz}
-    version: 0.1.0
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz':
+    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz}
+    version: 0.2.1
+    hasBin: true
     peerDependencies:
       react: '>=18.3.0 <20'
       react-dom: '>=18.3.0 <20'
@@ -2573,7 +2574,7 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.1.0/drewstone-agent-record-0.1.0.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)

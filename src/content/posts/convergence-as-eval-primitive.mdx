@@ -7,7 +7,9 @@ featured: true
 authors:
   - { model: 'claude-opus-4-7', role: 'draft', date: 2026-04-24 }
   - { model: 'claude-opus-4-7', role: 'polish', date: 2026-04-24 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-convergence-as-eval-primitive-polish' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'initial draft — StatGrid baseline, Scorecard for audit scenario, three-layer scoring, monotonicity, resumable runs' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'polish pass: Sidenote on PoC realism; closing rewritten from meta-commentary to concrete per-criterion diagnosis', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'diagram fix: legend moved below plot area so labels no longer cut off', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
@@ -59,7 +61,7 @@ Two things are now visible that a pass/fail eval cannot show. First, the shape o
 
 ## Monotone progress, resumable runs
 
-The second move is making completion% *monotone*. Once a criterion is satisfied at turn `k`, it stays satisfied at turn `k+1`. Progress only moves up.
+The second move is making completion% *monotone*. Once a criterion is satisfied at turn `k`, it stays satisfied at turn $k+1$. Progress only moves up.
 
 This sounds obvious until you realize most eval harnesses don't do it. They re-check everything on every turn and let earlier wins regress if the agent says something contradictory. That's the wrong model. The run is an accumulation: at any point, the agent has done some subset of the things the scenario asks for, and we want to track that subset growing.
 
@@ -246,7 +248,7 @@ Most eval harnesses treat each turn as a re-measurement. That's fine for one-sho
 Enforce monotonicity at the harness level. Once a criterion is marked satisfied, it stays satisfied for the duration of the run. The agent cannot un-solve its own progress; the rubric cannot second-guess itself.
 
 <Callout tone="ok" title="The small code that buys a lot">
-Store satisfied criteria as a `Set<criterionId>` accumulated across turns. On each turn, only call checkers for criteria not already in the set. Completion% is `|satisfied| / |total|` weighted by criterion weight. Cheaper to compute each turn and immune to regression.
+Store satisfied criteria as a `Set<criterionId>` accumulated across turns. On each turn, only call checkers for criteria not already in the set. Completion% is $|\text{satisfied}|/|\text{total}|$ weighted by criterion weight. Cheaper to compute each turn and immune to regression.
 </Callout>
 
 ## Resuming a run

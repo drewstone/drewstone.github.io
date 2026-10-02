@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-post-training-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-publish' }
@@ -60,9 +62,9 @@ evaluate candidate
 promote or reject
 ```
 
-But the mutable surface is no longer a prompt file or a worktree. It is `theta`, the model parameters, or some parameterized adapter attached to the model.
+But the mutable surface is no longer a prompt file or a worktree. It is $\theta$, the model parameters, or some parameterized adapter attached to the model.
 
-Once `theta` moves, the boundary changes. The behavior becomes harder to inspect, harder to patch locally, harder to roll back partially, and harder to explain from a single trace. It can also generalize better than any prompt edit when the signal is strong enough.
+Once $\theta$ moves, the boundary changes. The behavior becomes harder to inspect, harder to patch locally, harder to roll back partially, and harder to explain from a single trace. It can also generalize better than any prompt edit when the signal is strong enough.
 
 That is why this layer deserves separate treatment.
 
@@ -74,7 +76,7 @@ The previous posts treated the model as mostly fixed:
 y = model_theta(prompt, tools, memory, trace_context)
 ```
 
-External optimization changed everything around `theta`:
+External optimization changed everything around $\theta$:
 
 ```text
 prompt
@@ -87,12 +89,14 @@ selector
 harness
 ```
 
-Post-training changes `theta`, or a learned delta attached to it:
+Post-training changes $\theta$, or a learned delta attached to it:
 
-```text
-theta_{t+1} = Update(theta_t, data, objective)
-theta' = theta_base + Delta_adapter
-```
+$$
+\begin{aligned}
+  \theta_{t+1}&=\operatorname{Update}(\theta_t,\text{data},\text{objective}) \\
+  \theta'&=\theta_{\text{base}}+\Delta_{\text{adapter}}
+\end{aligned}
+$$
 
 That small notation hides the whole difference.
 
@@ -129,15 +133,15 @@ Supervised fine-tuning is the simplest objective.
 
 Given demonstrations:
 
-```text
-D = {(x_i, y_i)}
-```
+$$
+D=\{(x_i,y_i)\}
+$$
 
 train the model to put probability mass on the demonstrated output:
 
-```text
-L_SFT(theta) = - sum_i log pi_theta(y_i | x_i)
-```
+$$
+\mathcal{L}_{\text{SFT}}(\theta)=-\sum_i\log\pi_\theta(y_i\mid x_i)
+$$
 
 This is powerful when demonstrations are clean and the task distribution is stable.
 
@@ -174,22 +178,19 @@ Preference data looks like:
 (x, y_w, y_l)
 ```
 
-where `y_w` is preferred over `y_l`.
+where $y_w$ is preferred over $y_l$.
 
 A common reward-model loss is:
 
-```text
-L_RM(phi) =
-  - log sigma(r_phi(x, y_w) - r_phi(x, y_l))
-```
+$$
+\mathcal{L}_{\text{RM}}(\phi)=-\log\sigma(r_\phi(x,y_w)-r_\phi(x,y_l))
+$$
 
 Then the policy objective becomes:
 
-```text
-max_theta E_{y ~ pi_theta(. | x)}[
-  r_phi(x, y) - beta KL(pi_theta(. | x) || pi_ref(. | x))
-]
-```
+$$
+\max_\theta\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}\left[r_\phi(x,y)-\beta\,D_{\mathrm{KL}}(\pi_\theta(\cdot\mid x)\Vert\pi_{\mathrm{ref}}(\cdot\mid x))\right]
+$$
 
 The reward says "move toward preferred behavior." The KL term says "do not drift too far from the reference policy."
 
@@ -203,18 +204,20 @@ The gate has to test the trained policy on held-out tasks, adversarial probes, c
 
 PPO is the familiar online optimizer in many RLHF pipelines. It samples from the current policy, scores the samples, estimates an advantage, and updates the policy while clipping large policy-ratio moves:
 
-```text
-rho = pi_theta(y | x) / pi_old(y | x)
-L_PPO(theta) = E[min(rho A, clip(rho, 1 - eps, 1 + eps) A)]
-```
+$$
+\begin{aligned}
+  \rho&=\frac{\pi_\theta(y\mid x)}{\pi_{\text{old}}(y\mid x)} \\
+  \mathcal{L}_{\text{PPO}}(\theta)&=\mathbb{E}[\min(\rho A,\operatorname{clip}(\rho,1-\epsilon,1+\epsilon)A)]
+\end{aligned}
+$$
 
 The clipped objective is an engineering answer to a stability problem: if the policy moves too far in one update, the reward model can be exploited and the policy can drift.
 
 GRPO-style training changes the advantage estimate. Instead of training a separate critic to estimate value, sample a group of outputs for the same prompt and normalize rewards inside the group:
 
-```text
-A_i = (r_i - mean(r_1, ..., r_G)) / (std(r_1, ..., r_G) + eps)
-```
+$$
+A_i=\frac{r_i-\operatorname{mean}(r_1,\ldots,r_G)}{\operatorname{std}(r_1,\ldots,r_G)+\epsilon}
+$$
 
 That group-relative signal is why GRPO has become prominent in reasoning and tool-use RL discussions. It is not a free lunch. The reward still has to be meaningful, the group has to contain useful variation, and the heldout gate still has to catch reward hacking.
 
@@ -247,17 +250,11 @@ AI feedback is not automatically objective feedback.
 
 Direct Preference Optimization removes the explicit reward-model and online-RL stages.
 
-For a preferred output `y_w` and rejected output `y_l`, DPO optimizes a classification-style objective over log-probability differences:
+For a preferred output $y_w$ and rejected output $y_l$, DPO optimizes a classification-style objective over log-probability differences:
 
-```text
-L_DPO(theta) =
-  - log sigma(
-      beta [
-        log pi_theta(y_w | x) - log pi_ref(y_w | x)
-        - log pi_theta(y_l | x) + log pi_ref(y_l | x)
-      ]
-    )
-```
+$$
+\mathcal{L}_{\text{DPO}}(\theta)=-\log\sigma\!\left(\beta\left[\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\right]\right)
+$$
 
 The reference policy still matters. The preference pair still matters. The quality of the pair dataset becomes the training signal.
 
@@ -290,9 +287,9 @@ Process supervision scores intermediate steps.
 
 If an agent run is:
 
-```text
-tau = (x, a_1, o_1, a_2, o_2, ..., y)
-```
+$$
+\tau=(x,a_1,o_1,a_2,o_2,\ldots,y)
+$$
 
 then outcome reward is:
 
@@ -302,9 +299,9 @@ R(tau)
 
 Process reward is:
 
-```text
-R_process(tau) = sum_t gamma^t r_t(a_t, o_t, state_t)
-```
+$$
+R_{\text{process}}(\tau)=\sum_t\gamma^t r_t(a_t,o_t,\text{state}_t)
+$$
 
 The 2023 "Let's Verify Step by Step" result made this concrete for math reasoning: step-level feedback can outperform final-answer-only feedback when training reward models for hard reasoning.
 
@@ -328,13 +325,15 @@ The strongest RL signals are not vibes. They are checks.
 
 For code, math, theorem proving, schemas, and tool tasks, some rewards are decidable:
 
-```text
-r = 1[tests_pass]
-r = 1[schema_valid]
-r = 1[proof_checks]
-r = 1[compile_succeeds]
-r = fraction_of_assertions_passed
-```
+$$
+\begin{aligned}
+r &= \mathbb{1}[\text{tests pass}] \\
+r &= \mathbb{1}[\text{schema valid}] \\
+r &= \mathbb{1}[\text{proof checks pass}] \\
+r &= \mathbb{1}[\text{compilation succeeds}] \\
+r &= \text{fraction of assertions passed}
+\end{aligned}
+$$
 
 This is why tool-use and coding RL are attractive. The environment can score behavior without a subjective judge for at least part of the task.
 
@@ -532,7 +531,7 @@ gates promote candidates
 RL bridge exports training signal
 ```
 
-The final step, updating `theta`, remains outside the public product loop unless a real training backend is wired.
+The final step, updating $\theta$, remains outside the public product loop unless a real training backend is wired.
 
 ## The Promotion Gate Gets Stricter
 

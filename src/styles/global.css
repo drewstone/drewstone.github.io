@@ -181,6 +181,10 @@ a:hover {
   text-decoration-color: var(--fg);
 }
 
+.prose a {
+  overflow-wrap: anywhere;
+}
+
 blockquote {
   border-left: 2px solid var(--fg);
   padding-left: var(--space-lg);
@@ -291,25 +295,46 @@ pre code {
   }
 }
 
-/* Tables */
-table {
+/* Tables in essays and research articles */
+.prose table {
   width: 100%;
   border-collapse: collapse;
   margin: var(--space-lg) 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
-th,
-td {
-  padding: var(--space-sm) var(--space-md);
+.prose th,
+.prose td {
+  padding: 0.32rem 0.55rem;
   border-bottom: 1px solid var(--border);
   text-align: left;
+  vertical-align: top;
 }
 
-th {
+.prose th {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   border-bottom: 2px solid var(--fg);
+}
+
+@media (min-width: 800px) {
+  .prose table {
+    width: calc(100% + 6rem);
+    margin-left: -3rem;
+    margin-right: -3rem;
+  }
+}
+
+@media (max-width: 799px) {
+  .prose table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* KaTeX overrides */

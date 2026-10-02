@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-test-time-compute-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-publish' }
@@ -79,25 +81,25 @@ The key is that all of these are inference-time choices. They do not change mode
 
 Let:
 
-```text
-x = task
-m = fixed model or model set
-h = harness and runtime
-s = strategy for spending test-time compute
-B = compute budget
-R = reward, score, or task success
-C = measured cost
-```
+$$
+\begin{aligned}
+  x &= \text{task} \\
+  m &= \text{fixed model or model set} \\
+  h &= \text{harness and runtime} \\
+  s &= \text{strategy for spending test-time compute} \\
+  B &= \text{compute budget} \\
+  R &= \text{reward, score, or task success} \\
+  C &= \text{measured cost}
+\end{aligned}
+$$
 
 The objective is:
 
-```text
-J(s | m, h, B) =
-  E_{x ~ D}[R(run(m, h, s, x, B))]
-  - lambda * E[C(run(m, h, s, x, B))]
-```
+$$
+J(s\mid m,h,B)=\mathbb{E}_{x\sim D}[R(\operatorname{run}(m,h,s,x,B))]-\lambda\,\mathbb{E}[C(\operatorname{run}(m,h,s,x,B))]
+$$
 
-The budget `B` is not one scalar in practice. It is a vector:
+The budget $B$ is not one scalar in practice. It is a vector:
 
 ```text
 B = {
@@ -113,7 +115,7 @@ B = {
 }
 ```
 
-A fair comparison fixes the relevant parts of `B`, or it reports the tradeoff instead of pretending the strategy itself improved.
+A fair comparison fixes the relevant parts of $B$, or it reports the tradeoff instead of pretending the strategy itself improved.
 
 ## The Baseline Ladder
 
@@ -123,70 +125,78 @@ Every topology claim should climb a baseline ladder.
 
 The weakest baseline is one ordinary run:
 
-```text
-y_1 ~ q_m(y | x)
-score = R(y_1)
-```
+$$
+\begin{aligned}
+  y_1&\sim q_m(y\mid x) \\
+  \text{score}&=R(y_1)
+\end{aligned}
+$$
 
 Beating this is not enough. Almost any extra compute can beat one sample on tasks with stochastic failures.
 
 **Random@k**
 
-Sample `k` candidates from the same model and prompt distribution, then select without additional information or with a fixed production selector:
+Sample $k$ candidates from the same model and prompt distribution, then select without additional information or with a fixed production selector:
 
-```text
-y_i ~ q_m(y | x), i = 1..k
-y_hat = sigma_blind({y_i})
-```
+$$
+\begin{aligned}
+  y_i&\sim q_m(y\mid x),\quad i=1,\ldots,k \\
+  \hat{y}&=\sigma_{\text{blind}}(\{y_i\})
+\end{aligned}
+$$
 
 This asks: what happens if we just buy more attempts?
 
 **Pass@k**
 
-For verifiable tasks, `pass@k` asks whether any candidate succeeds:
+For verifiable tasks, $\operatorname{pass@k}$ asks whether any candidate succeeds:
 
-```text
-pass@k = P(max_i R(y_i) = 1)
-```
+$$
+\operatorname{pass@k}=\mathbb{P}\!\left(\max_iR(y_i)=1\right)
+$$
 
-Under independent binary success probability `q`:
+Under independent binary success probability $q$:
 
-```text
-pass@k = 1 - (1 - q)^k
-```
+$$
+\operatorname{pass@k}=1-(1-q)^k
+$$
 
-That formula is the reason repeated sampling is hard to dismiss. Even a weak model can look strong if the task is verifiable and `k` is large enough.
+That formula is the reason repeated sampling is hard to dismiss. Even a weak model can look strong if the task is verifiable and $k$ is large enough.
 
-In code-eval practice, `pass@k` is often estimated from `n` sampled candidates where `c` pass the tests:
+In code-eval practice, $\operatorname{pass@k}$ is often estimated from $n$ sampled candidates where $c$ pass the tests:
 
-```text
-pass_hat@k = 1 - C(n - c, k) / C(n, k)
-```
+$$
+\widehat{\operatorname{pass@k}}=1-\frac{\binom{n-c}{k}}{\binom{n}{k}}
+$$
 
-where `C(a, b)` is the binomial coefficient, with `C(a, b) = 0` when `a < b`. This estimates the chance that at least one of `k` drawn samples would pass, without pretending the evaluator can deploy the answer key.
+where $\binom{a}{b}$ is the binomial coefficient, with $\binom{a}{b}=0$ when $a<b$. This estimates the chance that at least one of $k$ drawn samples would pass, without pretending the evaluator can deploy the answer key.
 
-But `pass@k` is not a deployable policy. It is an oracle coverage metric. It tells you whether a correct answer existed in the sample set, not whether your system could find it without labels.
+But $\operatorname{pass@k}$ is not a deployable policy. It is an oracle coverage metric. It tells you whether a correct answer existed in the sample set, not whether your system could find it without labels.
 
 **Best-of-N with a selector**
 
 Now add a selector:
 
-```text
-y_hat = sigma(x, {y_1, ..., y_k})
-score = R(y_hat)
-```
+$$
+\begin{aligned}
+  \hat{y}&=\sigma(x,\{y_1,\ldots,y_k\}) \\
+  \text{score}&=R(\hat{y})
+\end{aligned}
+$$
 
-This is production-like only if `sigma` is available at deployment time. A hidden answer key, private unit tests, or human judge may be useful for measurement. It is not a runtime selector unless the product can actually call it.
+This is production-like only if $\sigma$ is available at deployment time. A hidden answer key, private unit tests, or human judge may be useful for measurement. It is not a runtime selector unless the product can actually call it.
 
 **Self-consistency**
 
 Self-consistency samples multiple reasoning paths and chooses the answer supported by the largest mass:
 
-```text
-z_i = reasoning path
-a_i = final answer extracted from z_i
-y_hat = argmax_a count(a_i = a)
-```
+$$
+\begin{aligned}
+  z_i&=\text{reasoning path} \\
+  a_i&=\text{final answer extracted from }z_i \\
+  \hat{y}&=\operatorname*{argmax}_a\operatorname{count}(a_i=a)
+\end{aligned}
+$$
 
 It is powerful when correct answers are stable attractors and wrong answers are diverse. It is weaker for open-ended artifact quality, where many outputs are plausible and no answer string gets a majority.
 
@@ -194,11 +204,11 @@ It is powerful when correct answers are stable attractors and wrong answers are 
 
 A verifier or reward model scores candidates:
 
-```text
-y_hat = argmax_i V(x, y_i, trace_i)
-```
+$$
+\hat{y}=\operatorname*{argmax}_i V(x,y_i,\operatorname{trace}_i)
+$$
 
-This is where process reward models, unit tests, static analyzers, rubric judges, and domain verifiers enter. The selector becomes useful only to the extent that `V` correlates with true task success and does not overfit superficial features.
+This is where process reward models, unit tests, static analyzers, rubric judges, and domain verifiers enter. The selector becomes useful only to the extent that $V$ correlates with true task success and does not overfit superficial features.
 
 **Guided compute**
 
@@ -234,16 +244,18 @@ Could the system identify that candidate without oracle labels?
 
 The two curves can be very different.
 
-```text
-coverage_k = P(exists i: R(y_i) = 1)
-selection_k = E[R(sigma({y_i}))]
-```
+$$
+\begin{aligned}
+  \operatorname{coverage}_k&=\mathbb{P}(\exists i:R(y_i)=1) \\
+  \operatorname{selection}_k&=\mathbb{E}[R(\sigma(\{y_i\}))]
+\end{aligned}
+$$
 
 The gap is selector loss:
 
-```text
-selector_loss_k = coverage_k - selection_k
-```
+$$
+\operatorname{selector\_loss}_k=\operatorname{coverage}_k-\operatorname{selection}_k
+$$
 
 A system with high coverage and high selector loss is not ready. It can generate a correct answer somewhere in the pile, but it cannot reliably ship the right artifact.
 
@@ -361,7 +373,7 @@ true_score = R(x, y)
 verifier_error = observed_score - true_score
 ```
 
-If guided search optimizes `V` faster than `V` tracks `R`, the system reward-hacks its own evaluator.
+If guided search optimizes $V$ faster than $V$ tracks $R$, the system reward-hacks its own evaluator.
 
 This is why the selector must be evaluated, not assumed.
 
@@ -392,7 +404,7 @@ The topology claim is:
 allocation_policy_multi(B) > allocation_policy_baseline(B)
 ```
 
-at a measured budget `B`.
+at a measured budget $B$.
 
 That is why the previous post insisted that role names are not enough. The role structure matters only if it improves allocation, evidence, selection, or verification under budget.
 
@@ -516,7 +528,7 @@ The candidate wins because it used more samples, turns, tokens, or tools.
 
 **Oracle selection**
 
-The paper or eval reports `pass@k`, but the product has no selector that can find the passing candidate.
+The paper or eval reports $\operatorname{pass@k}$, but the product has no selector that can find the passing candidate.
 
 **Verifier overfit**
 

@@ -133,18 +133,21 @@ const articleJsonLd = {
               {nextInSeries && <a href={`/posts/${nextInSeries.slug}`} class="series-nav-link">Next → {nextInSeries.title}</a>}
             </div>
           </div>
-          <ol class="post-series-list">
-            {orderedSeriesPosts.map((entry) => (
-              <li class={`series-item ${entry.slug === slug ? 'is-current' : ''}`}>
-                <span class="series-meta">{formatSeriesDate(entry.date)}</span>
-                {entry.slug === slug ? (
-                  <span class="series-current">{entry.title}</span>
-                ) : (
-                  <a href={`/posts/${entry.slug}`}>{entry.title}</a>
-                )}
-              </li>
-            ))}
-          </ol>
+          <details class="post-series-directory">
+            <summary>Browse all {orderedSeriesPosts.length} posts</summary>
+            <ol class="post-series-list">
+              {orderedSeriesPosts.map((entry) => (
+                <li class={`series-item ${entry.slug === slug ? 'is-current' : ''}`}>
+                  <span class="series-meta">{formatSeriesDate(entry.date)}</span>
+                  {entry.slug === slug ? (
+                    <span class="series-current">{entry.title}</span>
+                  ) : (
+                    <a href={`/posts/${entry.slug}`}>{entry.title}</a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </details>
         </section>
       )}
       <AuthorBadges authors={authors} original={original} />
@@ -214,7 +217,7 @@ const articleJsonLd = {
     margin: 0 0 var(--space-lg);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 0.9rem 1rem 1rem;
+    padding: 0.65rem 0.75rem;
     background: var(--bg-alt);
   }
   .post-series-head {
@@ -255,6 +258,15 @@ const articleJsonLd = {
     padding: 0;
     display: grid;
     gap: 0.35rem;
+  }
+  .post-series-directory > summary {
+    margin-top: 0.25rem;
+    padding: 0.25rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+  .post-series-directory[open] > summary {
+    margin-bottom: 0.55rem;
   }
   .series-item {
     display: flex;
@@ -330,6 +342,17 @@ const articleJsonLd = {
     }
     .post-header {
       padding-top: 0;
+    }
+    .post-meta-line {
+      flex-wrap: wrap;
+      row-gap: var(--space-xs);
+    }
+    .post-series-head {
+      display: grid;
+      gap: 0.4rem;
+    }
+    .post-series-nav {
+      justify-content: flex-start;
     }
   }
 </style>

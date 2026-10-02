@@ -21,7 +21,9 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-multi-agent-coordination-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-publish' }
@@ -59,44 +61,46 @@ Coordination is structure.
 
 The previous post made runtime topology explicit:
 
-```text
-g = executable graph of agents, tools, validators, selectors, handoffs, and gates
-pi = runtime policy over graph moves
-```
+$$
+\begin{aligned}
+  g &= \text{executable graph of agents, tools, validators, selectors, handoffs, and gates} \\
+  \pi &= \text{runtime policy over graph moves}
+\end{aligned}
+$$
 
 Multi-agent coordination sits one layer above that. It decides what the nodes are supposed to do together.
 
 Let:
 
-```text
-r = role contracts
-p = persona and instruction content
-k = active skills per role
-u = tools and permissions per role
-c = communication and context-sharing policy
-sigma = selector or merger policy
-v = verifier and judge stack
-b = budget allocation policy
-tau = termination and escalation policy
-```
+$$
+\begin{aligned}
+  r &= \text{role contracts} \\
+  p &= \text{persona and instruction content} \\
+  k &= \text{active skills per role} \\
+  u &= \text{tools and permissions per role} \\
+  c &= \text{communication and context-sharing policy} \\
+  \sigma &= \text{selector or merger policy} \\
+  v &= \text{verifier and judge stack} \\
+  b &= \text{budget allocation policy} \\
+  \tau &= \text{termination and escalation policy}
+\end{aligned}
+$$
 
 A multi-agent system candidate is:
 
-```text
-s = (g, r, p, k, u, c, sigma, v, b, tau)
-```
+$$
+s=(g,r,p,k,u,c,\sigma,v,b,\tau)
+$$
 
 The optimization target is:
 
-```text
-J(s | m, h) =
-  E_{x ~ D}[R(run(m, h, s, x))]
-  - lambda * E[C(run(m, h, s, x))]
-```
+$$
+J(s\mid m,h)=\mathbb{E}_{x\sim D}[R(\operatorname{run}(m,h,s,x))]-\lambda\,\mathbb{E}[C(\operatorname{run}(m,h,s,x))]
+$$
 
 The notation is only useful because it exposes the coordinate system.
 
-If only `p` changes, the optimizer is tuning role descriptions. If `k` changes, it is tuning durable role procedure. If `g`, `sigma`, `c`, `b`, or `tau` change, it is tuning coordination structure.
+If only $p$ changes, the optimizer is tuning role descriptions. If $k$ changes, it is tuning durable role procedure. If $g$, $\sigma$, $c$, $b$, or $\tau$ change, it is tuning coordination structure.
 
 That distinction prevents a common category error: evaluating a better persona as if it were a better multi-agent system.
 
@@ -179,18 +183,17 @@ If every worker shares the same prompt, same model, same examples, same context,
 
 The idealized independent case is easy:
 
-```text
-P(at least one success) = 1 - product_i(1 - q_i)
-```
+$$
+\mathbb{P}(\text{at least one success})=1-\prod_i(1-q_i)
+$$
 
-where `q_i` is the probability that worker `i` independently finds a valid answer.
+where $q_i$ is the probability that worker $i$ independently finds a valid answer.
 
 But multi-agent LLM systems rarely get independence for free. The useful quantity is not worker count. It is error correlation.
 
-```text
-coordination_gain =
-  E[score_multi at budget B] - E[score_best_single at budget B]
-```
+$$
+\operatorname{coordination\_gain}=\mathbb{E}[\operatorname{score\_multi}\text{ at budget }B]-\mathbb{E}[\operatorname{score\_best\_single}\text{ at budget }B]
+$$
 
 If the gain disappears at matched budget, the system did not learn coordination. It bought more samples.
 

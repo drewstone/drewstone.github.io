@@ -20,7 +20,9 @@ authors:
   - { model: 'gpt-5.5', role: 'review', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-optimization-theory-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-publish' }
@@ -84,9 +86,9 @@ For a prompt optimizer, `s` might be a system prompt, a task instruction, a fiel
 
 The objective looks like this:
 
-```text
-J(s) = E_{tau ~ D}[R(run(s, tau))] - lambda * C(s)
-```
+$$
+J(s)=\mathbb{E}_{\tau\sim D}[R(\operatorname{run}(s,\tau))]-\lambda C(s)
+$$
 
 In English:
 
@@ -95,15 +97,15 @@ In English:
 - `run(s, tau)` is the trace produced when the system with surface `s` attempts the task.
 - `R` is the reward or score for that trace.
 - `C` is cost: tokens, latency, dollars, tool calls, human review time, risk.
-- `lambda` controls how much you care about cost.
+- $\lambda$ controls how much you care about cost.
 
-Most agent teams do not write the equation down. They still live inside it. If a support agent is optimized for accuracy while token cost is ignored, then `lambda` is effectively zero. If a product always picks the cheapest model regardless of success rate, the cost term is dominating the objective. If the judge rewards long answers, the reward function has silently made verbosity a feature.
+Most agent teams do not write the equation down. They still live inside it. If a support agent is optimized for accuracy while token cost is ignored, then $\lambda$ is effectively zero. If a product always picks the cheapest model regardless of success rate, the cost term is dominating the objective. If the judge rewards long answers, the reward function has silently made verbosity a feature.
 
 An optimizer is an operator:
 
-```text
-s_next = O(s_current, traces, feedback, budget)
-```
+$$
+s_{\text{next}}=O(s_{\text{current}},\text{traces},\text{feedback},\text{budget})
+$$
 
 `O` can be a human writing a new prompt. It can be Bayesian optimization. It can be an LLM reflecting on failures. It can be evolutionary mutation. It can be reinforcement learning. The operator matters, but a weak gate dominates a clever operator. A sophisticated mutator with a bad score function is just a faster way to overfit.
 
@@ -129,9 +131,9 @@ Simulated annealing adds a different trick: sometimes accept a worse candidate e
 
 Bayesian optimization appears when evaluations are expensive. You cannot afford to try every prompt, every model, every tool order, or every hyperparameter combination. So you build a surrogate model of the objective from previous trials and use an acquisition function to choose the next trial. A common acquisition function is expected improvement:
 
-```text
-EI(x) = E[max(f(x) - f_best, 0)]
-```
+$$
+\operatorname{EI}(x)=\mathbb{E}[\max(f(x)-f_{\text{best}},0)]
+$$
 
 Expected improvement balances exploration and exploitation. It favors candidates that look promising, but it also spends trials in uncertain regions because those trials may reveal a better basin.
 
@@ -151,9 +153,9 @@ The model may be remote. The provider may not expose gradients. The action space
 
 The practical problem is closer to:
 
-```text
-argmax_s J(s)
-```
+$$
+\operatorname*{argmax}_s J(s)
+$$
 
 where `J` is expensive, noisy, partially subjective, and easy to game.
 
@@ -232,12 +234,14 @@ If a prompt changes, a held-out prompt eval may be enough. If a skill changes, y
 
 The simplest honest comparison is paired evaluation. Run the baseline and candidate on the same tasks, then compare per-task deltas:
 
-```text
-delta_i = score_i(candidate) - score_i(baseline)
-mean_delta = (1/n) * sum_i delta_i
-```
+$$
+\begin{aligned}
+  \Delta_i &= \operatorname{score}_i(\text{candidate})-\operatorname{score}_i(\text{baseline}) \\
+  \operatorname{mean\_delta} &= \frac{1}{n}\sum_i\Delta_i
+\end{aligned}
+$$
 
-If `mean_delta` is positive, the candidate looks better. But "looks better" is not enough. With stochastic systems, a candidate can win because it got easier samples, the judge was inconsistent, the model sampled lucky trajectories, or one outlier task dominated the average.
+If $\operatorname{mean\_delta}$ is positive, the candidate looks better. But "looks better" is not enough. With stochastic systems, a candidate can win because it got easier samples, the judge was inconsistent, the model sampled lucky trajectories, or one outlier task dominated the average.
 
 So the promotion rule needs uncertainty:
 
@@ -249,13 +253,13 @@ promote if lower_confidence_bound(mean_delta) > epsilon
 
 For agents, the score is rarely one-dimensional. Quality, cost, latency, robustness, safety, and trace integrity all matter. That leads to Pareto thinking:
 
-```text
-candidate A dominates B if:
-  quality_A >= quality_B
-  cost_A    <= cost_B
-  latency_A <= latency_B
-and at least one inequality is strict
-```
+$$
+A\succ B\quad\text{if}\quad\begin{cases}
+  \operatorname{quality}_A\ge\operatorname{quality}_B, \\
+  \operatorname{cost}_A\le\operatorname{cost}_B, \\
+  \operatorname{latency}_A\le\operatorname{latency}_B,
+\end{cases}\quad\text{with at least one strict inequality}
+$$
 
 Many real candidates do not dominate each other. One is better and slower. Another is cheaper and less robust. Another is safer but more verbose. This is why GEPA's Pareto framing is natural for compound systems, and why agent-eval style scorecards are more useful than a single magic number.
 
