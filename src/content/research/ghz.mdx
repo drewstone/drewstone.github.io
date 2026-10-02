@@ -1,0 +1,89 @@
+---
+title: 'A GHZ-mixture witness against BCWW'
+description: 'An explicit four-qubit state violating the BCWW candidate inequality, with an exact entropy reduction and a replayable verifier.'
+assessed: '2026-10-02'
+claim: 'A four-qubit GHZ mixture violates the same proposed inequality by 0.113302 bits.'
+limitation: 'The relevant marginals are classical. This does not establish a quantum advantage; the original discovery fleet trace is incomplete.'
+record_ids: ['q-conj-entropy-bcww-repair']
+order: 2
+---
+import WitnessExplorer from '../../components/WitnessExplorer.astro'
+
+## The state
+
+Take the four-qubit Greenberger–Horne–Zeilinger state
+
+$$
+|\mathrm{GHZ}_4\rangle=\frac{|0000\rangle+|1111\rangle}{\sqrt2}
+$$
+
+and define
+
+$$
+\rho=\frac34|\mathrm{GHZ}_4\rangle\!\langle\mathrm{GHZ}_4|
++\frac18|1010\rangle\!\langle1010|
++\frac18|1001\rangle\!\langle1001|.
+$$
+
+The [BCWW candidate inequality](https://arxiv.org/pdf/1507.05650) uses only proper subsystems.
+Tracing out any nonempty complement kills the GHZ off-diagonal term.
+Consequently, every entropy used in that inequality equals the Shannon entropy of the corresponding marginal of the classical distribution
+
+$$
+P(0000)=P(1111)=\frac38,\qquad
+P(1010)=P(1001)=\frac18.
+$$
+
+The quantum construction therefore has a simple classical verification.
+
+## The exact violation
+
+Using the [functional defined on the classical-witness page](/research/bcww#the-statement), substitution gives
+
+$$
+F=\frac{25}{4}-\frac98\log_2 3-\frac{15}{8}\log_2 5
+ =0.113302008774\ldots>0.
+$$
+
+Multiplying by eight reduces its positive sign to
+
+$$
+2^{50}>3^9 5^{15}.
+$$
+
+Both sides are integers:
+
+$$
+1125899906842624>600677490234375.
+$$
+
+The retained standard-library verifier reconstructs every required marginal and compares the result with the closed form.
+It was replayed successfully during the October 2 evidence review.
+[Download that exact verifier](/research/verify-ghz.py).
+
+<WitnessExplorer kind="ghz" />
+
+The slider varies the GHZ weight $p$ while assigning $(1-p)/2$ to each of the other two projectors.
+The exact certificate above applies to $p=3/4$.
+The other plotted values use ordinary floating point.
+
+## What the construction establishes
+
+This is a second witness against the same proposed BCWW inequality.
+Its relevant entropy vector is also realized classically.
+The violation does not show an advantage that requires quantum coherence.
+
+The retained provenance note attributes this construction to the fifth arm of an operator-led verification fleet dated August 10, 2026.
+That note records five independent verification approaches, including blind arithmetic and fresh code.
+The complete original fleet transcripts were not recovered in this review, so the note supports an attribution claim rather than a fully reconstructed discovery trajectory.
+
+## Retained pursuit
+
+The timeline below is a later BCWW repair pursuit, launched on August 30.
+It retained the GHZ witness and investigated the surrounding claim.
+It is **not** the August 10 discovery fleet.
+Its two recorded child attempts ended down, with rate-limit and incomplete-stream failures.
+Its archive has no native session JSONL.
+
+The archive retains Runtime events and a witness artifact; that is enough to inspect the later attempt and replay the construction.
+It does not prove that every original message, child session, or source byte was captured.

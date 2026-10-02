@@ -1,0 +1,31 @@
+{
+  "method": "Exact symbolic derivatives of the displayed conditional-entropy grouping; natural logarithms. Analyticity supplies the Taylor remainder. This receipt is a recomputation, not a Lean kernel certificate.",
+  "sympyVersion": "1.14.0",
+  "eNumeratorTaylor": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "-54/29"
+  ],
+  "yNumeratorTaylor": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0",
+    "27/29"
+  ],
+  "eLeadingNormalized": "-54000/841841",
+  "yLeadingNormalized": "27000/841841",
+  "verifierSource": {
+    "repository": "drewstone/lw6-counterexample",
+    "commit": "d05711f14a53dfd63ae4fbd55235119879f50dc3",
+    "sha256": "23cbefe7a11840d4b2bad0b3eed7246c0de857ec06c8eb1879c12df00b5ef65f"
+  },
+  "ghzVerifierSource": {
+    "repository": "drewstone/research",
+    "commit": "4fef283c6223d1e8a499f136236280c0898a3f28",
+    "sha256": "45210fc1fe0ad092f1bd08cdc446d88d936bc879ef0d9cee08c190735f9475ef"
+  }
+}

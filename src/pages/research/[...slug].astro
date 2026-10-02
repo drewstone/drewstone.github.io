@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro'
+import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
+import { getCollection, render } from 'astro:content'
+import { readFile } from 'node:fs/promises'
+import { evidenceSchema } from '../../lib/research-evidence'
+export async function getStaticPaths() {
+  return (await getCollection('research')).map(entry => ({params:{slug:entry.id},props:{entry}}))
+}
+const { entry } = Astro.props
+const { Content, headings } = await render(entry)
+const records = await Promise.all(entry.data.record_ids.map(async (id: string) => {
+  if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`Invalid publication record id: ${id}`)
+  return evidenceSchema.parse(JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8')))
+}))
+---
+<Base title={entry.data.title} description={entry.data.description} type="article" wide>
+  <p class="breadcrumb"><a href="/research">Research</a> / Quantum information</p>
+  <header class="research-header">
+    <h1>{entry.data.title}</h1>
+    <p class="claim">{entry.data.claim}</p>
+    <p class="date">Evidence assessed {entry.data.assessed.toISOString().slice(0,10)}</p>
+  </header>
+  <div class="article-grid">
+    <nav class="contents" aria-label="On this page"><ol>{headings.filter(h=>h.depth===2).map(h=><li><a href={`#${h.slug}`}>{h.text}</a></li>)}{records.length > 0 && <li><a href="#agent-record">Agent record</a></li>}<li><a href="#publication-note">Publication note</a></li></ol></nav>
+    <article class="prose"><Content /></article>
+  </div>
+  {records.length > 0 && <section id="agent-record" class="record"><h2>Agent record</h2><EvidenceExplorer records={records}/></section>}
+  <aside id="publication-note" class="publication-note">
+    <h2>Publication note</h2>
+    <p>This presentation was curated with Codex under Drew Stone's direction on October 2, 2026.
+      The dated research records identify their own models and harnesses.
+      Curating this page is separate from discovering or verifying its result.</p>
+    <p><a href="/research/method">Evidence standards and capture limitations</a> · <a href="https://github.com/drewstone/drewstone.github.io/commits/main/src/content/research">Page history</a></p>
+  </aside>
+</Base>
+<style>
+  .breadcrumb, .date { font: .7rem var(--font-mono); color: var(--fg-muted); }
+  .research-header { max-width: 43rem; margin: 1.5rem 0 3rem; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
+  .claim { font-size: 1.1rem; }
+  .article-grid { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 2rem; }
+  .contents { align-self: start; position: sticky; top: 1.5rem; font-size: .85rem; }
+  .contents ol { padding: 0; list-style: none; }
+  .contents li { padding: .35rem 0; }
+  .prose { min-width: 0; }
+  .prose :global(h2:first-child) { margin-top: 0; }
+  .prose :global(pre) { margin-left: 0; margin-right: 0; padding: 1rem; font-size: .8rem; }
+  .prose :global(table) { font-size: .87rem; }
+  .prose :global(th), .prose :global(td) { padding: .4rem .6rem; }
+  .record { margin-top: 4rem; }
+  .publication-note { max-width: 40rem; margin: 3rem 0 0 auto; color: var(--fg-muted); font-size: .85rem; }
+  .publication-note h2 { font-size: 1.1rem; }
+  @media (max-width: 800px) {
+    .article-grid { display: block; }
+    .contents { position: static; border-block: 1px solid var(--border); padding: .7rem 0; margin-bottom: 2rem; }
+    .contents ol { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin: 0; }
+  }
+</style>

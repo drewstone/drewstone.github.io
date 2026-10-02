@@ -1,0 +1,53 @@
+{
+  "ftqc-zips-2026-08-05-r1": {
+    "objective": "Inspect seven research archives from another AI effort, decide what is worth pursuing, and act on that assessment.",
+    "suppliedKnowledge": "Seven zip archives, described in the input as 30 MB and 1,349 entries. No pre-digested assessment was supplied.",
+    "deliverables": "Produce FINDINGS.md and submit the result. The director could choose the division of work and its own completion criteria.",
+    "constraints": "The scientific task was open-ended; reproducing a corpus artifact does not establish its original discovery.",
+    "source": {
+      "path": "run-input.json",
+      "sha256": "dbf46b19d928943569ce004a95178dba8f61fb79169c1f71e575f0bdc20473e9",
+      "bytes": 8592
+    }
+  },
+  "fc-audit-smoke-a": {
+    "objective": "Build and validate an entropy-inequality certification instrument on known-answer controls before a larger campaign.",
+    "suppliedKnowledge": "The paper and equation number were supplied. The task explicitly prohibited reading the prior BCWW answer.",
+    "deliverables": "Refute BCWW and a second known-false candidate; retain proven N=5 holographic facets; state scope; produce a machine-readable transcription schema.",
+    "constraints": "Exact rational certificates and cold checks were required. All four stated gates were meant to pass; the later correction invalidated the named BCWW atom set.",
+    "source": {
+      "path": "run-input.json",
+      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487",
+      "bytes": 13577
+    }
+  },
+  "q-q36-lw6-unbounded-ladder": {
+    "objective": "Construct and certify an unbounded classical ratio family for Linden\u2013Winter Conjecture 6, or report a bounded-in-grammar ceiling or inconclusive outcome.",
+    "suppliedKnowledge": "Prior thin witnesses, coefficient-region findings, and a partial earlier family recovery. Later preserved child assignments supplied W_L explicitly from cited prior knowledge.",
+    "deliverables": "A certified ratio ladder, an unbounded/bounded/inconclusive verdict, and off-diagonal coefficient-surface results.",
+    "constraints": "Exact certification, two independent arithmetic engines, and rationalization checks. Four scientific roles were planned; five child attempts were recorded, including a retry.",
+    "source": {
+      "path": "run-input.json",
+      "sha256": "f37994487d82d3f1adaf70ef8ad8d28a5dd76c67a3934fd020df28bed2e31185",
+      "bytes": 19623
+    }
+  },
+  "q-conj-entropy-bcww-repair": {
+    "objective": "Find or exclude repairs to the already-refuted BCWW candidate within a bounded grammar.",
+    "suppliedKnowledge": "The corrected classical witness, GHZ witness, and earlier no-go findings were supplied.",
+    "deliverables": "Check prior art first; then exact witness screening, a copy-lemma proof attempt, or a bounded conjecture with a falsifier battery.",
+    "constraints": "The task forbade re-verifying the settled BCWW refutation. It named an OpenCode director, four roles, a $25 budget, and small storage. These are intended conditions, not measured expenditure.",
+    "source": {
+      "path": "run-input.json",
+      "sha256": "f26ce94cf8498b91feb06e2214a75ef9176f626e954917f78615d42f4e995973",
+      "bytes": 30309
+    }
+  },
+  "q-ca-bcww-shareable-pkg": {
+    "objective": "The complete original input was not recovered. The retained finding resolves a mismatch between the charter atom set and the prior verified witness.",
+    "suppliedKnowledge": "Only retained post-run finding pages are available in this publication record.",
+    "deliverables": "No complete original acceptance contract is available.",
+    "constraints": "Do not infer an original prompt, topology, served model, or complete transcript from this finding.",
+    "source": null
+  }
+}

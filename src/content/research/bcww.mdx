@@ -1,0 +1,98 @@
+---
+title: 'A five-atom counterexample to BCWW'
+description: 'An exact classical witness violating equation (4.6) of Bao, Cao, Walter, and Wang, with corrections and retained verification records.'
+assessed: '2026-10-02'
+claim: 'Five equally likely bit strings violate a proposed four-party entropy inequality by 0.0529325 bits.'
+limitation: 'Corpus-origin witness; first discovery is unattributed. The original archived smoke witness was wrong.'
+record_ids: ['ftqc-zips-2026-08-05-r1', 'fc-audit-smoke-a', 'q-ca-bcww-shareable-pkg']
+order: 1
+---
+import WitnessExplorer from '../../components/WitnessExplorer.astro'
+
+## The statement
+
+Bao, Cao, Walter, and Wang proposed a candidate inequality for general four-party quantum states in [equation (4.6) of their 2015 paper](https://arxiv.org/pdf/1507.05650).
+Writing $S(X)$ for the entropy of subsystem $X$, its left side is
+
+$$
+\begin{aligned}
+F={}&S(ABD)+S(ABC)+S(BCD)\\
+&-2S(BD)-2S(BC)+S(CD)\\
+&-S(AD)-S(AC)-S(AB)+2S(B)+S(A).
+\end{aligned}
+$$
+
+The proposed bound is $F\leq 0$.
+The equation is numbered (4.16) in the paper's first version.
+This result concerns that candidate inequality, not the paper's full set of holographic entropy results.
+
+## The witness
+
+Let $(A,B,C,D)$ be uniformly distributed on
+
+$$
+\{0001,\;0010,\;0011,\;0111,\;1000\}.
+$$
+
+Each atom has probability $1/5$.
+The classical distribution defines a diagonal quantum state, so a classical violation also disproves the proposed general quantum bound.
+All logarithms on this page use base two.
+
+The nonzero marginal multiplicities are enough to calculate every term:
+
+| Subsystem | Multiplicities out of five |
+| --- | --- |
+| $A$, $B$ | $4,1$ |
+| $AB$, $AC$, $AD$ | $3,1,1$ |
+| $BC$, $BD$ | $2,2,1$ |
+| $CD$ | $2,1,1,1$ |
+| $ABC$, $ABD$ | $2,1,1,1$ |
+| $BCD$ | $1,1,1,1,1$ |
+
+Substituting $H=\log_2 5-\frac15\sum_j n_j\log_2 n_j$ gives
+
+$$
+F=\frac{9\log_2 3-14}{5}
+ =0.052932501298\ldots>0.
+$$
+
+The sign has an elementary integer certificate:
+
+$$
+3^9=19683>16384=2^{14}.
+$$
+
+<WitnessExplorer kind="bcww" />
+
+## Verification and correction
+
+The [public verification repository](https://github.com/drewstone/bcww-counterexample) contains the witness, a numerical checker, and Lean proof material.
+The integer comparison above establishes the positive sign independently of floating point.
+A numerical browser calculation is an illustration of that proof.
+
+An earlier archived smoke run named $\{0000,0010,0100,1000,1101\}$ as its witness.
+That atom set does **not** establish the advertised violation.
+A later verification pursuit recorded the inconsistency on September 3, 2026.
+The corrected atoms are the ones printed on this page; the interactive view lets you compare both sets.
+
+## Where the result came from
+
+The point appeared in an external entropy-research corpus dated August 4, 2026.
+Its generation history was not retained in the inspected material.
+I credit the retained program with verification, not first discovery of the classical point.
+
+A corpus-verification run on August 5 retained six Pi session files and a Runtime journal with a director and five children.
+Those files report GLM-5.2.
+An older provenance note attributed the run to DeepSeek; the captured model records contradict that attribution.
+The timeline below shows the corpus-verification campaign, which also checked other quantum-information artifacts.
+It is not a recording of the initial search that produced this point.
+
+The August 13 smoke archive has no native transcript in its retained tarball.
+The later corrected package has retained finding pages, but its complete source run was not recovered in the inspected archive set.
+These gaps prevent a complete reconstruction of discovery and correction from native traces.
+
+## Related construction
+
+A [GHZ mixture](/research/ghz) gives a second witness against the same inequality.
+It increases the violation to about $0.113302$ bits.
+The two witnesses constitute one refutation of one proposed inequality.

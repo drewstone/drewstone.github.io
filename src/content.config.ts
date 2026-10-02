@@ -163,4 +163,13 @@ const traces = defineCollection({
   }),
 })
 
-export const collections = { posts, traces }
+const research = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/research' }),
+  schema: z.object({
+    title: z.string(), description: z.string(), assessed: z.coerce.date(),
+    claim: z.string(), limitation: z.string(),
+    record_ids: z.array(z.string()).default([]), order: z.number(),
+  }),
+})
+
+export const collections = { posts, traces, research }
