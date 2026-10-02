@@ -1,32 +1,79 @@
 ---
 import Base from '../../layouts/Base.astro'
 import { getCollection } from 'astro:content'
-const results = (await getCollection('research')).sort((a,b) => a.data.order-b.data.order)
+const results = (await getCollection('research')).sort(
+  (a, b) => a.data.order - b.data.order,
+)
 ---
-<Base title="Proofs & counterexamples" description="Explicit counterexamples, proofs, verification artifacts, and the recorded agent work behind them." wide>
+
+<Base
+  title="Proofs & counterexamples"
+  description="Explicit counterexamples, proofs, verification artifacts, and the recorded agent work behind them."
+  wide
+>
   <header class="opening">
     <h1>Proofs &amp; counterexamples</h1>
-    <p>I use AI agents to investigate mathematical and scientific questions.
-      These pages collect results with explicit witnesses or proofs, alongside the evidence needed to examine them.</p>
-    <p>Start with the mathematics.
-      The agent records show how verification, corrections, and failed attempts contributed to the work.</p>
-    <p><a href="/research/method">How I assess the evidence</a></p>
+    <p>
+      Mathematical results, their proofs, and the recorded agent work. Three
+      witnesses address two proposed inequalities.
+    </p>
   </header>
   <ol class="results">
-    {results.map((item, i) => <li><span class="number">{String(i+1).padStart(2,'0')}</span><div><h2><a href={`/research/${item.id}`}>{item.data.title}</a></h2><p>{item.data.claim}</p><p class="limit">{item.data.limitation}</p></div></li>)}
+    {results.map((item, i) => (
+      <li>
+        <span class="number">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h2>
+            <a href={`/research/${item.id}`}>{item.data.title}</a>
+          </h2>
+          <p>{item.data.claim}</p>
+          <p class="limit">{item.data.limitation}</p>
+        </div>
+      </li>
+    ))}
   </ol>
-  <p class="scope">Three witnesses, two refutations.
-    The classical and GHZ constructions address the same BCWW inequality.
-    First discovery of the classical point is unattributed; the retained work establishes verification.</p>
+  <p class="scope">
+    Three witnesses, two refutations. The classical and GHZ constructions
+    address the same BCWW inequality. First discovery of the classical point is
+    unattributed; the retained work establishes verification.
+  </p>
 </Base>
 <style>
-  .opening { max-width: 39rem; margin-bottom: 2.5rem; }
-  h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
-  .results { list-style: none; padding: 0; }
-  .results li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--border); }
-  .number { font: .75rem var(--font-mono); color: var(--fg-faint); padding-top: .45rem; }
-  h2 { margin: 0 0 .65rem; font-size: 1.3rem; }
-  .results p { max-width: 42rem; margin-bottom: .4rem; }
-  .limit, .scope { color: var(--fg-muted); font-size: .9rem; }
-  .scope { max-width: 42rem; margin-top: 2rem; }
+  .opening {
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  .results {
+    list-style: none;
+    padding: 0;
+  }
+  .results li {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    gap: 0.7rem;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .number {
+    font: 0.72rem var(--font-mono);
+    color: var(--fg-faint);
+    padding-top: 0.2rem;
+  }
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.12rem;
+  }
+  .results p {
+    margin-bottom: 0.25rem;
+  }
+  .limit,
+  .scope {
+    color: var(--fg-muted);
+    font-size: 0.86rem;
+  }
+  .scope {
+    margin-top: 1rem;
+  }
 </style>

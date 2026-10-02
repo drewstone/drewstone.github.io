@@ -1,0 +1,38 @@
+[
+  {
+    "url": "https://gwern.net/index",
+    "font": "\"Source Serif 4\", \"Apple Garamond\", Baskerville, \"Libre Baskerville\", \"Droid Serif\", \"Times New Roman\", Times, serif, \"Noto Emoji\", Quivira",
+    "size": "20px",
+    "lineHeight": "normal",
+    "heading": "50px",
+    "paragraphGap": "0px",
+    "pageHeight": 10499
+  },
+  {
+    "url": "https://drewstone.github.io/",
+    "font": "\"CMU Serif\", \"Latin Modern Roman\", \"Computer Modern\", Georgia, serif",
+    "size": "19px",
+    "lineHeight": "32.3px",
+    "heading": "57px",
+    "paragraphGap": "19px",
+    "pageHeight": 2329
+  },
+  {
+    "url": "https://drewstone.github.io/research/",
+    "font": "\"CMU Serif\", \"Latin Modern Roman\", \"Computer Modern\", Georgia, serif",
+    "size": "19px",
+    "lineHeight": "32.3px",
+    "heading": "47.5px",
+    "paragraphGap": "19px",
+    "pageHeight": 1572
+  },
+  {
+    "url": "https://drewstone.github.io/research/bcww/?pursuit=ftqc-zips-2026-08-05-r1&event=finding-7e923d5e0963",
+    "font": "\"CMU Serif\", \"Latin Modern Roman\", \"Computer Modern\", Georgia, serif",
+    "size": "19px",
+    "lineHeight": "32.3px",
+    "heading": "47.5px",
+    "paragraphGap": "19px",
+    "pageHeight": 6031
+  }
+]

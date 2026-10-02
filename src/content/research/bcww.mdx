@@ -8,11 +8,15 @@ record_ids: ['ftqc-zips-2026-08-05-r1', 'fc-audit-smoke-a', 'q-ca-bcww-shareable
 order: 1
 ---
 import WitnessExplorer from '../../components/WitnessExplorer.astro'
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
 
-## The statement
+Five equally likely bit strings violate the four-party inequality proposed by Bao, Cao, Walter, and Wang [[1]](#ref-1).
+The violation is exact: its sign reduces to $3^9>2^{14}$.
 
-Bao, Cao, Walter, and Wang proposed a candidate inequality for general four-party quantum states in [equation (4.6) of their 2015 paper](https://arxiv.org/pdf/1507.05650).
-Writing $S(X)$ for the entropy of subsystem $X$, its left side is
+## Inequality
+
+Let $S(X)$ denote the entropy of subsystem $X$, with logarithms in base two.
+Equation (4.6) of [[1]](#ref-1), numbered (4.16) in its first version, proposes $F\leq0$, where
 
 $$
 \begin{aligned}
@@ -22,11 +26,9 @@ F={}&S(ABD)+S(ABC)+S(BCD)\\
 \end{aligned}
 $$
 
-The proposed bound is $F\leq 0$.
-The equation is numbered (4.16) in the paper's first version.
-This result concerns that candidate inequality, not the paper's full set of holographic entropy results.
+The counterexample concerns this candidate bound for general quantum states; the paper's holographic entropy results are unaffected.
 
-## The witness
+## Counterexample
 
 Let $(A,B,C,D)$ be uniformly distributed on
 
@@ -35,10 +37,8 @@ $$
 $$
 
 Each atom has probability $1/5$.
-The classical distribution defines a diagonal quantum state, so a classical violation also disproves the proposed general quantum bound.
-All logarithms on this page use base two.
-
-The nonzero marginal multiplicities are enough to calculate every term:
+The corresponding diagonal quantum state has the same marginal entropies, so a classical violation suffices.
+The nonzero marginal multiplicities determine all eleven entropy terms:
 
 | Subsystem | Multiplicities out of five |
 | --- | --- |
@@ -49,50 +49,41 @@ The nonzero marginal multiplicities are enough to calculate every term:
 | $ABC$, $ABD$ | $2,1,1,1$ |
 | $BCD$ | $1,1,1,1,1$ |
 
-Substituting $H=\log_2 5-\frac15\sum_j n_j\log_2 n_j$ gives
+Substitute $H=\log_2 5-\frac15\sum_j n_j\log_2 n_j$ to obtain
 
 $$
 F=\frac{9\log_2 3-14}{5}
- =0.052932501298\ldots>0.
-$$
-
-The sign has an elementary integer certificate:
-
-$$
+ =0.052932501298\ldots>0,
+\qquad
 3^9=19683>16384=2^{14}.
 $$
 
+The public repository includes a numerical checker and Lean proof material [[2]](#ref-2).
+The integer comparison proves the sign without floating point; the browser calculation below illustrates it.
+
 <WitnessExplorer kind="bcww" />
 
-## Verification and correction
+## Correction and attribution
 
-The [public verification repository](https://github.com/drewstone/bcww-counterexample) contains the witness, a numerical checker, and Lean proof material.
-The integer comparison above establishes the positive sign independently of floating point.
-A numerical browser calculation is an illustration of that proof.
+The earlier smoke archive [[4]](#ref-4) used $\{0000,0010,0100,1000,1101\}$, which does **not** violate the bound in the stated party order.
+The September 3 correction [[5]](#ref-5) records the inconsistency and supplies the atoms above.
+The widget compares both sets.
 
-An earlier archived smoke run named $\{0000,0010,0100,1000,1101\}$ as its witness.
-That atom set does **not** establish the advertised violation.
-A later verification pursuit recorded the inconsistency on September 3, 2026.
-The corrected atoms are the ones printed on this page; the interactive view lets you compare both sets.
+The corrected point appeared in an external entropy corpus dated August 4, 2026; its generation history is absent from the inspected evidence.
+First discovery remains unattributed.
+The August 5 corpus-verification campaign [[3]](#ref-3) retained six Pi session files and a journal recording a director and five children.
+Its native files report GLM-5.2, contradicting an older DeepSeek attribution.
+That campaign also checked other quantum-information artifacts; it is a verification trace, not the initial search for this point.
+The August 13 smoke archive has no native transcript, and the September 3 package retains findings without a recovered complete source run.
+The retained records therefore do not reconstruct the entire discovery and correction history.
 
-## Where the result came from
+The [GHZ-mixture construction](/research/ghz/) reaches $F\approx0.113302$ bits against the same bound.
+These are two witnesses to one refutation.
 
-The point appeared in an external entropy-research corpus dated August 4, 2026.
-Its generation history was not retained in the inspected material.
-I credit the retained program with verification, not first discovery of the classical point.
-
-A corpus-verification run on August 5 retained six Pi session files and a Runtime journal with a director and five children.
-Those files report GLM-5.2.
-An older provenance note attributed the run to DeepSeek; the captured model records contradict that attribution.
-The timeline below shows the corpus-verification campaign, which also checked other quantum-information artifacts.
-It is not a recording of the initial search that produced this point.
-
-The August 13 smoke archive has no native transcript in its retained tarball.
-The later corrected package has retained finding pages, but its complete source run was not recovered in the inspected archive set.
-These gaps prevent a complete reconstruction of discovery and correction from native traces.
-
-## Related construction
-
-A [GHZ mixture](/research/ghz) gives a second witness against the same inequality.
-It increases the violation to about $0.113302$ bits.
-The two witnesses constitute one refutation of one proposed inequality.
+<ResearchBibliography entries={[
+  { authors: 'N. Bao, C. Cao, M. Walter, and Z. Wang', title: 'Holographic entropy inequalities and gapped phases of matter', url: 'https://arxiv.org/abs/1507.05650v2', publication: 'J. High Energy Phys. 09 (2015), 203. arXiv:1507.05650v2, Eq. (4.6).', doi: '10.1007/JHEP09(2015)203' },
+  { title: 'BCWW counterexample: witness and verification material', url: 'https://github.com/drewstone/bcww-counterexample', publication: 'Public repository; contains numerical checks and Lean proof material. First discovery of the corpus point is unattributed.' },
+  { title: 'Corpus-verification campaign, August 5, 2026', url: '/research/records/ftqc-zips-2026-08-05-r1.json', publication: 'Retained event and finding projection. Source files are identified by SHA-256; capture is incomplete.' },
+  { title: 'Earlier BCWW smoke attempt', url: '/research/records/fc-audit-smoke-a.json', publication: 'Retained archive projection, August 13, 2026. The advertised witness was incorrect; no native transcript is retained.' },
+  { title: 'Corrected BCWW witness package', url: '/research/records/q-ca-bcww-shareable-pkg.json', publication: 'Retained correction, September 3, 2026. Finding pages survive; the complete source run was not recovered.' },
+]} />

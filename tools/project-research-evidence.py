@@ -17,6 +17,17 @@ reviewed_assignments = json.loads(
 )
 
 
+reviewed_messages = json.loads(
+    Path("research/research-publication/reviewed-messages.json").read_text()
+)
+message_review = json.loads(
+    Path("research/research-publication/reviewed-messages-receipt.json").read_text()
+)
+join_review = json.loads(
+    Path("research/research-publication/reviewed-native-joins.json").read_text()
+)
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -201,6 +212,24 @@ for run_id, source, title in runs:
                 "detail": allowed,
             }
         )
+    applicable_joins = join_review["joins"] if run_id == join_review["runId"] else []
+    for proof in applicable_joins:
+        for key in [
+            "nativeHeaderSource",
+            "nativePromptSource",
+            "runtimeAssignmentSource",
+        ]:
+            cited = proof[key]
+            if digest((source / cited["path"]).read_bytes()) != cited["sha256"]:
+                raise ValueError(
+                    "Native join source changed; exact identity requires review"
+                )
+    if run_id == message_review["runId"]:
+        for cited in message_review["sourceFiles"]:
+            if digest((source / cited["path"]).read_bytes()) != cited["sha256"]:
+                raise ValueError(
+                    "Conversation source changed; publication review required"
+                )
     native_files = list(source.glob("trace/pi-sessions/**/*.jsonl"))
     for path in sorted(native_files):
         h, b = source_record(path)
@@ -224,6 +253,17 @@ for run_id, source, title in runs:
             "modelSource": "unavailable",
             "servedModel": None,
         }
+        joined = next(
+            (j for j in applicable_joins if j["nativeSessionId"] == sid), None
+        )
+        if joined:
+            nodes[nid].update(
+                runtimeNodeId=joined["runtimeNodeId"],
+                runtimeJoin=joined["joinBasis"],
+                joinProof=joined,
+                label=joined["displayLabel"] + " · Pi",
+            )
+            nodes[joined["runtimeNodeId"]]["label"] = joined["displayLabel"]
         for ln, r in rows:
             kind = r.get("type", "unknown")
             at = r.get("timestamp")
@@ -257,11 +297,26 @@ for run_id, source, title in runs:
                 detail.update(
                     role=role,
                     toolNames=[x.get("name") for x in tools],
+                    toolCallIds=[
+                        safe_id(x.get("id")) for x in tools if safe_id(x.get("id"))
+                    ],
                     contentSha256=digest(json.dumps(content, sort_keys=True).encode()),
                     contentCharacters=sum(
                         len(str(x.get("text", x.get("thinking", "")))) for x in content
                     ),
                 )
+                approved = (
+                    reviewed_messages.get(detail["contentSha256"])
+                    if run_id == message_review["runId"]
+                    else None
+                )
+                if approved:
+                    detail["publicText"] = approved["text"]
+                    detail["publicationNote"] = approved.get("note")
+                elif any(c.get("type") == "text" and c.get("text") for c in content):
+                    detail[
+                        "contentOmitted"
+                    ] = "Text retained privately; not approved for public display."
                 if usage:
                     detail["usage"] = {
                         k: usage[k]
@@ -428,9 +483,9 @@ for run_id, source, title in runs:
         "coverage": {
             "runtimeNodes": sum(n["kind"] == "runtime" for n in nodes.values()),
             "nativeFiles": len(native_files),
-            "nativeRuntimeJoins": 0,
+            "nativeRuntimeJoins": len(applicable_joins),
             "completeOriginalCapture": False,
-            "publicContent": "Event metadata. Unreviewed message bodies, tool arguments/results, private reasoning, filesystem locations, credentials and billing data are not published. Original source hashes and line numbers remain available.",
+            "publicContent": "Reviewed ordinary user/assistant text and selected tool outputs are published with explicit redactions. Other tool bodies and arguments, hidden thinking, credentials, and billing data remain private. Original source hashes and line numbers are retained.",
             "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
             "cost": "Unavailable: zero-valued legacy counters are not treated as a bill.",
         },

@@ -59,3 +59,34 @@ Retain matching before/after screenshots and the uncut interaction recording out
 Check no-JavaScript reading, both themes, mobile overflow, direct event links, filters, empty results, downloads, keyboard controls, and LaTeX.
 Verify the deployed GitHub Pages revision and its actual URLs after merge.
 Rollback by reverting the publication commit and redeploying through the existing workflow.
+
+## Conversations and exact joins
+
+`reviewed-messages.json` contains reviewed ordinary transcript text keyed by original content SHA-256.
+The review receipt records source files, physical lines, roles, published-text hashes, and explicit redactions.
+It excludes hidden thinking and unreviewed tool bodies. Do not approve unread messages mechanically.
+`reviewed-native-joins.json` binds the six August 5 native sessions to Runtime nodes through unique exact task digests, with the director's matching spawn receipts as child evidence.
+The importer verifies the cited source hashes before applying these joins or publishing conversation text.
+Other archives retain their unresolved identities and missing conversations.
+
+The viewer groups events by those proven identities without deleting the original native IDs.
+The graph follows recorded parents recursively; time controls change the displayed execution state.
+Activity labels classify recorded operations, not scientific correctness.
+A missing message is shown as missing. A blank interval is not proof of idleness.
+
+## Shared interface
+
+`src/styles/controls.css` owns fields, buttons, tabs, focus states, and disclosures across the site.
+`ChoicePicker.astro` owns the searchable-by-typing, keyboard-navigable popover listbox, with a native select fallback without JavaScript.
+`ResearchBibliography.astro` owns numbered references and citation targets.
+The research conversation viewer reuses `ChatBlock.astro` for retained message text and reviewed tool outputs.
+No execution service or new runtime dependency is introduced.
+
+Timeline marks group events within six display pixels; hover states retain exact timestamps and group size.
+Repeated activation cycles a group's original events; zoom increases temporal resolution.
+All events remain available through keyboard navigation and the downloadable record.
+The Tokens tab separates input, output, and cache counters, with cumulative or per-response values against elapsed time or recorded order.
+Tool return time pairs exact call/result IDs within a native session; it is an observed interval, not model latency.
+Every metric respects the selected time; incomplete counters and unmatched timings remain unknown.
+Chart hover and focus details use the shared plain-text `plot-tooltip.ts` implementation.
+Open-graph image generation uses pinned local fonts with licenses and source hashes in `tools/fonts`.
