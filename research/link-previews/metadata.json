@@ -1,0 +1,763 @@
+{
+  "base": "6d14b9d75527cbc1a1525929384b621fbd7462ef",
+  "pages": [
+    {
+      "path": "/about/",
+      "title": "About \u00b7 drew",
+      "image": "https://drewstone.github.io/og/about.png?v=2"
+    },
+    {
+      "path": "/experiment/",
+      "title": "The experiment \u00b7 drew",
+      "image": "https://drewstone.github.io/og/experiment.png?v=2"
+    },
+    {
+      "path": "/",
+      "title": "drew \u00b7 Notes on systems, agents, and math.",
+      "image": "https://drewstone.github.io/og/home.png?v=2"
+    },
+    {
+      "path": "/posts/_example-original/",
+      "title": "Example: an original, human-written post \u00b7 drew",
+      "image": "https://drewstone.github.io/og/essays.png?v=2"
+    },
+    {
+      "path": "/posts/agentic-eval-improvement/",
+      "title": "RL Without Gradients \u00b7 drew",
+      "image": "https://drewstone.github.io/og/agentic-eval-improvement.png?v=2"
+    },
+    {
+      "path": "/posts/autonomous-autoreserach/",
+      "title": "Autonomous Autoreserach \u00b7 drew",
+      "image": "https://drewstone.github.io/og/autonomous-autoreserach.png?v=2"
+    },
+    {
+      "path": "/posts/browser-agent-stuck-detection/",
+      "title": "Building a Browser Agent That Doesn't Get Stuck \u00b7 drew",
+      "image": "https://drewstone.github.io/og/browser-agent-stuck-detection.png?v=2"
+    },
+    {
+      "path": "/posts/building-on-tangle/",
+      "title": "Sandboxes All the Way Down \u00b7 drew",
+      "image": "https://drewstone.github.io/og/building-on-tangle.png?v=2"
+    },
+    {
+      "path": "/posts/convergence-as-eval-primitive/",
+      "title": "Convergence as a first-class eval primitive \u00b7 drew",
+      "image": "https://drewstone.github.io/og/convergence-as-eval-primitive.png?v=2"
+    },
+    {
+      "path": "/posts/convergence-loops/",
+      "title": "Convergence in Multi-Agent Review Loops \u00b7 drew",
+      "image": "https://drewstone.github.io/og/convergence-loops.png?v=2"
+    },
+    {
+      "path": "/posts/deepwork-orchestrator/",
+      "title": "Multi-Agent Orchestration with Convergence Loops \u00b7 drew",
+      "image": "https://drewstone.github.io/og/deepwork-orchestrator.png?v=2"
+    },
+    {
+      "path": "/posts/exploit-or-disprove/",
+      "title": "Exploit-or-Disprove: Adversarial Validation of Security Findings \u00b7 drew",
+      "image": "https://drewstone.github.io/og/exploit-or-disprove.png?v=2"
+    },
+    {
+      "path": "/posts/how-i-rebuilt-the-blog/",
+      "title": "How I rebuilt the blog \u00b7 drew",
+      "image": "https://drewstone.github.io/og/how-i-rebuilt-the-blog.png?v=2"
+    },
+    {
+      "path": "/posts/",
+      "title": "Essays \u00b7 drew",
+      "image": "https://drewstone.github.io/og/essays.png?v=2"
+    },
+    {
+      "path": "/posts/lifting-auto-research/",
+      "title": "Lifting Auto-Research \u00b7 drew",
+      "image": "https://drewstone.github.io/og/lifting-auto-research.png?v=2"
+    },
+    {
+      "path": "/posts/long-running-task-systems/",
+      "title": "The Agent Marathon \u00b7 drew",
+      "image": "https://drewstone.github.io/og/essays.png?v=2"
+    },
+    {
+      "path": "/posts/provider-fallback-chains/",
+      "title": "The Expected Cost of Fallback Chains \u00b7 drew",
+      "image": "https://drewstone.github.io/og/provider-fallback-chains.png?v=2"
+    },
+    {
+      "path": "/posts/redteam-architecture/",
+      "title": "Anatomy of an Autonomous Security Audit \u00b7 drew",
+      "image": "https://drewstone.github.io/og/redteam-architecture.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-agents/",
+      "title": "Teaching Agents to Improve Themselves \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-agents.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-ai-systems/",
+      "title": "Self-Improving AI Is Real, But Not the Way People Mean It \u00b7 drew",
+      "image": "https://drewstone.github.io/og/essays.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-agent-runtime-topology/",
+      "title": "Topology Is The Missing Action Space \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-agent-runtime-topology.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-evaluation-gates/",
+      "title": "The Gate Is The Optimizer \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-evaluation-gates.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-governance/",
+      "title": "Self-Improvement Needs A Safety Case \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-governance.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-harness-evolution/",
+      "title": "When The Harness Has To Evolve \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-harness-evolution.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-memory-flywheels/",
+      "title": "Memory Is Not Automatically Learning \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-memory-flywheels.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-multi-agent-coordination/",
+      "title": "Personas Are Content, Coordination Is Structure \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-multi-agent-coordination.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-optimization-theory/",
+      "title": "Optimization Theory For Agent Builders \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-optimization-theory.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-post-training/",
+      "title": "When The Model Itself Is Mutable \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-post-training.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-prompt-optimization/",
+      "title": "Prompt Optimization Is Not The Whole Game \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-prompt-optimization.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-skill-optimization/",
+      "title": "Skills Are Trainable State \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-skill-optimization.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-test-time-compute/",
+      "title": "Beat Random At Equal Compute First \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-test-time-compute.png?v=2"
+    },
+    {
+      "path": "/posts/self-improving-stack-trace-systems/",
+      "title": "Traces Are The Training Data \u00b7 drew",
+      "image": "https://drewstone.github.io/og/self-improving-stack-trace-systems.png?v=2"
+    },
+    {
+      "path": "/posts/session-multiplexing/",
+      "title": "One API for Eight Browser Backends \u00b7 drew",
+      "image": "https://drewstone.github.io/og/session-multiplexing.png?v=2"
+    },
+    {
+      "path": "/posts/superintelligence-in-the-wild/",
+      "title": "If Superintelligence Arrives Quietly \u00b7 drew",
+      "image": "https://drewstone.github.io/og/essays.png?v=2"
+    },
+    {
+      "path": "/posts/the-ensemble-and-the-edit/",
+      "title": "The ensemble and the edit \u00b7 drew",
+      "image": "https://drewstone.github.io/og/the-ensemble-and-the-edit.png?v=2"
+    },
+    {
+      "path": "/posts/the-self-improving-stack/",
+      "title": "The Self-Improving Stack \u00b7 drew",
+      "image": "https://drewstone.github.io/og/the-self-improving-stack.png?v=2"
+    },
+    {
+      "path": "/posts/vibecoding-a-browser-agent/",
+      "title": "Vibecoding a Browser Agent \u00b7 drew",
+      "image": "https://drewstone.github.io/og/vibecoding-a-browser-agent.png?v=2"
+    },
+    {
+      "path": "/research/bcww/",
+      "title": "A five-atom counterexample to BCWW \u00b7 drew",
+      "image": "https://drewstone.github.io/og/research-bcww.png?v=2"
+    },
+    {
+      "path": "/research/ghz/",
+      "title": "A GHZ-mixture witness against BCWW \u00b7 drew",
+      "image": "https://drewstone.github.io/og/research-ghz.png?v=2"
+    },
+    {
+      "path": "/research/",
+      "title": "Proofs & counterexamples \u00b7 drew",
+      "image": "https://drewstone.github.io/og/research.png?v=2"
+    },
+    {
+      "path": "/research/linden-winter/",
+      "title": "A family refuting Linden\u2013Winter Conjecture 6 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/research-linden-winter.png?v=2"
+    },
+    {
+      "path": "/traces/2/",
+      "title": "Traces \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T21-25-53-333Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T21-25-53-333Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-17-37-593Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-17-37-593Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-34-05-645Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-34-05-645Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-34-22-687Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-34-22-687Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-35-05-146Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-35-05-146Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-35-18-050Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-35-18-050Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-35-27-913Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-35-27-913Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-35-34-190Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-35-34-190Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-35-49-291Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-35-49-291Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-37-17-788Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-37-17-788Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-38-22-040Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-38-22-040Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-23T23-38-35-672Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-23T23-38-35-672Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-24T18-01-15Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-24T18-01-15Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-27T22-31-22-386Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-27T22-31-22-386Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-04-27T22-35-59-001Z-claude-opus-4-7/",
+      "title": "Trace \u00b7 2026-04-27T22-35-59-001Z-claude-opus-4-7 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-05-25T11-23-22-617Z-gpt-5.5-series-outline/",
+      "title": "Trace \u00b7 2026-05-25T11-23-22-617Z-gpt-5.5-series-outline \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5 \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-agent-runtime-topology-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-governance-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-governance-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-governance-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-governance-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-harness-evolution-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-memory-flywheels-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-memory-flywheels-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-memory-flywheels-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-memory-flywheels-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-multi-agent-coordination-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-optimization-theory-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-prompt-optimization-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-skill-optimization-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-test-time-compute-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-trace-systems-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-trace-systems-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-trace-systems-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-trace-systems-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-draft/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-draft \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-publish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-publish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-review/",
+      "title": "Trace \u00b7 2026-06-05T12-08-35-196Z-gpt-5.5-the-self-improving-stack-review \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-08-44-415Z-gpt-5.5-long-running-task-systems-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-08-44-415Z-gpt-5.5-long-running-task-systems-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-governance-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-optimization-theory-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-prompt-optimization-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-skill-optimization-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-test-time-compute-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-trace-systems-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-polish/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-rewrite/",
+      "title": "Trace \u00b7 2026-06-05T12-35-48-868Z-gpt-5.5-the-self-improving-stack-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish/",
+      "title": "Trace \u00b7 2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-rewrite/",
+      "title": "Trace \u00b7 2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-self-improving-stack-harness-evolution-rewrite \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-superintelligence-in-the-wild-polish/",
+      "title": "Trace \u00b7 2026-06-06T18-19-05-739Z-gpt-5.3-codex-spark-superintelligence-in-the-wild-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-08T08-32-11-493Z-gpt-5.3-codex-spark-self-improving-ai-systems-polish/",
+      "title": "Trace \u00b7 2026-06-08T08-32-11-493Z-gpt-5.3-codex-spark-self-improving-ai-systems-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-08T09-56-56-341Z-gpt-5.3-codex-spark-long-running-task-systems-polish/",
+      "title": "Trace \u00b7 2026-06-08T09-56-56-341Z-gpt-5.3-codex-spark-long-running-task-systems-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/2026-06-08T10-10-44-256Z-gpt-5.5-the-self-improving-stack-polish/",
+      "title": "Trace \u00b7 2026-06-08T10-10-44-256Z-gpt-5.5-the-self-improving-stack-polish \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/3/",
+      "title": "Traces \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    },
+    {
+      "path": "/traces/",
+      "title": "Traces \u00b7 drew",
+      "image": "https://drewstone.github.io/og/traces.png?v=2"
+    }
+  ],
+  "images": {
+    "og/about.png": {
+      "bytes": 23893,
+      "sha256": "fbd7969c46f40932ab8593da36331d9c7c4272cced0dddef5d231d1e6b6b8b73"
+    },
+    "og/experiment.png": {
+      "bytes": 41149,
+      "sha256": "a8e2c9c522412fb05285e89cd421679c7bf801e62f17be2fdf62197c47e059af"
+    },
+    "og/home.png": {
+      "bytes": 45107,
+      "sha256": "eea52ba8d68092c0605b4437b7755b7cc4c91952ae6597385eb69bd3469ef0a3"
+    },
+    "og/essays.png": {
+      "bytes": 23448,
+      "sha256": "f1c82916d5f4b138f96193e3428c5b7b476c236b7adfc3d0d7dd8388963a66d5"
+    },
+    "og/agentic-eval-improvement.png": {
+      "bytes": 37191,
+      "sha256": "6723f67c16e4c7ab83c1993c48b283f43bf88e71eed88ff8cf1bedf4ec23e78c"
+    },
+    "og/autonomous-autoreserach.png": {
+      "bytes": 33594,
+      "sha256": "252f19b2db2321c4d90445d102c906b4cefa40cbe95fef0c4bb5f2a6b5e5b591"
+    },
+    "og/browser-agent-stuck-detection.png": {
+      "bytes": 48359,
+      "sha256": "ccd1524c7bba94aafde90ece39577ae140ca603939d587d347836efe1a538788"
+    },
+    "og/building-on-tangle.png": {
+      "bytes": 33744,
+      "sha256": "96e355f1adbbdbdbbbf7b0e4bcae4dd23894de7d6e21e61149f9b77bb553cdfe"
+    },
+    "og/convergence-as-eval-primitive.png": {
+      "bytes": 44413,
+      "sha256": "a18d4d2763a90b7485f0c55d8be890e9195de8b9a04b44591ab52a46b168632d"
+    },
+    "og/convergence-loops.png": {
+      "bytes": 45647,
+      "sha256": "bd9c568fd7a6ba13e5b9e22c67f332187a9c7a5a3addc08725f14cb0a108401e"
+    },
+    "og/deepwork-orchestrator.png": {
+      "bytes": 49588,
+      "sha256": "13a979835e58172f793bb8d657ed06954a6a3a74304e8c84dceebda93c98f2e6"
+    },
+    "og/exploit-or-disprove.png": {
+      "bytes": 51153,
+      "sha256": "5a44c6e0b5af2d9e6b1f7b9aa11070568619593817b8682e534571c18eed410c"
+    },
+    "og/how-i-rebuilt-the-blog.png": {
+      "bytes": 31728,
+      "sha256": "c7b67162b9dc32e8b000ac6e6d3573b583c26c536f065d9683b0ef8a8e5e0daf"
+    },
+    "og/lifting-auto-research.png": {
+      "bytes": 37490,
+      "sha256": "eaec955213507563aaa230f574b2671949c7d4f8fa803c80672c9bf9efabf7be"
+    },
+    "og/provider-fallback-chains.png": {
+      "bytes": 34190,
+      "sha256": "902afbd4210f9bffc621736cb426fe33048fad46d6612452f2e152ea3063095e"
+    },
+    "og/redteam-architecture.png": {
+      "bytes": 45589,
+      "sha256": "69067d4d85f2363b1f217e7b251229fff4ed0f286e0f1b85742150a17b16ebed"
+    },
+    "og/self-improving-agents.png": {
+      "bytes": 42158,
+      "sha256": "8e929754f57374da05a269b61c17a81bc091134126645ed080015f4bfc1d7d59"
+    },
+    "og/self-improving-stack-agent-runtime-topology.png": {
+      "bytes": 44313,
+      "sha256": "df7d457cf64eca75b768260a9f1a0a90f9e58a003589f3a6e7495fe2296ecfd0"
+    },
+    "og/self-improving-stack-evaluation-gates.png": {
+      "bytes": 37341,
+      "sha256": "e98915c9f2e5068dbdabc14d40245a0a6ebd4fed7dbf624164362d53f51ea581"
+    },
+    "og/self-improving-stack-governance.png": {
+      "bytes": 35041,
+      "sha256": "acbaf04859dcb670542e5a5b8a119a81c41beb558fbd6ee5f31aaf2d00e66cf7"
+    },
+    "og/self-improving-stack-harness-evolution.png": {
+      "bytes": 41495,
+      "sha256": "30fcec5e76e6d24033710c37044586b2ec14655a1c8f5b4ec9751a3ad06ec6b2"
+    },
+    "og/self-improving-stack-memory-flywheels.png": {
+      "bytes": 44744,
+      "sha256": "e307f5584fbb47f56dd796229d004082790fad632bfd8ab21915c551b2242936"
+    },
+    "og/self-improving-stack-multi-agent-coordination.png": {
+      "bytes": 47057,
+      "sha256": "798a9d57476af1338911ed28a364d90da69163bce21edab7bf5f5dc9eb578994"
+    },
+    "og/self-improving-stack-optimization-theory.png": {
+      "bytes": 42811,
+      "sha256": "fb445cb2be15548f82d21ab43a92b5b4dae3e9851b5716200e9193e05b8dd2e3"
+    },
+    "og/self-improving-stack-post-training.png": {
+      "bytes": 43088,
+      "sha256": "9ac076a2c53851cd961b33cf351155eafb2edc7bd6e7a3b92aecaf2b1c353c13"
+    },
+    "og/self-improving-stack-prompt-optimization.png": {
+      "bytes": 44779,
+      "sha256": "a2e31f88b3cd5f21a2a016d0b1830ee701493a0b6e934acc1e41573bd41a4ffc"
+    },
+    "og/self-improving-stack-skill-optimization.png": {
+      "bytes": 38793,
+      "sha256": "6f4ebda82eb63d3900ce31c937b24691f7c74cdf6bc39c85cc54446e17a20480"
+    },
+    "og/self-improving-stack-test-time-compute.png": {
+      "bytes": 41000,
+      "sha256": "3bde9dc5d8ca4d6df1a3c6ad9c012382737f62cc1cb8570a8b5db2c7549c8c36"
+    },
+    "og/self-improving-stack-trace-systems.png": {
+      "bytes": 41819,
+      "sha256": "743000b73b90db969f32f5c0b267fab41610cc350e25b6590e3613277ac7d2f6"
+    },
+    "og/session-multiplexing.png": {
+      "bytes": 34108,
+      "sha256": "7dd4aa64e051bab64b7aa61c9e58cdf7a0182c17ce98f2513fad8618f0de9165"
+    },
+    "og/the-ensemble-and-the-edit.png": {
+      "bytes": 39923,
+      "sha256": "0e61ca2b72199d3c0641c28694ba989ba4af17907048d235bfd027983d940591"
+    },
+    "og/the-self-improving-stack.png": {
+      "bytes": 41425,
+      "sha256": "cb577561fc2d809ac868028c744575be5ce93497786b9c9f9e5042e6ad3ee85d"
+    },
+    "og/vibecoding-a-browser-agent.png": {
+      "bytes": 40944,
+      "sha256": "6a957cdb7d8404cc677d68fe9134629fe63adb8ad782611b19e066c218a4fb62"
+    },
+    "og/research-bcww.png": {
+      "bytes": 49488,
+      "sha256": "7bb0e4c6869c1048db7070451e766b37d80f503f92d7e0169de7535862b6c2a0"
+    },
+    "og/research-ghz.png": {
+      "bytes": 46655,
+      "sha256": "93fd08f5b017a696ca1f14c621fe9dbd788776ddd28f9f1a69dca2041f1afe6a"
+    },
+    "og/research.png": {
+      "bytes": 47277,
+      "sha256": "6f84d1b8791f86a67613d18ade789bbce25e9a89f330e506228113899cc8fa09"
+    },
+    "og/research-linden-winter.png": {
+      "bytes": 48365,
+      "sha256": "a16390c654f844b4b7d90cdf3f2596cd5783fbb9fbd74b6abbf0e8412c745db3"
+    },
+    "og/traces.png": {
+      "bytes": 42707,
+      "sha256": "ba7eecee3460b5c997e2228db3113a0489931ecd96ebcac6f078a35f55b2e839"
+    }
+  },
+  "counts": {
+    "pages": 120,
+    "images": 38
+  }
+}

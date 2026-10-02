@@ -1,0 +1,48 @@
+{
+  "origin": "http://127.0.0.1:14373",
+  "at": "2026-10-02T21:37:19.843Z",
+  "pages": [
+    {
+      "path": "/",
+      "image": "https://drewstone.github.io/og/home.png?v=2",
+      "sha256": "eea52ba8d68092c0605b4437b7755b7cc4c91952ae6597385eb69bd3469ef0a3"
+    },
+    {
+      "path": "/posts/",
+      "image": "https://drewstone.github.io/og/essays.png?v=2",
+      "sha256": "f1c82916d5f4b138f96193e3428c5b7b476c236b7adfc3d0d7dd8388963a66d5"
+    },
+    {
+      "path": "/research/",
+      "image": "https://drewstone.github.io/og/research.png?v=2",
+      "sha256": "6f84d1b8791f86a67613d18ade789bbce25e9a89f330e506228113899cc8fa09"
+    },
+    {
+      "path": "/research/bcww/",
+      "image": "https://drewstone.github.io/og/research-bcww.png?v=2",
+      "sha256": "7bb0e4c6869c1048db7070451e766b37d80f503f92d7e0169de7535862b6c2a0"
+    },
+    {
+      "path": "/research/ghz/",
+      "image": "https://drewstone.github.io/og/research-ghz.png?v=2",
+      "sha256": "93fd08f5b017a696ca1f14c621fe9dbd788776ddd28f9f1a69dca2041f1afe6a"
+    },
+    {
+      "path": "/research/linden-winter/",
+      "image": "https://drewstone.github.io/og/research-linden-winter.png?v=2",
+      "sha256": "a16390c654f844b4b7d90cdf3f2596cd5783fbb9fbd74b6abbf0e8412c745db3"
+    },
+    {
+      "path": "/posts/self-improving-stack-agent-runtime-topology/",
+      "image": "https://drewstone.github.io/og/self-improving-stack-agent-runtime-topology.png?v=2",
+      "sha256": "df7d457cf64eca75b768260a9f1a0a90f9e58a003589f3a6e7495fe2296ecfd0"
+    },
+    {
+      "path": "/posts/_example-original/",
+      "image": "https://drewstone.github.io/og/essays.png?v=2",
+      "sha256": "f1c82916d5f4b138f96193e3428c5b7b476c236b7adfc3d0d7dd8388963a66d5"
+    }
+  ],
+  "errors": [],
+  "complete": true
+}
