@@ -39,6 +39,14 @@ const revisionSchema = z.object({
   scores: z.array(judgeScoreSchema).optional(),
 })
 
+// One local image supplies both the article figure and its generated link preview.
+const figureSchema = z.object({
+  src: z.string().regex(/^\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-][a-zA-Z0-9_.-]*\.(?:svg|png|jpe?g)$/, 'Use an SVG, PNG, or JPEG path under public/'),
+  alt: z.string().trim().min(1),
+  caption: z.string().optional(),
+  source: z.string().url().optional(),
+})
+
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
   schema: z.object({
@@ -49,6 +57,7 @@ const posts = defineCollection({
     tags: z.array(z.string()).optional(),
     draft: z.boolean().optional(),
     featured: z.boolean().optional(),
+    figure: figureSchema.optional(),
     /**
      * `original: true` marks a human-authored post. Distinct color, distinct
      * AuthorBadge treatment, excluded from /traces and /experiment, and
@@ -168,6 +177,7 @@ const research = defineCollection({
   schema: z.object({
     title: z.string(), description: z.string(), assessed: z.coerce.date(),
     claim: z.string(), limitation: z.string(),
+    figure: figureSchema.optional(),
     record_ids: z.array(z.string()).default([]), order: z.number(),
   }),
 })

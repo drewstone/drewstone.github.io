@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500" role="img" aria-labelledby="title description">
+  <title id="title">Software 3.0: prompts as programs</title>
+  <desc id="description">Software 1.0 represents a program as source code. Software 2.0 represents it as learned neural network weights. Software 3.0 programs a language model with natural-language instructions. These forms can coexist in one system.</desc>
+  <rect width="500" height="500" fill="#f6f3eb"/>
+  <g fill="#25231e" font-family="Georgia, serif">
+    <text x="30" y="49" font-size="34">Software 3.0</text>
+    <text x="30" y="79" font-size="20" fill="#777269">What represents the program?</text>
+    <path d="M30 104H470 M30 216H470 M30 328H470" stroke="#d7d2c7"/>
+    <g font-size="30">
+      <text x="126" y="147">Source code</text>
+      <text x="126" y="259">Learned weights</text>
+      <text x="126" y="371" fill="#315e77">Natural-language prompt</text>
+    </g>
+    <g font-family="'JetBrains Mono', monospace" font-size="23">
+      <text x="30" y="147" fill="#777269">1.0</text>
+      <text x="30" y="259" fill="#777269">2.0</text>
+      <text x="30" y="371" fill="#315e77">3.0</text>
+      <text x="126" y="184" font-size="20">if x &gt; 0: return 1</text>
+      <text x="126" y="296" font-size="22">y = f(x; θ)</text>
+    </g>
+    <g font-size="24" fill="#315e77">
+      <text x="126" y="411">“Classify this review as</text>
+      <text x="126" y="441">positive or negative.”</text>
+    </g>
+    <text x="30" y="479" font-size="18" fill="#777269">Code, weights, and prompts can coexist.</text>
+  </g>
+</svg>

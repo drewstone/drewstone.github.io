@@ -1,7 +1,7 @@
 import type { OgArtKind } from '../../tools/og-art'
 
 /** Increment when the cover design changes so shared-link caches see a new image URL. */
-const DESIGN_VERSION = '2'
+const DESIGN_VERSION = '3'
 export const coverUrl = (slug: string) => `/og/${slug}.png?v=${DESIGN_VERSION}`
 
 export const pageCovers = {
@@ -34,7 +34,6 @@ const essayFigures: Record<string, OgArtKind> = {
   'redteam-architecture': 'topology',
   'self-improving-agents': 'search',
   'the-ensemble-and-the-edit': 'traces',
-  'the-self-improving-stack': 'topology',
   'vibecoding-a-browser-agent': 'search',
   'self-improving-stack-agent-runtime-topology': 'topology',
   'self-improving-stack-evaluation-gates': 'search',
