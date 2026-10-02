@@ -1,5 +1,7 @@
 ---
 import Base from './Base.astro'
+import Figure from '../components/Figure.astro'
+import type { CollectionEntry } from 'astro:content'
 import { coverUrl } from '../lib/social-images'
 import AuthorBadges from '../components/AuthorBadges.astro'
 import SupportingTraces from '../components/SupportingTraces.astro'
@@ -43,6 +45,7 @@ interface Props {
   seriesPosts?: SeriesPost[]
   original?: boolean
   draft?: boolean
+  figure?: CollectionEntry<'posts'>['data']['figure']
 }
 
 const {
@@ -59,6 +62,7 @@ const {
   seriesPosts = [],
   original = false,
   draft = false,
+  figure,
 } = Astro.props
 
 function formatDate(d: Date): string {
@@ -153,6 +157,7 @@ const articleJsonLd = {
       )}
     </header>
     <div class={`prose${original ? ' prose-original' : ''}`}>
+      {figure && <Figure {...figure} />}
       <slot />
     </div>
     <Revisions revisions={revisions} repo={repo} slug={slug} />

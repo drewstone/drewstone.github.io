@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+type Props = NonNullable<CollectionEntry<'posts'>['data']['figure']>
+const { src, alt, caption, source } = Astro.props
+---
+
+<figure class="post-figure">
+  <a class="figure-image" href={src} aria-label="Open full-size figure">
+    <img src={src} alt={alt} decoding="async" />
+  </a>
+  {(caption || source) && <figcaption>
+    {caption}
+    {source && <> <a href={source}>Source</a></>}
+  </figcaption>}
+</figure>
+
+<style>
+  .post-figure { margin: 1.5rem auto; max-width: 32rem; }
+  .figure-image { display: block; }
+  img { display: block; width: 100%; height: auto; }
+  a:focus-visible { outline: 2px solid var(--c-action); outline-offset: 4px; }
+  figcaption { margin-top: 0.5rem; color: var(--fg-muted); font-size: 0.875rem; line-height: 1.5; }
+</style>

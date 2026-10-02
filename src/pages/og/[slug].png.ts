@@ -11,9 +11,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const covers: { slug: string; cover: OgInput }[] = [
     ...posts.map(post => ({ slug: post.id, cover: {
       title: post.data.title, section: 'Essay', art: essayArt(post.id), original: !!post.data.original,
+      figure: post.data.figure?.src,
     } })),
     ...research.map(entry => ({ slug: `research-${entry.id}`, cover: {
-      title: entry.data.title, section: 'Quantum information',
+      title: entry.data.title, section: entry.id in researchArt ? 'Quantum information' : 'Research',
+      figure: entry.data.figure?.src,
       art: researchArt[entry.id as keyof typeof researchArt] ?? 'text',
     } })),
     ...Object.entries(pageCovers).map(([slug, cover]) => ({ slug, cover })),

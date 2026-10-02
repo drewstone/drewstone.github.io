@@ -54,3 +54,28 @@ Choose an essay illustration explicitly; uncurated essays use the typography des
 Research figures must reproduce the article’s stated construction and distinguish asymptotics from measured data.
 Inspect all covers at sharing size before release, including the longest title and every research result.
 Keep generated preview evidence outside `public` and the application bundle.
+
+### Reuse an article figure
+
+Set `figure` in an essay or research page's frontmatter:
+
+```yaml
+figure:
+  src: '/images/software-3.svg'
+  alt: 'Source code, learned weights, and natural-language prompts.'
+  caption: 'Three representations of a program.'
+  source: 'https://www.youtube.com/watch?v=LCEmiRjPEtQ'
+```
+
+Place the image in `public/images/`.
+SVG, PNG, and JPEG are supported; `alt` is required, while `caption` and `source` are optional.
+The shared Figure component renders it before the article body, with a link to the full-size image.
+The preview renderer fits that same file beside the title, without cropping or stretching.
+Use large labels; the preview's figure area is 400×400 pixels.
+
+Every published essay and research entry gets a preview automatically during `pnpm build` and deployment.
+No separate generation command, per-post route, or image service is needed.
+Without `figure`, existing curated illustrations or the title template apply.
+Missing files fail the build.
+Draft routes retain their generic sharing image.
+Changing a figure or title rebuilds its preview; bump `DESIGN_VERSION` when replacing already-shared images.

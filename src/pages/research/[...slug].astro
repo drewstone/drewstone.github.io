@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro'
+import Figure from '../../components/Figure.astro'
 import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
 import { getCollection, render } from 'astro:content'
 import { readFile } from 'node:fs/promises'
@@ -60,6 +61,7 @@ const records = await Promise.all(
       </ol>
     </nav>
     <article class="prose">
+      {entry.data.figure && <Figure {...entry.data.figure} />}
       <Content />
     </article>
   </div>

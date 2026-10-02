@@ -21,9 +21,10 @@ export type OgInput = {
   section: string
   art: OgArtKind
   original?: boolean
+  figure?: string
 }
 
-const artCache = new Map<OgArtKind, string>()
+const artCache = new Map<string, string>()
 const fontOptions = { loadSystemFonts: false, defaultFontFamily: 'EB Garamond',
   fontFiles: FONT_SPECS.map(f => join(FONT_DIR, `${f.name}-${f.weight}.ttf`)),
 }
@@ -37,10 +38,21 @@ export async function renderOgPng(input: OgInput): Promise<Buffer> {
   const size = input.title.length > 60 ? 58 : input.title.length > 32 ? 66 : 78
   // Embedded SVG images cannot inherit the parent renderer's font database.
   // Rasterize the figure with the same pinned fonts before embedding it.
-  let art = artCache.get(input.art)
+  const key = input.figure ?? input.art
+  let art = artCache.get(key)
   if (!art) {
-    art = new Resvg(renderOgArt(input.art), { font: fontOptions }).render().asPng().toString('base64')
-    artCache.set(input.art, art)
+    if (input.figure) {
+      // Content validation limits this to local public SVG/PNG/JPEG files.
+      // Missing or invalid images must fail the build instead of silently changing the preview.
+      const bytes = await readFile(join(process.cwd(), 'public', input.figure))
+      const format = input.figure.split('.').pop()
+      art = format === 'svg'
+        ? `data:image/png;base64,${new Resvg(bytes, { font: fontOptions }).render().asPng().toString('base64')}`
+        : `data:image/${format === 'png' ? 'png' : 'jpeg'};base64,${bytes.toString('base64')}`
+    } else {
+      art = `data:image/png;base64,${new Resvg(renderOgArt(input.art), { font: fontOptions }).render().asPng().toString('base64')}`
+    }
+    artCache.set(key, art)
   }
   const node = box({ width: 1200, height: 630, padding: '48px 60px 36px', backgroundColor: paper,
     color: ink, flexDirection: 'column', fontFamily: 'Garamond', position: 'relative' },
@@ -50,7 +62,7 @@ export async function renderOgPng(input: OgInput): Promise<Buffer> {
     ),
     box({ flex: 1, alignItems: 'center', justifyContent: 'space-between', gap: 44 },
       box({ width: 610, fontSize: size, fontWeight: 700, lineHeight: 1.04, letterSpacing: '-0.025em' }, input.title),
-      h('img', { src: `data:image/png;base64,${art}`, width: 400, height: 400 }),
+      h('img', { src: art, width: 400, height: 400, style: { objectFit: 'contain' } }),
     ),
     box({ alignItems: 'center', justifyContent: 'space-between', fontFamily: 'JetBrainsMono', fontSize: 17, color: quiet },
       box({}, 'drewstone.github.io'),
