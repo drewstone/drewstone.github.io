@@ -1,0 +1,166 @@
+{
+  "schema": "research-publication.tool-review-receipt.v1",
+  "reviewedAt": "2026-10-02T09:18:17.226266+00:00",
+  "runId": "ftqc-zips-2026-08-05-r1",
+  "reviewManifest": {
+    "path": "research/research-publication/reviewed-tools.json",
+    "sha256": "69dd6eb05ec39ed8538ab9484f978597b6d3afc1604611eabf51578f2773e5d6"
+  },
+  "sourceFiles": [
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-12-38-502Z_192d4a0a-a66c-4d09-a640-235a7438b02e.jsonl",
+      "sha256": "cd9807a74b1b1750b7390852b81f83ccf6fd9760e5e321eddb4d51771be8d230",
+      "bytes": 576321
+    },
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-18-35-762Z_3236b35c-d5ea-4ca6-84ea-b461c8baa225.jsonl",
+      "sha256": "b3d48c95befa0db5581c14aa42296d1830edbf7dad091a8c4421c08d0545a17a",
+      "bytes": 562062
+    },
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-18-35-780Z_3d89c28d-40af-4298-85c8-f42dc19fefbb.jsonl",
+      "sha256": "8c06b92b2c8d10702902cdcb22c000c4cb9cafc1d1572cd56dade11dfe42e7b2",
+      "bytes": 382204
+    },
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-18-35-786Z_353502c4-8f55-4e64-be03-807f9aa449a6.jsonl",
+      "sha256": "de5833b0907e32cd355106111d8390e73f40a076bbba96cfe618bf8410f9ebe3",
+      "bytes": 241809
+    },
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-19-00-628Z_e6cf0243-e72b-43c8-82bc-af5b15c3bf00.jsonl",
+      "sha256": "f564e03121e6f5cba07182864a26702663b8dc3110419f92fc947a6ce7b4cd55",
+      "bytes": 375362
+    },
+    {
+      "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-19-00-634Z_465e1fd1-238e-4bae-be4f-ea49535b8cf9.jsonl",
+      "sha256": "48917e3e42af616ffeebd5c3568c9224c10dde7592063e00ea2620122884529b",
+      "bytes": 509417
+    }
+  ],
+  "scope": "Reviewed every published tool input and public result body across all six retained August 5 Pi sessions. Exact duplicate result contents share an approval by content hash. Long responses publish explicitly marked reviewed excerpts; review does not claim that excluded private material was all read. Ordinary-message approvals remain in reviewed-messages.json. Hidden thinking is not published.",
+  "coverage": {
+    "toolInputs": {
+      "full": 121,
+      "redacted": 279
+    },
+    "toolInputBodies": 400,
+    "toolResultBodies": 399,
+    "toolResults": {
+      "redacted": 74,
+      "full": 240,
+      "excerpt": 85
+    },
+    "uniqueResultContents": 376,
+    "matchedCallResultPairs": 399,
+    "missingResultCalls": 1,
+    "orphanResults": 0,
+    "omittedResultBodies": 0,
+    "unreviewedToolInputs": 0,
+    "unreviewedRetainedResultBodies": 0,
+    "publishedInputCharacters": 322806,
+    "publishedResultCharacters": 494478,
+    "sourceAssociations": 683,
+    "completeOriginalCapture": false
+  },
+  "missingResults": [
+    {
+      "sessionId": "353502c4-8f55-4e64-be03-807f9aa449a6",
+      "toolCallId": "call_bf07b9f1ad54427aa0d8f1e0",
+      "source": {
+        "path": "trace/pi-sessions/--home-drew-code-discovery-lab-pursuits-ftqc-zips-2026-08-05-r1-workspaces--/2026-08-05T17-18-35-786Z_353502c4-8f55-4e64-be03-807f9aa449a6.jsonl",
+        "line": 62
+      },
+      "reason": "The retained qLTC session ends after dispatching this k3 X-weight search. No matching tool result is present; completion and outcome are unknown."
+    }
+  ],
+  "perSession": [
+    {
+      "sessionId": "192d4a0a-a66c-4d09-a640-235a7438b02e",
+      "calls": 116,
+      "results": 116,
+      "matchedResults": 116,
+      "missingResults": 0
+    },
+    {
+      "sessionId": "3236b35c-d5ea-4ca6-84ea-b461c8baa225",
+      "calls": 88,
+      "results": 88,
+      "matchedResults": 88,
+      "missingResults": 0
+    },
+    {
+      "sessionId": "3d89c28d-40af-4298-85c8-f42dc19fefbb",
+      "calls": 69,
+      "results": 69,
+      "matchedResults": 69,
+      "missingResults": 0
+    },
+    {
+      "sessionId": "353502c4-8f55-4e64-be03-807f9aa449a6",
+      "calls": 31,
+      "results": 30,
+      "matchedResults": 30,
+      "missingResults": 1
+    },
+    {
+      "sessionId": "e6cf0243-e72b-43c8-82bc-af5b15c3bf00",
+      "calls": 44,
+      "results": 44,
+      "matchedResults": 44,
+      "missingResults": 0
+    },
+    {
+      "sessionId": "465e1fd1-238e-4bae-be4f-ea49535b8cf9",
+      "calls": 52,
+      "results": 52,
+      "matchedResults": 52,
+      "missingResults": 0
+    }
+  ],
+  "proof": {
+    "exporterCommand": "python3 tools/project-research-evidence.py /home/drew/code/drewstone.github.io-evidence-private",
+    "sourceFilesMatch": true,
+    "allReviewedSourceLinesMatch": true,
+    "publishedInputsMatchExactArgumentsOrDocumentedPathRedactions": true,
+    "nativeSessionScopedCallResultJoin": true,
+    "originalMetadataAndEventIdentitiesUnchangedFrom": "87754eb7d700128dadb647fb5911514c6b0f5cff",
+    "runs": [
+      {
+        "runId": "fc-audit-smoke-a",
+        "events": 6,
+        "nodes": 1,
+        "sources": 3
+      },
+      {
+        "runId": "ftqc-zips-2026-08-05-r1",
+        "events": 760,
+        "nodes": 13,
+        "sources": 10
+      },
+      {
+        "runId": "q-ca-bcww-shareable-pkg",
+        "events": 1,
+        "nodes": 1,
+        "sources": 1
+      },
+      {
+        "runId": "q-conj-entropy-bcww-repair",
+        "events": 241,
+        "nodes": 4,
+        "sources": 4
+      },
+      {
+        "runId": "q-q36-lw6-unbounded-ladder",
+        "events": 46,
+        "nodes": 11,
+        "sources": 9
+      }
+    ],
+    "privateBearerValuesAbsent": true,
+    "credentialPatternScanPassed": true,
+    "recordedErrorFlagsPreserved": true,
+    "limitation": "A native isError=false indicates the tool returned; it does not certify the scientific claim or imply an inner shell pipeline succeeded.",
+    "byteIdenticalRepeatProjection": true
+  }
+}

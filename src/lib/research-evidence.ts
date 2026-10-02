@@ -43,7 +43,22 @@ export const evidenceSchema = z.object({
         sha256: z.string().regex(/^[0-9a-f]{64}$/),
         line: z.number().int().positive(),
       }),
-      detail: z.record(z.string(), z.unknown()),
+      detail: z
+        .object({
+          publicText: z.string().optional(),
+          publicationNote: z.string().nullish(),
+          publicToolCalls: z
+            .array(
+              z.object({
+                id: z.string(),
+                name: z.string(),
+                input: z.string(),
+                publicationNote: z.string().nullish(),
+              }),
+            )
+            .optional(),
+        })
+        .catchall(z.unknown()),
     }),
   ),
   sources: z.array(

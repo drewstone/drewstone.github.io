@@ -314,7 +314,7 @@
         "toolCallIds": [],
         "contentSha256": "a0c7fc1e7a72ff551b67c8109678b130f614194b6c68400c116bf4197479df08",
         "contentCharacters": 5366,
-        "contentOmitted": "Text retained privately; not approved for public display.",
+        "contentOmitted": "This message was outside the reviewed August 5 source set; its body has not been reviewed for publication.",
         "responseId": null
       }
     },
@@ -465,7 +465,7 @@
         "toolCallIds": [],
         "contentSha256": "c17d145c40aa9a8a84622ee6ee6c4af2d3ceac7093611a0333dab01ec89fd276",
         "contentCharacters": 4801,
-        "contentOmitted": "Text retained privately; not approved for public display.",
+        "contentOmitted": "This message was outside the reviewed August 5 source set; its body has not been reviewed for publication.",
         "responseId": null
       }
     },
@@ -1211,7 +1211,7 @@
     "nativeFiles": 4,
     "nativeRuntimeJoins": 0,
     "completeOriginalCapture": false,
-    "publicContent": "Reviewed ordinary user/assistant text and selected tool outputs are published with explicit redactions. Other tool bodies and arguments, hidden thinking, credentials, and billing data remain private. Original source hashes and line numbers are retained.",
+    "publicContent": "Reviewed assignments and recorded findings are published where available. Native message bodies outside the August 5 review remain unpublished. Original source hashes and physical line numbers are retained.",
     "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
     "cost": "Unavailable: zero-valued legacy counters are not treated as a bill."
   }

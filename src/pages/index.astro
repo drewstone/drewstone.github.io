@@ -36,7 +36,6 @@ const originals = posts.filter((p) => p.data.original)
       <h2>
         <a href="/research">Proofs &amp; counterexamples</a>
       </h2>
-      <p class="section-intro">Three witnesses, two refutations.</p>
       <ol class="research-list">
         {research.map((item) => (
           <li>
@@ -49,7 +48,7 @@ const originals = posts.filter((p) => p.data.original)
       </ol>
     </section>
     <section>
-      <h2>Essays</h2>
+      <h2><a href="/posts">Essays</a></h2>
       <ul class="essay-list">
         {posts.slice(0, 8).map((post) => (
           <li>
@@ -97,8 +96,7 @@ const originals = posts.filter((p) => p.data.original)
   .introduction p {
     font-size: 1rem;
   }
-  .quiet,
-  .section-intro {
+  .quiet {
     color: var(--fg-muted);
   }
   .home-columns {
