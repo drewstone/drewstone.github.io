@@ -3563,7 +3563,7 @@
     "nativeFiles": 0,
     "nativeRuntimeJoins": 0,
     "completeOriginalCapture": false,
-    "publicContent": "Reviewed ordinary user/assistant text and selected tool outputs are published with explicit redactions. Other tool bodies and arguments, hidden thinking, credentials, and billing data remain private. Original source hashes and line numbers are retained.",
+    "publicContent": "Reviewed assignments and recorded findings are published where available. Native message bodies outside the August 5 review remain unpublished. Original source hashes and physical line numbers are retained.",
     "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
     "cost": "Unavailable: zero-valued legacy counters are not treated as a bill."
   }

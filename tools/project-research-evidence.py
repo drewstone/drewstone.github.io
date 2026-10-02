@@ -26,10 +26,59 @@ message_review = json.loads(
 join_review = json.loads(
     Path("research/research-publication/reviewed-native-joins.json").read_text()
 )
+tool_review = json.loads(
+    Path("research/research-publication/reviewed-tools.json").read_text()
+)
 
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def validate_tool_review(source):
+    """A reviewed excerpt is valid only for the cited immutable record."""
+    rows_by_path = {}
+    for cited in tool_review["sourceFiles"]:
+        data = (source / cited["path"]).read_bytes()
+        if digest(data) != cited["sha256"] or len(data) != cited["bytes"]:
+            raise ValueError("Tool source changed; publication review required")
+        rows_by_path[cited["path"]] = {
+            ln: json.loads(line)
+            for ln, line in enumerate(data.decode().splitlines(), 1)
+            if line.strip()
+        }
+    reviewed = {}
+    source_hashes = {f["path"]: f["sha256"] for f in tool_review["sourceFiles"]}
+    for entry in tool_review["records"]:
+        cited = entry["source"]
+        key = (cited["path"], cited["line"], entry["kind"])
+        message = rows_by_path[cited["path"]][cited["line"]].get("message", {})
+        content = message.get("content", [])
+        content = (
+            content if isinstance(content, list)
+            else [{"type": "text", "text": content}]
+        )
+        if (
+            key in reviewed
+            or cited["sha256"] != source_hashes[cited["path"]]
+            or digest(json.dumps(content, sort_keys=True).encode()) != entry["contentSha256"]
+        ):
+            raise ValueError("Tool review does not match its cited source record")
+        content_hash = entry["contentSha256"]
+        if entry["kind"] == "input":
+            actual = [
+                (t.get("id"), t.get("name")) for t in content
+                if t.get("type") in ["toolCall", "tool_use"]
+            ]
+            approved = tool_review["calls"][content_hash]
+            if actual != [(t["id"], t["name"]) for t in approved]:
+                raise ValueError("Reviewed tool calls differ from the source IDs or names")
+        elif entry["kind"] == "result" and message.get("role") == "toolResult":
+            approved = tool_review["results"][content_hash]
+        else:
+            raise ValueError("Invalid tool review record kind")
+        reviewed[key] = approved
+    return reviewed
 
 
 def safe_id(value):
@@ -87,6 +136,10 @@ runs = [
 ]
 for run_id, source, title in runs:
     nodes, events, sources = {}, [], []
+    tool_publications = (
+        validate_tool_review(source) if run_id == tool_review["runId"] else {}
+    )
+    seen_tool_publications = set()
 
     def source_record(path):
         b = path.read_bytes()
@@ -310,13 +363,31 @@ for run_id, source, title in runs:
                     if run_id == message_review["runId"]
                     else None
                 )
+                if run_id == tool_review["runId"]:
+                    if tools:
+                        key = (str(path.relative_to(source)), ln, "input")
+                        public_calls = tool_publications[key]
+                        seen_tool_publications.add(key)
+                        detail["publicToolCalls"] = [
+                            {
+                                k: call[k] for k in ["id", "name", "input", "publicationNote"]
+                                if k in call
+                            }
+                            for call in public_calls
+                        ]
+                    if role == "toolResult":
+                        key = (str(path.relative_to(source)), ln, "result")
+                        approved = tool_publications[key]
+                        seen_tool_publications.add(key)
                 if approved:
                     detail["publicText"] = approved["text"]
                     detail["publicationNote"] = approved.get("note")
+                    if "mode" in approved:
+                        detail["publicationMode"] = approved["mode"]
                 elif any(c.get("type") == "text" and c.get("text") for c in content):
-                    detail[
-                        "contentOmitted"
-                    ] = "Text retained privately; not approved for public display."
+                    detail["contentOmitted"] = (
+                        "This message was outside the reviewed August 5 source set; its body has not been reviewed for publication."
+                    )
                 if usage:
                     detail["usage"] = {
                         k: usage[k]
@@ -382,6 +453,8 @@ for run_id, source, title in runs:
                     "detail": detail,
                 }
             )
+    if seen_tool_publications != set(tool_publications):
+        raise ValueError("A reviewed tool record was not projected")
     # Persisted findings are agent-authored outputs, not hidden reasoning or verified claims.
     # Keep their authors unresolved when the source contains only run-level attribution.
     for path in sorted(source.glob("kb/pages/**/*.md")):
@@ -485,7 +558,11 @@ for run_id, source, title in runs:
             "nativeFiles": len(native_files),
             "nativeRuntimeJoins": len(applicable_joins),
             "completeOriginalCapture": False,
-            "publicContent": "Reviewed ordinary user/assistant text and selected tool outputs are published with explicit redactions. Other tool bodies and arguments, hidden thinking, credentials, and billing data remain private. Original source hashes and line numbers are retained.",
+            "publicContent": (
+                "All 400 tool inputs and 399 retained tool results in the six August 5 sessions have reviewed public bodies, alongside their ordinary messages. Long outputs use marked excerpts; credentials, unrelated memory previews, and hidden thinking are excluded. The final qLTC search has no retained result. Original source hashes, call IDs, and physical line numbers are preserved."
+                if run_id == tool_review["runId"] else
+                "Reviewed assignments and recorded findings are published where available. Native message bodies outside the August 5 review remain unpublished. Original source hashes and physical line numbers are retained."
+            ),
             "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
             "cost": "Unavailable: zero-valued legacy counters are not treated as a bill.",
         },

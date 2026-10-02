@@ -79,7 +79,9 @@ A missing message is shown as missing. A blank interval is not proof of idleness
 `src/styles/controls.css` owns fields, buttons, tabs, focus states, and disclosures across the site.
 `ChoicePicker.astro` owns the searchable-by-typing, keyboard-navigable popover listbox, with a native select fallback without JavaScript.
 `ResearchBibliography.astro` owns numbered references and citation targets.
-The research conversation viewer reuses `ChatBlock.astro` for retained message text and reviewed tool outputs.
+`ResearchConversation.astro` pairs tool calls and results within the exact native session and call ID.
+It reuses `ChatBlock.astro` for retained message text and shared icons from `chat-icons.ts`.
+The viewer labels team roles separately from assignments: the five August 5 workers were assigned verification.
 No execution service or new runtime dependency is introduced.
 
 Timeline marks group events within six display pixels; hover states retain exact timestamps and group size.
@@ -90,3 +92,20 @@ Tool return time pairs exact call/result IDs within a native session; it is an o
 Every metric respects the selected time; incomplete counters and unmatched timings remain unknown.
 Chart hover and focus details use the shared plain-text `plot-tooltip.ts` implementation.
 Open-graph image generation uses pinned local fonts with licenses and source hashes in `tools/fonts`.
+
+## Reviewed tool content
+
+`reviewed-tools.json` binds published arguments and results to their original source file, physical line, and content hash.
+The importer rejects changed sources, missing approvals, and unmatched reviewed records.
+`reviewed-tools-receipt.json` records the review coverage and one missing result.
+
+The August 5 publication includes all 400 tool inputs and all 399 retained results.
+Of those results, 240 are full, 74 contain labeled redactions, and 85 contain labeled excerpts.
+The final qLTC search has no retained result; its outcome remains unknown.
+Original private archives remain unchanged.
+
+The conversation pairs each input with its retained outputs, timestamps, publication notes, and source links.
+Time controls hide future outputs; opened tools remain open while browsing recorded time.
+“Returned” means a result was recorded, not that a command or scientific claim succeeded.
+“Error” reflects the source error flag; a shell pipeline can return normally despite an inner command failing.
+No state implies a currently running agent.

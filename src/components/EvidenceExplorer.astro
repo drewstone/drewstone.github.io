@@ -1,7 +1,7 @@
 ---
 import type { EvidenceRecord } from '../lib/research-evidence'
 import ChoicePicker from './ChoicePicker.astro'
-import ChatBlock from './ChatBlock.astro'
+import ResearchConversation from './ResearchConversation.astro'
 interface Props {
   records: EvidenceRecord[]
 }
@@ -11,10 +11,10 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
 ---
 
 <div class="evidence-explorer">
-  <p class="viewer-intro">
-    Follow the agents below. Choose a node to read its conversation, or a
-    timeline mark to jump to that moment.
-  </p>
+  <div class="run-context">
+    <p data-objective>{first.assignment.objective}</p>
+    <span class="archive-state">Recorded run</span>
+  </div>
   <div class="controls">
     <ChoicePicker
       label="Run"
@@ -101,8 +101,11 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
     ))}
   </div>
   <div class="workspace">
-    <section class="topology">
-      <h3>Delegation</h3>
+    <details class="topology" open>
+      <summary>
+        <span>Agents</span>
+        <span data-agent-count></span>
+      </summary>
       <p class="small" data-graph-caption></p>
       <div class="graph-scroll">
         <svg
@@ -111,10 +114,18 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
           aria-label="Director and child agents. Select a node to read its conversation."
         ></svg>
       </div>
-    </section>
+    </details>
     <section class="conversation-panel">
       <div class="conversation-head">
-        <h3 data-agent-title>Conversation</h3>
+        <div class="agent-identity">
+          <span class="agent-avatar" data-agent-avatar aria-hidden="true">
+            D
+          </span>
+          <div>
+            <h3 data-agent-title>Conversation</h3>
+            <p data-agent-role></p>
+          </div>
+        </div>
         <ChoicePicker label="Agent" field="agent" />
       </div>
       <div class="ui-tabs" role="tablist" aria-label="Agent evidence">
@@ -154,7 +165,17 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
         aria-labelledby="evidence-chat-tab"
         data-panel="chat"
       >
-        <p class="small" data-chat-caption></p>
+        <div class="conversation-toolbar">
+          <p class="small" data-chat-caption></p>
+          <button
+            type="button"
+            class="tool-expansion"
+            data-expand-tools
+            aria-pressed="false"
+          >
+            Expand tools
+          </button>
+        </div>
         <div
           class="conversation-scroll"
           data-chat
@@ -233,7 +254,6 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   </p>
   <details class="assignment">
     <summary>Original assignment</summary>
-    <p data-objective>{first.assignment.objective}</p>
     <dl data-assignment></dl>
   </details>
   <details class="coverage">
@@ -248,83 +268,8 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       The interactive viewer requires JavaScript.
     </p>
   </noscript>
-  {records.map((r) => (
-    <template data-chat-record={r.runId}>
-      {r.events
-        .filter(
-          (e) =>
-            e.detail.publicText ||
-            e.detail.recordedClaim ||
-            e.detail.role === 'toolResult' ||
-            e.detail.responseStatus === 'error' ||
-            (e.detail.toolNames as string[] | undefined)?.length,
-        )
-        .map((e) => (
-          <article
-            class="chat-message"
-            data-message={e.id}
-            data-message-node={e.node}
-          >
-            <header>
-              <strong>
-                {e.detail.recordedClaim
-                  ? 'Recorded finding'
-                  : e.detail.responseStatus === 'error'
-                    ? 'Request failed'
-                    : e.detail.role === 'user'
-                      ? 'Assignment'
-                      : e.detail.role === 'toolResult'
-                        ? 'Tool result'
-                        : 'Assistant'}
-              </strong>
-              <time datetime={e.at}>{e.at.slice(11, 19)} UTC</time>
-              <button
-                class="message-source"
-                type="button"
-                data-source-event={e.id}
-              >
-                source
-              </button>
-            </header>
-            {e.detail.publicText ? (
-              <ChatBlock
-                block={{
-                  kind: e.detail.role === 'toolResult' ? 'tool_result' : 'text',
-                  label: e.label,
-                  content: String(e.detail.publicText),
-                  collapsed: e.detail.role === 'toolResult',
-                }}
-              />
-            ) : e.detail.recordedClaim ? (
-              <ChatBlock
-                block={{
-                  kind: 'text',
-                  content: String(e.detail.recordedClaim),
-                }}
-              />
-            ) : e.detail.responseStatus === 'error' ? (
-              <p class="recorded-error">
-                Request failed. No assistant response text or measured usage was
-                retained.
-              </p>
-            ) : (
-              <details class="tool-record">
-                <summary>{e.label}</summary>
-                <p>
-                  Message content is retained privately. Source metadata is
-                  available.
-                </p>
-              </details>
-            )}
-            {e.detail.publicationNote && (
-              <p class="redaction">{String(e.detail.publicationNote)}</p>
-            )}
-            {e.detail.recordedClaim && (
-              <p class="redaction">{String(e.detail.assessment)}</p>
-            )}
-          </article>
-        ))}
-    </template>
+  {records.map((record) => (
+    <ResearchConversation record={record} />
   ))}
   <script type="application/json" data-evidence set:html={json} />
 </div>
@@ -357,6 +302,9 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       chat = el<HTMLElement>('[data-chat]'),
       tokens = el<SVGSVGElement>('[data-tokens]'),
       moment = el<HTMLSelectElement>('[data-moment]')
+    const openDetails = new Set<string>()
+    let conversationKey = ''
+    let expandTools = false
     let record = records[0],
       selected = '',
       actor = '',
@@ -415,7 +363,13 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       const n = node(event.node)
       return {
         runId: record.runId,
-        runtimeNodeId: canonical(event.node),
+        observedNodeId: event.node,
+        runtimeNodeId:
+          n?.kind === 'runtime'
+            ? n.id
+            : n?.kind === 'native'
+              ? (n.runtimeNodeId ?? null)
+              : null,
         nativeSessionId: n?.nativeSessionId ?? null,
         joinBasis: n?.runtimeJoin ?? null,
         joinProof: n?.joinProof ?? null,
@@ -445,7 +399,19 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       const target = chat.querySelector<HTMLElement>(
         `[data-message="${CSS.escape(event.id)}"]`,
       )
-      target?.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+      if (target) {
+        const details = target.closest('details')
+        if (details) details.open = true
+        if (
+          target.classList.contains('tool-turn') ||
+          target.classList.contains('assignment-message')
+        )
+          for (const d of target.querySelectorAll<HTMLDetailsElement>(
+            'details',
+          ))
+            d.open = true
+        target.scrollIntoView({ block: 'nearest', behavior: 'instant' })
+      }
     }
     const describe = (n: N) => {
       const sessions = record.nodes.filter(
@@ -461,105 +427,139 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
             : null,
       }
     }
+    const roleOf = (n: N) =>
+      n.kind === 'runtime'
+        ? n.parent
+          ? 'Worker'
+          : 'Director'
+        : n.kind === 'native'
+          ? 'Native session'
+          : 'Finding'
+    const nameOf = (n: N) =>
+      n.label.startsWith('verifier-') ? n.label.slice(9).toUpperCase() : n.label
+    const selectActor = (id: string) => {
+      const event =
+        record.events.find(
+          (e) =>
+            canonical(e.node) === id &&
+            (e.detail.publicText || e.detail.publicToolCalls),
+        ) ?? record.events.find((e) => canonical(e.node) === id)
+      if (event) inspect(event, ms(event.at) > now())
+      else {
+        actor = id
+        agent.value = id
+        render()
+      }
+      setView('chat')
+      chat.scrollTop = 0
+    }
     function renderGraph() {
       graph.replaceChildren()
-      const list = actors().filter((n) => n.kind !== 'finding')
-      const byId = new Map(list.map((n) => [n.id, n]))
-      const children = (id: string) => list.filter((n) => n.parent === id)
-      const positions = new Map<string, { x: number; y: number }>()
+      const list = actors().filter((n) => n.kind !== 'finding'),
+        byId = new Map(list.map((n) => [n.id, n])),
+        positions = new Map<string, { x: number; y: number; depth: number }>(),
+        seen = new Set<string>()
       let row = 0
-      const seen = new Set<string>()
       const place = (n: N, depth: number) => {
         if (seen.has(n.id)) return
         seen.add(n.id)
-        const kids = children(n.id)
-        for (const child of kids) place(child, depth + 1)
-        const y = kids.length
-          ? (positions.get(kids[0].id)!.y + positions.get(kids.at(-1)!.id)!.y) /
-            2
-          : 25 + row++ * 76
-        positions.set(n.id, { x: 12 + depth * 190, y })
+        positions.set(n.id, { x: 8 + depth * 18, y: 6 + row++ * 52, depth })
+        for (const child of list.filter((c) => c.parent === n.id))
+          place(child, depth + 1)
       }
       for (const n of list.filter((n) => !n.parent || !byId.has(n.parent)))
         place(n, 0)
       for (const n of list) if (!seen.has(n.id)) place(n, 0)
       const width = Math.max(
-          220,
-          ...[...positions.values()].map((p) => p.x + 170),
+          235,
+          ...[...positions.values()].map((p) => p.x + 200),
         ),
-        height = Math.max(100, row * 76 + 15)
+        height = Math.max(60, row * 52 + 12)
       graph.setAttribute('viewBox', `0 0 ${width} ${height}`)
-      graph.style.width = `${width}px`
+      graph.style.width = '100%'
       for (const n of list) {
-        const p = positions.get(n.id)!
-        const parent = n.parent ? positions.get(n.parent) : null
+        const p = positions.get(n.id)!,
+          parent = n.parent ? positions.get(n.parent) : null
         if (parent)
           shape(graph, 'path', {
-            d: `M${parent.x + 164},${parent.y + 26} C${parent.x + 180},${parent.y + 26} ${p.x - 16},${p.y + 26} ${p.x},${p.y + 26}`,
+            d: `M${parent.x + 13},${parent.y + 30} V${p.y + 22} H${p.x + 10}`,
             class: 'graph-link',
           })
       }
       for (const n of list) {
-        const p = positions.get(n.id)!
-        const start = n.start
-          ? ms(n.start)
-          : Math.min(
-              ...record.events
-                .filter((e) => canonical(e.node) === n.id)
-                .map((e) => ms(e.at)),
-            )
-        const future = start > now()
+        const p = positions.get(n.id)!,
+          begin = n.start
+            ? ms(n.start)
+            : Math.min(
+                ...record.events
+                  .filter((e) => canonical(e.node) === n.id)
+                  .map((e) => ms(e.at)),
+              ),
+          future = begin > now(),
+          ended = n.end && ms(n.end) <= now()
+        const state = future
+          ? 'Not yet started'
+          : ended
+            ? n.status === 'done'
+              ? 'Finished'
+              : n.status === 'down'
+                ? 'Stopped'
+                : (n.status ?? 'Ended')
+            : n.end
+              ? 'Not yet settled'
+              : 'No terminal record'
         const g = shape(graph, 'g', {
           class: `graph-node ${actor === n.id ? 'selected' : ''} ${future ? 'future' : ''}`,
           transform: `translate(${p.x},${p.y})`,
           role: 'button',
           tabindex: 0,
-          'aria-label': `Read ${n.label} conversation`,
+          'aria-label': `Read ${roleOf(n)} ${nameOf(n)} conversation`,
+          'aria-pressed': String(actor === n.id),
           'data-node': n.id,
         })
-        shape(g, 'rect', { width: 164, height: 54, rx: 3 })
+        shape(g, 'rect', { width: width - p.x - 8, height: 44, rx: 5 })
+        shape(g, 'circle', {
+          cx: 13,
+          cy: 16,
+          r: 3,
+          class:
+            ended && n.status === 'done'
+              ? 'state-done'
+              : ended && n.status === 'down'
+                ? 'state-down'
+                : 'state-unknown',
+        })
+        shape(g, 'text', { x: 25, y: 19, class: 'graph-label' }, nameOf(n))
         shape(
           g,
           'text',
-          { x: 10, y: 21, class: 'graph-label' },
-          n.label.length > 23 ? n.label.slice(0, 21) + '…' : n.label,
+          { x: 25, y: 35, class: 'graph-meta' },
+          `${roleOf(n)} · ${state}`,
         )
-        const { sessions } = describe(n)
         shape(
           g,
-          'text',
-          { x: 10, y: 41, class: 'graph-meta' },
-          future
-            ? 'not yet spawned'
-            : `${sessions.length ? 'conversation retained' : 'native chat missing'}${n.end && ms(n.end) <= now() ? ' · ' + (n.status ?? 'ended') : ''}`,
+          'title',
+          {},
+          `${n.label} · ${describe(n).sessions.length ? 'Native conversation retained' : 'Native conversation missing'}`,
         )
-        const choose = () => {
-          actor = n.id
-          agent.value = actor
-          if (future) {
-            const { start: begin, end } = bounds()
-            cursor.value = String(
-              Math.ceil(((start - begin) / Math.max(1, end - begin)) * 1000),
-            )
-          }
-          render()
-          choiceSync()
-        }
-        g.addEventListener('click', choose)
+        g.addEventListener('click', () => selectActor(n.id))
         g.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
-            choose()
+            selectActor(n.id)
           }
         })
       }
+      text('[data-agent-count]', String(list.length))
+      const workers = list.filter((n) => n.kind === 'runtime' && n.parent),
+        verifiers = workers.filter((n) => n.label.startsWith('verifier-'))
       text(
         '[data-graph-caption]',
-        record.coverage.runtimeNodes === 0
-          ? 'No topology was recovered for this finding.'
-          : record.coverage.nativeRuntimeJoins
-            ? `${record.coverage.nativeRuntimeJoins} conversations joined by exact task identity.`
-            : 'Native conversations cannot be joined to these agents from the retained evidence.',
+        verifiers.length === workers.length && workers.length
+          ? `${workers.length} workers with verification assignments.`
+          : record.coverage.runtimeNodes === 0
+            ? 'No team topology was recovered.'
+            : `${workers.length} recorded workers. Native conversations ${record.coverage.nativeRuntimeJoins ? 'joined by exact task identity' : 'not recovered for these nodes'}.`,
       )
     }
     function hoverLines(e: E) {
@@ -578,8 +578,20 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
           String(e.detail.publicText).slice(0, 220) +
             (String(e.detail.publicText).length > 220 ? '…' : ''),
         )
-      else if (e.detail.role)
-        lines.push('Body is not approved for public display.')
+      if (e.detail.publicToolCalls?.length)
+        for (const call of e.detail.publicToolCalls)
+          lines.push(
+            `${call.name}: ${call.input.replace(/\s+/g, ' ').slice(0, 220)}`,
+          )
+      else if (!e.detail.publicText && e.detail.role)
+        lines.push(
+          e.detail.responseStatus === 'error'
+            ? 'No response body was retained.'
+            : String(
+                e.detail.contentOmitted ??
+                  'No text body is present in this record.',
+              ),
+        )
       lines.push('Click to inspect the message and its source.')
       return lines
     }
@@ -592,7 +604,7 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
           Math.max(940, el('.timeline-scroll').clientWidth) *
           Number(zoom.value),
         left = 160,
-        step = 29,
+        step = 23,
         height = 48 + list.length * step
       timeline.setAttribute('viewBox', `0 0 ${width} ${height}`)
       timeline.style.width = `${width}px`
@@ -616,7 +628,7 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
         )
       }
       list.forEach((n, i) => {
-        const y = 43 + i * step
+        const y = 40 + i * step
         shape(
           timeline,
           'text',
@@ -650,9 +662,9 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
         const e = events[selectedIndex >= 0 ? selectedIndex : 0]
         const mark = shape(timeline, 'rect', {
           x: left + bin * 6,
-          y: 36 + lane * step,
+          y: 34 + lane * step,
           width: 4,
-          height: 14,
+          height: 12,
           rx: 1,
           class: `event ${e.category} ${selectedIndex >= 0 ? 'selected' : ''}`,
           opacity: events.every((e) => ms(e.at) > now()) ? 0.25 : 1,
@@ -697,67 +709,153 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       })
     }
     function renderConversation() {
+      const q = search.value.trim().toLowerCase(),
+        cutoff = now()
+      const visibleIds = record.events
+        .filter((e) => canonical(e.node) === actor && ms(e.at) <= cutoff)
+        .map((e) => e.id)
+      const key = `${record.runId}:${actor}:${visibleIds.join(',')}:${q}:${selected}:${expandTools}`
+      if (key === conversationKey) return
+      conversationKey = key
+      for (const details of chat.querySelectorAll<HTMLDetailsElement>(
+        'details[data-open-key]',
+      )) {
+        const k = record.runId + ':' + details.dataset.openKey
+        if (details.open) openDetails.add(k)
+        else openDetails.delete(k)
+      }
       const template = [
         ...root.querySelectorAll<HTMLTemplateElement>('[data-chat-record]'),
-      ].find((t) => t.dataset.chatRecord === record.runId)!
-      const fragment = template.content.cloneNode(true) as DocumentFragment
-      const q = search.value.trim().toLowerCase()
+      ].find(
+        (t) =>
+          t.dataset.chatRecord === record.runId &&
+          t.dataset.chatActor === actor,
+      )
+      const fragment = template?.content.cloneNode(true) as
+        DocumentFragment | undefined
       let count = 0,
-        ordinary = 0
-      for (const message of fragment.querySelectorAll<HTMLElement>(
-        '[data-message]',
-      )) {
-        const e = record.events.find((e) => e.id === message.dataset.message)!
-        if (
-          canonical(e.node) !== actor ||
-          ms(e.at) > now() ||
-          (q && !JSON.stringify(e.detail).toLowerCase().includes(q))
-        ) {
-          message.remove()
-          continue
+        toolCount = 0
+      if (fragment) {
+        for (const entry of fragment.querySelectorAll<HTMLElement>(
+          '[data-entry]',
+        )) {
+          const e = record.events.find((e) => e.id === entry.dataset.entry)!
+          if (ms(e.at) > cutoff) {
+            entry.remove()
+            continue
+          }
+          for (const result of entry.querySelectorAll<HTMLElement>(
+            '[data-result-at]',
+          ))
+            if (ms(result.dataset.resultAt!) > cutoff) result.remove()
+          for (const tool of entry.querySelectorAll<HTMLDetailsElement>(
+            '[data-tool-call]',
+          )) {
+            const returned = [
+                ...tool.querySelectorAll<HTMLElement>('[data-result-at]'),
+              ],
+              last = returned.at(-1),
+              later =
+                tool.dataset.returnAt && ms(tool.dataset.returnAt) > cutoff
+            const status = !last
+              ? tool.dataset.returnAt
+                ? 'pending'
+                : 'missing'
+              : last.dataset.resultError === 'true'
+                ? 'error'
+                : 'returned'
+            tool.dataset.status = status
+            tool.querySelector('[data-tool-status]')!.textContent =
+              status === 'error'
+                ? 'Error'
+                : status === 'returned'
+                  ? 'Returned'
+                  : status === 'pending'
+                    ? 'Not returned'
+                    : 'No result'
+            const elapsed = last
+              ? (ms(last.dataset.resultAt!) - ms(tool.dataset.callAt!)) / 1000
+              : null
+            tool.querySelector('[data-tool-duration]')!.textContent =
+              elapsed !== null && elapsed >= 0
+                ? elapsed < 1
+                  ? `${Math.round(elapsed * 1000)} ms`
+                  : `${elapsed.toFixed(1)} s`
+                : ''
+            const pending = tool.querySelector<HTMLElement>(
+              '[data-result-pending]',
+            )!
+            pending.hidden = returned.length > 0 && !later
+            if (later)
+              pending.textContent =
+                'The result had not returned at the selected time.'
+          }
+          if (q && !entry.textContent?.toLowerCase().includes(q)) {
+            entry.remove()
+            continue
+          }
+          count++
+          toolCount += entry.querySelectorAll('[data-tool-call]').length
         }
-        count++
-        if (e.detail.publicText || e.detail.recordedClaim) ordinary++
-        message.classList.toggle('selected', e.id === selected)
+        for (const message of fragment.querySelectorAll<HTMLElement>(
+          '[data-message]',
+        ))
+          message.classList.toggle(
+            'selected',
+            message.dataset.message === selected,
+          )
+        for (const details of fragment.querySelectorAll<HTMLDetailsElement>(
+          'details[data-open-key]',
+        ))
+          details.open =
+            openDetails.has(record.runId + ':' + details.dataset.openKey) ||
+            (expandTools && Boolean(details.dataset.toolCall))
       }
-      const previousScroll = chat.scrollTop
-      chat.replaceChildren(fragment)
-      chat.scrollTop = previousScroll
-      const n = node(actor)
-      text('[data-agent-title]', n?.label ?? 'Conversation')
-      const { sessions, model } = n
-        ? describe(n)
-        : { sessions: [], model: null }
+      const scroll = chat.scrollTop
+      chat.replaceChildren(...(fragment ? [fragment] : []))
+      chat.scrollTop = scroll
+      const n = node(actor),
+        { sessions, model } = n ? describe(n) : { sessions: [], model: null }
+      text('[data-agent-title]', n ? nameOf(n) : 'Conversation')
+      text(
+        '[data-agent-avatar]',
+        n
+          ? roleOf(n) === 'Director'
+            ? 'D'
+            : roleOf(n) === 'Worker'
+              ? 'W'
+              : 'S'
+          : '?',
+      )
+      text(
+        '[data-agent-role]',
+        `${n ? roleOf(n) : 'Record'}${n?.label.startsWith('verifier-') ? ' · verification assignment' : ''}${model ? ' · ' + model : ''}`,
+      )
       text(
         '[data-chat-caption]',
-        `${ordinary} published messages at this time${model ? ' · ' + model : ''}. ${sessions.length ? 'Verbatim ordinary text; tool bodies are published only where reviewed.' : 'No native conversation can be attributed to this node from these sources.'}`,
+        `${count} entries · ${toolCount} tool calls at this time${sessions.length ? '' : ' · native conversation unavailable'}`,
       )
+      const expansion = el<HTMLButtonElement>('[data-expand-tools]')
+      expansion.disabled = !toolCount
+      expansion.textContent = expandTools ? 'Collapse tools' : 'Expand tools'
+      expansion.setAttribute('aria-pressed', String(expandTools))
       if (!count) {
         const p = document.createElement('p')
         p.className = 'chat-empty'
-        p.textContent = sessions.length
-          ? 'No published ordinary text at this time. The session may contain only metadata, or its first message may occur later.'
-          : 'The journal records this agent, but these sources do not identify its native conversation. The Source tab shows the retained evidence.'
+        p.textContent = q
+          ? 'No conversation entries match this search.'
+          : sessions.length
+            ? 'No retained messages at the selected time.'
+            : 'These sources do not identify this agent’s native conversation. Source events remain inspectable.'
         chat.append(p)
-        const first = record.events.find(
-          (e) =>
-            canonical(e.node) === actor &&
-            e.detail.publicText &&
-            ms(e.at) > now(),
-        )
-        if (first && !q) {
-          const button = document.createElement('button')
-          button.className = 'ui-button'
-          button.textContent = 'Open first retained message'
-          button.addEventListener('click', () => inspect(first))
-          chat.append(button)
-        }
       }
-      for (const b of chat.querySelectorAll<HTMLButtonElement>(
+      for (const button of chat.querySelectorAll<HTMLButtonElement>(
         '[data-source-event]',
       ))
-        b.addEventListener('click', () => {
-          const e = record.events.find((e) => e.id === b.dataset.sourceEvent)
+        button.addEventListener('click', () => {
+          const e = record.events.find(
+            (e) => e.id === button.dataset.sourceEvent,
+          )
           if (e) inspect(e)
           setView('source')
         })
@@ -770,7 +868,12 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
         '[data-event-meta]',
         `${e.at} · ${node(canonical(e.node))?.label ?? e.node}`,
       )
-      text('[data-event-detail]', JSON.stringify(e.detail, null, 2))
+      text(
+        '[data-event-detail]',
+        ms(e.at) > now()
+          ? 'This event occurs after the selected time. Advance the timeline to read its content.'
+          : JSON.stringify(e.detail, null, 2),
+      )
       text('[data-event-source]', JSON.stringify(eventSource(e), null, 2))
       text(
         '[data-position]',
@@ -778,6 +881,7 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       )
     }
     function renderTokens() {
+      tooltip.hide()
       tokens.replaceChildren()
       const { start } = bounds(),
         cutoff = now(),
@@ -973,6 +1077,7 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       el<HTMLElement>('.usage-legend').hidden = metric === 'tool-time'
     }
     function render() {
+      tooltip.hide()
       const query = search.value.trim().toLowerCase()
       visible = record.events.filter(
         (e) =>
@@ -990,7 +1095,7 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       )
       text(
         '[data-summary]',
-        `${record.coverage.runtimeNodes} recorded Runtime nodes · ${record.coverage.nativeFiles} native sessions · ${visible.length} of ${record.events.length} events · capture incomplete`,
+        `${record.coverage.runtimeNodes} recorded agents · ${record.coverage.nativeFiles} native sessions · ${visible.length} / ${record.events.length} events · capture incomplete`,
       )
       const { start } = bounds()
       text('[data-clock]', `${((now() - start) / 60000).toFixed(1)} min`)
@@ -1005,9 +1110,20 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       el<HTMLButtonElement>('[data-next]').disabled = visible.length === 0
     }
     function load() {
+      conversationKey = ''
       const list = actors()
       actor = list.find((n) => n.id === record.runId)?.id ?? list[0]?.id ?? ''
-      agent.replaceChildren(...list.map((n) => new Option(n.label, n.id)))
+      agent.replaceChildren(
+        ...list.map(
+          (n) =>
+            new Option(
+              nameOf(n) === roleOf(n)
+                ? nameOf(n)
+                : `${nameOf(n)} · ${roleOf(n)}`,
+              n.id,
+            ),
+        ),
+      )
       agent.value = actor
       cursor.value = '1000'
       selected =
@@ -1091,10 +1207,22 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
       const e = record.events.find((e) => e.id === selected)
       if (e) inspect(e, false)
     })
-    agent.addEventListener('change', () => {
-      actor = agent.value
-      render()
+    agent.addEventListener('change', () => selectActor(agent.value))
+    el('[data-expand-tools]').addEventListener('click', () => {
+      expandTools = !expandTools
+      if (!expandTools) {
+        for (const d of chat.querySelectorAll<HTMLDetailsElement>(
+          'details[data-tool-call]',
+        ))
+          d.open = false
+        for (const k of openDetails)
+          if (k.includes(':tool:')) openDetails.delete(k)
+      }
+      conversationKey = ''
+      renderConversation()
     })
+    if (matchMedia('(max-width:760px)').matches)
+      el<HTMLDetailsElement>('.topology').open = false
     el('[data-metric]').addEventListener('change', renderTokens)
     el('[data-axis]').addEventListener('change', renderTokens)
     filter.addEventListener('change', render)
@@ -1172,38 +1300,77 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   }
 </script>
 <style>
-  .viewer-intro {
-    margin-bottom: 0.6rem;
+  .evidence-explorer {
+    --workspace-surface: color-mix(in srgb, var(--bg-alt) 35%, var(--bg));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .run-context {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    padding: 0.8rem 0.85rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--workspace-surface);
+  }
+  .run-context p {
+    font: 15px/1.4 var(--font-body);
+    margin: 0;
+    max-width: 48rem;
+  }
+  .archive-state {
+    font: 10px var(--font-mono);
     color: var(--fg-muted);
-    font-size: 0.9rem;
+    white-space: nowrap;
+    margin-left: auto;
+    padding-top: 0.2rem;
   }
   .controls {
     display: grid;
     grid-template-columns: 1.25fr 0.8fr 1fr;
-    gap: 0.65rem;
+    gap: 0.55rem;
+    padding: 0.65rem 0.85rem 0.35rem;
+  }
+  .controls :global(.ui-label) {
+    font-size: 10px;
+  }
+  .controls :global(.ui-choice-trigger),
+  .controls input {
+    min-height: 32px;
+    font-size: 11px;
+    padding: 0.4rem 0.55rem;
   }
   .record-summary {
-    margin: 0.5rem 0;
-    font: 0.65rem var(--font-mono);
-    color: var(--fg-muted);
+    margin: 0;
+    padding: 0.2rem 0.85rem 0.45rem;
+    font: 10px var(--font-mono);
+    color: var(--fg-faint);
   }
   .playback {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.5rem 0;
+    gap: 0.6rem;
+    padding: 0.35rem 0.85rem;
   }
   .playback label {
     display: flex;
     flex: 1;
     align-items: center;
     gap: 0.65rem;
-    font: 0.7rem var(--font-mono);
+    font: 10px var(--font-mono);
+  }
+  .playback .ui-button {
+    min-height: 29px;
+    padding: 0.2rem 0.6rem;
+    font-size: 10px;
   }
   input[type='range'] {
     min-width: 3rem;
     width: 100%;
     accent-color: var(--fg);
+    height: 14px;
   }
   .playback input {
     flex: 1;
@@ -1216,22 +1383,22 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
+    font: 11px var(--font-mono);
+    margin: 0.25rem 0.85rem 0.1rem;
   }
   .timeline-heading label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font: 0.65rem var(--font-mono);
+    font: 10px var(--font-mono);
   }
   .timeline-heading input {
-    width: 6rem;
+    width: 5rem;
   }
   .timeline-scroll {
     overflow: auto;
     border-block: 1px solid var(--border);
-    margin: 0.3rem 0;
+    margin: 0.3rem 0.85rem 0;
   }
   svg {
     display: block;
@@ -1262,10 +1429,10 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   .legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 0.8rem;
-    font: 0.59rem var(--font-mono);
+    gap: 0.3rem 0.8rem;
+    font: 9px var(--font-mono);
     color: var(--fg-muted);
-    margin: 0.4rem 0 0.7rem;
+    padding: 0.45rem 0.85rem 0.65rem;
   }
   .legend span {
     display: flex;
@@ -1273,8 +1440,9 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
     gap: 0.3rem;
   }
   .legend i {
-    width: 0.45rem;
-    height: 0.45rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 1px;
   }
   .coordination {
     background: var(--c-action);
@@ -1314,147 +1482,201 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   }
   .workspace {
     display: grid;
-    grid-template-columns: 390px minmax(0, 1fr);
-    gap: 1rem;
-    padding-top: 0.5rem;
+    grid-template-columns: 250px minmax(0, 1fr);
+    border-block: 1px solid var(--border);
   }
-  h3 {
-    margin: 0.2rem 0 0.35rem;
-    font: 700 1rem var(--font-body);
+  .topology {
+    background: var(--workspace-surface);
+    border-right: 1px solid var(--border);
+    min-width: 0;
   }
-  h4 {
-    margin: 0.65rem 0;
-    overflow-wrap: anywhere;
+  .topology > summary {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    font: 12px var(--font-mono);
+    font-weight: 600;
   }
-  .small {
-    font-size: 0.73rem;
+  .topology > summary::before {
+    display: none;
+  }
+  .topology > summary span:last-child {
     color: var(--fg-muted);
+    font-weight: 400;
+  }
+  .topology .small {
+    padding: 0 0.8rem;
+    margin: 0;
+    font-size: 11px;
     line-height: 1.45;
   }
   .graph-scroll {
     overflow: auto;
-    max-height: 26rem;
-  }
-  .graph-scroll svg {
-    min-width: 100%;
+    max-height: 31rem;
+    padding: 0.3rem 0.3rem 0.75rem;
   }
   svg :global(.graph-link) {
     stroke: var(--border-strong);
     fill: none;
   }
   svg :global(.graph-node rect) {
-    fill: var(--bg);
-    stroke: var(--border-strong);
+    fill: var(--workspace-surface);
+    stroke: transparent;
   }
   svg :global(.graph-node) {
     cursor: pointer;
   }
+  svg :global(.graph-node:hover rect) {
+    stroke: var(--border-strong);
+  }
   svg :global(.graph-node.selected rect) {
-    stroke: var(--fg);
-    stroke-width: 2;
-    fill: var(--bg-alt);
+    stroke: var(--border-strong);
+    fill: var(--bg);
   }
   svg :global(.graph-node.future) {
-    opacity: 0.4;
+    opacity: 0.45;
   }
   svg :global(.graph-label) {
     fill: var(--fg);
-    font: 14px var(--font-body);
+    font: 600 13px var(--font-mono);
   }
   svg :global(.graph-meta) {
     fill: var(--fg-muted);
     font: 9px var(--font-mono);
   }
+  svg :global(.state-done) {
+    fill: var(--c-ok);
+  }
+  svg :global(.state-down) {
+    fill: var(--c-fail);
+  }
+  svg :global(.state-unknown) {
+    fill: var(--fg-faint);
+  }
   .conversation-panel {
     min-width: 0;
   }
   .conversation-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    background: var(--workspace-surface);
+  }
+  .agent-identity {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+  .agent-avatar {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--bg);
+    font: 600 12px var(--font-mono);
+  }
+  .agent-identity h3 {
+    margin: 0;
+    font: 600 14px var(--font-mono);
+    font-style: normal;
+  }
+  .agent-identity p {
+    margin: 0.2rem 0 0;
+    font: 10px/1.35 var(--font-mono);
+    color: var(--fg-muted);
+  }
+  .conversation-head :global(choice-picker) {
+    width: 170px;
+    flex-shrink: 0;
+  }
+  .conversation-head :global(.ui-label) {
+    display: none;
+  }
+  .conversation-head :global(.ui-choice-trigger) {
+    min-height: 29px;
+    font-size: 10px;
+    padding: 0.35rem 0.5rem;
+  }
+  .ui-tabs {
+    padding: 0.3rem 0.7rem;
+    gap: 0.3rem;
+  }
+  .ui-tabs button {
+    font-size: 11px;
+    padding: 0.4rem 0.65rem;
+  }
+  .conversation-toolbar {
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
-    align-items: end;
-    margin-bottom: 0.3rem;
+    padding: 0.45rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .conversation-toolbar .small {
+    margin: 0;
+    font: 10px/1.4 var(--font-mono);
+    color: var(--fg-faint);
+  }
+  .tool-expansion {
+    margin-left: auto;
+    padding: 0.2rem 0.4rem;
+    flex-shrink: 0;
+    font-size: 10px;
+    border-color: transparent;
   }
   .conversation-scroll {
-    height: 26rem;
+    height: 29rem;
     overflow: auto;
-    border-bottom: 1px solid var(--border);
-    padding-right: 0.6rem;
     scroll-behavior: auto;
+    overscroll-behavior: contain;
   }
-  .conversation-scroll :global(.chat-message) {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .conversation-scroll :global(.chat-message.selected) {
-    border-left: 2px solid var(--c-info);
-    padding-left: 0.65rem;
-  }
-  .conversation-scroll :global(header) {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-  }
-  .conversation-scroll :global(time),
-  .conversation-scroll :global(.message-source) {
-    font: 0.6rem var(--font-mono);
-    color: var(--fg-muted);
-  }
-  .conversation-scroll :global(.message-source) {
-    margin-left: auto;
-    border: 0;
-    padding: 0.2rem;
-  }
-  .conversation-scroll :global(.blk-text) {
-    font-family: var(--font-body);
-    font-size: 0.88rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-  .conversation-scroll :global(.recorded-error) {
-    color: var(--c-fail);
-    font-size: 0.8rem;
-  }
-  .conversation-scroll :global(.redaction),
-  .conversation-scroll :global(.tool-record p),
   .conversation-scroll :global(.chat-empty) {
-    font-size: 0.75rem;
+    padding: 1rem;
+    font: 14px/1.5 var(--font-body);
     color: var(--fg-muted);
-    overflow-wrap: anywhere;
   }
   .navigation {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
-    gap: 0.45rem;
-    padding: 0.65rem 0;
-    font: 0.65rem var(--font-mono);
+    gap: 0.4rem;
+    padding: 0.6rem 0.85rem;
+    font: 10px var(--font-mono);
+    background: var(--workspace-surface);
   }
   .navigation :global(choice-picker) {
     flex: 1;
     min-width: 12rem;
   }
+  .navigation :global(.ui-label) {
+    font-size: 10px;
+  }
+  .navigation :global(.ui-choice-trigger),
+  .navigation .ui-button {
+    min-height: 29px;
+    padding: 0.35rem 0.55rem;
+    font-size: 10px;
+  }
   .navigation a {
     margin-left: auto;
     padding-bottom: 0.4rem;
   }
-  pre {
-    margin: 0.65rem 0;
-    padding: 0.65rem;
-    font: 0.66rem/1.5 var(--font-mono);
-    background: var(--bg-alt);
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    max-height: 17rem;
-    overflow-y: auto;
-  }
   .assignment,
   .coverage {
     border-top: 1px solid var(--border);
-    font-size: 0.8rem;
+    font-size: 12px;
+    padding: 0 0.85rem;
+  }
+  .assignment > summary,
+  .coverage > summary {
+    padding: 0.55rem 0;
+    font-size: 12px;
   }
   .assignment :global(dt) {
     font-weight: 700;
@@ -1466,6 +1688,32 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   }
   .coverage :global(p) {
     color: var(--fg-muted);
+    font-size: 12px;
+  }
+  [data-panel='source'],
+  [data-panel='usage'] {
+    padding: 0.5rem 0.85rem;
+  }
+  h4 {
+    margin: 0.3rem 0;
+    font-size: 16px;
+    font-style: normal;
+    overflow-wrap: anywhere;
+  }
+  [data-panel='source'] .small {
+    font: 11px var(--font-mono);
+    color: var(--fg-muted);
+  }
+  pre {
+    margin: 0.5rem 0;
+    padding: 0.65rem;
+    font: 12px/1.5 var(--font-mono);
+    background: var(--bg-sink);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-height: 17rem;
+    overflow: auto;
+    border-radius: 4px;
   }
   [data-tokens] {
     width: 100%;
@@ -1507,12 +1755,19 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
-    margin: 0.6rem 0;
+    margin: 0.2rem 0 0.7rem;
+  }
+  .metric-controls :global(.ui-label) {
+    font-size: 10px;
+  }
+  .metric-controls :global(.ui-choice-trigger) {
+    font-size: 11px;
+    min-height: 30px;
   }
   .usage-legend {
     display: flex;
     gap: 0.8rem;
-    font: 0.62rem var(--font-mono);
+    font: 11px var(--font-mono);
   }
   .input-key {
     color: var(--c-info);
@@ -1523,38 +1778,104 @@ const json = JSON.stringify(records).replace(/</g, '\\u003c')
   .cache-key {
     color: var(--c-run);
   }
+  [data-token-caption] {
+    font: 11px/1.5 var(--font-mono);
+    color: var(--fg-muted);
+    margin: 0.6rem 0;
+  }
   @media (max-width: 950px) {
+    .workspace {
+      grid-template-columns: 220px minmax(0, 1fr);
+    }
+    .conversation-head {
+      align-items: start;
+      flex-direction: column;
+    }
+    .conversation-head :global(choice-picker) {
+      width: 100%;
+    }
+    .agent-identity p {
+      font-size: 9px;
+    }
+  }
+  @media (max-width: 760px) {
     .workspace {
       grid-template-columns: minmax(0, 1fr);
     }
+    .topology {
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .topology > summary::after {
+      content: '+';
+      margin-left: auto;
+    }
+    .topology[open] > summary::after {
+      content: '−';
+    }
     .graph-scroll {
       max-height: 18rem;
+      width: 100%;
+      max-width: 340px;
     }
-    .graph-scroll svg {
-      min-width: 0;
+    .conversation-head {
+      flex-direction: row;
+      align-items: center;
+    }
+    .conversation-head :global(choice-picker) {
+      width: 145px;
+    }
+    .agent-identity p {
+      max-width: 190px;
+    }
+    .conversation-scroll {
+      height: 28rem;
     }
   }
-  @media (max-width: 600px) {
+  @media (max-width: 500px) {
     .controls {
       grid-template-columns: 1fr 1fr;
     }
     .controls > label {
       grid-column: 1/-1;
     }
+    .run-context {
+      display: block;
+    }
+    .archive-state {
+      display: none;
+    }
     .playback label {
       flex-wrap: wrap;
+      gap: 0.3rem;
     }
     .playback input {
       min-width: 100%;
     }
     .conversation-head {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .conversation-scroll {
-      height: 30rem;
+    .conversation-head :global(choice-picker) {
+      width: 100%;
+    }
+    .agent-identity p {
+      max-width: none;
+    }
+    .timeline-scroll {
+      margin-inline: 0.55rem;
     }
     .navigation a {
       margin-left: 0;
+    }
+    .tool-expansion {
+      font-size: 9px;
+    }
+    .conversation-toolbar {
+      padding: 0.4rem 0.6rem;
+    }
+    .record-summary {
+      line-height: 1.5;
     }
   }
 </style>
