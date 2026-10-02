@@ -1,0 +1,154 @@
+---
+interface Props {
+  label: string
+  field: string
+  options?: { value: string; label: string }[]
+  value?: string
+}
+const { label, field, options = [], value } = Astro.props
+const id = `choice-${field}`
+---
+
+<choice-picker class="ui-field">
+  <span class="ui-label" id={`${id}-label`}>
+    {label}
+  </span>
+  <select aria-label={label} {...{ [`data-${field}`]: true }}>
+    {options.map((o) => (
+      <option value={o.value} selected={o.value === value}>
+        {o.label}
+      </option>
+    ))}
+  </select>
+  <button
+    class="ui-choice-trigger"
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-labelledby={`${id}-label ${id}-value`}
+    popovertarget={`${id}-popup`}
+    hidden
+  >
+    <span id={`${id}-value`}></span>
+    <span class="ui-chevron" aria-hidden="true"></span>
+  </button>
+  <div
+    class="ui-choice-popup"
+    id={`${id}-popup`}
+    popover="auto"
+    role="listbox"
+    aria-labelledby={`${id}-label`}
+  ></div>
+</choice-picker>
+<script>
+  class ChoicePicker extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.ready) return
+      this.dataset.ready = 'true'
+      const select = this.querySelector('select')!
+      const trigger =
+        this.querySelector<HTMLButtonElement>('.ui-choice-trigger')!
+      const menu = this.querySelector<HTMLElement>('[popover]')!
+      const caption = trigger.querySelector('span')!
+      select.hidden = true
+      trigger.hidden = false
+      const sync = () => {
+        caption.textContent =
+          select.selectedOptions[0]?.textContent ?? 'Choose a moment'
+        trigger.disabled = select.disabled
+      }
+      const close = () => {
+        menu.hidePopover()
+        trigger.focus()
+      }
+      const choose = (option: HTMLOptionElement) => {
+        select.value = option.value
+        select.dispatchEvent(new Event('change', { bubbles: true }))
+        sync()
+        close()
+      }
+      let typeahead = ''
+      let lastKey = 0
+      const fill = () => {
+        menu.replaceChildren()
+        for (const option of select.options) {
+          const row = document.createElement('button')
+          row.type = 'button'
+          row.role = 'option'
+          row.tabIndex = -1
+          row.textContent = option.textContent
+          row.dataset.choiceValue = option.value
+          row.setAttribute('aria-selected', String(option.selected))
+          row.disabled = option.disabled
+          row.addEventListener('click', () => choose(option))
+          menu.append(row)
+        }
+        const box = trigger.getBoundingClientRect()
+        menu.style.width = `${Math.min(Math.max(box.width, 230), innerWidth - 24)}px`
+        menu.style.left = `${Math.min(box.left, innerWidth - parseFloat(menu.style.width) - 12)}px`
+        menu.style.top = `${Math.min(box.bottom + 6, innerHeight - 180)}px`
+        menu.style.maxHeight = `${Math.max(160, innerHeight - box.bottom - 18)}px`
+      }
+      menu.addEventListener('beforetoggle', (event) => {
+        if ((event as ToggleEvent).newState === 'open') {
+          fill()
+          sync()
+        }
+      })
+      menu.addEventListener('toggle', (event) => {
+        const open = (event as ToggleEvent).newState === 'open'
+        trigger.setAttribute('aria-expanded', String(open))
+        if (open)
+          menu.querySelector<HTMLElement>('[aria-selected="true"]')?.focus()
+      })
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault()
+          menu.showPopover()
+        }
+      })
+      menu.addEventListener('keydown', (event) => {
+        const rows = [
+          ...menu.querySelectorAll<HTMLButtonElement>(
+            '[role="option"]:not(:disabled)',
+          ),
+        ]
+        const at = rows.indexOf(document.activeElement as HTMLButtonElement)
+        let target: number | undefined
+        if (event.key === 'ArrowDown') target = (at + 1) % rows.length
+        if (event.key === 'ArrowUp')
+          target = (at - 1 + rows.length) % rows.length
+        if (event.key === 'Home') target = 0
+        if (event.key === 'End') target = rows.length - 1
+        if (target !== undefined) {
+          event.preventDefault()
+          rows[target]?.focus()
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          close()
+        }
+        if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
+          const now = Date.now()
+          typeahead = now - lastKey < 700 ? typeahead + event.key : event.key
+          lastKey = now
+          rows
+            .find((r) =>
+              r.textContent?.toLowerCase().startsWith(typeahead.toLowerCase()),
+            )
+            ?.focus()
+        }
+      })
+      select.addEventListener('change', sync)
+      this.addEventListener('choice-refresh', sync)
+      new MutationObserver(sync).observe(select, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+      })
+      sync()
+    }
+  }
+  if (!customElements.get('choice-picker'))
+    customElements.define('choice-picker', ChoicePicker)
+</script>

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "Garamond-400.ttf",
+    "source": "https://raw.githubusercontent.com/octaviopardo/EBGaramond12/106a4a6d377987459ae5e68673a4570f13b957fb/fonts/ttf/EBGaramond-Regular.ttf",
+    "sha256": "2028dc06d3c130b4761693481436a32a8e35ed500bf58c25c53de004106125b8",
+    "bytes": 627304
+  },
+  {
+    "file": "Garamond-700.ttf",
+    "source": "https://raw.githubusercontent.com/octaviopardo/EBGaramond12/106a4a6d377987459ae5e68673a4570f13b957fb/fonts/ttf/EBGaramond-Bold.ttf",
+    "sha256": "0cfed122e51e3fd44ccedaef7637efed6d5bdc4ad89a6117d70241510309a186",
+    "bytes": 687396
+  },
+  {
+    "file": "JetBrainsMono-400.ttf",
+    "source": "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/ttf/JetBrainsMono-Regular.ttf",
+    "sha256": "e6fd0d7e91550b3ed2b735d4312474362c4716edc4fc0577a0f61ed782d5aed1",
+    "bytes": 270224
+  },
+  {
+    "file": "JetBrainsMono-700.ttf",
+    "source": "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/ttf/JetBrainsMono-Bold.ttf",
+    "sha256": "d22c4f3821d725eb01210d278d95dfcfcaadc34699a06658d47c8a5cc5830ada",
+    "bytes": 274096
+  }
+]

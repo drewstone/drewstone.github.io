@@ -3563,7 +3563,7 @@
     "nativeFiles": 0,
     "nativeRuntimeJoins": 0,
     "completeOriginalCapture": false,
-    "publicContent": "Event metadata. Unreviewed message bodies, tool arguments/results, private reasoning, filesystem locations, credentials and billing data are not published. Original source hashes and line numbers remain available.",
+    "publicContent": "Reviewed ordinary user/assistant text and selected tool outputs are published with explicit redactions. Other tool bodies and arguments, hidden thinking, credentials, and billing data remain private. Original source hashes and line numbers are retained.",
     "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
     "cost": "Unavailable: zero-valued legacy counters are not treated as a bill."
   }
