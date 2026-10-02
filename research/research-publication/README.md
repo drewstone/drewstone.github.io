@@ -17,9 +17,10 @@ Do not claim peer review, complete capture, or first discovery without the suppo
 
 ## Event records
 
-`src/components/EvidenceExplorer.astro` renders `research-publication.events.v1`, validated by `src/lib/research-evidence.ts`.
-The same viewer accepts Runtime nodes, native sessions, and run-attributed findings from any harness.
-It does not infer native-to-Runtime joins or execute research.
+`src/components/EvidenceExplorer.astro` embeds the React viewer from [`@drewstone/agent-record`](https://github.com/drewstone/agent-record).
+Its `fromResearchPublication` adapter validates and converts `research-publication.events.v1` into the shared record format.
+`AgentRecordView.tsx` owns site URLs; the package owns rendering and interaction.
+The viewer accepts attributed agents, native sessions, and findings without inferring session joins or executing research.
 The legacy import tool currently reads retained Runtime journals and Pi JSONL archives; it is not an all-harness capture implementation.
 New harness exports must use retained source records and the same publication contract.
 
@@ -54,7 +55,7 @@ A gap between event marks is missing observation, not a measured idle interval.
 
 ## Release and evidence
 
-Build on GTR, then exercise the static output through a browser.
+Build on a beelink, then exercise the static output through a browser.
 Retain matching before/after screenshots and the uncut interaction recording outside application bundles.
 Check no-JavaScript reading, both themes, mobile overflow, direct event links, filters, empty results, downloads, keyboard controls, and LaTeX.
 Verify the deployed GitHub Pages revision and its actual URLs after merge.
@@ -79,10 +80,10 @@ A missing message is shown as missing. A blank interval is not proof of idleness
 `src/styles/controls.css` owns fields, buttons, tabs, focus states, and disclosures across the site.
 `ChoicePicker.astro` owns the searchable-by-typing, keyboard-navigable popover listbox, with a native select fallback without JavaScript.
 `ResearchBibliography.astro` owns numbered references and citation targets.
-`ResearchConversation.astro` pairs tool calls and results within the exact native session and call ID.
-It reuses `ChatBlock.astro` for retained message text and shared icons from `chat-icons.ts`.
+The shared Agent Record package pairs tools within the original node and call ID.
+`ChatBlock.astro` and `chat-icons.ts` remain shared by essay authorship traces.
 The viewer labels team roles separately from assignments: the five August 5 workers were assigned verification.
-No execution service or new runtime dependency is introduced.
+The viewer uses React and Zod; it introduces no execution service.
 
 Timeline marks group events within six display pixels; hover states retain exact timestamps and group size.
 Repeated activation cycles a group's original events; zoom increases temporal resolution.
@@ -90,7 +91,7 @@ All events remain available through keyboard navigation and the downloadable rec
 The Tokens tab separates input, output, and cache counters, with cumulative or per-response values against elapsed time or recorded order.
 Tool return time pairs exact call/result IDs within a native session; it is an observed interval, not model latency.
 Every metric respects the selected time; incomplete counters and unmatched timings remain unknown.
-Chart hover and focus details use the shared plain-text `plot-tooltip.ts` implementation.
+Chart hover and focus details are plain text within the shared viewer.
 Open-graph image generation uses pinned local fonts with licenses and source hashes in `tools/fonts`.
 
 ## Reviewed tool content
