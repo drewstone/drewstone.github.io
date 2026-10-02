@@ -42,3 +42,15 @@ Prefer HTML or an existing component for structured UI; use Canvas for plots and
 Read theme variables rather than hardcode chart colors.
 Give labels enough space and verify the result in both themes and at narrow widths.
 Scoped MDX components are appropriate when existing components cannot express the example.
+
+## Shared-link images
+
+`tools/og-render.ts` owns the 1200×630 cover layout and pinned local fonts.
+`tools/og-art.ts` owns the mathematical figures and labeled conceptual illustrations.
+`src/lib/social-images.ts` chooses images and versions their URLs; the OG route generates covers for published content.
+Existing draft preview routes use the generic essay cover.
+Keep article titles authoritative, including human-original titles.
+Choose an essay illustration explicitly; uncurated essays use the typography design.
+Research figures must reproduce the article’s stated construction and distinguish asymptotics from measured data.
+Inspect all covers at sharing size before release, including the longest title and every research result.
+Keep generated preview evidence outside `public` and the application bundle.

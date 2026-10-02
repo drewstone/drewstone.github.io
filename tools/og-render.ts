@@ -1,235 +1,62 @@
-/**
- * og-render — programmatic OG image renderer (Satori → Resvg → PNG).
- *
- * Produces 1200×630 PNGs with a monochrome design that matches the site:
- * big serif title, mono caption strip with date · tags · author, a single
- * violet accent dot. Deterministic; runs at build time once per post.
- */
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
+import { createElement as h, type CSSProperties, type ReactNode } from 'react'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { renderOgArt, type OgArtKind } from './og-art'
 
-// Astro bundles this module into dist; import.meta.url would point at transient output.
-// The build runs from the project root, where the licensed font assets are retained.
 const FONT_DIR = join(process.cwd(), 'tools/fonts')
-const FONTS = [
+const FONT_SPECS = [
   { name: 'Garamond', weight: 400 as const },
   { name: 'Garamond', weight: 700 as const },
   { name: 'JetBrainsMono', weight: 400 as const },
-  { name: 'JetBrainsMono', weight: 700 as const },
 ]
-let fontCache:
-  | Promise<
-      { name: string; weight: 400 | 700; data: Buffer; style: 'normal' }[]
-    >
-  | undefined
-
-function loadFonts() {
-  return (fontCache ??= Promise.all(
-    FONTS.map(async ({ name, weight }) => ({
-      name,
-      weight,
-      style: 'normal' as const,
-      data: await readFile(join(FONT_DIR, `${name}-${weight}.ttf`)),
-    })),
-  ))
-}
+let fontCache: Promise<{ name: string; weight: 400 | 700; data: Buffer; style: 'normal' }[]> | undefined
+const fonts = () => fontCache ??= Promise.all(FONT_SPECS.map(async f => ({
+  ...f, style: 'normal' as const, data: await readFile(join(FONT_DIR, `${f.name}-${f.weight}.ttf`)),
+})))
 
 export type OgInput = {
   title: string
-  description?: string
-  date?: Date | string
-  tags?: string[]
-  author?: string
+  section: string
+  art: OgArtKind
   original?: boolean
 }
 
-function fmtDate(d: Date | string | undefined) {
-  if (!d) return ''
-  const dt = d instanceof Date ? d : new Date(d)
-  return dt
-    .toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-    .toUpperCase()
+const artCache = new Map<OgArtKind, string>()
+const fontOptions = { loadSystemFonts: false, defaultFontFamily: 'EB Garamond',
+  fontFiles: FONT_SPECS.map(f => join(FONT_DIR, `${f.name}-${f.weight}.ttf`)),
 }
 
+const box = (style: CSSProperties, ...children: ReactNode[]) => h('div', { style: { display: 'flex', ...style } }, ...children)
+
+/** One build-time cover system. Fonts and scientific figures are local and deterministic. */
 export async function renderOgPng(input: OgInput): Promise<Buffer> {
-  const fonts = await loadFonts()
-
-  const accent = input.original ? '#15803d' : '#6d28d9'
-  const dateStr = fmtDate(input.date)
-  const tagStr = (input.tags ?? [])
-    .filter((t) => t !== 'original')
-    .slice(0, 4)
-    .map((t) => t.toLowerCase())
-    .join('  ·  ')
-  const authorStr = input.original ? 'DREW STONE' : 'DREW STONE  ·  WITH AGENTS'
-
-  const node = {
-    type: 'div',
-    props: {
-      style: {
-        width: '1200px',
-        height: '630px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        backgroundColor: '#ffffff',
-        padding: '70px 80px',
-        fontFamily: 'Garamond',
-        color: '#111111',
-        position: 'relative',
-      },
-      children: [
-        // top eyebrow: dot + site
-        {
-          type: 'div',
-          props: {
-            style: {
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              fontFamily: 'JetBrainsMono',
-              fontSize: '20px',
-              letterSpacing: '4px',
-              color: '#7a7a7a',
-              textTransform: 'uppercase',
-              fontWeight: 700,
-            },
-            children: [
-              {
-                type: 'div',
-                props: {
-                  style: {
-                    width: '14px',
-                    height: '14px',
-                    borderRadius: '50%',
-                    backgroundColor: accent,
-                  },
-                },
-              },
-              { type: 'span', props: { children: 'drewstone.github.io' } },
-            ],
-          },
-        },
-        // title
-        {
-          type: 'div',
-          props: {
-            style: {
-              display: 'flex',
-              fontFamily: 'Garamond',
-              fontSize: input.title.length > 48 ? '78px' : '96px',
-              fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-              color: '#111111',
-              maxWidth: '1040px',
-            },
-            children: input.title,
-          },
-        },
-        // bottom strip: meta
-        {
-          type: 'div',
-          props: {
-            style: {
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              fontFamily: 'JetBrainsMono',
-            },
-            children: [
-              ...(input.description
-                ? [
-                    {
-                      type: 'div',
-                      props: {
-                        style: {
-                          display: 'flex',
-                          fontFamily: 'Garamond',
-                          fontSize: '28px',
-                          lineHeight: 1.4,
-                          color: '#4a4a4a',
-                          maxWidth: '1040px',
-                        },
-                        children:
-                          input.description.length > 180
-                            ? input.description.slice(0, 177) + '…'
-                            : input.description,
-                      },
-                    },
-                  ]
-                : []),
-              {
-                type: 'div',
-                props: {
-                  style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '24px',
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: '18px',
-                    color: '#7a7a7a',
-                    fontWeight: 400,
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    marginTop: '12px',
-                  },
-                  children: [
-                    ...(dateStr
-                      ? [{ type: 'span', props: { children: dateStr } }]
-                      : []),
-                    ...(tagStr
-                      ? [
-                          {
-                            type: 'span',
-                            props: {
-                              style: { color: '#d4d4d4' },
-                              children: '·',
-                            },
-                          },
-                          { type: 'span', props: { children: tagStr } },
-                        ]
-                      : []),
-                    {
-                      type: 'span',
-                      props: {
-                        style: {
-                          marginLeft: 'auto',
-                          color: accent,
-                          fontWeight: 700,
-                        },
-                        children: authorStr,
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  } as any
-
-  const svg = await satori(node, {
-    width: 1200,
-    height: 630,
-    fonts: fonts.map((f) => ({
-      name: f.name,
-      data: f.data,
-      weight: f.weight,
-      style: f.style,
-    })),
-  })
-
-  const png = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } })
-    .render()
-    .asPng()
-  return png
+  const loadedFonts = await fonts()
+  const ink = '#25231e', quiet = '#777269', paper = '#f6f3eb'
+  const size = input.title.length > 60 ? 58 : input.title.length > 32 ? 66 : 78
+  // Embedded SVG images cannot inherit the parent renderer's font database.
+  // Rasterize the figure with the same pinned fonts before embedding it.
+  let art = artCache.get(input.art)
+  if (!art) {
+    art = new Resvg(renderOgArt(input.art), { font: fontOptions }).render().asPng().toString('base64')
+    artCache.set(input.art, art)
+  }
+  const node = box({ width: 1200, height: 630, padding: '48px 60px 36px', backgroundColor: paper,
+    color: ink, flexDirection: 'column', fontFamily: 'Garamond', position: 'relative' },
+    box({ alignItems: 'baseline', justifyContent: 'space-between', paddingBottom: 20, borderBottom: '1px solid #d7d2c7' },
+      box({ fontSize: 32 }, 'Drew Stone'),
+      box({ fontFamily: 'JetBrainsMono', fontSize: 17, color: quiet }, input.section),
+    ),
+    box({ flex: 1, alignItems: 'center', justifyContent: 'space-between', gap: 44 },
+      box({ width: 610, fontSize: size, fontWeight: 700, lineHeight: 1.04, letterSpacing: '-0.025em' }, input.title),
+      h('img', { src: `data:image/png;base64,${art}`, width: 400, height: 400 }),
+    ),
+    box({ alignItems: 'center', justifyContent: 'space-between', fontFamily: 'JetBrainsMono', fontSize: 17, color: quiet },
+      box({}, 'drewstone.github.io'),
+      input.original ? box({ color: '#396747' }, 'Human original') : null,
+    ),
+  )
+  const svg = await satori(node, { width: 1200, height: 630, fonts: loadedFonts })
+  return new Resvg(svg, { font: fontOptions }).render().asPng()
 }

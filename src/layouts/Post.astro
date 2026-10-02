@@ -1,5 +1,6 @@
 ---
 import Base from './Base.astro'
+import { coverUrl } from '../lib/social-images'
 import AuthorBadges from '../components/AuthorBadges.astro'
 import SupportingTraces from '../components/SupportingTraces.astro'
 import Revisions from '../components/Revisions.astro'
@@ -41,6 +42,7 @@ interface Props {
   seriesLabel?: string
   seriesPosts?: SeriesPost[]
   original?: boolean
+  draft?: boolean
 }
 
 const {
@@ -56,6 +58,7 @@ const {
   seriesLabel,
   seriesPosts = [],
   original = false,
+  draft = false,
 } = Astro.props
 
 function formatDate(d: Date): string {
@@ -98,7 +101,7 @@ const articleJsonLd = {
   title={title}
   description={description}
   type="article"
-  image={slug ? `/og/${slug}.png` : undefined}
+  image={draft ? coverUrl('essays') : undefined}
   publishedTime={date}
   modifiedTime={updated}
   tags={tags}
