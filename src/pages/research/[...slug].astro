@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro'
 import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
 import { getCollection, render } from 'astro:content'
 import { readFile } from 'node:fs/promises'
-import { evidenceSchema } from '../../lib/research-evidence'
+import { fromResearchPublication } from '@drewstone/agent-record/adapters/research-publication'
 export async function getStaticPaths() {
   return (await getCollection('research')).map((entry) => ({
     params: { slug: entry.id },
@@ -16,7 +16,7 @@ const records = await Promise.all(
   entry.data.record_ids.map(async (id: string) => {
     if (!/^[a-z0-9-]+$/.test(id))
       throw new Error(`Invalid publication record id: ${id}`)
-    return evidenceSchema.parse(
+    return fromResearchPublication(
       JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8')),
     )
   }),
