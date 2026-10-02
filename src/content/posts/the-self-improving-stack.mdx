@@ -104,25 +104,29 @@ The system is not self-improving because it says "reflect." It is self-improving
 
 The compact equation is:
 
-```text
-Delta_t = E_{x ~ D_task}[Eval(Run(c_t, x), Run(s_t, x))]
-
-s_{t+1} =
-  Promote(s_t, c_t)
-  if Gate(Delta_t, policy) passes
-  else s_t
-```
+$$
+\begin{aligned}
+  \Delta_t &= \mathbb{E}_{x\sim D_{\text{task}}}[\operatorname{Eval}(\operatorname{Run}(c_t,x),\operatorname{Run}(s_t,x))] \\
+  s_{t+1} &=
+  \begin{cases}
+    \operatorname{Promote}(s_t,c_t), & \text{if }\operatorname{Gate}(\Delta_t,\text{policy})\text{ passes}, \\
+    s_t, & \text{otherwise.}
+  \end{cases}
+\end{aligned}
+$$
 
 where:
 
-```text
-s_t = current system state
-c_t = candidate state
-x ~ D_task = a user task drawn from the task distribution the system is meant to serve
-Run(.) = full agent trajectory under sampled user-task scenarios
-Eval(.) = measured evidence on task outcomes and trace behavior
-Gate(.) = promotion rule under policy
-```
+$$
+\begin{aligned}
+  s_t &= \text{current system state} \\
+  c_t &= \text{candidate state} \\
+  x &\sim D_{\text{task}}\quad\text{(a user task drawn from the target task distribution)} \\
+  \operatorname{Run}(\cdot) &= \text{full agent trajectory under sampled user-task scenarios} \\
+  \operatorname{Eval}(\cdot) &= \text{measured evidence on task outcomes and trace behavior} \\
+  \operatorname{Gate}(\cdot) &= \text{promotion rule under policy}
+\end{aligned}
+$$
 
 The system improves only when the promoted state performs better on the user-task distribution while staying inside cost, safety, integrity, and governance constraints.
 
@@ -189,11 +193,11 @@ But prompt search operates inside a fixed runtime.
 
 The objective is roughly:
 
-```text
-p* = argmax_p E[R(Run(h_fixed, p, x))]
-```
+$$
+p^*=\operatorname*{argmax}_p\mathbb{E}[R(\operatorname{Run}(h_{\text{fixed}},p,x))]
+$$
 
-The harness `h_fixed` is held constant.
+The harness $h_{\text{fixed}}$ is held constant.
 
 If the runtime lacks a worker pool, the prompt can ask for parallelism but cannot create it. If the tool graph lacks a verifier, the prompt can request verification but cannot execute one. If the evaluator leaks holdout answers, the prompt can overfit beautifully.
 
@@ -404,9 +408,9 @@ evaluator
 
 Post-training mutates model behavior itself:
 
-```text
-theta_{t+1} = Update(theta_t, data, objective)
-```
+$$
+\theta_{t+1}=\operatorname{Update}(\theta_t,\text{data},\text{objective})
+$$
 
 or:
 
@@ -424,11 +428,12 @@ Memory changes future runs by changing what persists.
 
 The update rule is:
 
-```text
-M_{t+1} =
-  Apply(M_t, u_t) if G_mem(u_t, trace, policy) passes
-  M_t             otherwise
-```
+$$
+M_{t+1}=\begin{cases}
+  \operatorname{Apply}(M_t,u_t),&\text{if }G_{\text{mem}}(u_t,\text{trace},\text{policy})\text{ passes}, \\
+  M_t,&\text{otherwise.}
+\end{cases}
+$$
 
 A memory system is useful when:
 

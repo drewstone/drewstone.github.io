@@ -86,7 +86,7 @@ A_runtime = {
 }
 ```
 
-If `parallel` is not in `A_runtime`, no optimized prompt can make true parallelism appear. If `checkpoint` and `replay` are absent, a long-running agent has no durable execution boundary. If `select` is only an LLM preference expressed in prose, the system has no enforceable winner rule.
+If `parallel` is not in $A_{\text{runtime}}$, no optimized prompt can make true parallelism appear. If `checkpoint` and `replay` are absent, a long-running agent has no durable execution boundary. If `select` is only an LLM preference expressed in prose, the system has no enforceable winner rule.
 
 The deep question is:
 
@@ -100,25 +100,27 @@ That one distinction determines whether multi-agent self-improvement is engineer
 
 Let:
 
-```text
-g = runtime topology
-pi = runtime policy over moves in A_runtime
-m = model/backend set
-p = prompts and role descriptions
-k = active skills
-u = tools and external affordances
-x = task from distribution D
-R = trajectory reward or eval score
-C = cost, latency, compute, human review, or risk
-```
+$$
+\begin{aligned}
+  g &= \text{runtime topology} \\
+  \pi &= \text{runtime policy over moves in } A_{\text{runtime}} \\
+  m &= \text{model/backend set} \\
+  p &= \text{prompts and role descriptions} \\
+  k &= \text{active skills} \\
+  u &= \text{tools and external affordances} \\
+  x &= \text{task from distribution } D \\
+  R &= \text{trajectory reward or eval score} \\
+  C &= \text{cost, latency, compute, human review, or risk}
+\end{aligned}
+$$
 
 Runtime topology optimization estimates:
 
-```text
-J(g, pi | m, p, k, u) = E_{x ~ D}[R(run(g, pi, m, p, k, u, x))] - lambda * E[C(run(g, pi, m, p, k, u, x))]
-```
+$$
+J(g, \pi \mid m,p,k,u) = \mathbb{E}_{x\sim D}[R(\operatorname{run}(g,\pi,m,p,k,u,x))] - \lambda\,\mathbb{E}[C(\operatorname{run}(g,\pi,m,p,k,u,x))]
+$$
 
-Prompt and skill optimization usually keep `g` fixed. Topology optimization changes `g`, `pi`, or both.
+Prompt and skill optimization usually keep $g$ fixed. Topology optimization changes $g$, $\pi$, or both.
 
 This is not gradient descent over a dense parameter tensor. It is discrete search over executable program structure: graph edges, worker counts, branch policies, selectors, validators, budget ledgers, replay boundaries, and promotion gates.
 

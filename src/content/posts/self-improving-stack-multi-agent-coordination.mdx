@@ -59,44 +59,46 @@ Coordination is structure.
 
 The previous post made runtime topology explicit:
 
-```text
-g = executable graph of agents, tools, validators, selectors, handoffs, and gates
-pi = runtime policy over graph moves
-```
+$$
+\begin{aligned}
+  g &= \text{executable graph of agents, tools, validators, selectors, handoffs, and gates} \\
+  \pi &= \text{runtime policy over graph moves}
+\end{aligned}
+$$
 
 Multi-agent coordination sits one layer above that. It decides what the nodes are supposed to do together.
 
 Let:
 
-```text
-r = role contracts
-p = persona and instruction content
-k = active skills per role
-u = tools and permissions per role
-c = communication and context-sharing policy
-sigma = selector or merger policy
-v = verifier and judge stack
-b = budget allocation policy
-tau = termination and escalation policy
-```
+$$
+\begin{aligned}
+  r &= \text{role contracts} \\
+  p &= \text{persona and instruction content} \\
+  k &= \text{active skills per role} \\
+  u &= \text{tools and permissions per role} \\
+  c &= \text{communication and context-sharing policy} \\
+  \sigma &= \text{selector or merger policy} \\
+  v &= \text{verifier and judge stack} \\
+  b &= \text{budget allocation policy} \\
+  \tau &= \text{termination and escalation policy}
+\end{aligned}
+$$
 
 A multi-agent system candidate is:
 
-```text
-s = (g, r, p, k, u, c, sigma, v, b, tau)
-```
+$$
+s=(g,r,p,k,u,c,\sigma,v,b,\tau)
+$$
 
 The optimization target is:
 
-```text
-J(s | m, h) =
-  E_{x ~ D}[R(run(m, h, s, x))]
-  - lambda * E[C(run(m, h, s, x))]
-```
+$$
+J(s\mid m,h)=\mathbb{E}_{x\sim D}[R(\operatorname{run}(m,h,s,x))]-\lambda\,\mathbb{E}[C(\operatorname{run}(m,h,s,x))]
+$$
 
 The notation is only useful because it exposes the coordinate system.
 
-If only `p` changes, the optimizer is tuning role descriptions. If `k` changes, it is tuning durable role procedure. If `g`, `sigma`, `c`, `b`, or `tau` change, it is tuning coordination structure.
+If only $p$ changes, the optimizer is tuning role descriptions. If $k$ changes, it is tuning durable role procedure. If $g$, $\sigma$, $c$, $b$, or $\tau$ change, it is tuning coordination structure.
 
 That distinction prevents a common category error: evaluating a better persona as if it were a better multi-agent system.
 
@@ -179,18 +181,17 @@ If every worker shares the same prompt, same model, same examples, same context,
 
 The idealized independent case is easy:
 
-```text
-P(at least one success) = 1 - product_i(1 - q_i)
-```
+$$
+\mathbb{P}(\text{at least one success})=1-\prod_i(1-q_i)
+$$
 
-where `q_i` is the probability that worker `i` independently finds a valid answer.
+where $q_i$ is the probability that worker $i$ independently finds a valid answer.
 
 But multi-agent LLM systems rarely get independence for free. The useful quantity is not worker count. It is error correlation.
 
-```text
-coordination_gain =
-  E[score_multi at budget B] - E[score_best_single at budget B]
-```
+$$
+\operatorname{coordination\_gain}=\mathbb{E}[\operatorname{score\_multi}\text{ at budget }B]-\mathbb{E}[\operatorname{score\_best\_single}\text{ at budget }B]
+$$
 
 If the gain disappears at matched budget, the system did not learn coordination. It bought more samples.
 

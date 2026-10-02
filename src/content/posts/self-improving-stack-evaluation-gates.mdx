@@ -57,18 +57,20 @@ A gate is a promotion policy.
 
 Let:
 
-```text
-b = baseline system
-c = candidate system
-x = scenario
-p = agent profile cell
-z = seed or replicate id
-R = task reward or score
-C = measured cost vector
-T = trace integrity predicate
-D_search = search split
-D_holdout = held-out split
-```
+$$
+\begin{aligned}
+  b &= \text{baseline system} \\
+  c &= \text{candidate system} \\
+  x &= \text{scenario} \\
+  p &= \text{agent profile cell} \\
+  z &= \text{seed or replicate id} \\
+  R &= \text{task reward or score} \\
+  C &= \text{measured cost vector} \\
+  T &= \text{trace integrity predicate} \\
+  D_{\text{search}} &= \text{search split} \\
+  D_{\text{holdout}} &= \text{held-out split}
+\end{aligned}
+$$
 
 The gate is a function:
 
@@ -129,9 +131,9 @@ Suppose the baseline sees one sample of tasks and the candidate sees another. A 
 
 The paired comparison fixes that:
 
-```text
-delta_i = R(c, x_i, p_i, z_i) - R(b, x_i, p_i, z_i)
-```
+$$
+\Delta_i = R(c,x_i,p_i,z_i)-R(b,x_i,p_i,z_i)
+$$
 
 where the candidate and baseline are evaluated on the same scenario, profile, and replicate. Then the question becomes:
 
@@ -143,12 +145,11 @@ The median is useful because agent scores often have heavy tails. One catastroph
 
 A practical promotion rule:
 
-```text
-n_pairs >= n_min
-LCB_95(median(delta)) > epsilon
-```
+$$
+n_{\text{pairs}} \ge n_{\min},\qquad \operatorname{LCB}_{95}(\operatorname{median}(\Delta)) > \epsilon
+$$
 
-`LCB_95` is the lower confidence bound. If the lower bound clears the threshold, the gate has evidence that the lift is not just random luck.
+$\operatorname{LCB}_{95}$ is the lower confidence bound. If the lower bound clears the threshold, the gate has evidence that the lift is not just random luck.
 
 This is where bootstrap confidence intervals are useful. You resample paired deltas, compute the median for each resample, and inspect the lower quantile:
 
@@ -157,9 +158,11 @@ delta = [delta_1, ..., delta_n]
 for r in 1..B:
   sample n deltas with replacement
   m_r = median(sample)
-
-LCB_95 = quantile({m_r}, 0.025)  // two-sided 95 interval
 ```
+
+$$
+\operatorname{LCB}_{95}=Q_{0.025}(m_1,\ldots,m_B)
+$$
 
 The gate promotes only when the pessimistic estimate is still good enough.
 
@@ -185,14 +188,18 @@ score(c, holdout) goes down
 
 So the gate needs an overfit check:
 
-```text
-gap_c = mean_score(c, search) - mean_score(c, holdout)
-gap_b = mean_score(b, search) - mean_score(b, holdout)
+$$
+\begin{aligned}
+  \operatorname{gap}_c &= \operatorname{mean\_score}(c,\text{search})-\operatorname{mean\_score}(c,\text{holdout}) \\
+  \operatorname{gap}_b &= \operatorname{mean\_score}(b,\text{search})-\operatorname{mean\_score}(b,\text{holdout})
+\end{aligned}
+$$
 
+```text
 reject(c) if gap_c > gap_b + tau
 ```
 
-This says the candidate may look better on the search split, but it cannot be much more search-specialized than the baseline. `tau` is slack, not forgiveness. It accounts for sampling noise and legitimate split difficulty differences.
+This says the candidate may look better on the search split, but it cannot be much more search-specialized than the baseline. $\tau$ is slack, not forgiveness. It accounts for sampling noise and legitimate split difficulty differences.
 
 The gate configuration has to be fixed before the candidate is scored:
 
@@ -289,28 +296,30 @@ then evaluate the judge as a measurement instrument.
 
 Let:
 
-```text
-V(x, y, trace) = judge score
-R(x, y) = true product outcome
-```
+$$
+\begin{aligned}
+V(x,y,\text{trace}) &= \text{judge score} \\
+R(x,y) &= \text{true product outcome}
+\end{aligned}
+$$
 
 A judge gate needs calibration:
 
-```text
-calibration_error = E[R | V = s] - s
-```
+$$
+\operatorname{calibration\_error}=\mathbb{E}[R\mid V=s]-s
+$$
 
 and agreement:
 
-```text
-agreement = P(sign(V_a - V_b) = sign(H_a - H_b))
-```
+$$
+\operatorname{agreement}=\mathbb{P}(\operatorname{sign}(V_a-V_b)=\operatorname{sign}(H_a-H_b))
+$$
 
-where `H` is a human preference or trusted adjudicator. For ordinal rubrics, rank correlation is often more useful than raw score correlation:
+where $H$ is a human preference or trusted adjudicator. For ordinal rubrics, rank correlation is often more useful than raw score correlation:
 
-```text
-rho = Spearman(V, H)
-```
+$$
+\rho=\operatorname{Spearman}(V,H)
+$$
 
 A gate should track judge drift over time. If the judge model, rubric, prompt, or examples change, the score distribution can move even when the agent behavior does not.
 
@@ -356,11 +365,15 @@ This prevents aggregate masking. A candidate can improve the mean while regressi
 
 Regression detection should combine effect size and statistical confidence:
 
-```text
-delta = current - baseline
-d = CohenD(current_scores, baseline_scores)
-p = WelchT(current_scores, baseline_scores)
+$$
+\begin{aligned}
+  \Delta &= \text{current}-\text{baseline} \\
+  d &= \operatorname{CohenD}(\text{current\_scores},\text{baseline\_scores}) \\
+  p &= \operatorname{WelchT}(\text{current\_scores},\text{baseline\_scores})
+\end{aligned}
+$$
 
+```text
 regressed if delta < 0 and abs(d) >= d_min and p <= alpha
 ```
 

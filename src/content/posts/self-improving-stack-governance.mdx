@@ -95,35 +95,40 @@ If any part of that trajectory can mutate future behavior, it belongs in the saf
 
 Let:
 
-```text
-h = harness and runtime
-s = mutable surface
-c = candidate change
-tau(c) = trace produced by candidate c
-R(tau) = utility or quality score
-K(tau) = risk vector
-A(tau) = authority exercised by the agent
-G = promotion gate
-```
+$$
+\begin{aligned}
+  h &= \text{harness and runtime} \\
+  s &= \text{mutable surface} \\
+  c &= \text{candidate change} \\
+  \tau(c) &= \text{trace produced by candidate }c \\
+  R(\tau) &= \text{utility or quality score} \\
+  K(\tau) &= \text{risk vector} \\
+  A(\tau) &= \text{authority exercised by the agent} \\
+  G &= \text{promotion gate}
+\end{aligned}
+$$
 
 The naive optimizer wants:
 
-```text
-c* = argmax_c E[R(tau(c))]
-```
+$$
+c^*=\operatorname*{argmax}_c\mathbb{E}[R(\tau(c))]
+$$
 
 The governed optimizer has a constrained objective:
 
-```text
-c* = argmax_c E[R(tau(c))] - lambda^T Cost(tau(c))
+$$
+c^*=\operatorname*{argmax}_c\left(\mathbb{E}[R(\tau(c))]-\lambda^\top\operatorname{Cost}(\tau(c))\right)
+$$
 
 subject to:
-  K_i(tau(c)) <= risk_limit_i
-  A(tau(c)) <= authority_cap
-  trace_integrity(tau(c)) passes
-  eval_integrity(tau(c)) passes
-  data_boundary(tau(c)) passes
-  release_gate(c) passes
+
+```text
+K_i(tau(c)) <= risk_limit_i
+A(tau(c)) <= authority_cap
+trace_integrity(tau(c)) passes
+eval_integrity(tau(c)) passes
+data_boundary(tau(c)) passes
+release_gate(c) passes
 ```
 
 Promotion is not a single score:

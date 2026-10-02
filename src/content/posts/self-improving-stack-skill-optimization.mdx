@@ -90,22 +90,24 @@ That middle layer is where a lot of real agent learning will happen, because it 
 
 Let:
 
-```text
-k = skill artifact
-a = activation policy or retrieval policy for the skill
-m = model or backend
-h = harness and runtime
-p = ordinary prompt context
-x = task from distribution D
-R = task reward or eval score
-C = cost, latency, token load, or risk
-```
+$$
+\begin{aligned}
+  k &= \text{skill artifact} \\
+  a &= \text{activation policy or retrieval policy for the skill} \\
+  m &= \text{model or backend} \\
+  h &= \text{harness and runtime} \\
+  p &= \text{ordinary prompt context} \\
+  x &= \text{task from distribution }D \\
+  R &= \text{task reward or eval score} \\
+  C &= \text{cost, latency, token load, or risk}
+\end{aligned}
+$$
 
 Skill optimization estimates:
 
-```text
-J(k, a | m, h, p) = E_{x ~ D}[R(run(m, h, p, k, a, x))] - lambda * E[C(run(m, h, p, k, a, x))]
-```
+$$
+J(k,a\mid m,h,p)=\mathbb{E}_{x\sim D}[R(\operatorname{run}(m,h,p,k,a,x))]-\lambda\,\mathbb{E}[C(\operatorname{run}(m,h,p,k,a,x))]
+$$
 
 The conditional variables matter. If a skill is evaluated while the model, tools, runtime, evaluator, or prompt also change, the measured lift is not a clean skill effect. The correct cell is an agent profile:
 
@@ -307,16 +309,18 @@ Minimum protocol:
 
 The core comparison is paired:
 
-```text
-delta_i = score_i(profile_with_skill) - score_i(profile_without_skill)
-```
+$$
+\Delta_i=\operatorname{score}_i(\text{profile with skill})-\operatorname{score}_i(\text{profile without skill})
+$$
 
 For activation:
 
-```text
-precision = relevant_loaded / loaded
-recall = relevant_loaded / relevant_tasks
-```
+$$
+\begin{aligned}
+  \operatorname{precision}&=\frac{\text{relevant loaded}}{\text{loaded}} \\
+  \operatorname{recall}&=\frac{\text{relevant loaded}}{\text{relevant tasks}}
+\end{aligned}
+$$
 
 For promotion:
 
@@ -352,7 +356,7 @@ Another failure is activation gaming:
 skill description becomes broad -> skill loads often -> eval improves on benchmark -> unrelated tasks degrade
 ```
 
-This is why the activation policy `a` belongs in the objective. Optimizing only the body `k` is incomplete.
+This is why the activation policy $a$ belongs in the objective. Optimizing only the body $k$ is incomplete.
 
 ## When Skills Are The Right Surface
 

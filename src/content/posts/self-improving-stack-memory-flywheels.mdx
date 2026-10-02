@@ -73,12 +73,14 @@ The clean way to think about memory is as mutable external state.
 
 Let:
 
-```text
-M_t = memory state before episode t
-tau_t = full trace from episode t
-u_t = proposed memory write after episode t
-G_mem = memory write gate
-```
+$$
+\begin{aligned}
+  M_t &= \text{memory state before episode }t \\
+  \tau_t &= \text{full trace from episode }t \\
+  u_t &= \text{proposed memory write after episode }t \\
+  G_{\text{mem}} &= \text{memory write gate}
+\end{aligned}
+$$
 
 Write candidates need structure:
 
@@ -96,38 +98,42 @@ u_t =
 
 The update rule is:
 
-```text
-M_{t+1} =
-  Apply(M_t, u_t) if G_mem(u_t, tau_t, policy) passes
-  M_t             otherwise
-```
+$$
+M_{t+1}=\begin{cases}
+  \operatorname{Apply}(M_t,u_t),&\text{if }G_{\text{mem}}(u_t,\tau_t,\text{policy})\text{ passes}, \\
+  M_t,&\text{otherwise.}
+\end{cases}
+$$
 
 At inference time, the memory layer changes the context seen by the policy:
 
-```text
-c_t = Retrieve(M_t, q_t, k, policy)
-y_t = pi_theta(x_t, c_t, tools)
-```
+$$
+\begin{aligned}
+  c_t &= \operatorname{Retrieve}(M_t,q_t,k,\text{policy}) \\
+  y_t &= \pi_\theta(x_t,c_t,\text{tools})
+\end{aligned}
+$$
 
 where:
 
-```text
-x_t = task input
-q_t = retrieval query or retrieval plan
-k = retrieval budget
-c_t = retrieved context
-pi_theta = model policy with fixed weights theta
-y_t = output or next action
-```
+$$
+\begin{aligned}
+  x_t &= \text{task input} \\
+  q_t &= \text{retrieval query or retrieval plan} \\
+  k &= \text{retrieval budget} \\
+  c_t &= \text{retrieved context} \\
+  \pi_\theta &= \text{model policy with fixed weights }\theta \\
+  y_t &= \text{output or next action}
+\end{aligned}
+$$
 
 Memory is not magic. It is an intervention on the policy's input distribution.
 
 That gives us a measurable target:
 
-```text
-Delta_memory =
-  E[Score(pi_theta with M)] - E[Score(pi_theta without M)]
-```
+$$
+\Delta_{\text{memory}}=\mathbb{E}[\operatorname{Score}(\pi_\theta\text{ with }M)]-\mathbb{E}[\operatorname{Score}(\pi_\theta\text{ without }M)]
+$$
 
 The unit test for memory is not "did retrieval return something?"
 
@@ -212,9 +218,9 @@ tau_t =
 
 The extractor turns trace evidence into proposed writes:
 
-```text
-tau_t -> {u_1, u_2, ..., u_n}
-```
+$$
+\tau_t\longrightarrow\{u_1,u_2,\ldots,u_n\}
+$$
 
 The gate decides whether each write is safe, scoped, supported, and useful:
 
@@ -318,7 +324,7 @@ becomes:
 pi_theta(y | x, c)
 ```
 
-where `c` is retrieved context.
+where $c$ is retrieved context.
 
 That context can help, do nothing, or harm. It can help by supplying missing facts, preserving user preferences, recalling a successful procedure, or warning against a repeated mistake. It can harm by anchoring the model on irrelevant facts, stale procedures, false summaries, or over-broad preferences.
 

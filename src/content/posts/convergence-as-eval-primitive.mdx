@@ -59,7 +59,7 @@ Two things are now visible that a pass/fail eval cannot show. First, the shape o
 
 ## Monotone progress, resumable runs
 
-The second move is making completion% *monotone*. Once a criterion is satisfied at turn `k`, it stays satisfied at turn `k+1`. Progress only moves up.
+The second move is making completion% *monotone*. Once a criterion is satisfied at turn `k`, it stays satisfied at turn $k+1$. Progress only moves up.
 
 This sounds obvious until you realize most eval harnesses don't do it. They re-check everything on every turn and let earlier wins regress if the agent says something contradictory. That's the wrong model. The run is an accumulation: at any point, the agent has done some subset of the things the scenario asks for, and we want to track that subset growing.
 
@@ -246,7 +246,7 @@ Most eval harnesses treat each turn as a re-measurement. That's fine for one-sho
 Enforce monotonicity at the harness level. Once a criterion is marked satisfied, it stays satisfied for the duration of the run. The agent cannot un-solve its own progress; the rubric cannot second-guess itself.
 
 <Callout tone="ok" title="The small code that buys a lot">
-Store satisfied criteria as a `Set<criterionId>` accumulated across turns. On each turn, only call checkers for criteria not already in the set. Completion% is `|satisfied| / |total|` weighted by criterion weight. Cheaper to compute each turn and immune to regression.
+Store satisfied criteria as a `Set<criterionId>` accumulated across turns. On each turn, only call checkers for criteria not already in the set. Completion% is $|\text{satisfied}|/|\text{total}|$ weighted by criterion weight. Cheaper to compute each turn and immune to regression.
 </Callout>
 
 ## Resuming a run
