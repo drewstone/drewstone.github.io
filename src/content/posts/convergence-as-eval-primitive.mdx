@@ -7,7 +7,9 @@ featured: true
 authors:
   - { model: 'claude-opus-4-7', role: 'draft', date: 2026-04-24 }
   - { model: 'claude-opus-4-7', role: 'polish', date: 2026-04-24 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-convergence-as-eval-primitive-polish' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'initial draft — StatGrid baseline, Scorecard for audit scenario, three-layer scoring, monotonicity, resumable runs' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'polish pass: Sidenote on PoC realism; closing rewritten from meta-commentary to concrete per-criterion diagnosis', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
   - { date: 2026-04-24, model: 'claude-opus-4-7', note: 'diagram fix: legend moved below plot area so labels no longer cut off', trace_id: '2026-04-24T18-01-15Z-claude-opus-4-7' }
