@@ -23,6 +23,7 @@ authors:
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
   - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-45-37-367Z-gpt-6-luna-self-improving-stack-memory-flywheels-polish' }
   - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-memory-flywheels-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-memory-flywheels-rewrite' }
@@ -47,6 +48,8 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from "../../components/Steps.astro"
+
 Remembering more is not learning.
 
 Learning means the next run changes in the right direction.
@@ -59,13 +62,11 @@ So the important question is not "does the agent have memory?"
 
 The important question is:
 
-```text
-what is allowed to persist,
-who can retrieve it,
-what evidence supports it,
-how it is tested,
-and how it is retired?
-```
+- what is allowed to persist,
+- who can retrieve it,
+- what evidence supports it,
+- how it is tested,
+- and how it is retired?
 
 That is the memory flywheel.
 
@@ -86,17 +87,16 @@ $$
 
 Write candidates need structure:
 
-```text
-u_t =
-  kind
-  claim_or_procedure
-  evidence_refs
-  scope
-  confidence
-  sensitivity
-  freshness_policy
-  retrieval_policy
-```
+$u_t$ contains:
+
+- kind
+- `claim_or_procedure`
+- `evidence_refs`
+- scope
+- confidence
+- sensitivity
+- `freshness_policy`
+- `retrieval_policy`
 
 The update rule is:
 
@@ -157,16 +157,7 @@ The security story sharpened too. MemoryGraft, submitted on December 18, 2025, d
 
 That is the line from RAG to agent memory:
 
-```text
-retrieve facts
--> store experiences
--> reflect across episodes
--> store executable procedures
--> manage memory as context
--> evaluate multi-session behavior
--> learn memory operations
--> defend the memory trust boundary
-```
+<Steps layout="flow" items={[{"title": "retrieve facts"}, {"title": "store experiences"}, {"title": "reflect across episodes"}, {"title": "store executable procedures"}, {"title": "manage memory as context"}, {"title": "evaluate multi-session behavior"}, {"title": "learn memory operations"}, {"title": "defend the memory trust boundary"}]} />
 
 The frontier is not "bigger memory."
 
@@ -194,29 +185,26 @@ A retrieved user preference, an executable skill, a stale API fact, a failed dep
 
 A useful memory flywheel has seven steps:
 
-```text
-observe
-extract
-propose
-gate
-retrieve
-act
-evaluate
-```
+1. observe
+2. extract
+3. propose
+4. gate
+5. retrieve
+6. act
+7. evaluate
 
 The trace supplies the raw material:
 
-```text
-tau_t =
-  task
-  messages
-  tool calls
-  observations
-  artifacts
-  verifier results
-  analyst findings
-  outcome
-```
+$\tau_t$ contains:
+
+- task
+- messages
+- tool calls
+- observations
+- artifacts
+- verifier results
+- analyst findings
+- outcome
 
 The extractor turns trace evidence into proposed writes:
 
@@ -226,26 +214,20 @@ $$
 
 The gate decides whether each write is safe, scoped, supported, and useful:
 
-```text
-G_mem(u_i) -> admit | reject | ask | quarantine | expire
-```
+`G_mem(u_i) → admit | reject | ask | quarantine | expire`
 
 The retriever selects admitted memory for a future task:
 
-```text
-Retrieve(M_{t+1}, q, policy) -> context
-```
+`Retrieve(M_{t+1}, q, policy) → context`
 
 Then the evaluator measures whether the retrieval actually helped.
 
 That last step is where many memory systems become cargo cults. They store more, retrieve more, and show more context to the model, but never run the paired ablation:
 
-```text
-same task
-same model
-same tool surface
-with memory versus without memory
-```
+- same task
+- same model
+- same tool surface
+- with memory versus without memory
 
 Without that ablation, memory success is often just retrieval theater.
 
@@ -273,26 +255,22 @@ A self-generated artifact is not the same thing as a source. An agent can write 
 
 Some memories do not need external source grounding. A user preference can be grounded in the user's own instruction. A local coding habit can be grounded in a repeated trace pattern. A decision record can be grounded in the decision meeting or session. But the scope must be explicit:
 
-```text
-operator preference for this repo
-team convention for this product
-task-local assumption
-global technical fact
-```
+- operator preference for this repo
+- team convention for this product
+- task-local assumption
+- global technical fact
 
 Most poisoning problems start when a scoped memory is treated as global truth.
 
 One useful mental model is a scope lattice:
 
-```text
-run
-task
-project
-persona
-team
-organization
-global
-```
+- `run`
+- `task`
+- `project`
+- `persona`
+- `team`
+- `organization`
+- `global`
 
 Promotion up the lattice requires stronger evidence. A run-local observation can become a task memory after repeated traces. A task memory can become a project convention after review. A project convention rarely deserves to become a global technical fact.
 
@@ -316,15 +294,15 @@ Retrieval is not context stuffing.
 
 Retrieval changes the policy input:
 
-```text
-pi_theta(y | x)
-```
+$$
+\pi_\theta(y\mid x)
+$$
 
 becomes:
 
-```text
-pi_theta(y | x, c)
-```
+$$
+\pi_\theta(y\mid x,c)
+$$
 
 where $c$ is retrieved context.
 
@@ -349,15 +327,15 @@ A memory can be retrievable and harmful. A vector store can return semantically 
 
 The promotion gate compares:
 
-```text
-Score_with_memory - Score_without_memory
-```
+$$
+\mathrm{Score}_{\text{with memory}}-\mathrm{Score}_{\text{without memory}}
+$$
 
 and also:
 
-```text
-Cost_with_memory - Cost_without_memory
-```
+$$
+\mathrm{Cost}_{\text{with memory}}-\mathrm{Cost}_{\text{without memory}}
+$$
 
 A memory layer that improves one benchmark by adding large latency and subtle privacy risk may be a bad production trade.
 
@@ -367,13 +345,11 @@ Negative knowledge is one of the most useful and most dangerous forms of memory.
 
 It records what not to do:
 
-```text
-do not use endpoint A after version 3
-do not assume screenshots live in path P
-do not ask the user for repo facts before inspecting the repo
-do not collapse supervisor and worker roles for this task class
-do not retry a failed deploy hook without checking logs
-```
+- do not use endpoint A after version 3
+- do not assume screenshots live in path P
+- do not ask the user for repo facts before inspecting the repo
+- do not collapse supervisor and worker roles for this task class
+- do not retry a failed deploy hook without checking logs
 
 This is often the difference between an agent that keeps repeating a class of mistake and one that actually compounds.
 
@@ -399,9 +375,7 @@ Procedural memory is close to skill optimization, but the distinction is useful.
 
 A memory can say:
 
-```text
-when patching a repo, inspect status and the last few commits first
-```
+> when patching a repo, inspect status and the last few commits first
 
 A skill can operationalize it:
 
@@ -416,13 +390,11 @@ The skill has an invocation contract, parameters, steps, and verification. The m
 
 Voyager's executable library sits on the skill side. Reflexion's verbal reflections sit on the episodic/procedural memory side. In production agents, the clean loop is:
 
-```text
-trace shows repeated procedural failure
--> memory records the failure pattern
--> skill proposal updates the reusable procedure
--> held-out tasks test the skill
--> memory stores the promotion evidence
-```
+1. trace shows repeated procedural failure
+2. memory records the failure pattern
+3. skill proposal updates the reusable procedure
+4. held-out tasks test the skill
+5. memory stores the promotion evidence
 
 This prevents the memory layer from becoming a bag of instructions that only work when the model happens to read them.
 
@@ -434,40 +406,32 @@ There are drivers, workers, reviewers, supervisors, routers, judges, researchers
 
 A coding worker may need:
 
-```text
-repo conventions
-tool-call habits
-known failure modes
-current task artifacts
-```
+- repo conventions
+- tool-call habits
+- known failure modes
+- current task artifacts
 
 A supervisor may need:
 
-```text
-branch state
-worker assignments
-conflict map
-quality bar
-promotion gate
-```
+- branch state
+- worker assignments
+- conflict map
+- quality bar
+- promotion gate
 
 A judge may need:
 
-```text
-rubric
-reference outputs
-verifier traces
-leakage restrictions
-```
+- `rubric`
+- reference outputs
+- verifier traces
+- leakage restrictions
 
 A coordinator may need:
 
-```text
-fanout policy
-budget policy
-selector rules
-stop conditions
-```
+- fanout policy
+- budget policy
+- selector rules
+- stop conditions
 
 This is why a single optimized persona prompt is not enough. In a multi-agent flow, memory has to be routed by role and task. A worker does not need every supervisor constraint. A judge cannot retrieve candidate-internal rationales that contaminate independence. A coordinator cannot treat one worker's failed local path as a global ban unless the evidence says so.
 
@@ -475,13 +439,11 @@ The same point applies to `maxTurns=0` agentic flows.
 
 If a subagent gets one shot, it cannot learn inside its own episode. The learning has to happen outside it:
 
-```text
-pre-run retrieval
-post-run trace capture
-cross-run write proposal
-promotion gate
-next-run retrieval
-```
+1. pre-run retrieval
+2. post-run trace capture
+3. cross-run write proposal
+4. promotion gate
+5. next-run retrieval
 
 That is still a flywheel, but the flywheel lives in the harness and memory substrate, not inside the worker's conversational loop.
 
@@ -497,15 +459,11 @@ Knowledge poisoning is not merely "the agent did not know something."
 
 A gap is:
 
-```text
-the agent needed X and did not have it
-```
+> the agent needed X and did not have it
 
 Poisoning is:
 
-```text
-the agent confidently used X, and X was wrong
-```
+> the agent confidently used X, and X was wrong
 
 The second case is worse because the agent does not ask. It acts.
 
@@ -513,35 +471,29 @@ In December 2025, MemoryGraft named a concrete version of this attack surface: p
 
 The general pattern is broader:
 
-```text
-stale wiki page
-outdated web result
-wrong prior-run summary
-tool description with old return shape
-system prompt copied from an older runtime
-successful-looking trace from a compromised task
-```
+- stale wiki page
+- outdated web result
+- wrong prior-run summary
+- tool description with old return shape
+- system prompt copied from an older runtime
+- successful-looking trace from a compromised task
 
 The defense is not "trust memory less" in the abstract. The defense is dual verification:
 
-```text
 1. Did the agent act on the belief?
 2. Does trace or source evidence show the belief is false?
-```
 
 Only then can the system emit a poisoning finding. Otherwise it risks turning uncertainty into fake certainty.
 
 Poisoning remediation is also a memory write:
 
-```text
-mark stale
-supersede claim
-quarantine source
-lower confidence
-add expiry
-link contradiction evidence
-trigger held-out replay
-```
+- mark stale
+- supersede claim
+- quarantine source
+- lower confidence
+- add expiry
+- link contradiction evidence
+- trigger held-out replay
 
 Bad memory cannot just be deleted quietly. The system needs to learn why it was bad.
 
@@ -553,66 +505,49 @@ The local Tangle stack is close to the architecture described above.
 
 The important detail is that it models memory as structured knowledge, not loose text:
 
-```text
-SourceRecord
-SourceAnchor
-KnowledgeClaim
-KnowledgeRelation
-KnowledgePage
-KnowledgeIndex
-KnowledgeSearchResult
-KnowledgeLintFinding
-KnowledgeRelease
-```
+- `SourceRecord`
+- `SourceAnchor`
+- `KnowledgeClaim`
+- `KnowledgeRelation`
+- `KnowledgePage`
+- `KnowledgeIndex`
+- `KnowledgeSearchResult`
+- `KnowledgeLintFinding`
+- `KnowledgeRelease`
 
 That shape supports the gate:
 
-```text
-refs
-confidence
-status
-validUntil
-lastVerifiedAt
-sourceIds
-allowedPathPrefixes
-lint findings
-release reports
-```
+- `refs`
+- `confidence`
+- `status`
+- `validUntil`
+- `lastVerifiedAt`
+- `sourceIds`
+- `allowedPathPrefixes`
+- lint findings
+- release reports
 
 `@tangle-network/agent-eval` supplies the analyst side. The local source includes knowledge-gap and knowledge-poisoning analyst specs. The knowledge-gap analyst asks what the agent lacked or what was stale, then attributes the gap to the layer responsible for holding it:
 
-```text
-agent-knowledge:wiki:<page>
-agent-knowledge:claim:<topic>
-agent-knowledge:raw:<source>
-agent-knowledge:stale:<page>
-websearch:outdated:<topic>
-tool-doc:<tool>
-system-prompt:<section>
-memory:<key>
-```
+- **Agent-knowledge:** `wiki:<page>`
+- **Agent-knowledge:** `claim:<topic>`
+- **Agent-knowledge:** `raw:<source>`
+- **Agent-knowledge:** `stale:<page>`
+- **Websearch:** `outdated:<topic>`
+- **Tool-doc:** `<tool>`
+- **System-prompt:** `<section>`
+- **Memory:** `<key>`
 
 The knowledge-poisoning analyst asks for confident wrong action, then requires the dual verification protocol:
 
-```text
-acted on false belief
-belief contradicted by trace evidence
-```
+- acted on false belief
+- belief contradicted by trace evidence
 
 `@tangle-network/agent-runtime` supplies the bridge. The local `createSurfaceKnowledgeAdapter` wraps `agent-knowledge` proposal generation and write-block application. It converts analyst findings into knowledge proposals, applies write blocks against a knowledge root, and optionally lints after apply.
 
 Put together, the stack can express this loop:
 
-```text
-production trace
--> agent-eval analyst finding
--> agent-knowledge proposal
--> safe write block
--> lint and readiness checks
--> retrieved context
--> future production run
--> held-out and production evaluation
-```
+<Steps layout="flow" items={[{"title": "production trace"}, {"title": "agent-eval analyst finding"}, {"title": "agent-knowledge proposal"}, {"title": "safe write block"}, {"title": "lint and readiness checks"}, {"title": "retrieved context"}, {"title": "future production run"}, {"title": "held-out and production evaluation"}]} />
 
 That is the memory flywheel as software.
 
@@ -622,28 +557,24 @@ The most underrated piece is readiness.
 
 Before an agent starts a task, the system can ask:
 
-```text
-what knowledge is required for this task?
-is it present?
-is it fresh?
-is it sensitive?
-how confident does it need to be?
-what happens if it is missing?
-```
+- what knowledge is required for this task?
+- is it present?
+- is it fresh?
+- is it sensitive?
+- how confident does it need to be?
+- what happens if it is missing?
 
 The local `agent-knowledge` readiness builder maps specs to requirements with fields such as:
 
-```text
-category
-acquisitionMode
-importance
-freshness
-sensitivity
-confidenceNeeded
-fallbackPolicy
-minSources
-minHits
-```
+- `category`
+- `acquisitionMode`
+- `importance`
+- `freshness`
+- `sensitivity`
+- `confidenceNeeded`
+- `fallbackPolicy`
+- `minSources`
+- `minHits`
 
 That is a better frame than "give the model memories."
 
@@ -655,7 +586,6 @@ Readiness turns memory from a passive archive into a pre-flight gate.
 
 A memory system is doing real self-improvement when all of these are true:
 
-```text
 1. A trace produces a specific finding.
 2. The finding proposes a scoped memory write.
 3. The write is source-grounded or explicitly scoped to its evidence.
@@ -663,7 +593,6 @@ A memory system is doing real self-improvement when all of these are true:
 5. Future retrieval selects it only for appropriate roles and tasks.
 6. A paired eval shows task lift, not just retrieval activity.
 7. Staleness, contradiction, privacy, and poisoning have review paths.
-```
 
 If any part is missing, the system may still be useful, but it is not a disciplined learning loop.
 

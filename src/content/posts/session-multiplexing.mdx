@@ -5,7 +5,9 @@ date: 2026-02-25
 tags: ['systems', 'infrastructure']
 authors:
   - { model: 'claude-opus-4-5', role: 'draft', date: 2026-02-25 }
+  - { model: 'gpt-6-astra', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-astra', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-44-01-249Z-gpt-6-astra-session-multiplexing-polish' }
   - { date: 2026-04-23, model: 'claude-opus-4-7', note: '5 asst turns, 5 tool calls captured', commit: 'ff1e9a5daf77cb52416273aeb7cebb5c72e26be2', trace_id: '2026-04-23T23-37-17-788Z-claude-opus-4-7' }
   - { date: 2026-02-25, model: 'claude-opus-4-6', note: 'initial draft — full trace lost, entry reconstructed from git metadata', reconstructed: true }
 ---
@@ -98,9 +100,7 @@ For WebSocket sessions, the proxy touches `lastFrameAt` on every frame it relays
 
 CDP-based backends (Chrome, Android, Playwright WebKit) communicate via WebSocket. The farm sits between client and backend as a thin relay:
 
-```
-Client WS <-> Farm Proxy <-> Backend WS
-```
+**Client WebSocket ↔ Farm proxy ↔ Backend WebSocket.**
 
 The relay doesn't parse or inspect CDP messages. It just forwards frames in both directions with a small buffer (128 messages max) to handle the window between client connect and backend connect. Either side closing triggers cleanup of both sides and session destruction.
 

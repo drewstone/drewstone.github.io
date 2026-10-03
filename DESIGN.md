@@ -79,3 +79,12 @@ Without `figure`, existing curated illustrations or the title template apply.
 Missing files fail the build.
 Draft routes retain their generic sharing image.
 Changing a figure or title rebuilds its preview; bump `DESIGN_VERSION` when replacing already-shared images.
+
+## Lists and process diagrams
+
+Use code fences for executable code, pseudocode, schemas, and literal output.
+Write ordinary lists as Markdown lists, definitions as labeled lists, and quotations as blockquotes.
+Render equations with KaTeX.
+For a short ordered process, use `Steps.astro` with `layout="flow"` and an `items` array of titles.
+The flow wraps to the available width; the default layout supports detailed numbered procedures.
+Do not draw prose lists or process diagrams inside `text` fences.

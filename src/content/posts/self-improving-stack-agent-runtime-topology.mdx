@@ -22,6 +22,7 @@ authors:
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-45-17-233Z-gpt-6-luna-self-improving-stack-agent-runtime-topology-polish' }
   - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-agent-runtime-topology-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-agent-runtime-topology-rewrite' }
@@ -46,6 +47,8 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from '../../components/Steps.astro';
+
 When I tell a coding agent to "parallelize the work," I am not asking for a different tone.
 
 I am asking for a different execution graph: spawn independent executions, cap concurrency, isolate state, collect traces, score results, select or merge outputs, cancel losers, and account for cost. If the runtime cannot express those moves, a prompt can only ask the model to simulate the shape.
@@ -62,12 +65,10 @@ It is not the persona. It is not the supervisor prompt. It is not the model's pr
 
 A minimal topology has:
 
-```text
-nodes = agents, tools, validators, selectors, human gates
-edges = sequence, fanout, handoff, retry, interrupt, merge
-state = trace, memory, artifacts, budgets, run handles
-policy = planning, selection, cancellation, promotion, replay
-```
+- **Nodes:** Agents, tools, validators, selectors, and human gates
+- **Edges:** Sequence, fanout, handoff, retry, interrupt, and merge
+- **State:** Traces, memory, artifacts, budgets, and run handles
+- **Policy:** Planning, selection, cancellation, promotion, and replay
 
 The runtime action space is the set of moves the system can execute:
 
@@ -92,9 +93,7 @@ If `parallel` is not in $A_{\text{runtime}}$, no optimized prompt can make true 
 
 The deep question is:
 
-```text
-Which topology moves are first-class runtime actions, and which are merely instructions?
-```
+Which topology moves are first-class runtime actions, and which exist only as instructions?
 
 That one distinction determines whether multi-agent self-improvement is engineering or theater.
 
@@ -144,13 +143,7 @@ The objective is still the same skeleton: propose, run, score, compare, update, 
 
 A supervisor prompt can say:
 
-```text
-Assign independent subtasks to specialist workers.
-Have them work in parallel.
-Merge their findings.
-Ask a verifier to check the final result.
-Stop when the verifier passes.
-```
+<Steps layout="flow" items={[{title:'Assign independent subtasks'}, {title:'Run specialist workers in parallel'}, {title:'Merge their findings'}, {title:'Verify the result'}, {title:'Stop when the verifier passes'}]} />
 
 That text only has leverage if the runtime has matching actions.
 
@@ -193,27 +186,21 @@ The inspected package surface exposes:
 
 The important split is in the type surface:
 
-```text
-kernel owns: iteration accounting, concurrency, aborts, cost, traces
-driver owns: topology
-validator owns: scoring
-output adapter owns: parsing
-agent spec owns: executable profile and prompt formatting
-```
+- **Kernel:** Iteration accounting, concurrency, aborts, cost, and traces
+- **Driver:** Topology
+- **Validator:** Scoring
+- **Output adapter:** Parsing
+- **Agent spec:** Executable profile and prompt formatting
 
 The decomposition matters. Swapping a `Driver` changes topology without changing the model, prompt, skill body, validator, or output parser. The execution graph becomes a replaceable runtime object rather than a paragraph inside a supervisor prompt.
 
 For `refine`, the driver emits one task per iteration until the validator accepts the output or a cap is reached:
 
-```text
-attempt -> validate -> if invalid, attempt again -> stop on pass or cap
-```
+<Steps layout="flow" items={[{title:'Attempt'}, {title:'Validate'}, {title:'Retry if invalid'}, {title:'Stop on pass or cap'}]} />
 
 For `fanout-vote`, the driver emits N attempts in the first iteration, lets the kernel run them in parallel subject to `maxConcurrency`, then selects the highest-scoring valid output:
 
-```text
-spawn N -> validate each -> select valid winner -> fail if none valid
-```
+<Steps layout="flow" items={[{title:'Spawn N candidates'}, {title:'Validate each'}, {title:'Select a valid winner'}, {title:'Fail if none pass'}]} />
 
 The MCP delegation layer turns this topology into an agent-callable surface. `delegate_code` can launch specialist coder agents that produce validated patches, return immediately with a `taskId`, and let the caller poll for completion. With `variants > 1`, multiple coder harnesses attempt the task in parallel and the highest-scoring patch wins. `delegate_research` does the same shape for evidence-bearing research, with source diversity, citation density, recency, gap coverage, and namespace isolation in the scoring contract.
 
@@ -225,13 +212,9 @@ Some useful concepts are not present in the inspected local `agent-runtime` pack
 
 The useful conclusion is not "missing feature." It is a sharper map:
 
-```text
-shipped in the checked source:
-  runLoop, refine, fanout-vote, multi-harness coder/research delegation
+**Shipped in the checked source:** `runLoop`, `refine`, `fanout-vote`, and multi-harness coder/research delegation.
 
-obvious next primitives:
-  dynamic driver, typed program DSL, supervisor scope, budget ledger, durable replay
-```
+**Obvious next primitives:** dynamic driver, typed program DSL, supervisor scope, budget ledger, and durable replay.
 
 This boundary is load-bearing. A substrate map is wrong if it treats unshipped names as APIs. If a runtime does not yet expose `Supervisor` or `Scope`, the concept can still be named as a target surface. It cannot be treated as a shipped API.
 
@@ -279,28 +262,22 @@ If candidate A gets one worker and candidate B gets eight workers, B may win bec
 
 A runtime topology benchmark should record:
 
-```text
-workers spawned
-iterations used
-wall-clock latency
-tokens in/out
-tool calls
-LLM calls
-failed branches
-cancelled branches
-human approvals
-cost_usd
-```
+- Workers spawned
+- Iterations used
+- Wall-clock latency
+- Tokens in and out
+- Tool and LLM calls
+- Failed and cancelled branches
+- Human approvals
+- `cost_usd`
 
 Then promotion can distinguish:
 
-```text
-quality lift at same budget
-quality lift for higher budget
-latency reduction at same quality
-cost reduction at same quality
-risk reduction with acceptable quality loss
-```
+- Quality lift at the same budget
+- Quality lift for a higher budget
+- Latency reduction at the same quality
+- Cost reduction at the same quality
+- Risk reduction with acceptable quality loss
 
 Without this ledger, topology search will usually rediscover "try more things" and call it intelligence.
 
@@ -348,16 +325,14 @@ A serious runtime topology eval should treat topology changes as architecture ch
 
 Minimum protocol:
 
-```text
-1. Freeze model, prompts, skills, tools, dataset, and evaluator where possible.
-2. Register baseline topology hash and candidate topology hash.
-3. Run paired scenario/seed comparisons.
+1. Freeze the model, prompts, skills, tools, dataset, and evaluator where possible.
+2. Register the baseline and candidate topology hashes.
+3. Run paired scenario and seed comparisons.
 4. Record every branch, tool call, validator result, selector decision, and cost.
 5. Compare under at least one compute-matched budget.
-6. Run stress cases for timeouts, branch failure, cancellation, and partial results.
+6. Stress test timeouts, branch failures, cancellation, and partial results.
 7. Reject candidates that hide errors, exceed budget, lose traces, or skip gates.
-8. Promote only on held-out lift, cost/latency policy, and trace integrity.
-```
+8. Promote only when held-out lift, cost and latency policy, and trace integrity pass.
 
 Promotion can look like:
 
@@ -381,23 +356,15 @@ It hides coordination in prose. It spawns workers without isolation. It lets bra
 
 The most common failure is fake fanout:
 
-```text
-prompt says: split the task among specialists
-runtime does: one model call with specialist names in text
-trace says: one branch
-```
+- **Prompt:** Says to split the task among specialists.
+- **Runtime:** Makes one model call with specialist names in the text.
+- **Trace:** Records one branch.
 
 The fix is not a better coordinator prompt. The fix is an actual fanout primitive.
 
 Another failure is unpriced parallelism:
 
-```text
-candidate topology spawns 8 workers
-baseline topology spawns 1 worker
-candidate wins by 4 points
-candidate costs 12x more
-promotion report says "better"
-```
+The candidate topology spawns eight workers while the baseline spawns one. It wins by four points, costs twelve times more, and the promotion report calls it “better.”
 
 That is not necessarily wrong. It is incomplete. The product decision depends on whether the gain is worth the compute, latency, and operational complexity.
 

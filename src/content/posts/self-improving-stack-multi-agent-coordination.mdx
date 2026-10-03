@@ -23,6 +23,7 @@ authors:
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
   - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-45-57-880Z-gpt-6-luna-self-improving-stack-multi-agent-coordination-polish' }
   - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-multi-agent-coordination-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-multi-agent-coordination-rewrite' }
@@ -46,6 +47,9 @@ revisions:
 supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
+
+import Steps from '../../components/Steps.astro'
+
 
 I can give five agents five names and still have one mind making one mistake.
 
@@ -108,27 +112,23 @@ That distinction prevents a common category error: evaluating a better persona a
 
 A persona can say:
 
-```text
-You are a careful supervisor.
-You delegate independent work.
-You force disagreement before consensus.
-You stop when the reviewer passes the artifact.
-```
+> You are a careful supervisor.
+> You delegate independent work.
+> You force disagreement before consensus.
+> You stop when the reviewer passes the artifact.
 
 Those instructions may improve local judgment. They do not grant runtime authority.
 
 Authority lives in the structure:
 
-```text
-Can this role spawn workers?
-Can it choose tools?
-Can it read child traces?
-Can it cancel branches?
-Can it override a reviewer?
-Can it spend more budget?
-Can it merge artifacts?
-Can it promote the result?
-```
+- Can this role spawn workers?
+- Can it choose tools?
+- Can it read child traces?
+- Can it cancel branches?
+- Can it override a reviewer?
+- Can it spend more budget?
+- Can it merge artifacts?
+- Can it promote the result?
 
 If the answers are not represented in the runtime, the persona is aspirational. It may be useful text, but it is not a coordination contract.
 
@@ -219,9 +219,7 @@ Mixture-of-Agents made the ensemble structure more layered: agents generate outp
 
 The research arc is clear:
 
-```text
-sample many -> search branches -> assign roles -> debate -> aggregate -> orchestrate
-```
+<Steps layout="flow" items={[{title: "Sample many"}, {title: "Search branches"}, {title: "Assign roles"}, {title: "Debate"}, {title: "Aggregate"}, {title: "Orchestrate"}]} />
 
 The open engineering problem is making the orchestration measurable.
 
@@ -233,9 +231,7 @@ The useful patterns are not defined by agent names. They are defined by informat
 
 Multiple workers attempt the same task. A selector or verifier picks one.
 
-```text
-spawn N -> score each -> return winner
-```
+<Steps layout="flow" items={[{title: "Spawn N"}, {title: "Score each"}, {title: "Return winner"}]} />
 
 This is strong when outputs are easy to score and independent attempts are cheap. It is weak when scoring is subjective or all workers share the same blind spot.
 
@@ -243,9 +239,7 @@ This is strong when outputs are easy to score and independent attempts are cheap
 
 Multiple reasoning paths produce candidate answers. The system chooses the answer supported by the most paths or highest marginal score.
 
-```text
-sample paths -> marginalize answers -> choose stable answer
-```
+<Steps layout="flow" items={[{title: "Sample paths"}, {title: "Marginalize answers"}, {title: "Choose stable answer"}]} />
 
 This helps when the final answer has a stable attractor and errors are diverse. It is less useful for open-ended artifact quality where many incompatible answers can all be plausible.
 
@@ -253,9 +247,7 @@ This helps when the final answer has a stable attractor and errors are diverse. 
 
 The system expands intermediate states, evaluates partial progress, prunes weak branches, and backtracks.
 
-```text
-expand -> evaluate -> select frontier -> continue or backtrack
-```
+<Steps layout="flow" items={[{title: "Expand"}, {title: "Evaluate"}, {title: "Select frontier"}, {title: "Continue or backtrack"}]} />
 
 This is coordination over thoughts, plans, or artifacts. It requires explicit state and a heuristic good enough to guide search.
 
@@ -263,9 +255,7 @@ This is coordination over thoughts, plans, or artifacts. It requires explicit st
 
 Agents expose arguments, counterarguments, and revisions before a final decision.
 
-```text
-propose -> critique -> respond -> judge
-```
+<Steps layout="flow" items={[{title: "Propose"}, {title: "Critique"}, {title: "Respond"}, {title: "Judge"}]} />
 
 Debate is useful when hidden assumptions matter. It fails when agents optimize rhetoric, defer to the strongest voice, or converge before evidence changes.
 
@@ -273,9 +263,7 @@ Debate is useful when hidden assumptions matter. It fails when agents optimize r
 
 A central coordinator delegates scoped tasks to workers and keeps authority over the final artifact.
 
-```text
-supervisor -> assign -> collect -> merge -> verify
-```
+<Steps layout="flow" items={[{title: "Supervisor"}, {title: "Assign"}, {title: "Collect"}, {title: "Merge"}, {title: "Verify"}]} />
 
 This is good for work that has clear subdomains. It fails when the supervisor has no real budget, no child trace access, or no merge discipline.
 
@@ -283,9 +271,7 @@ This is good for work that has clear subdomains. It fails when the supervisor ha
 
 Control transfers from one agent to another.
 
-```text
-triage -> active specialist -> maybe hand off again
-```
+<Steps layout="flow" items={[{title: "Triage"}, {title: "Active specialist"}, {title: "Maybe hand off again"}]} />
 
 Handoffs are good when the next specialist should own the state and speak directly. They are dangerous when state transfer is implicit or context grows without boundaries.
 
@@ -293,9 +279,7 @@ Handoffs are good when the next specialist should own the state and speak direct
 
 Agents write partial results into a shared workspace. Other agents read and improve them.
 
-```text
-workers -> shared artifact store -> reviewers -> revised artifact
-```
+<Steps layout="flow" items={[{title: "Workers"}, {title: "Shared artifact store"}, {title: "Reviewers"}, {title: "Revised artifact"}]} />
 
 This is natural for code, research, planning, and design. It needs locking, provenance, conflict resolution, and traceable authorship.
 
@@ -303,9 +287,7 @@ This is natural for code, research, planning, and design. It needs locking, prov
 
 One layer proposes outputs. Later layers aggregate, refine, or route.
 
-```text
-proposers -> aggregators -> final selector
-```
+<Steps layout="flow" items={[{title: "Proposers"}, {title: "Aggregators"}, {title: "Final selector"}]} />
 
 This works when the aggregator can exploit complementary model strengths. It fails when later layers smooth away critical dissent.
 
@@ -355,11 +337,9 @@ The MCP layer is a third shape, not a replacement for either of the first two. `
 
 The separation is important:
 
-```text
-runLoop = bounded multi-shot task kernel
-conversation = long-horizon participant dialogue
-MCP delegation = async specialist work surface
-```
+- **`runLoop`**: bounded multi-shot task kernel.
+- **`conversation`**: long-horizon participant dialogue.
+- **MCP delegation**: async specialist work surface.
 
 A reliable coordination stack needs the following contracts regardless of which layer hosts them:
 
@@ -402,12 +382,10 @@ In the local `@tangle-network/agent-eval@0.34.1` source, the package is not just
 
 For multi-agent coordination, the clean split is:
 
-```text
-agent-runtime/conversation decides which participants spoke, under which policy
-agent-runtime/loops decides which bounded workers ran
-agent-runtime/mcp exposes async specialist delegation
-agent-eval decides whether the resulting system was better
-```
+- agent-runtime/conversation decides which participants spoke, under which policy
+- agent-runtime/loops decides which bounded workers ran
+- agent-runtime/mcp exposes async specialist delegation
+- agent-eval decides whether the resulting system was better
 
 Multi-agent coordination without eval is theater. Eval without trace-level runtime evidence is an opinion poll.
 
@@ -455,7 +433,6 @@ Do not ask whether a multi-agent system "feels smarter." Ask whether it beats th
 
 Minimum protocol:
 
-```text
 1. Define the task distribution and artifact contract.
 2. Freeze model set, tools, prompts, skills, dataset, and evaluator where possible.
 3. Compare against best single-agent and best-of-N baselines at matched budget.
@@ -463,32 +440,23 @@ Minimum protocol:
 5. Measure quality, cost, latency, branch failure rate, trace integrity, and human review load.
 6. Run ablations: no debate, no shared context, no heterogeneity, deterministic selector.
 7. Promote only on held-out lift with acceptable cost, latency, and failure-mode profile.
-```
 
 The promotion rule can be written:
 
-```text
-promote(s_multi) if:
-  LCB_95(median(score_multi - score_baseline on holdout)) > epsilon
-  and median_cost_multi <= cost_ceiling
-  and median_latency_multi <= latency_ceiling
-  and trace_integrity == 1
-  and selector_ablation_delta > 0
-  and deterministic_failures == 0
-```
+$$
+\begin{aligned}\operatorname{promote}(s_{\text{multi}})&\text{ if: }\operatorname{LCB}_{95}(\operatorname{median}(\text{score}_{\text{multi}}-\text{score}_{\text{baseline}}\text{ on holdout}))>\epsilon\\&\land\operatorname{median\_cost}_{\text{multi}}\le\text{cost\_ceiling}\\&\land\operatorname{median\_latency}_{\text{multi}}\le\text{latency\_ceiling}\\&\land\text{trace\_integrity}=1\\&\land\text{selector\_ablation\_delta}>0\\&\land\text{deterministic\_failures}=0\end{aligned}
+$$
 
 The `selector_ablation_delta` term matters. If the multi-agent system still performs the same when the selector is replaced with a trivial rule, the sophisticated coordination may not be doing causal work.
 
 For open-ended work, add a disagreement audit:
 
-```text
-disagreement_audit:
-  independent evidence found?
-  contradictions preserved?
-  reviewer defects resolved?
-  final merge cites child lineage?
-  rejected branches explained?
-```
+- disagreement_audit:
+-   independent evidence found?
+-   contradictions preserved?
+-   reviewer defects resolved?
+-   final merge cites child lineage?
+-   rejected branches explained?
 
 Disagreement is useful only when it changes the final decision or improves confidence calibration.
 
@@ -496,43 +464,35 @@ Disagreement is useful only when it changes the final decision or improves confi
 
 Prompt optimizers can improve role instructions:
 
-```text
-critic prompt
-planner prompt
-selector rubric
-handoff description
-reviewer checklist
-```
+- critic prompt
+- planner prompt
+- selector rubric
+- handoff description
+- reviewer checklist
 
 Skill optimizers can improve durable role procedure:
 
-```text
-how a reviewer inspects a patch
-how a researcher triangulates sources
-how a coordinator merges conflicting evidence
-how an analyst clusters trace failures
-```
+- how a reviewer inspects a patch
+- how a researcher triangulates sources
+- how a coordinator merges conflicting evidence
+- how an analyst clusters trace failures
 
 Runtime topology optimizers can improve execution shape:
 
-```text
-fanout width
-which roles run in parallel
-whether debate happens before or after evidence collection
-which selector sees which fields
-when branches cancel
-how budget is allocated
-```
+- fanout width
+- which roles run in parallel
+- whether debate happens before or after evidence collection
+- which selector sees which fields
+- when branches cancel
+- how budget is allocated
 
 Harness evolution can change the coordination machine itself:
 
-```text
-new driver
-new selector implementation
-new trace schema
-new sandbox isolation model
-new promotion gate
-```
+- new driver
+- new selector implementation
+- new trace schema
+- new sandbox isolation model
+- new promotion gate
 
 This is where GEPA, MIPRO, SkillOpt, agent-runtime, agent-eval, and meta-harness stop looking like competitors. They operate on different mutable surfaces.
 
@@ -555,13 +515,11 @@ Do not use multiple agents when the only benefit is a richer cast list.
 
 The engineering test is simple:
 
-```text
-Can the system show why this role existed?
-Can it show what information the role had?
-Can it show what the role produced?
-Can it show how the selector used or rejected that output?
-Can it beat a compute-matched single-agent baseline?
-```
+- Can the system show why this role existed?
+- Can it show what information the role had?
+- Can it show what the role produced?
+- Can it show how the selector used or rejected that output?
+- Can it beat a compute-matched single-agent baseline?
 
 If not, the coordination is not yet a system property. It is prose.
 
