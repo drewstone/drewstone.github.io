@@ -271,26 +271,11 @@ That can still be useful. A sampler with a good selector may be exactly what the
 ## Parallel Versus Sequential Compute
 
 Extra compute has shapes.
-
-Parallel sampling:
-
-<Steps layout="flow" items={[{title: "Sample k independent attempts"}, {title: "Select"}]} />
-
-Sequential refinement:
-
-<Steps layout="flow" items={[{title: "Attempt"}, {title: "Critique"}, {title: "Revise"}, {title: "Critique"}, {title: "Revise"}]} />
-
-Tree search:
-
-<Steps layout="flow" items={[{title: "Expand frontier"}, {title: "Score partial states"}, {title: "Allocate next step"}]} />
-
-Debate:
-
-<Steps layout="flow" items={[{title: "Propose"}, {title: "Criticism"}, {title: "Respond"}, {title: "Judge"}]} />
-
-Tool-grounded search:
-
-<Steps layout="flow" items={[{title: "Hypothesis"}, {title: "Tool call"}, {title: "Observation"}, {title: "Update"}]} />
+- **Parallel sampling:** sample k independent attempts, then select.
+- **Sequential refinement:** attempt, critique, and revise; repeat as needed.
+- **Tree search:** expand the frontier, score partial states, and allocate a next step.
+- **Debate:** propose, criticize, respond, then judge.
+- **Tool-grounded search:** form a hypothesis, call a tool, observe, then update.
 
 None dominates everywhere.
 
