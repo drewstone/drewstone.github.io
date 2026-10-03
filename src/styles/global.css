@@ -235,6 +235,8 @@ code {
   border-radius: 2px;
 }
 
+.prose :not(pre) > code { overflow-wrap: anywhere; }
+
 /* Code blocks */
 .prose pre {
   background: var(--bg-alt);

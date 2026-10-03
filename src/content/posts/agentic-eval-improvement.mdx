@@ -11,6 +11,7 @@ revisions:
 ---
 
 import Chart from '../../components/Chart.astro'
+import Steps from '../../components/Steps.astro'
 
 RL works because weights are differentiable: run, measure, compute gradients, update. Agents can't do that. An agent built on Claude or GPT doesn't get to update its weights.
 
@@ -138,37 +139,15 @@ None of the major agent platforms (Claude Code, Codex CLI, Amp, Pimono, Factory)
 
 The architecture that matters:
 
-```
-┌──────────────────────────────────────┐
-│          Agent Configuration         │
-│  prompt + tools + memory + strategy  │
-└──────────┬───────────────────────────┘
-           │
-     ┌─────▼─────┐
-     │  Execute   │ ← run on benchmark suite
-     └─────┬─────┘
-           │
-     ┌─────▼─────┐
-     │  Measure   │ ← pass rate, turns, tokens, waste
-     └─────┬─────┘
-           │
-     ┌─────▼─────┐
-     │ Analyze    │ ← failure taxonomy, trajectory scoring
-     └─────┬─────┘
-           │
-     ┌─────▼─────┐
-     │ Hypothesize│ ← propose config change
-     └─────┬─────┘
-           │
-     ┌─────▼─────┐
-     │    AB Test │ ← statistical validation
-     └─────┬─────┘
-           │
-     ┌─────▼─────┐
-     │  Promote / │
-     │  Reject    │ → update config or discard
-     └────────────┘
-```
+<Steps items={[
+  { title: 'Agent configuration', body: 'Prompt, tools, memory, and strategy.' },
+  { title: 'Execute', body: 'Run on the benchmark suite.' },
+  { title: 'Measure', body: 'Pass rate, turns, tokens, and waste.' },
+  { title: 'Analyze', body: 'Failure taxonomy and trajectory scoring.' },
+  { title: 'Hypothesize', body: 'Propose a configuration change.' },
+  { title: 'AB test', body: 'Statistical validation.' },
+  { title: 'Promote or reject', body: 'Update the configuration or discard the change.' },
+]} />
 
 The key insight: the "hypothesize" step is itself an agent task. You can use an LLM to analyze failure patterns and propose configuration changes. Our trajectory analyzer does this already: it reads past failures, detects patterns (high-failure actions, stuck loops, verification gaps), and generates hints. The step from "generate hints for the next run" to "generate a configuration change for the next experiment" is small.
 

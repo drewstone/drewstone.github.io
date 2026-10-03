@@ -47,6 +47,9 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from '../../components/Steps.astro'
+
+
 When the prompt keeps asking for a capability the runtime cannot express, the next improvement is not a better sentence. It is a different machine.
 
 That is the harness-evolution moment. Prompt optimizers can discover better wording, examples, instructions, rubrics, and sometimes better high-level tactics. Skill optimizers can discover reusable procedures. Runtime topology can change how many workers act, who reviews them, and what gets selected.
@@ -57,13 +60,7 @@ That code might be a planner contract, a driver, a verifier, a budget policy, a 
 
 So no, GEPA, SkillOpt, AlphaEvolve-style code search, and meta-harness are not all "doing the same thing" in the strong sense. They share an outer loop:
 
-```text
-propose candidate
-run candidate
-measure candidate
-select survivor
-repeat
-```
+<Steps layout="flow" items={[{title: "Propose candidate"}, {title: "Run candidate"}, {title: "Measure candidate"}, {title: "Select survivor"}, {title: "Repeat"}]} />
 
 They differ in the mutable surface. That distinction is everything.
 
@@ -91,9 +88,9 @@ $$
 
 An optimizer has a mutation operator:
 
-```text
-M_s(candidate, evidence) -> candidate'
-```
+$$
+\operatorname{M}_s(\text{candidate},\text{evidence})\to\text{candidate}'
+$$
 
 The set of systems it can reach after $k$ mutations is:
 
@@ -133,14 +130,9 @@ $$
 
 The promotion rule is not just the objective. It is a gate:
 
-```text
-promote(h) iff
-  quality(h, holdout) > quality(baseline, holdout)
-  and deterministic_verifiers(h) pass
-  and trace_integrity(h) passes
-  and cost(h) is inside budget
-  and h does not mutate the gate that judged it
-```
+$$
+\begin{aligned}\operatorname{promote}(h)&\iff \operatorname{quality}(h,\text{holdout})>\operatorname{quality}(\text{baseline},\text{holdout})\\&\land \operatorname{deterministic\_verifiers}(h)\text{ pass}\\&\land \operatorname{trace\_integrity}(h)\text{ passes}\\&\land \operatorname{cost}(h)\text{ is inside budget}\\&\land h\text{ does not mutate the gate that judged it}\end{aligned}
+$$
 
 That last clause is the dangerous one.
 
@@ -166,13 +158,7 @@ The Darwin Gödel Machine moved the discussion closer to agent harnesses. Instea
 
 That is the practical line:
 
-```text
-proof-based self-rewrite
--> evaluator-driven program search
--> LLM-generated code mutation
--> archives of self-improving agent harnesses
--> production systems with gates, traces, worktrees, and rollback
-```
+<Steps layout="flow" items={[{title: "Proof-based self-rewrite"}, {title: "Evaluator-driven program search"}, {title: "LLM-generated code mutation"}, {title: "Archives of self-improving agent harnesses"}, {title: "Production systems with gates, traces, worktrees, and rollback"}]} />
 
 The engineering problem is no longer whether code can be searched. It is which parts of the agent system should be mutable, how candidates are isolated, how evidence is preserved, and who prevents the search from learning the wrong gate.
 
@@ -182,32 +168,28 @@ The harness is the code that turns model calls into a system.
 
 For an agent, it includes surfaces like:
 
-```text
-planner contract
-tool routing
-memory read and write policy
-retrieval policy
-driver topology
-subagent delegation
-supervisor policy
-budget ledger
-trace emitter
-artifact capture
-output parser
-validator
-selector
-promotion gate
-benchmark adapter
-worktree lifecycle
-```
+- planner contract
+- tool routing
+- memory read and write policy
+- retrieval policy
+- driver topology
+- subagent delegation
+- supervisor policy
+- budget ledger
+- trace emitter
+- artifact capture
+- output parser
+- validator
+- selector
+- promotion gate
+- benchmark adapter
+- worktree lifecycle
 
 These are not cosmetic. They define the action space.
 
 A prompt can say:
 
-```text
-Fan out to three workers, ask one to critique, merge the best answer, and stop after the verifier passes.
-```
+> Fan out to three workers, ask one to critique, merge the best answer, and stop after the verifier passes.
 
 That instruction only works if the runtime exposes fanout, workers, critique, merge, stop, and verifier operations. If the runtime only supports one serial LLM call, the instruction is theater. The model may describe parallelism, but the system did not execute parallelism.
 
@@ -215,17 +197,15 @@ This is why multi-agent optimization cannot be reduced to persona wording.
 
 Personas matter. A driver persona that says "act as a strict reviewer" can change behavior. But a real supervisor is more than tone:
 
-```text
-observable state
-authority to spawn workers
-budget allocation
-tool access
-handoff contract
-stop rule
-conflict-resolution policy
-selection rule
-trace obligations
-```
+- observable state
+- authority to spawn workers
+- budget allocation
+- tool access
+- handoff contract
+- stop rule
+- conflict-resolution policy
+- selection rule
+- trace obligations
 
 If those are not represented in the harness, the optimizer cannot search them as first-class variables.
 
@@ -237,35 +217,23 @@ If an individual worker has no local conversational loop, improvement pressure m
 
 The system can still be agentic, but the agency lives in the orchestration layer:
 
-```text
-coordinator receives task
-coordinator creates worker prompts
-workers run bounded episodes
-collector parses outputs
-verifier scores artifacts
-selector chooses candidate
-coordinator decides next episode or final answer
-```
+<Steps layout="flow" items={[{title: "Coordinator receives task"}, {title: "Coordinator creates worker prompts"}, {title: "Workers run bounded episodes"}, {title: "Collector parses outputs"}, {title: "Verifier scores artifacts"}, {title: "Selector chooses candidate"}, {title: "Coordinator decides next episode or final answer"}]} />
 
 GEPA can optimize text inside that flow. It might learn directives like "parallelize independent file reads" or "ask the reviewer to focus on behavioral regressions." But GEPA does not automatically invent a new coordinator unless the coordinator is a mutable candidate representation and the eval rewards the resulting behavior.
 
 The rule:
 
-```text
 If the workflow move is not representable in the candidate, the optimizer cannot select it.
-```
 
 So for multi-agent systems, the important question is not "can the prompt mention fanout?" It is:
 
-```text
-Can the candidate change the fanout policy?
-Can it change the worker mix?
-Can it change the supervisor's observable state?
-Can it change the verifier?
-Can it change the selector?
-Can it change the episode boundary?
-Can it change how traces and artifacts are passed forward?
-```
+- Can the candidate change the fanout policy?
+- Can it change the worker mix?
+- Can it change the supervisor's observable state?
+- Can it change the verifier?
+- Can it change the selector?
+- Can it change the episode boundary?
+- Can it change how traces and artifacts are passed forward?
 
 That is harness evolution.
 
@@ -277,20 +245,7 @@ It treats the harness as the search object.
 
 A good meta-harness loop has the following phases:
 
-```text
-discover harness
-freeze evals
-seed baseline
-read traces
-propose structural variant
-isolate candidate in worktree
-smoke test
-run full eval
-compare against frontier
-merge useful lineages
-run held-out gate
-promote or reject
-```
+<Steps layout="flow" items={[{title: "Discover harness"}, {title: "Freeze evals"}, {title: "Seed baseline"}, {title: "Read traces"}, {title: "Propose structural variant"}, {title: "Isolate candidate in worktree"}, {title: "Smoke test"}, {title: "Run full eval"}, {title: "Compare against frontier"}, {title: "Merge useful lineages"}, {title: "Run held-out gate"}, {title: "Promote or reject"}]} />
 
 The important word is structural.
 
@@ -298,16 +253,14 @@ Changing $n=8$ to $n=16$ is not harness evolution. Changing a threshold is not h
 
 Structural variants change mechanism:
 
-```text
-sequential retry -> fanout plus vote
-single judge -> deterministic verifier plus semantic judge
-summary-only trace -> span tree plus raw provider capture
-flat prompt -> declarative persona and tool surfaces
-single winner -> Pareto frontier with cost and latency
-one agent -> coordinator plus specialist workers
-best score -> held-out promotion gate
-one code path -> worktree-isolated candidate lifecycle
-```
+- **sequential retry** → fanout plus vote
+- **single judge** → deterministic verifier plus semantic judge
+- **summary-only trace** → span tree plus raw provider capture
+- **flat prompt** → declarative persona and tool surfaces
+- **single winner** → Pareto frontier with cost and latency
+- **one agent** → coordinator plus specialist workers
+- **best score** → held-out promotion gate
+- **one code path** → worktree-isolated candidate lifecycle
 
 A meta-harness rejects variants that only tune knobs unless the knob is itself part of a broader mechanism change. The reason is not aesthetic. Knob tuning is cheaper and belongs to ordinary evolution. Meta-harness is expensive because it lets the system rewrite architecture.
 
@@ -317,20 +270,17 @@ Architecture search without a stable baseline is noise wearing a lab coat.
 
 At minimum:
 
-```text
-baseline_runs >= 3
-baseline_value = median(baseline_runs)
-spread <= acceptable_noise
-```
+$$
+\begin{aligned}\texttt{baseline\_runs}&\ge 3\\\texttt{baseline\_value}&=\operatorname{median}(\texttt{baseline\_runs})\\\texttt{spread}&\le\texttt{acceptable\_noise}\end{aligned}
+$$
 
 If the baseline varies by more than the claimed improvement, the search cannot tell a better harness from a lucky harness.
 
 The same applies to candidate variants:
 
-```text
-candidate_runs >= 3
-candidate_delta = median(candidate_runs - paired_baseline_runs)
-```
+$$
+\begin{aligned}\texttt{candidate\_runs}&\ge 3\\\texttt{candidate\_delta}&=\operatorname{median}(\texttt{candidate\_runs}-\texttt{paired\_baseline\_runs})\end{aligned}
+$$
 
 The strongest comparison is paired:
 
@@ -350,12 +300,14 @@ So meta-harness tracks a Pareto frontier.
 
 Candidate $a$ dominates candidate $b$ when:
 
-```text
-quality_a >= quality_b
-cost_a <= cost_b
-latency_a <= latency_b
-integrity_a >= integrity_b
-```
+$$
+\begin{aligned}
+\mathrm{quality}_a &\ge \mathrm{quality}_b \\
+\mathrm{cost}_a &\le \mathrm{cost}_b \\
+\mathrm{latency}_a &\le \mathrm{latency}_b \\
+\mathrm{integrity}_a &\ge \mathrm{integrity}_b
+\end{aligned}
+$$
 
 with at least one strict improvement.
 
@@ -363,11 +315,9 @@ The frontier is the set of non-dominated candidates.
 
 This matters because the next generation may need a lineage merge:
 
-```text
-variant A fixes retrieval misses
-variant B adds a stronger verifier
-variant C combines A and B without inheriting their regressions
-```
+- variant A fixes retrieval misses
+- variant B adds a stronger verifier
+- variant C combines A and B without inheriting their regressions
 
 Lineage merging is different from picking the current best score. It treats architecture as compositional. The value of a variant is not only its score, but the mechanism it contributes to future candidates.
 
@@ -377,20 +327,18 @@ For harness evolution, candidate isolation is not a workflow nicety. It is part 
 
 Each candidate carries:
 
-```text
-base ref
-worktree path
-changed files
-hypothesis
-trace evidence
-generation id
-parent id
-smoke result
-eval result
-cost ledger
-promotion verdict
-rollback handle
-```
+- base ref
+- worktree path
+- changed files
+- hypothesis
+- trace evidence
+- generation id
+- parent id
+- smoke result
+- eval result
+- cost ledger
+- promotion verdict
+- rollback handle
 
 Without isolation, parallel proposers corrupt each other. Without a parent id, lineage is lost. Without a hypothesis, the search cannot learn from failure. Without a rollback handle, promotion is operationally unsafe.
 
@@ -404,27 +352,23 @@ A prompt optimizer can overfit a phrase. A harness optimizer can overfit the ent
 
 Examples:
 
-```text
-adds a selector that favors judge-friendly wording over correct artifacts
-changes the benchmark adapter to drop hard cases
-adds retries that hide deterministic failure under higher cost
-routes around a verifier instead of satisfying it
-improves the aggregate while breaking one high-value persona
-creates a worker topology that only works on the search split
-reduces latency by skipping trace capture
-```
+- adds a selector that favors judge-friendly wording over correct artifacts
+- changes the benchmark adapter to drop hard cases
+- adds retries that hide deterministic failure under higher cost
+- routes around a verifier instead of satisfying it
+- improves the aggregate while breaking one high-value persona
+- creates a worker topology that only works on the search split
+- reduces latency by skipping trace capture
 
 This is why harness evolution needs outer invariants:
 
-```text
-eval definitions are frozen during candidate search
-holdout labels are not visible to the candidate
-trace capture is mandatory
-backend integrity is checked before aggregation
-deterministic verifiers run before semantic judges
-cost and latency are promotion dimensions
-high-value profiles are inspected separately
-```
+- eval definitions are frozen during candidate search
+- holdout labels are not visible to the candidate
+- trace capture is mandatory
+- backend integrity is checked before aggregation
+- deterministic verifiers run before semantic judges
+- cost and latency are promotion dimensions
+- high-value profiles are inspected separately
 
 If the optimizer can edit the gate and then pass the gate, it did not improve the product. It captured the evaluator.
 
@@ -436,83 +380,68 @@ The audited source trees report `@tangle-network/agent-eval` package version `0.
 
 `@tangle-network/agent-eval` is the measurement and promotion substrate. The audited local source exposes:
 
-```text
-runEvalCampaign
-RunRecord
-AgentProfileCell
-appendScorecard/loadScorecard/diffScorecard
-HeldOutGate
-assertRealBackend
-RawProviderSink
-assertRunCaptured
-ReplayCache
-AnalystRegistry
-MultiLayerVerifier
-runProductionLoop
-runPromptEvolution
-runHarnessExperiment
-createSandboxCodeMutator
-createCompositeMutator
-paretoFrontier
-```
+- `runEvalCampaign`
+- `RunRecord`
+- `AgentProfileCell`
+- `appendScorecard/loadScorecard/diffScorecard`
+- `HeldOutGate`
+- `assertRealBackend`
+- `RawProviderSink`
+- `assertRunCaptured`
+- `ReplayCache`
+- `AnalystRegistry`
+- `MultiLayerVerifier`
+- `runProductionLoop`
+- `runPromptEvolution`
+- `runHarnessExperiment`
+- `createSandboxCodeMutator`
+- `createCompositeMutator`
+- `paretoFrontier`
 
 That package is where the evaluator, trace, scorecard, analyst, frontier, and gate live.
 
 `@tangle-network/agent-runtime` is the execution and candidate-lifecycle substrate. The audited local source exposes:
 
-```text
-runLoop
-createRefineDriver
-createFanoutVoteDriver
-LoopTraceEvent
-defineAgent
-AgentSurfaces
-improvementDriver
-reflectiveGenerator
-agenticGenerator
-MCP delegation tools
-analyst loop
-OTLP export
-```
+- `runLoop`
+- `createRefineDriver`
+- `createFanoutVoteDriver`
+- `LoopTraceEvent`
+- `defineAgent`
+- `AgentSurfaces`
+- `improvementDriver`
+- `reflectiveGenerator`
+- `agenticGenerator`
+- MCP delegation tools
+- analyst loop
+- OTLP export
 
 The cleanup matters. The runtime improvement surface now has one driver that owns the candidate lifecycle:
 
-```text
-create worktree
-generate candidate
-finalize or discard
-repeat for population size
-return CodeSurface
-```
+<Steps layout="flow" items={[{title: "Create worktree"}, {title: "Generate candidate"}, {title: "Finalize or discard"}, {title: "Repeat for population size"}, {title: "Return CodeSurface"}]} />
 
 The generator is the dial:
 
-```text
-reflectiveGenerator = cheap patch application from findings
-agenticGenerator = coding harness runs inside the candidate worktree
-```
+- **`reflectiveGenerator`**: cheap patch application from findings.
+- **`agenticGenerator`**: coding harness runs inside the candidate worktree.
 
 That is a good kernel shape. The lifecycle is centralized, while the candidate producer can vary by cost and depth.
 
 The full stack placement is:
 
-```text
-agent-runtime:
-  execute workflows
-  express drivers
-  run fanout/refine loops
-  declare mutable agent surfaces
-  create and finalize candidate worktrees
-
-agent-eval:
-  capture traces
-  run campaigns
-  score profile cells
-  analyze failures
-  verify artifacts
-  maintain frontiers
-  gate promotion
-```
+- **agent-runtime**
+  - execute workflows
+  - express drivers
+  - run fanout/refine loops
+  - declare mutable agent surfaces
+  - create and finalize candidate worktrees
+- **agent-eval**
+  - capture traces
+  - run campaigns
+  - score profile cells
+  - analyze failures
+  - verify artifacts
+  - maintain frontiers
+  - gate promotion
 
 So meta-harness composes those packages instead of duplicating them.
 
@@ -522,40 +451,34 @@ A practical meta-harness over this stack would use `agent-runtime` to generate a
 
 A real harness variant changes at least one of these:
 
-```text
-action space
-observation space
-control flow
-candidate representation
-verification stack
-selection policy
-trace ontology
-budget policy
-promotion policy
-rollback path
-```
+- action space
+- observation space
+- control flow
+- candidate representation
+- verification stack
+- selection policy
+- trace ontology
+- budget policy
+- promotion policy
+- rollback path
 
 Examples:
 
-```text
-Add raw provider capture and fail-closed replay before judge recalibration.
-Replace single worker retry with fanout-vote plus deterministic validator.
-Add profile-cell stamping so driver and scorecard identity cannot diverge.
-Route analyst findings to declared file surfaces instead of fabricated paths.
-Split supervisor persona into authority contract, observation contract, and stop rule.
-Add worktree-isolated candidate generation with mandatory discard on failure.
-```
+- Add raw provider capture and fail-closed replay before judge recalibration.
+- Replace single worker retry with fanout-vote plus deterministic validator.
+- Add profile-cell stamping so driver and scorecard identity cannot diverge.
+- Route analyst findings to declared file surfaces instead of fabricated paths.
+- Split supervisor persona into authority contract, observation contract, and stop rule.
+- Add worktree-isolated candidate generation with mandatory discard on failure.
 
 Non-examples:
 
-```text
-Increase population size.
-Raise a judge threshold after seeing a candidate.
-Add "be rigorous" to the prompt.
-Rename a role from reviewer to supervisor.
-Let the candidate skip trace capture to reduce latency.
-Tune the metric until the candidate wins.
-```
+- Increase population size.
+- Raise a judge threshold after seeing a candidate.
+- Add "be rigorous" to the prompt.
+- Rename a role from reviewer to supervisor.
+- Let the candidate skip trace capture to reduce latency.
+- Tune the metric until the candidate wins.
 
 The difference is whether the reachable behavior changed.
 
@@ -569,25 +492,21 @@ An optimizer can only select over candidates it can express, run, and evaluate. 
 
 For example, the instruction "parallelize independent reads" can exist at several levels:
 
-```text
-human instruction to a coding agent
-prompt directive inside a worker policy
-skill file teaching an agent when to fan out
-driver topology that actually dispatches concurrent tasks
-runtime kernel with maxConcurrency and trace events
-meta-harness variant that changes the driver topology
-eval gate that rewards equal-quality lower wall time
-```
+- human instruction to a coding agent
+- prompt directive inside a worker policy
+- skill file teaching an agent when to fan out
+- driver topology that actually dispatches concurrent tasks
+- runtime kernel with maxConcurrency and trace events
+- meta-harness variant that changes the driver topology
+- eval gate that rewards equal-quality lower wall time
 
 Those are not equivalent. The higher layers can make the behavior more reliable because they remove dependence on one model remembering one instruction in one context window.
 
 The research-level question is representation:
 
-```text
-Which workflow dimensions are first-class variables?
-Which are merely text?
-Which are invisible operator habits?
-```
+- Which workflow dimensions are first-class variables?
+- Which are merely text?
+- Which are invisible operator habits?
 
 Meta-harness earns its name only when it turns invisible operator habits into explicit mutable surfaces and then tests whether the change generalizes.
 

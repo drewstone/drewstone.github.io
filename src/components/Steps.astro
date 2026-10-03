@@ -16,15 +16,16 @@ interface Step {
 
 interface Props {
   items: Step[]
+  layout?: 'steps' | 'flow'
 }
 
-const { items } = Astro.props
+const { items, layout = 'steps' } = Astro.props
 ---
 
-<ol class="steps">
+<ol class:list={['steps', { 'steps-flow': layout === 'flow' }]} role="list">
   {items.map((s, i) => (
     <li class="step">
-      <span class="step-num">{String(i + 1).padStart(2, '0')}</span>
+      {layout === 'steps' && <span class="step-num">{String(i + 1).padStart(2, '0')}</span>}
       <div class="step-content">
         <div class="step-head">
           <span class="step-title">{s.title}</span>
@@ -114,5 +115,35 @@ const { items } = Astro.props
     font-size: 0.98rem;
     line-height: 1.55;
     color: var(--fg-muted);
+  }
+  .steps-flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1.2rem;
+    margin: var(--space-md) 0;
+    padding: 0;
+  }
+  .steps-flow::before { display: none; }
+  .steps-flow .step {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+    padding: 0;
+    min-width: 0;
+  }
+  .steps-flow .step:not(:last-child)::after {
+    content: '→';
+    color: var(--fg-muted);
+  }
+  .steps-flow .step-content { padding: 0; }
+  .steps-flow .step-head { margin: 0; }
+  .steps-flow .step-title {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  @media (max-width: 600px) {
+    .steps-flow { gap: 0.3rem 0.75rem; }
+    .steps-flow .step { gap: 0.75rem; }
   }
 </style>

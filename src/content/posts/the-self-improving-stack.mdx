@@ -43,15 +43,15 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from '../../components/Steps.astro';
+
 I can tell a coding agent to parallelize work, and it will often agree with me while still doing one thing at a time.
 
 That failure looks like a prompting problem until you inspect the trace. The sentence "fan out independent subtasks" changed the model's intention, but it did not create a worker pool, a scheduler, a merge rule, a verifier, or a budget policy. The prompt moved. The action space did not.
 
 That is the category error hiding inside a lot of talk about self-improving agents. We say:
 
-```text
-the system optimizes itself
-```
+The system optimizes itself.
 
 as if there were one surface called "the system."
 
@@ -63,14 +63,12 @@ Self-improvement only has content after you name the task class. The target is b
 
 The useful questions are more concrete:
 
-```text
-what user task distribution is being improved?
-what is allowed to change?
-what evidence says it improved that task?
-how are candidates generated?
-what gate decides promotion?
-what can go wrong when that layer changes?
-```
+- Which user task distribution is being improved?
+- What is allowed to change?
+- What evidence shows improvement on that task?
+- How are candidates generated?
+- What gate decides promotion?
+- What can go wrong when that layer changes?
 
 Those six questions are the self-improving stack.
 
@@ -78,29 +76,18 @@ Those six questions are the self-improving stack.
 
 A self-improving agent system has a closed loop:
 
-```text
-run
-observe
-diagnose
-propose
-validate
-promote
-remember
-govern
-```
+<Steps layout="flow" items={[{title:'Run'}, {title:'Observe'}, {title:'Diagnose'}, {title:'Propose'}, {title:'Validate'}, {title:'Promote'}, {title:'Remember'}, {title:'Govern'}]} />
 
 The loop is only real when each verb has a concrete implementation.
 
-```text
-run: execute the agent under a sampled user-task scenario
-observe: capture a full trace, not only a score
-diagnose: identify failure modes and missing knowledge
-propose: generate a candidate change
-validate: test the candidate against baseline
-promote: replace baseline only if the gate passes
-remember: persist the right lesson for future runs
-govern: keep the optimizer inside its authority and evidence boundary
-```
+- **Run:** Execute the agent under a sampled user-task scenario.
+- **Observe:** Capture a full trace, not only a score.
+- **Diagnose:** Identify failure modes and missing knowledge.
+- **Propose:** Generate a candidate change.
+- **Validate:** Test the candidate against the baseline.
+- **Promote:** Replace the baseline only if the gate passes.
+- **Remember:** Persist the right lesson for future runs.
+- **Govern:** Keep the optimizer inside its authority and evidence boundary.
 
 The system is not self-improving because it says "reflect." It is self-improving when a future run gets better at the class of user tasks it is meant to serve because a previous run produced admissible evidence.
 
@@ -155,12 +142,7 @@ This table is the core of the series.
 
 GEPA, SkillOpt, meta-harness, post-training, and memory flywheels all have the same outer skeleton:
 
-```text
-propose candidate
-run candidate
-measure candidate
-promote or reject
-```
+<Steps layout="flow" items={[{title:'Propose candidate'}, {title:'Run candidate'}, {title:'Measure candidate'}, {title:'Promote or reject'}]} />
 
 They are not the same system because they mutate different surfaces.
 
@@ -205,16 +187,14 @@ If the runtime lacks a worker pool, the prompt can ask for parallelism but canno
 
 This is why the series keeps separating:
 
-```text
-better wording
-better procedure
-better topology
-better evaluator
-better harness
-better model
-better memory
-better governance
-```
+- Better wording
+- Better procedure
+- Better topology
+- Better evaluator
+- Better harness
+- Better model
+- Better memory
+- Better governance
 
 Those are different control surfaces.
 
@@ -224,23 +204,15 @@ Skills sit between prompts and code.
 
 A skill is durable procedural memory:
 
-```text
-when this task class appears,
-use this decomposition,
-with these tools,
-under these checks,
-and stop under these conditions
-```
+> When this task class appears, use this decomposition, with these tools, under these checks, and stop under these conditions.
 
 That makes skills more reusable than a one-off prompt and less rigid than hard-coded application logic.
 
 The hard part is activation. A skill that never triggers is inert. A skill that triggers everywhere becomes a new bug. The gate has to test transfer:
 
-```text
-does the skill improve held-out tasks in the intended class?
-does it avoid harming nearby tasks outside the class?
-does it reduce repeated failures?
-```
+- Does the skill improve held-out tasks in the intended class?
+- Does it avoid harming nearby tasks outside the class?
+- Does it reduce repeated failures?
 
 That is why skill optimization belongs in the stack but does not replace runtime design.
 
@@ -250,17 +222,15 @@ Agent behavior is not only model output.
 
 It is workflow shape:
 
-```text
-single shot
-refine loop
-fanout and vote
-planner plus worker
-researcher plus coder
-supervisor plus reviewer
-debate
-tree search
-human approval gate
-```
+- Single shot
+- Refine loop
+- Fanout and vote
+- Planner plus worker
+- Researcher plus coder
+- Supervisor plus reviewer
+- Debate
+- Tree search
+- Human approval gate
 
 The topology defines which actions exist and which observations can influence future actions.
 
@@ -268,15 +238,7 @@ This matters for multi-agent systems. "Persona" is content. "Coordinator," "revi
 
 For `maxTurns=0` worker flows, learning does not happen inside the worker's conversation. It happens across runs:
 
-```text
-pre-run retrieval
-single worker attempt
-post-run trace capture
-analyst finding
-candidate change
-promotion gate
-next run
-```
+<Steps layout="flow" items={[{title:'Pre-run retrieval'}, {title:'Single worker attempt'}, {title:'Post-run trace capture'}, {title:'Analyst finding'}, {title:'Candidate change'}, {title:'Promotion gate'}, {title:'Next run'}]} />
 
 That is still self-improvement, but the loop lives in the harness.
 
@@ -286,23 +248,20 @@ Before claiming that a new optimizer improved the agent, beat random or naive sa
 
 A lot of agent improvements are really compute allocation changes:
 
-```text
-more samples
-more branches
-more retries
-more verifier calls
-more expensive judge
-more time
-```
+- More samples
+- More branches
+- More retries
+- More verifier calls
+- A more expensive judge
+- More time
 
 Those can be useful. They are not free.
 
 The fair comparison is:
 
-```text
-quality(candidate) - quality(baseline)
-cost(candidate) - cost(baseline)
-```
+$$
+\Delta Q = Q(\text{candidate}) - Q(\text{baseline}), \qquad \Delta C = C(\text{candidate}) - C(\text{baseline})
+$$
 
 A candidate that wins only by spending more may still be worth shipping, but the claim is different. It is a cost-quality trade, not pure intelligence gain.
 
@@ -335,34 +294,26 @@ Traces say what happened.
 
 An agent trace needs enough information to explain the mechanism:
 
-```text
-which prompt
-which model
-which tools
-which arguments
-which observations
-which retrieved documents
-which artifacts
-which verifier
-which failure class
-which budget
-which outcome
-```
+- Which prompt
+- Which model
+- Which tools and arguments
+- Which observations and retrieved documents
+- Which artifacts and verifier
+- Which failure class and budget
+- Which outcome
 
 Without traces, the system can only hill climb on a lossy projection.
 
 With traces, the system can diagnose:
 
-```text
-missing knowledge
-bad tool argument
-weak verifier
-wrong selector
-coordination failure
-memory poisoning
-budget breach
-unsafe side effect
-```
+- Missing knowledge
+- Bad tool argument
+- Weak verifier
+- Wrong selector
+- Coordination failure
+- Memory poisoning
+- Budget breach
+- Unsafe side effect
 
 That is why traces are not logging decoration. They are the training data for the external-state loop.
 
@@ -372,25 +323,19 @@ When prompt, skill, and topology tuning plateau, the mutable surface may need to
 
 Harness evolution changes:
 
-```text
-planner contracts
-tool routers
-selectors
-trace emitters
-verifiers
-benchmark adapters
-worktree lifecycle
-promotion gates
-memory write paths
-```
+- Planner contracts
+- Tool routers and selectors
+- Trace emitters and verifiers
+- Benchmark adapters
+- Worktree lifecycle
+- Promotion gates
+- Memory write paths
 
 This is powerful because it expands the reachable set.
 
 It is dangerous because the harness may contain the evaluator. The core rule from the governance layer is:
 
-```text
-the optimizer cannot own the gate that promotes it
-```
+The optimizer cannot own the gate that promotes it.
 
 If the candidate can rewrite the judge or release policy that approves it, the loop is no longer honest.
 
@@ -398,15 +343,13 @@ If the candidate can rewrite the judge or release policy that approves it, the l
 
 Most systems discussed before the post-training layer mutate external state:
 
-```text
-prompt
-skill
-tool docs
-memory
-runtime
-harness
-evaluator
-```
+- Prompt
+- Skill
+- Tool documentation
+- Memory
+- Runtime
+- Harness
+- Evaluator
 
 Post-training mutates model behavior itself:
 
@@ -416,9 +359,9 @@ $$
 
 or:
 
-```text
-theta' = theta_base + Delta_adapter
-```
+$$
+\theta' = \theta_{\text{base}} + \Delta_{\text{adapter}}
+$$
 
 That can generalize better than prompt edits when the signal is strong. It also makes the behavior harder to inspect, partially roll back, and attribute to one trace.
 
@@ -439,9 +382,9 @@ $$
 
 A memory system is useful when:
 
-```text
-Score(with memory) - Score(without memory) > threshold
-```
+$$
+\operatorname{Score}(\text{with memory}) - \operatorname{Score}(\text{without memory}) > \text{threshold}
+$$
 
 under cost, freshness, privacy, and poisoning constraints.
 
@@ -455,15 +398,13 @@ Governance is what makes autonomy accountable.
 
 A self-improving system needs a safety case:
 
-```text
-claim
-scope
-evidence
-residual risk
-owner
-release gate
-rollback path
-```
+- Claim
+- Scope
+- Evidence
+- Residual risk
+- Owner
+- Release gate
+- Rollback path
 
 The system can propose improvements. The gate decides which improvements persist. The owner accepts residual risk.
 
@@ -483,18 +424,11 @@ Without that rule, self-improvement can become proxy hacking with better brandin
 
 When someone says their agent improves itself, ask for the layer.
 
-```text
-What changed?
-Who proposed it?
-What evidence was captured?
-What baseline was beaten?
-What held-out set was protected?
-What gate approved it?
-What got more expensive?
-What became riskier?
-What can roll back?
-What persisted into the next run?
-```
+- What changed, and who proposed it?
+- What evidence was captured, and what baseline was beaten?
+- What held-out set was protected, and what gate approved it?
+- What became more expensive or riskier?
+- What can roll back, and what persisted into the next run?
 
 If those questions have concrete answers, there may be a real loop.
 

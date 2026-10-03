@@ -46,6 +46,8 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from '../../components/Steps.astro';
+
 The first time prompt optimization feels magical is also the moment it starts lying to you.
 
 You change a sentence, run the benchmark, and the score moves. GEPA reflects over traces. MIPRO searches instructions and demonstrations. DSPy compiles an LM program. AxLLM packages the optimizer into a TypeScript surface. The intervention is small, the evidence is numeric, and the temptation is to say the agent improved.
@@ -58,9 +60,7 @@ Prompt optimization is powerful when a text surface has causal leverage over the
 
 So the question is not "which prompt optimizer is best?" The question is:
 
-```text
-Which factors are mutable, which factors are held fixed, and which evaluator is trusted enough to promote a candidate?
-```
+Which factors are mutable, which stay fixed, and which evaluator is trusted to promote a candidate?
 
 Answer that and the ecosystem stops looking like magic. It becomes experimental design.
 
@@ -93,15 +93,11 @@ This is experimental design, not pedantry. A candidate prompt can look better be
 
 Prompt optimization is cleanest when the causal path is:
 
-```text
-text surface -> model behavior -> output or trajectory -> score
-```
+A text surface changes model behavior, which changes the output or trajectory that receives a score.
 
 The measurement becomes contaminated when the actual path is:
 
-```text
-text surface -> planner hint -> runtime capability missing -> no action -> evaluator still gives partial credit
-```
+A text surface can give the planner a hint while the runtime lacks the capability to act on it. No action follows, yet the evaluator may still award partial credit.
 
 The first path is a causal optimization claim. The second is a measurement artifact.
 
@@ -159,14 +155,12 @@ AxLLM brings these ideas into a TypeScript-first programming surface. Ax program
 
 This is the through-line:
 
-```text
-APE: generate instruction candidates, score them.
-OPRO: use an LLM as the optimizer over scored candidates.
-MIPRO: optimize instructions and demos across LM-program modules.
-TextGrad: propagate textual feedback through a computation graph.
-GEPA: evolve prompts from trace reflection and Pareto selection.
-AxLLM: expose these optimization patterns in a typed production surface.
-```
+- **APE:** Generates instruction candidates and scores them.
+- **OPRO:** Uses an LLM to optimize scored candidates.
+- **MIPRO:** Optimizes instructions and demos across LM-program modules.
+- **TextGrad:** Propagates textual feedback through a computation graph.
+- **GEPA:** Evolves prompts through trace reflection and Pareto selection.
+- **AxLLM:** Exposes these optimization patterns through a typed production surface.
 
 They share a black-box or language-mediated search skeleton. They differ in candidate representation, proposal operator, feedback channel, and selection rule.
 
@@ -215,16 +209,9 @@ That distinction becomes central for agents. Agent failures are often procedural
 
 A multi-agent system is not a bigger prompt. It is a factored system:
 
-```text
-agent system = text surfaces
-             x model choices
-             x tool/action space
-             x memory/retrieval policy
-             x runtime topology
-             x turn and cost budgets
-             x evaluator stack
-             x promotion policy
-```
+$$
+\begin{gathered}\text{Agent system} = \text{text surfaces} \times \text{model choices} \times \text{tool/action space} \\ \times \text{memory/retrieval policy} \times \text{runtime topology} \\ \times \text{turn and cost budgets} \times \text{evaluator stack} \times \text{promotion policy}\end{gathered}
+$$
 
 Prompt optimizers explore the factors you expose to them. If the candidate encoding only contains a supervisor prompt, the optimizer can only mutate supervisor text. It cannot invent a real fanout executor, persistent memory, sandbox policy, multi-worker merge protocol, or verifier pass unless those dimensions are present in the candidate representation.
 
@@ -232,13 +219,7 @@ This is the exact issue with coordinator and worker personas.
 
 You can optimize a coordinator persona to say:
 
-```text
-Fan out independent subtasks.
-Run specialists in parallel.
-Merge findings.
-Escalate disagreement to a supervisor.
-Verify before final output.
-```
+<Steps layout="flow" items={[{title:'Fan out independent subtasks'}, {title:'Run specialists in parallel'}, {title:'Merge findings'}, {title:'Escalate disagreement to a supervisor'}, {title:'Verify before final output'}]} />
 
 That may improve behavior if the runtime already exposes the necessary actions. It will not create those actions. A text instruction to parallelize is operational only if the agent has a tool or runtime primitive that dispatches work concurrently. A text instruction to continue until verified only works if the loop budget and stop semantics allow it. A text instruction to use memory only works if memory is available, scoped, and retrievable.
 
@@ -276,19 +257,12 @@ The Tangle packages fit as substrate, not as another prompt optimizer.
 
 That means the stack split is:
 
-```text
-GEPA/MIPRO/Ax/DSPy:
-  proposal and search over prompt or LM-program surfaces
-
-agent-runtime:
-  execution semantics, topology, tools, loops, surfaces, trace emission
-
-agent-eval:
-  scoring, trace analysis, causal attribution, gates, promotion evidence
-
-meta-harness:
-  architecture-level search over the system that runs and evaluates agents
-```
+| System | Responsibility |
+| --- | --- |
+| GEPA, MIPRO, Ax, DSPy | Propose and search prompt or LM-program surfaces |
+| `agent-runtime` | Execution semantics, topology, tools, loops, surfaces, and trace emission |
+| `agent-eval` | Scoring, trace analysis, causal attribution, gates, and promotion evidence |
+| `meta-harness` | Architecture-level search over the system that runs and evaluates agents |
 
 This composition keeps each layer honest. Prompt optimizers mutate text. Runtime exposes real action and topology. Eval decides promotion under controlled comparisons. Meta-harness touches architecture only when the lower layers plateau or the traces show the wrong surface is being optimized.
 
@@ -298,16 +272,14 @@ A serious prompt optimization run should leave an audit trail strong enough for 
 
 Minimum protocol:
 
-```text
-1. Freeze model, runtime, toolset, schema, and evaluator.
-2. Split examples into search, validation, and holdout.
-3. Register baseline prompt/config hash.
-4. Generate candidates with stable ids and rationales.
-5. Run paired comparisons on identical scenario/seed cells.
+1. Freeze the model, runtime, toolset, schema, and evaluator.
+2. Split examples into search, validation, and holdout sets.
+3. Register the baseline prompt and configuration hash.
+4. Generate candidates with stable IDs and rationales.
+5. Run paired comparisons on identical scenario and seed cells.
 6. Preserve full traces, not only final scores.
 7. Reject candidates that violate schema or safety invariants.
-8. Promote only on held-out lift, cost budget, and regression checks.
-```
+8. Promote only when held-out lift, cost budget, and regression checks pass.
 
 For stochastic agents, paired deltas are the basic unit:
 
@@ -330,9 +302,9 @@ The exact statistic can vary. Bootstrap confidence intervals, Wilcoxon signed-ra
 
 For multi-agent systems, add factorial attribution:
 
-```text
-cells = model x prompt x topology x scenario x seed
-```
+$$
+\text{cells} = \text{model} \times \text{prompt} \times \text{topology} \times \text{scenario} \times \text{seed}
+$$
 
 If the candidate wins, you want to know why. Was the lift from prompt wording, model choice, topology, scenario mix, or an interaction? `agent-eval` has a local causal attribution primitive for exactly this style of factorial decomposition. The point is not academic neatness. It prevents the team from shipping a prompt change while the actual effect came from a model swap or runtime setting.
 
@@ -344,20 +316,15 @@ They overfit benchmark phrasing. They learn judge preferences. They inflate verb
 
 The most dangerous failure is surface misattribution:
 
-```text
-observed failure: agent did not verify output
-wrong fix: add "always verify" to prompt
-right diagnosis: runtime stops after first draft, verifier tool is absent, or eval ignores missing verification
-```
+- **Observed failure:** The agent did not verify the output.
+- **Wrong fix:** Add “always verify” to the prompt.
+- **Right diagnosis:** The runtime stops after the first draft, the verifier tool is absent, or the evaluation ignores missing verification.
 
 The text fix may help a little. It is still optimizing the wrong factor.
 
 Another common failure is evaluator coupling:
 
-```text
-candidate prompt -> answer phrasing closer to judge rubric -> higher score
-candidate prompt -> no real increase in task success
-```
+A candidate prompt can move answer phrasing closer to the judge rubric and raise the score without increasing task success.
 
 This is why high-stakes surfaces need multiple evaluators: deterministic checks where possible, calibrated LLM judges where needed, human labels for anchor sets, and downstream outcome correlation when production data exists.
 
@@ -388,15 +355,13 @@ Do not use prompt optimization as the primary fix when the traces show a capabil
 
 Robust agent stacks do not pick one optimizer and call it the answer. They route failures to the layer with causal control:
 
-```text
-wording failure -> prompt optimizer
-procedure failure -> skill optimizer
-tool-doc failure -> tool-surface optimizer
-memory failure -> knowledge or retrieval update
-coordination failure -> runtime/topology search
-evaluator failure -> harness and judge repair
-model capability failure -> model selection, fine-tuning, or post-training
-```
+- **Wording failure:** Prompt optimizer
+- **Procedure failure:** Skill optimizer
+- **Tool documentation failure:** Tool-surface optimizer
+- **Memory failure:** Knowledge or retrieval update
+- **Coordination failure:** Runtime or topology search
+- **Evaluator failure:** Harness and judge repair
+- **Model capability failure:** Model selection, fine-tuning, or post-training
 
 That is the core answer to "are they doing the same thing?"
 

@@ -98,9 +98,7 @@ For WebSocket sessions, the proxy touches `lastFrameAt` on every frame it relays
 
 CDP-based backends (Chrome, Android, Playwright WebKit) communicate via WebSocket. The farm sits between client and backend as a thin relay:
 
-```
-Client WS <-> Farm Proxy <-> Backend WS
-```
+**Client WebSocket ↔ Farm proxy ↔ Backend WebSocket.**
 
 The relay doesn't parse or inspect CDP messages. It just forwards frames in both directions with a small buffer (128 messages max) to handle the window between client connect and backend connect. Either side closing triggers cleanup of both sides and session destruction.
 
