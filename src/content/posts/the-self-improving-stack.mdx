@@ -44,6 +44,7 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import CandidateLoop from '../../components/CandidateLoop.astro';
 import Steps from '../../components/Steps.astro';
 
 I can tell a coding agent to parallelize work, and it will often agree with me while still doing one thing at a time.
@@ -143,7 +144,7 @@ This table is the core of the series.
 
 GEPA, SkillOpt, meta-harness, post-training, and memory flywheels all have the same outer skeleton:
 
-<Steps layout="flow" items={[{title:'Propose candidate'}, {title:'Run candidate'}, {title:'Measure candidate'}, {title:'Promote or reject'}]} />
+<CandidateLoop />
 
 They are not the same system because they mutate different surfaces.
 

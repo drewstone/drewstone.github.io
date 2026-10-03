@@ -20,12 +20,13 @@ interface Props {
 }
 
 const { items, layout = 'steps' } = Astro.props
+const isLongFlow = layout === 'flow' && items.length > 5
 ---
 
-<ol class:list={['steps', { 'steps-flow': layout === 'flow' }]} role="list">
+<ol class:list={['steps', { 'steps-flow': layout === 'flow', 'steps-flow-long': isLongFlow }]} role="list">
   {items.map((s, i) => (
     <li class="step">
-      {layout === 'steps' && <span class="step-num">{String(i + 1).padStart(2, '0')}</span>}
+      {(layout === 'steps' || layout === 'flow') && <span class="step-num">{String(i + 1).padStart(2, '0')}</span>}
       <div class="step-content">
         <div class="step-head">
           <span class="step-title">{s.title}</span>
@@ -117,33 +118,66 @@ const { items, layout = 'steps' } = Astro.props
     color: var(--fg-muted);
   }
   .steps-flow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem 1.2rem;
-    margin: var(--space-md) 0;
-    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+    gap: 1rem 1.2rem;
+    margin: var(--space-lg) 0;
   }
-  .steps-flow::before { display: none; }
+
+  .steps-flow::before {
+    display: none;
+  }
+
   .steps-flow .step {
-    display: flex;
-    align-items: baseline;
-    gap: 1.2rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.55rem;
     padding: 0;
     min-width: 0;
   }
+
   .steps-flow .step:not(:last-child)::after {
-    content: '→';
-    color: var(--fg-muted);
+    display: none;
   }
-  .steps-flow .step-content { padding: 0; }
-  .steps-flow .step-head { margin: 0; }
+
+  .steps-flow .step-num {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--fg-faint);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.45;
+    background: none;
+    align-items: flex-start;
+  }
+
+  .steps-flow .step-content {
+    padding: 0;
+  }
+
+  .steps-flow .step-head {
+    display: block;
+    margin: 0;
+  }
+
   .steps-flow .step-title {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.4;
   }
+
+  .steps-flow-long {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   @media (max-width: 600px) {
-    .steps-flow { gap: 0.3rem 0.75rem; }
-    .steps-flow .step { gap: 0.75rem; }
+    .steps-flow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.45rem;
+    }
   }
 </style>

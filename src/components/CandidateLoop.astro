@@ -1,0 +1,81 @@
+---
+/** Stateful candidate lifecycle diagram for the self-improving stack. */
+---
+
+<figure class="candidate-loop">
+  <svg class="wide" viewBox="0 0 760 300" role="img" aria-labelledby="wide-title wide-desc">
+    <title id="wide-title">Candidate evaluation loop</title>
+    <desc id="wide-desc">A candidate is proposed from the current program, run and measured, then evaluated at a promotion gate. Acceptance replaces the current program; rejection leaves it unchanged. Evidence from either outcome informs the next proposal.</desc>
+    <defs>
+      <marker id="next" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="currentColor" /></marker>
+      <marker id="back" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="var(--fg-muted)" /></marker>
+    </defs>
+    <g class="lines">
+      <path d="M179 58H215" marker-end="url(#next)" /><path d="M380 58H415" marker-end="url(#next)" /><path d="M560 58H615" marker-end="url(#next)" />
+      <path d="M680 79V105H300V135" marker-end="url(#next)" /><path d="M680 79V105H600V135" marker-end="url(#next)" />
+      <path d="M300 184V218H450V232" marker-end="url(#next)" /><path d="M600 184V218H450" />
+      <path class="state" d="M215 184H14V64H30" marker-end="url(#back)" />
+      <path class="return" d="M450 254V280H750V78H385" marker-end="url(#back)" />
+    </g>
+    <g class="stages">
+      <text x="105" y="64" text-anchor="middle">Current program</text>
+      <text x="300" y="64" text-anchor="middle">Candidate program</text>
+      <text x="490" y="64" text-anchor="middle">Run and measure</text>
+      <text x="680" y="64" text-anchor="middle">Promotion gate</text>
+    </g>
+    <g class="outcomes" text-anchor="middle">
+      <text class="accept" x="300" y="157">ACCEPTED</text><text x="300" y="176">Replace current program</text>
+      <text class="reject" x="600" y="157">REJECTED</text><text x="600" y="176">Keep current program</text>
+    </g>
+    <text class="evidence" x="450" y="250" text-anchor="middle">Evidence informs next proposal</text>
+  </svg>
+
+  <svg class="narrow" viewBox="0 0 360 430" role="img" aria-labelledby="narrow-title narrow-desc">
+    <title id="narrow-title">Candidate evaluation loop</title>
+    <desc id="narrow-desc">A candidate is proposed from the current program, run and measured, then evaluated at a promotion gate. Acceptance replaces the current program; rejection leaves it unchanged. Evidence from either outcome informs the next proposal.</desc>
+    <defs>
+      <marker id="next-small" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="currentColor" /></marker>
+      <marker id="back-small" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="var(--fg-muted)" /></marker>
+    </defs>
+    <g class="lines">
+      <path d="M180 60V86" marker-end="url(#next-small)" /><path d="M180 123V149" marker-end="url(#next-small)" /><path d="M180 186V212" marker-end="url(#next-small)" />
+      <path d="M180 245V265H92V276" marker-end="url(#next-small)" /><path d="M180 265H268V276" marker-end="url(#next-small)" />
+      <path d="M92 344V361H180V372" marker-end="url(#next-small)" /><path d="M268 344V361H180" />
+      <path class="state" d="M92 344V356H14V52H110" marker-end="url(#back-small)" />
+      <path class="return" d="M180 404V416H346V105H275" marker-end="url(#back-small)" />
+    </g>
+    <g class="stages">
+      <text x="180" y="52" text-anchor="middle">Current program</text>
+      <text x="180" y="115" text-anchor="middle">Candidate program</text>
+      <text x="180" y="178" text-anchor="middle">Run and measure</text>
+      <text x="180" y="241" text-anchor="middle">Promotion gate</text>
+    </g>
+    <g class="outcomes" text-anchor="middle">
+      <text class="accept" x="92" y="294">ACCEPTED</text><text x="92" y="318">Replace current</text><text x="92" y="334">program</text>
+      <text class="reject" x="268" y="294">REJECTED</text><text x="268" y="318">Keep current</text><text x="268" y="334">program</text>
+    </g>
+    <text class="evidence" x="180" y="390" text-anchor="middle">Evidence informs next proposal</text>
+  </svg>
+</figure>
+
+<style>
+  .candidate-loop { margin: var(--space-lg) 0; }
+  svg { display:block; width:100%; height:auto; color:var(--fg); }
+  .narrow { display:none; }
+  .lines { fill:none; stroke:var(--border-strong); stroke-width:1.4; vector-effect:non-scaling-stroke; }
+  .lines .return, .lines .state { stroke:var(--fg-muted); }
+  .stages, .outcomes { font-family:var(--font-body); fill:var(--fg); font-size:17px; }
+  .accept, .reject { font-family:var(--font-mono); font-size:11px; letter-spacing:.05em; }
+  .accept { fill:var(--c-ok); }
+  .reject { fill:var(--c-fail); }
+  .outcomes > text:not(.accept):not(.reject) { font-size:15px; }
+  .evidence { font:15px var(--font-body); fill:var(--fg-muted); }
+  @media (max-width:600px) {
+    .wide { display:none; }
+    .narrow { display:block; }
+    .narrow .stages { font-size:17px; }
+    .narrow .outcomes { font-size:13px; }
+    .narrow .outcomes > text:not(.accept):not(.reject) { font-size:13px; }
+    .narrow .evidence { font-size:14px; }
+  }
+</style>

@@ -245,9 +245,7 @@ This helps when the final answer has a stable attractor and errors are diverse. 
 
 **Tree search**
 
-The system expands intermediate states, evaluates partial progress, prunes weak branches, and backtracks.
-
-<Steps layout="flow" items={[{title: "Expand"}, {title: "Evaluate"}, {title: "Select frontier"}, {title: "Continue or backtrack"}]} />
+The system expands intermediate states, evaluates partial progress, and prunes weak branches. It selects a frontier to continue or backtracks to another branch.
 
 This is coordination over thoughts, plans, or artifacts. It requires explicit state and a heuristic good enough to guide search.
 
@@ -278,8 +276,6 @@ Handoffs are good when the next specialist should own the state and speak direct
 **Blackboard**
 
 Agents write partial results into a shared workspace. Other agents read and improve them.
-
-<Steps layout="flow" items={[{title: "Workers"}, {title: "Shared artifact store"}, {title: "Reviewers"}, {title: "Revised artifact"}]} />
 
 This is natural for code, research, planning, and design. It needs locking, provenance, conflict resolution, and traceable authorship.
 
