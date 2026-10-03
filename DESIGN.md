@@ -86,5 +86,5 @@ Use code fences for executable code, pseudocode, schemas, and literal output.
 Write ordinary lists as Markdown lists, definitions as labeled lists, and quotations as blockquotes.
 Render equations with KaTeX.
 For a short ordered process, use `Steps.astro` with `layout="flow"` and an `items` array of titles.
-The same component lays out arrows horizontally on desktop and vertically on phones; its default layout supports detailed procedures.
+The flow wraps to the available width; the default layout supports detailed numbered procedures.
 Do not draw prose lists or process diagrams inside `text` fences.
