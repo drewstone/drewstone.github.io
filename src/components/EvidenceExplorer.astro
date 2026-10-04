@@ -1,11 +1,11 @@
 ---
 import type { RunRecord } from '@drewstone/agent-record/record'
-import AgentRecordView from './AgentRecordView'
+import AgentRecordView, { type EventIdMap } from './AgentRecordView'
 import '@drewstone/agent-record/styles.css'
-interface Props { records: RunRecord[] }
-const { records } = Astro.props
+interface Props { records: RunRecord[]; idmap: EventIdMap }
+const { records, idmap } = Astro.props
 ---
-<AgentRecordView records={records} client:load />
+<AgentRecordView records={records} idmap={idmap} client:load />
 <noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>
 <style is:global>
   .research-agent-record {

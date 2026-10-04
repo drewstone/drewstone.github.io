@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content'
 import { glob } from 'astro/loaders'
 import type { Loader } from 'astro/loaders'
+import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -180,7 +181,14 @@ const research = defineCollection({
     /** Field shown in the breadcrumb and link preview. */
     area: z.string().default('Quantum information'),
     figure: figureSchema.optional(),
-    record_ids: z.array(z.string()).default([]), order: z.number(),
+    // A cited record exists only as a publication: manifest, review overlay and lock (research/publications).
+    record_ids: z.array(
+      z.string().regex(/^[a-z0-9][a-z0-9._-]*$/).superRefine((id, ctx) => {
+        if (!['manifest.json', 'overlay.json', 'lock.json'].every((name) => existsSync(join('research/publications', id, name))))
+          ctx.addIssue({ code: 'custom', message: `Record ${id} has no manifest, overlay and lock under research/publications/${id}` })
+      }),
+    ).default([]),
+    order: z.number(),
   }),
 })
 

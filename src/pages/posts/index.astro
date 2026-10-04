@@ -43,18 +43,11 @@ const columns: Col[] = [
   { key: 'featured', label: '★',        type: 'mono', width: '2.5rem', align: 'center' },
 ]
 
-const totalRevs = rows.reduce((s, r) => s + r.revs, 0)
-const featuredCount = rows.filter((r) => r.featured).length
 ---
 
 <Base title="Essays" description="Every post on the blog, sortable by date, tags, model, and revision count. Posts span AI infrastructure, agent design, evals, optimization loops, and applied math." wide>
   <section class="archive-head">
     <h1>Essays</h1>
-    <p class="archive-sub">
-      Every post on the blog. Sortable. Click a column header to flip the order;
-      <strong>{posts.length}</strong> posts, <strong>{totalRevs}</strong> tracked revisions,
-      <strong>{featuredCount}</strong> marked featured.
-    </p>
   </section>
 
   <DataTable
@@ -73,16 +66,5 @@ const featuredCount = rows.filter((r) => r.featured).length
     font-size: 2.2rem;
     margin: 0 0 var(--space-sm);
     letter-spacing: -0.02em;
-  }
-  .archive-sub {
-    font-size: 1rem;
-    line-height: 1.55;
-    color: var(--fg-muted);
-    margin: 0;
-  }
-  .archive-sub strong {
-    color: var(--fg);
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
   }
 </style>

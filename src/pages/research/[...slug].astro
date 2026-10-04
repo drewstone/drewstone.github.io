@@ -4,7 +4,7 @@ import Figure from '../../components/Figure.astro'
 import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
 import { getCollection, render } from 'astro:content'
 import { readFile } from 'node:fs/promises'
-import { fromResearchPublication } from '@drewstone/agent-record/adapters/research-publication'
+import { parseRecord } from '@drewstone/agent-record/record'
 export async function getStaticPaths() {
   return (await getCollection('research')).map((entry) => ({
     params: { slug: entry.id },
@@ -13,15 +13,14 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props
 const { Content, headings } = await render(entry)
+// Each record is the checked public projection of its manifest (tools/research-records.mjs check).
 const records = await Promise.all(
-  entry.data.record_ids.map(async (id: string) => {
-    if (!/^[a-z0-9-]+$/.test(id))
-      throw new Error(`Invalid publication record id: ${id}`)
-    return fromResearchPublication(
-      JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8')),
-    )
-  }),
+  entry.data.record_ids.map(async (id: string) =>
+    parseRecord(JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8'))),
+  ),
 )
+const { records: allIds } = JSON.parse(await readFile('research/publications/idmap.json', 'utf8'))
+const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, allIds[id] ?? {}]))
 ---
 
 <Base
@@ -71,7 +70,7 @@ const records = await Promise.all(
   {records.length > 0 && (
     <section id="agent-record" class="record">
       <h2>Agent record</h2>
-      <EvidenceExplorer records={records} />
+      <EvidenceExplorer records={records} idmap={idmap} />
     </section>
   )}
 </Base>

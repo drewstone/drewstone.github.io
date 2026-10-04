@@ -1,0 +1,16 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "ftqc-zips-2026-08-05-r1",
+  "recordDigest": "sha256:91a19a3fa39ceba1dfd0667657173157062d7fe940d57c920d55bfaf660d4a02",
+  "overlaySha256": "43ea2207df760810c0de6d42f2e00b93b52ff16f6852ce1523eb90cef016eceb",
+  "publicSha256": "f64cfe52608c3362dc5361253bf8342c17c4f3a661ddabfaa99c227c7b2beace",
+  "snapshot": "sha256:7bd4ec17b07440fb5163a7550586d15a96ef47aca0bf13a1003744f813d3ca2b",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.7.0",
+    "adapter": "2.0.0",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-04T22:26:53.596Z",
+  "builtOn": "DESKTOP-18IR33V"
+}

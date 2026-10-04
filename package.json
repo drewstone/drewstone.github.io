@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.22.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node tools/research-records.mjs check && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "blog": "node tools/blog-loop.mjs",
@@ -13,14 +13,17 @@
     "write": "node tools/edit-post.mjs",
     "gen:graphics": "node tools/gen-graphics.mjs",
     "log-edit": "node tools/log-edit.mjs",
-    "install:hooks": "node tools/install-hooks.mjs"
+    "install:hooks": "node tools/install-hooks.mjs",
+    "research:check": "node tools/research-records.mjs check",
+    "research:build": "node tools/research-records.mjs build",
+    "research:verify": "node tools/research-records.mjs verify"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/react": "5.0.7",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.0",
-    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz",
+    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.7.0/drewstone-agent-record-0.7.0.tgz",
     "astro": "^6.1.10",
     "katex": "^0.16.38",
     "react": "19.3.0",
