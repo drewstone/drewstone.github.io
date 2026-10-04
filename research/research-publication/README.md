@@ -26,20 +26,21 @@ Each record has a directory under `research/publications/<record id>/`:
 
 - `manifest.json` names the store namespace, the snapshot manifest digest, the converter version and the record digest.
 - `overlay.json` is the review. It is the only path by which a message, tool input, tool result or finding body becomes public.
-- `lock.json` holds the digests of the last build: record, overlay and public projection.
+- `lock.json` holds the digests of the last build (record, overlay and public projection) and the build's signature over them and the manifest.
 
 `public/research/records/<record id>.json` is the public projection: the converted record with only the bodies the overlay approves.
 It is committed so the site builds without store credentials, and the gates below prove it matches its inputs.
 A research post lists its records in `record_ids`; the content schema refuses an ID without a publication.
 
-To publish or rebuild a record, on GTR:
+To publish or rebuild a record, on GTR or beelink1:
 
 ```bash
-node tools/research-records.mjs build <record id>   # materialize the snapshot, convert, apply the review, write
+node tools/research-records.mjs build <record id>   # check the pins, materialize the snapshot, convert, apply the review, write, sign
 node tools/research-records.mjs verify <record id>  # reproduce it from the store and check the pins
 ```
 
 `build` and `verify` read the store through discovery-lab `tools/evidence.mjs` (`EVIDENCE_CLI`) with the credentials the research tool uses.
+`build` signs each lock with `BLOG_RECORDS_SIGNING_KEY` from the same encrypted file (tangle-devops `secrets/agent-state.env`); `research/publications/attestation-keys.json` lists the public keys the site build accepts.
 Upload a new run with `evidence.mjs put` and pin it with `evidence.mjs pin --from research/publications` before citing it.
 
 ## Review overlay
@@ -73,9 +74,12 @@ Joins, channel choices and converter upgrades do not change an ID, so a publishe
 - the committed projection and overlay match their lock;
 - every published ID, every `?event=` link under `src/content` and `research/`, and every map target resolves to an event;
 - public records hold no credential, private path, unlisted email address, nonce, encrypted blob or hidden reasoning, and every published body traces to the overlay;
-- no file under `public/research/records` lacks a manifest.
+- no file under `public/research/records` lacks a manifest;
+- every lock carries a valid signature over the current manifest, overlay, projection and record digests.
 
-`verify` runs on GTR before every push that touches research records (`pnpm install:hooks` installs the hook) and nightly:
+The site build cannot read the store, so the signature carries the store's verdict to it: `build` signs only after the pins pass and the record reproduces from the store, and a lock, overlay or manifest edited afterwards fails `check`, wherever the commit came from.
+
+`verify` runs before every push that touches research records (the `research-records` pre-push check in `.ai-agent-hooks.json`) and nightly on GTR (tangle-tools `evidence-verify.timer`):
 
 - every object of every cited snapshot exists with its length and digest;
 - each cited namespace is locked against deletion, and its objects are mirrored to `/mnt/traces/evidence-pins` on GTR for backup (the mirror is checked where it lives);

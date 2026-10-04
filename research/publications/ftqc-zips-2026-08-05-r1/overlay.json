@@ -21,28 +21,23 @@
     },
     "ftqc-zips-2026-08-05-r1:s0": {
       "label": "verifier-pcftc",
-      "role": "Worker",
-      "assignment": "Verification"
+      "role": "Worker"
     },
     "ftqc-zips-2026-08-05-r1:s1": {
       "label": "verifier-qldpc",
-      "role": "Worker",
-      "assignment": "Verification"
+      "role": "Worker"
     },
     "ftqc-zips-2026-08-05-r1:s2": {
       "label": "verifier-qltc",
-      "role": "Worker",
-      "assignment": "Verification"
+      "role": "Worker"
     },
     "ftqc-zips-2026-08-05-r1:s3": {
       "label": "verifier-channel",
-      "role": "Worker",
-      "assignment": "Verification"
+      "role": "Worker"
     },
     "ftqc-zips-2026-08-05-r1:s4": {
       "label": "verifier-robustqec",
-      "role": "Worker",
-      "assignment": "Verification"
+      "role": "Worker"
     },
     "finding:ftqc-zips-2026-08-05-r1": {
       "label": "Recorded findings",

@@ -4,7 +4,7 @@
   "title": "Corrected witness finding, September 3",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "format": "finding-only",
   "idScheme": "anchor.v1",
@@ -116,10 +116,10 @@
   },
   "terminal": null,
   "coverage": {
-    "completeOriginalCapture": true,
+    "completeOriginalCapture": false,
     "publicContent": "No session transcripts were retained.",
-    "categoryMethod": "Activity types come from a fixed map of tool names and shell commands in the agent-runtime adapter. They describe what a call did, not its value.",
-    "cost": "List price from recorded usage; not billed.",
+    "categoryMethod": "Activity types are keyword matches on tool names and commands. They do not measure research value or show independent verification.",
+    "cost": "Not recorded",
     "nodes": [
       {
         "nodeId": "finding:q-ca-bcww-shareable-pkg",
