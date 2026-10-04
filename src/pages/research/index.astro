@@ -13,10 +13,7 @@ const results = (await getCollection('research')).sort(
 >
   <header class="opening">
     <h1>Proofs &amp; counterexamples</h1>
-    <p>
-      Mathematical results, their proofs, and the recorded agent work. Three
-      witnesses address two proposed inequalities.
-    </p>
+    <p>Mathematical results, their proofs, and the recorded agent work.</p>
   </header>
   <ol class="results">
     {results.map((item, i) => (
@@ -32,11 +29,6 @@ const results = (await getCollection('research')).sort(
       </li>
     ))}
   </ol>
-  <p class="scope">
-    The classical and GHZ constructions
-    address the same BCWW inequality. First discovery of the classical point is
-    unattributed; the retained work establishes verification.
-  </p>
 </Base>
 <style>
   .opening {
@@ -68,12 +60,8 @@ const results = (await getCollection('research')).sort(
   .results p {
     margin-bottom: 0.25rem;
   }
-  .limit,
-  .scope {
+  .limit {
     color: var(--fg-muted);
     font-size: 0.86rem;
-  }
-  .scope {
-    margin-top: 1rem;
   }
 </style>
