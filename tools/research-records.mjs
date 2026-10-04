@@ -190,19 +190,13 @@ const EMAIL_ALLOW = new Set(['noreply@anthropic.com', 'git@github.com'])
 const HIDDEN_KEYS = new Set(['reasoning', 'thinking', 'reasoningText', 'encrypted_content'])
 
 function scanPublic(gate, id, text, record, overlay) {
-  for (const [kind, pattern] of LEAKS) {
-    const hit = pattern.exec(text)
-    if (hit) gate.fail('G8', id, `public record holds a ${kind} (${hit[0].slice(0, 12)}…)`)
-  }
-  for (const hit of text.matchAll(EMAIL)) {
-    if (!EMAIL_ALLOW.has(hit[0].toLowerCase()) && !/\.(png|jpe?g|svg|js|ts|py|md|sh|rs|go|json)$/i.test(hit[0])) {
-      gate.fail('G8', id, `public record holds an email address outside the allowlist (${hit[0].replace(/^(.{2}).*@/, '$1…@')})`)
-      break
-    }
-  }
+  // Patterns run on decoded strings, so a JSON escape (\n, \t) never joins or splits a match.
+  const strings = []
   const walk = (value, path) => {
+    if (typeof value === 'string') strings.push([path, value])
     if (!value || typeof value !== 'object') return
     for (const [key, inner] of Object.entries(value)) {
+      strings.push([`${path}/${key}`, key])
       // Token counters named `reasoning` are numbers; reasoning text is a string or a block list.
       if (HIDDEN_KEYS.has(key) && (typeof inner === 'string' ? inner !== '' : inner !== null && typeof inner === 'object'))
         gate.fail('G8', id, `public record holds a ${key} field at ${path}/${key}`)
@@ -211,6 +205,22 @@ function scanPublic(gate, id, text, record, overlay) {
     }
   }
   walk(record, '')
+  const found = new Set()
+  for (const [path, value] of strings) {
+    for (const [kind, pattern] of LEAKS) {
+      const hit = pattern.exec(value)
+      if (hit && !found.has(kind)) {
+        found.add(kind)
+        gate.fail('G8', id, `public record holds a ${kind} at ${path} (${hit[0].slice(0, 12)}…)`)
+      }
+    }
+    for (const hit of value.matchAll(EMAIL)) {
+      if (!found.has('email') && !EMAIL_ALLOW.has(hit[0].toLowerCase()) && !/\.(png|jpe?g|svg|js|ts|py|md|sh|rs|go|json)$/i.test(hit[0])) {
+        found.add('email')
+        gate.fail('G8', id, `public record holds an email address outside the allowlist at ${path} (${hit[0].replace(/^(.{2}).*@/, '$1…@')})`)
+      }
+    }
+  }
   // Every published body traces to the review.
   for (const event of record.events ?? []) {
     const d = event.detail ?? {}
@@ -558,10 +568,13 @@ async function regenerate(id, manifest, overlay, work, conv, { runDir: localRun 
     ;[materialized] = await evidence(['materialize', snapshot.namespace, snapshot.snapshot, '--out', runDir, '--prefix', prefix])
   }
   const recordPath = join(work, 'record.json')
-  const { stdout } = await exec(process.execPath, [conv.ingest, runDir, '--run-id', id, '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
+  // A bundle (several harnesses as one record) names its own record id; a run directory takes the publication's.
+  const bundle = existsSync(join(runDir, 'bundle.json'))
+  const { stdout } = await exec(process.execPath, [conv.ingest, runDir, ...(bundle ? [] : ['--run-id', id]), '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
   const summary = JSON.parse(stdout.trim().split('\n').at(-1))
   const recordBytes = await readFile(recordPath)
   const record = JSON.parse(recordBytes.toString('utf8'))
+  if (record.runId !== id) throw new Error(`the snapshot converts to record ${record.runId}, not ${id}`)
   const projected = applyOverlay(record, overlay)
   const reviewIssues = await checkReviewSources(record, overlay, runDir)
   return { materialized, summary, record, recordDigest: `sha256:${sha256(recordBytes)}`, projected, reviewIssues, snapshotManifest }
