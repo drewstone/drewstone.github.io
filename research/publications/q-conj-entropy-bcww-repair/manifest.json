@@ -12,11 +12,11 @@
   "bytes": 649939,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.7.0",
-    "adapter": "2.0.0",
+    "version": "0.8.0",
+    "adapter": "2.1.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:69feebb52acba77ecb0cc30e08043246b30040b22519724f75ad35adf6736a38",
+  "recordDigest": "sha256:be985886d58bb0d6adef85f0106bbd9ffa60e8a47c650c66165e1789a272ec56",
   "overlay": "overlay.json",
   "public": "public/research/records/q-conj-entropy-bcww-repair.json"
 }

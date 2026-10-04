@@ -4,7 +4,7 @@
   "title": "Linden–Winter ladder certification, August 16",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.0.0"
+    "version": "2.1.0"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
@@ -39,7 +39,8 @@
       "parent": "q-q36-lw6-unbounded-ladder",
       "kind": "agent",
       "role": "Worker",
-      "model": "glm-5.2",
+      "model": "pi/tangle-router/glm-5.2",
+      "modelSource": "materialization receipt",
       "servedModel": null,
       "harness": "pi",
       "start": "2026-08-16T21:00:40.958Z",
@@ -60,7 +61,8 @@
       "parent": "q-q36-lw6-unbounded-ladder",
       "kind": "agent",
       "role": "Worker",
-      "model": null,
+      "model": "pi/tangle-router/glm-5.2",
+      "modelSource": "materialization receipt",
       "servedModel": null,
       "harness": null,
       "start": "2026-08-16T21:00:41.049Z",
@@ -79,7 +81,8 @@
       "parent": "q-q36-lw6-unbounded-ladder",
       "kind": "agent",
       "role": "Worker",
-      "model": "glm-5.2",
+      "model": "pi/tangle-router/glm-5.2",
+      "modelSource": "materialization receipt",
       "servedModel": null,
       "harness": "pi",
       "start": "2026-08-16T21:01:07.713Z",
@@ -100,7 +103,8 @@
       "parent": "q-q36-lw6-unbounded-ladder",
       "kind": "agent",
       "role": "Worker",
-      "model": null,
+      "model": "claude-code/zai-coding-plan/glm-5.2",
+      "modelSource": "materialization receipt",
       "servedModel": null,
       "harness": null,
       "start": "2026-08-16T21:02:02.834Z",
@@ -119,7 +123,8 @@
       "parent": "q-q36-lw6-unbounded-ladder",
       "kind": "agent",
       "role": "Worker",
-      "model": null,
+      "model": "pi/tangle-router/glm-5.2",
+      "modelSource": "materialization receipt",
       "servedModel": null,
       "harness": null,
       "start": "2026-08-16T21:51:31.910Z",
@@ -403,6 +408,9 @@
       "detail": {
         "role": "user",
         "nativeRecordId": "b9d2ce0b",
+        "nativeParentId": "7ce0dd11",
+        "contentSha256": "a0c7fc1e7a72ff551b67c8109678b130f614194b6c68400c116bf4197479df08",
+        "contentCharacters": 5366,
         "publicText": "SEAT C (constructor), run q-q36-lw6-unbounded-ladder. Your workspace root is $DISCOVERY_RUN_WORKSPACE (use it or __file__ for absolute paths in every check; the grader runs from a foreign CWD).\n\nMISSION: certify the classical LW6 kill-ratio ladder family W_L, rows L=1..16 (extend to L=17..20 only if each row costs < 2 min), with YOUR OWN exact engine, and write the deliverable check.\n\nCONTEXT (KB-cited facts; cite, never re-derive): LW6 functional f_k = k1*x + k2*y + k3*z + E where x=I(A;C|B)=S(AB)+S(BC)-S(B)-S(ABC), y=I(C;B|A)=S(AB)+S(AC)-S(A)-S(ABC), z=I(A;B|D)=S(AD)+S(BD)-S(D)-S(ABD), E=S(ABC)+S(D)-S(AB)-S(CD). Parties (A,B,C,D) are the 4 bits of each atom string, MSB-first. R(w) = -E/(x+y+z) is the diagonal kill ratio: f_(t,t,t)<0 for all integer t < R. Prior certified diagonal frontier (CITED, already beats this charter's 200/1e3/1e4 targets): thin witnesses R>=9.70, 14.65, 76.43, 2923, 12538, 3.555e9 (KB pages pursuit-q-qb-quantum-kill-beyond-classical). Your job is the FAMILY ladder, the unboundedness object.\n\nTHE FAMILY (KB page pursuit-q-q36-u5-weights-recover, \"LW6_VERDICT=REFUTED_UNBOUNDED\"): support strings (A,B,C,D MSB-first) {0000, 0010, 1101, 1111, 0101, 0110} with integer weights, L a positive integer:\n  w(0000)=2*10^(4L+3)\n  w(0010)=27*10^(4L+3) - 27*10^(3L+3)\n  w(1101)=2*10^(4L)\n  w(1111)=27*10^(4L)\n  w(0101)=2*10^(L+3)\n  w(0110)=27*10^(L+3)\nProbabilities = weights / N_L (N_L = sum). KB-claimed: certified rows L=2..12, R_L >= 1.9*10^L for L>=3, R_L -> 2*10^L from below, R_12 in [1999999999999.356320, 1999999999999.356322].\n\nENGINE ANCHORS (verify YOUR engine against these BEFORE certifying family rows; these are KB-cited certified values):\n (a) atoms (1000),(1110),(1101),(0111) weights (1/3,1/6,1/6,1/3): f_(1,1,1) = 3 - 2*log2(3) = -0.169925001442312...\n (b) W2: atoms (0100),(1100),(1110),(0001),(0011),(0111) weights (0.118687,0.071970,0.309343,0.309343,0.071970,0.118687) over denominator 10^6: x=y=0.04742814163445661480..., z=0, E=-0.18864209..., threshold T=-E/x = 3.9774295326437793488652038465902970699380108305768938194639 (KB gives 49 digits; you should match 40+).\nA float-only smoke engine exists at work/smoke_wl.py (parent's); you may read it for conventions, but YOUR engine must be exact: Fraction weights -> Decimal directed-rounding interval entropies (ROUND_FLOOR/ROUND_CEILING contexts), precision prec >= 5*L+100 for row L (y_L ~ 10^-5L sits ~5L+2 orders below the O(1) entropies). Document that each entropy interval is computed by rounding every Decimal operation outward.\n\nSUPPORT THEOREMS (machine-check them yourself; they are tooling, 15 lines): z=0 IDENTICALLY on this support (A is constant on the D=0 atoms {0000,0010,0110}; B is constant on the D=1 atoms {1101,1111,0101}); x=0 iff w(1101)*w(0110) = w(1111)*w(0101) (the B=1 block is a 2x2 table over (A,C); independence iff determinant zero). For W_L the product identity holds in exact integers — verify per L in integers. When x=z=0 exactly, f_k = k2*y + E: the witness kills EVERY k with k2 < R_L, for any k1,k3 >= 0.\n\nDELIVERABLES:\n1. work/results/ladder_cert.json — create the file FIRST (with \"status\":\"in_progress\"), append one row per L as it certifies: {L, weights_int:[...], N_int, x_interval, y_interval, E_interval, R_interval:[R_lo,R_hi], R_display_10sig, x_det_certificate (the exact integer products), certified_kills:{...}}. Include for each L the 10-significant-digit display of R_lo NEXT TO the full-precision floor (the u5 display-floor lesson: display must never be mistaken for the value).\n2. work/checks/check_ladder.py — runs from any CWD (absolute paths via os.environ['DISCOVERY_RUN_WORKSPACE'] or __file__), reads ladder_cert.json, re-derives every R interval from the weights ITSELF (does not trust the JSON's arithmetic; recompute rows L=2,8,16 fresh and compare), and prints EXACTLY ONE decisive line: R_LADDER=L2:<floor>,...,L16:<floor> followed by exit 0 IF AND ONLY IF every L>=3 has R_lo >= 1.9*10^L and L=2 has R_lo >= 1.89*10^2. If any row fails or cannot be certified, print R_LADDER=BLOCKED:<reason> and exit 1. A check that cannot fail is worthless; make the failure mode real. Print the floors with 6 significant digits.\n3. work/seat-c/CLAIMS.md — each claim + its check command + expected output substring.\n4. Certified diagonal kills: at suitable L, certify interval-upper-bound f_(t,t,t) < 0 for t in {200, 1000, 10000, 10^6, 10^9, 10^12, 10^15} (one row each in the JSON; the deep t's need deep L: t=10^15 needs R_L > 10^15, so L=16).\nWEIGHTS ARE EXACT INTEGERS (no float origin): state this in the JSON per row (rationalization-stability is vacuous for integer-origin weights; the integers ARE the certificate).\n\nRULES: WRITE AS YOU GO (file before work, append as rows settle; if you die mid-run, what survived must be on disk). Do not read large files. Do not re-derive cited KB results (the ladder rows you certify are the INDEPENDENT REPRODUCTION + EXTENSION of the KB page - that is the assignment, and disagreement with the KB is a legitimate, reportable outcome: if your certified R_12 contradicts [1999999999999.356320, 1999999999999.356322], say so loudly in CLAIMS.md). You have ~5M tokens: write code directly, run it, iterate. Use your native machinery (parallel tool calls, subagents) where it helps. Record nothing to the KB yourself; the parent re-runs your checks and records.",
         "publicationMode": "full",
         "publicationNote": null
@@ -584,6 +592,9 @@
       "detail": {
         "role": "user",
         "nativeRecordId": "a93673cf",
+        "nativeParentId": "577ac1eb",
+        "contentSha256": "c17d145c40aa9a8a84622ee6ee6c4af2d3ceac7093611a0333dab01ec89fd276",
+        "contentCharacters": 4801,
         "publicText": "SEAT O (off-diagonal surface), run q-q36-lw6-unbounded-ladder. Workspace root $DISCOVERY_RUN_WORKSPACE (absolute paths in checks; grader runs from a foreign CWD).\n\nMISSION: build the certified OFF-DIAGONAL kill surface of LW6 in coefficient space k=(k1,k2,k3): rows at (k1,k2) off the diagonal with certified max-k3 reach, in two honestly-labeled tiers, plus the closure statement that the family slabs kill the previously-open surface points.\n\nCONTEXT (KB-cited, never re-derive): f_k = k1*x + k2*y + k3*z + E; x=I(A;C|B)=S(AB)+S(BC)-S(B)-S(ABC); y=I(C;B|A)=S(AB)+S(AC)-S(A)-S(ABC); z=I(A;B|D)=S(AD)+S(BD)-S(D)-S(ABD); E=S(ABC)+S(D)-S(AB)-S(CD); parties = 4 bits MSB-first (A,B,C,D). A witness w kills k when interval-upper-bound of f_k(w) < 0. KB-cited kill infrastructure: halfspace union H = {k1<1} U {k2<1} U {k3<1} U {k1+k2<3.97743} (exact, from W2: atoms (0100),(1100),(1110),(0001),(0011),(0111) w (0.118687,0.071970,0.309343,0.309343,0.071970,0.118687)/10^6, threshold 3.9774295326437793488652038465902970699380108305768938194639); diagonal certified kills t <= 3.555e9 by a witness with KB-recorded digits x=2.4373764e-35, y=2.4373249e-35, z=9.1790e-38, e=-1.7360207e-25 (pursuit-q-qb-quantum-kill-beyond-classical). KB page pursuit-q-qb-classical-critical-surface-r3 certified k*=(3977/125, 3977/125, 1)=(31.816,31.816,1) as OPEN w.r.t. that run's on-disk witnesses.\n\nFAMILY W_L (KB page pursuit-q-q36-u5-weights-recover; the unboundedness object): support (MSB) {0000,0010,1101,1111,0101,0110}; w(0000)=2*10^(4L+3); w(0010)=27*10^(4L+3)-27*10^(3L+3); w(1101)=2*10^(4L); w(1111)=27*10^(4L); w(0101)=2*10^(L+3); w(0110)=27*10^(L+3); probabilities w/N_L. SUPPORT THEOREMS (machine-check yourself; tooling): z=0 identically (A const on D=0 atoms; B const on D=1 atoms); x=0 iff w(1101)*w(0110)=w(1111)*w(0101) (exact integers for W_L). Hence f_k(W_L) = k2*y_L + E_L: the certified kill region is the SLAB {k2 < R_L = -E_L/y_L}, k1,k3 ARBITRARY (>= 0), for every L with a certified R_L interval. Engine anchors before family rows: (a) (1/3,1/6,1/6,1/3) at (1000),(1110),(1101),(0111): f_(1,1,1)=3-2*log2(3)=-0.169925001442312...; (b) W2 (above): x=y=0.04742814163445661480..., E=-0.18864209... Your own engine: Fraction weights -> Decimal directed-rounding interval entropies (write it yourself; parent's work/smoke_wl.py is float conventions only). Precision per row: prec >= 5L+100. KB claims R_L >= 1.9*10^L (L>=3), R_12 in [1999999999999.356320, 1999999999999.356322].\n\nDELIVERABLES:\n1. work/results/offdiag_surface.json (create FIRST, status in_progress, append per row). TIER-EXACT rows (rung 4-5, your own certificates): for L in {3,6,9,12}: certified R_L interval and slab row {k2 < R_L(lo)} for all k1,k3>=0; certified anchor kills f<0 at off-diagonal points: (10^30, 100, 10^30) at L=3; (1, 1.89*10^12, 10^50) at L=12; (10^3, 10^3, 10^3) at the shallowest L whose certified R_L(lo) exceeds 10^3; (10^9, 10^9, 10^9) at shallowest L with R_L(lo) > 10^9. Also certify: k*=(3977/125, 3977/125, 1) is killed by the L=2 slab (k2=31.816 < R_2 ~ 189) - i.e. the KB's certified-open point is now closed, with exact Fractions for k*. TIER-DIGIT rows (rung 3, labeled 'digit-interval; digits inherited from source-run certificates, +/-5ulp slack'): incumbents r9 (x=1.3830845e-4, y=1.3829639e-4, z=2.476e-8, e=-2.9586245e-3), r14 (x=4.37832256e-5, y=4.37810146e-5, z=0, e=-1.3702750751e-3), mp3.5e9 (x=2.4373764e-35, y=2.4373249e-35, z=9.1790e-38, e=-1.7360207e-25): for each, at (k1,k2) in {(100,100),(1000,100),(100,1000),(10^6,10^6)}: certified interval of max k3 killed = -(k1*x+k2*y+e)/z (interval arithmetic; if the z-interval contains 0: row is 'k3-unbounded' when hi(k1*x+k2*y+e)<0 else 'undecidable-at-digits'). Also W2 exact row: k1+k2 < 3.9774295326437793488652038465902970699380108305768938194639, any k3 (cited exact; your interval re-check of the threshold at your precision).\n2. work/checks/check_offdiag.py — any-CWD-safe, recomputes the TIER-EXACT anchors it reports (does not trust stored arithmetic), prints EXACTLY ONE line: OFFDIAG_SURFACE=<n_exact_rows> exact rows, slab L3..L12, kstar_closed=True|False, <n_digit_rows> digit rows and exits 0 iff all TIER-EXACT anchors re-certify and k* is certified killed; else prints OFFDIAG_SURFACE=BLOCKED:<reason> exit 1.\n3. work/seat-o/CLAIMS.md (claims + check commands + expected substrings), including the honest tier labeling.\n\nRULES: WRITE AS YOU GO (files before work, append as rows settle). No shared code with other seats (parent's smoke_wl.py conventions only). Do not read large files. Do not re-derive KB-cited results (H, the diagonal frontier) - you USE them with citations; your new content is the off-diagonal rows and the k* closure. ~5M tokens. Record nothing to the KB; the parent re-runs your checks and records.",
         "publicationMode": "full",
         "publicationNote": null
@@ -635,7 +646,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "1eda9054"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "1eda9054",
+        "nativeParentId": "b9d2ce0b",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -717,7 +732,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "bdd798ee"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "bdd798ee",
+        "nativeParentId": "a93673cf",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -735,7 +754,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "b13ba0a2"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "b13ba0a2",
+        "nativeParentId": "1eda9054",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -753,7 +776,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "543c6f3b"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "543c6f3b",
+        "nativeParentId": "bdd798ee",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -771,7 +798,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "8e21fd5e"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "8e21fd5e",
+        "nativeParentId": "b13ba0a2",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -789,7 +820,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "98e62375"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "98e62375",
+        "nativeParentId": "543c6f3b",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -807,7 +842,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "16d7c62a"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "16d7c62a",
+        "nativeParentId": "8e21fd5e",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -889,7 +928,11 @@
       "detail": {
         "role": "assistant",
         "responseStatus": "error",
-        "nativeRecordId": "10b0d0c6"
+        "responseReportedModel": "glm-5.2",
+        "nativeRecordId": "10b0d0c6",
+        "nativeParentId": "98e62375",
+        "contentSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "contentCharacters": 0
       }
     },
     {
@@ -1661,9 +1704,9 @@
   },
   "coverage": {
     "completeOriginalCapture": false,
-    "publicContent": "The constructor and off-diagonal assignment prompts are published. Other message and tool bodies are withheld; roles, tool names, timing and token usage are published.",
-    "categoryMethod": "Activity types come from a fixed map of tool names and shell commands in the agent-runtime adapter. They describe what a call did, not its value.",
-    "cost": "List price from recorded usage; not billed.",
+    "publicContent": "The constructor and off-diagonal assignment prompts are published, and every model request in those two sessions failed. No other conversation was retained.",
+    "categoryMethod": "Activity types are keyword matches on tool names and commands. They do not measure research value or show independent verification.",
+    "cost": "Not recorded",
     "nodes": [
       {
         "nodeId": "q-q36-lw6-unbounded-ladder",
