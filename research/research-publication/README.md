@@ -40,6 +40,13 @@ Never update the allowlist mechanically to make an import pass.
 Unreviewed transcript bodies, tool arguments/results, private reasoning, credentials, and personal information remain outside the public projection.
 Do not publish an original archive just because its metadata projection is safe.
 
+## Records from other harnesses
+
+`apn-critical-point-r11` combines Claude Code, Codex and OpenCode sessions with a Runtime journal.
+A one-off generator, retained beside the private sources, projected it; `apn-critical-point-receipt.json` lists every source hash, published line range, exclusion and redaction rule.
+Mention-only sessions publish one verified quotation each, and correspondence steps are excluded.
+Native sessions join a Runtime node only through an exact recorded identifier; workflow subagents name their parent session by file location and session ID.
+
 ## Counts and visual meaning
 
 Runtime nodes, native files, and findings are different units.

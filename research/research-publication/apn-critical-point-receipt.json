@@ -1,0 +1,213 @@
+{
+ "record": "apn-critical-point-r11",
+ "generated": "2026-10-04T08:12:12Z",
+ "rules": {
+  "published": "ordinary message text, tool inputs and tool results",
+  "excluded": "hidden thinking, encrypted reasoning, system reminders, developer instructions, Codex event duplicates",
+  "redactions": [
+   "system reminders omitted",
+   "encrypted inter-agent message omitted",
+   "credential redacted",
+   "acknowledgement nonce redacted",
+   "remote login redacted",
+   "IP address redacted",
+   "account name redacted",
+   "email addresses redacted",
+   "Private filesystem roots replaced with [home] or [scratch]."
+  ],
+  "excerpts": "tool results above 2,600 characters, tool inputs above 5,000, prompts above 7,000 (4,000 in the operator session)"
+ },
+ "counts": {
+  "nodes": 22,
+  "events": 1141,
+  "modes": {
+   "full": 315,
+   "excerpt": 199,
+   "redacted": 90
+  },
+  "excluded": {
+   "OpenCode reasoning parts": 22,
+   "codex event_msg:item_completed": 175,
+   "codex token_usage_record": 74,
+   "codex event_msg:token_count": 75,
+   "codex inter_agent_communication_metadata": 6,
+   "codex response_item reasoning": 73,
+   "codex event_msg:task_complete": 1,
+   "claude record type attachment": 564,
+   "hidden thinking blocks": 316,
+   "session listings of unrelated sessions (ListAgents)": 4,
+   "correspondence steps: finding author addresses, drafting the note and handing it to the mail session": 70
+  }
+ },
+ "sources": [
+  {
+   "path": "lab-run/subscription-apn-glm-lab-20260927c/spawn-journal.jsonl",
+   "sha256": "aba3b85d7969b4f18c8e3e60a29045778d025c54494cd0992cfafb0c88e18451",
+   "published": "journal events with digests, budgets and settlement"
+  },
+  {
+   "path": "lab-run/subscription-apn-glm-lab-20260927c/native-trajectory.json",
+   "sha256": "4b03263dcb03c9182cf9ac29a2573dc36939c9a8dccd8ce6074e7dd08a728d5b",
+   "bytes": 452668,
+   "messages": 34,
+   "parts": 144,
+   "published": "text and tool parts; reasoning parts excluded"
+  },
+  {
+   "path": "codex-gtr/sessions/2026/09/27/rollout-2026-09-27T02-53-13-01a0e211-8456-7cc2-bd85-39a6b3992757.jsonl",
+   "sha256": "fc3d18ca7ba6d93862827f28cbc44b639dda49e2a26f3cb4284b1137420ad737",
+   "bytes": 23167966,
+   "publishedLines": [
+    740,
+    1312
+   ],
+   "published": "messages and tool bodies in the run-c window; reasoning and event duplicates excluded"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852.jsonl",
+   "sha256": "33e8dcdbebea2edbe6687f83a19c7a2fbfcf143054f194ce354d5e4eebda964f",
+   "bytes": 59700766,
+   "publishedLines": [
+    22697,
+    22698,
+    22835,
+    22836,
+    23619,
+    23630,
+    23631,
+    23641,
+    23642,
+    23660,
+    23885,
+    23886,
+    23906,
+    23907,
+    23910,
+    24029,
+    24030,
+    24050,
+    24082,
+    24083,
+    24087,
+    24088,
+    24091,
+    24143,
+    24165,
+    24166,
+    24173,
+    24174,
+    24191
+   ],
+   "published": "selected lines about this result"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_4315e8f2-78d/agent-a7d1fa49d0e4e24ad.jsonl",
+   "sha256": "4d881021e98bc70e58a4552c1fc56d5e76ace523a81c090c82776e7ded1f563c",
+   "bytes": 879141,
+   "lines": 191,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_4315e8f2-78d/agent-a105c2eb83792ce9d.jsonl",
+   "sha256": "90d70ef18ec6ff1d2517c944d069c5a17a1ad555c960d6961320e8bbafba4d5f",
+   "bytes": 1180709,
+   "lines": 270,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-a92569e2c2a008b1f.jsonl",
+   "sha256": "82bbfa952c8096e255681610c93b089b675bf9f2ea491c11bc323da626a6bf50",
+   "bytes": 725822,
+   "lines": 134,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-a07277ad73a4b2bff.jsonl",
+   "sha256": "591a72aa63f2a02b47afdf2a7ec98524c6c9b8101435b387a4d9063b482c6edd",
+   "bytes": 679070,
+   "lines": 128,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-aa16e4b57e685d4ec.jsonl",
+   "sha256": "22196e908be9c031acfcf6097aa32a1445ba84e56e739a896f7615cb2b960ca9",
+   "bytes": 636142,
+   "lines": 133,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-ae12a9d90fa5829b2.jsonl",
+   "sha256": "ec1fe5a3556631b4d469ffe7eb6ae060813420733d4310c879a2fb07978a6521",
+   "bytes": 811237,
+   "lines": 187,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-aa9f42af3c7e93746.jsonl",
+   "sha256": "23faafe80415d14541a222f94d9c414c1da0b8d4c1aefc9cb747b4dc9a14e500",
+   "bytes": 797019,
+   "lines": 152,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_5f3219dd-2a3/agent-ade4803bb252a0b1b.jsonl",
+   "sha256": "9d8102853602adb0d1caba7153acd29a161821b1ab602969ddca86a41b8ad030",
+   "bytes": 1005369,
+   "lines": 232,
+   "published": "all ordinary messages and tool bodies"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_b8fdece2-3a6/agent-a05a8ac12d3706028.jsonl",
+   "sha256": "96b3709c2bd76d61c0d319d751c7dfcc9e3273c101cea207e5dadc26cbd42372",
+   "bytes": 1300573,
+   "lines": 363,
+   "published": "all ordinary messages and tool bodies; excluded lines [96, 98, 100, 101, 108, 109, 112, 113, 115, 116, 118, 119, 121, 122, 216, 217, 284, 285, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360] (correspondence steps: finding author addresses, drafting the note and handing it to the mail session)"
+  },
+  {
+   "path": "claude-projects/-Users-drew-webb-discovery-lab/7269e9f8-bcc5-4c78-85ed-a7f081548852/subagents/workflows/wf_4315e8f2-78d/agent-a0a379eb85025500d.jsonl",
+   "sha256": "3070cae99b01290dc7b68e52a6f65efbe60b8e3e0da39cf2196dbba70217294e",
+   "bytes": 4081293,
+   "hashScope": "whole file",
+   "published": "quoted mention entries only"
+  },
+  {
+   "path": "codex-mac/sessions/2026/09/26/rollout-2026-09-26T23-31-50-01a0e190-126d-71b0-b769-7fd11440decf.jsonl",
+   "sha256": "f00728b06421d65bd5be093288d31fa6990c700a2bb1214de4b8e10e3f5ff61b",
+   "bytes": 38504850,
+   "hashScope": "first 5738 lines; the file is still being appended",
+   "published": "quoted mention entries only"
+  },
+  {
+   "path": "codex-mac/sessions/2026/09/27/rollout-2026-09-27T01-52-21-01a0e210-b6bf-7711-a3ef-e58d0c81c001.jsonl",
+   "sha256": "d3a362c27168d7b6c127e2a8f418f40d312b8120c32f81c726043d6da3f82a42",
+   "bytes": 31217982,
+   "hashScope": "first 2992 lines; the file is still being appended",
+   "published": "quoted mention entries only"
+  },
+  {
+   "path": "codex-mac/sessions/2026/09/28/rollout-2026-09-28T11-34-50-01a0e94c-59b7-7fa2-be46-ab0812effa6e.jsonl",
+   "sha256": "26f2ca38b6ab978609d3a52acd25ea044ff9a2ac5559f7e52e7bfbe90460857f",
+   "bytes": 1441687,
+   "hashScope": "first 30 lines; the file is still being appended",
+   "published": "quoted mention entries only"
+  },
+  {
+   "path": "codex-mac/sessions/2026/09/29/rollout-2026-09-29T16-43-32-01a0ef8d-56b5-7400-8fd2-37efadab43d7.jsonl",
+   "sha256": "0a8068743ea2bd3eceef902fc36ee0c53ff18c28d5f43dc44d64ac067928ab87",
+   "bytes": 690273086,
+   "hashScope": "first 49148 lines; the file is still being appended",
+   "published": "quoted mention entries only"
+  },
+  {
+   "path": "claude-projects/-Users-drew-company/7e8d9fcd-425c-420c-afef-e1f286d6fe4d/subagents/workflows/wf_a6805fd5-2b2/agent-aea85cb0b4946feaa.jsonl",
+   "sha256": "e9068fc9fe7ca4bfb4ea7b1592e16a9af8bb21dc0654b8ba27f5971d779d84c7",
+   "bytes": 1186136,
+   "hashScope": "whole file",
+   "published": "quoted mention entries only"
+  }
+ ],
+ "generator": {
+  "path": "build_apn_record.py (retained beside the private sources on the lab host)",
+  "sha256": "1644aef1aa5c2e4102e2ed80704ac0c193bc056db51adfc05750393f763285b4"
+ }
+}
