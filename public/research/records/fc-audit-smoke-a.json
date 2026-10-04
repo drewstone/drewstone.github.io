@@ -1,51 +1,82 @@
 {
-  "schema": "research-publication.events.v1",
+  "schema": "agent-record.v1",
   "runId": "fc-audit-smoke-a",
   "title": "Invalid original witness, August 13",
-  "assignment": {
-    "objective": "Build and validate an entropy-inequality certification instrument on known-answer controls before a larger campaign.",
-    "suppliedKnowledge": "The paper and equation number were supplied. The task explicitly prohibited reading the prior BCWW answer.",
-    "deliverables": "Refute BCWW and a second known-false candidate; retain proven N=5 holographic facets; state scope; produce a machine-readable transcription schema.",
-    "constraints": "Exact rational certificates and cold checks were required. All four stated gates were meant to pass; the later correction invalidated the named BCWW atom set.",
-    "source": {
-      "path": "run-input.json",
-      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487",
-      "bytes": 13577
-    }
+  "producer": {
+    "name": "@drewstone/agent-record/adapters/agent-runtime",
+    "version": "2.0.0"
+  },
+  "format": "runtime",
+  "idScheme": "anchor.v1",
+  "input": {
+    "snapshot": "sha256:209fce62ae43b2e13bc8d9ad87abef8dd1b9036f2fc385a702ef9648cb699e5e",
+    "runIdBasis": "option"
   },
   "nodes": [
     {
       "id": "fc-audit-smoke-a",
       "label": "root",
       "parent": null,
-      "kind": "runtime",
-      "model": "claude-code/anthropic/sonnet",
-      "modelSource": "materialization declaration",
+      "kind": "agent",
+      "role": "Director",
+      "model": "sonnet",
+      "modelSource": "run input profile",
       "servedModel": null,
-      "start": "2026-08-13T09:16:58.119Z"
+      "harness": "claude-code",
+      "start": "2026-08-13T09:16:58.119Z",
+      "end": "2026-08-13T09:37:06.575Z",
+      "status": "winner",
+      "sandboxes": [],
+      "capture": {
+        "channel": "journal",
+        "status": "absent",
+        "reason": "no-conversation-channel"
+      }
+    },
+    {
+      "id": "finding:fc-audit-smoke-a",
+      "label": "Recorded findings",
+      "parent": null,
+      "kind": "finding",
+      "role": "Findings",
+      "model": null,
+      "servedModel": null,
+      "harness": null,
+      "start": "2026-08-13T09:31:41.312Z",
+      "sandboxes": [],
+      "capture": {
+        "channel": "kb",
+        "status": "complete",
+        "reason": null
+      }
     }
   ],
   "events": [
     {
-      "id": "j-1",
+      "id": "630b5179bba0:1",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:16:58.119Z",
       "kind": "begin",
-      "category": "other",
+      "category": "lifecycle",
       "label": "begin",
       "source": {
         "path": "spawn-journal.jsonl",
         "sha256": "630b5179bba0015d654b2063a8e25e44176d09b53fb2393e227b75da19f6aee0",
         "line": 1
       },
-      "detail": {}
+      "detail": {
+        "lifecycle": "begin",
+        "data": {
+          "root": "fc-audit-smoke-a"
+        }
+      }
     },
     {
-      "id": "j-2",
+      "id": "630b5179bba0:2",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:16:58.119Z",
       "kind": "spawned",
-      "category": "coordination",
+      "category": "lifecycle",
       "label": "spawned",
       "source": {
         "path": "spawn-journal.jsonl",
@@ -53,46 +84,126 @@
         "line": 2
       },
       "detail": {
-        "identity": {
-          "profileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
-          "taskDigest": "sha256:0934e7c56a5de13ccae099985d8477656c0e97bc2fa5d293641d537db980d72e"
+        "lifecycle": "spawned",
+        "data": {
+          "label": "root",
+          "budget": {
+            "maxIterations": 60,
+            "maxTokens": 4000000,
+            "deadlineMs": 5400000
+          },
+          "runtime": "cli",
+          "identity": {
+            "profileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
+            "taskDigest": "sha256:0934e7c56a5de13ccae099985d8477656c0e97bc2fa5d293641d537db980d72e"
+          }
         }
       }
     },
     {
-      "id": "j-3",
+      "id": "630b5179bba0:3",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:37:06.549Z",
       "kind": "metered",
-      "category": "other",
+      "category": "lifecycle",
       "label": "metered",
       "source": {
         "path": "spawn-journal.jsonl",
         "sha256": "630b5179bba0015d654b2063a8e25e44176d09b53fb2393e227b75da19f6aee0",
         "line": 3
       },
-      "detail": {}
+      "detail": {
+        "lifecycle": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 132,
+            "output": 96530,
+            "cacheRead": 7979851,
+            "cacheBreakdownKnown": false
+          },
+          "usd": 0,
+          "ms": 0
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 132,
+              "cacheRead": 7979851,
+              "cacheBreakdownKnown": false
+            },
+            "usd": 0,
+            "ms": 0
+          },
+          "providerModel": {
+            "status": "known",
+            "attempts": [
+              {
+                "observations": [
+                  "claude-code/anthropic/sonnet"
+                ]
+              }
+            ],
+            "models": [
+              "claude-code/anthropic/sonnet"
+            ]
+          }
+        }
+      }
     },
     {
-      "id": "j-4",
+      "id": "630b5179bba0:4",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:37:06.558Z",
       "kind": "metered",
-      "category": "other",
+      "category": "lifecycle",
       "label": "metered",
       "source": {
         "path": "spawn-journal.jsonl",
         "sha256": "630b5179bba0015d654b2063a8e25e44176d09b53fb2393e227b75da19f6aee0",
         "line": 4
       },
-      "detail": {}
+      "detail": {
+        "lifecycle": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0
+          },
+          "usd": 0,
+          "usdKnown": false,
+          "ms": 0
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0
+            },
+            "usd": 0,
+            "usdKnown": false,
+            "ms": 0
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
     },
     {
-      "id": "j-5",
+      "id": "630b5179bba0:5",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:37:06.569Z",
       "kind": "materialized",
-      "category": "infrastructure",
+      "category": "lifecycle",
       "label": "materialized",
       "source": {
         "path": "spawn-journal.jsonl",
@@ -100,30 +211,35 @@
         "line": 5
       },
       "detail": {
-        "receipt": {
-          "authoredProfileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
-          "effectiveProfileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
-          "materializationPlanDigest": "sha256:7b63ef8640771a3fa137045461c7c17815eef7c956d6d376ed8199d9106720cf",
-          "platformAttachmentsDigest": "sha256:337878dbce02121a642596f12816d8ac566142961538560a625b1d4086ec235f",
-          "runtime": "cli",
-          "backend": "bridge",
-          "model": {
+        "lifecycle": "materialized",
+        "data": {
+          "receipt": {
             "status": "known",
-            "id": "claude-code/anthropic/sonnet"
-          },
-          "execution": {
-            "kind": "session",
-            "id": "supervised-manager-15aaf1fff876a55c21cbcfd0b5105d680158c23da64cb97470672a23143a74dd"
+            "authoredProfileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
+            "effectiveProfileDigest": "sha256:fc3a3fd7730de8bccf097e9db1cc1877b27d9c884fd3d9f17e0c354cf80e5218",
+            "materializationPlanDigest": "sha256:7b63ef8640771a3fa137045461c7c17815eef7c956d6d376ed8199d9106720cf",
+            "platformAttachmentsDigest": "sha256:337878dbce02121a642596f12816d8ac566142961538560a625b1d4086ec235f",
+            "runtime": "cli",
+            "backend": "bridge",
+            "model": {
+              "status": "known",
+              "id": "claude-code/anthropic/sonnet"
+            },
+            "execution": {
+              "kind": "session",
+              "id": "supervised-manager-15aaf1fff876a55c21cbcfd0b5105d680158c23da64cb97470672a23143a74dd"
+            },
+            "materializer": "cli-bridge-agent-profile"
           }
         }
       }
     },
     {
-      "id": "j-6",
+      "id": "630b5179bba0:6",
       "node": "fc-audit-smoke-a",
       "at": "2026-08-13T09:37:06.575Z",
       "kind": "execution-bound",
-      "category": "infrastructure",
+      "category": "lifecycle",
       "label": "execution bound",
       "source": {
         "path": "spawn-journal.jsonl",
@@ -131,42 +247,111 @@
         "line": 6
       },
       "detail": {
-        "attemptId": "fc-audit-smoke-a:attempt:88963de3-8214-4f5e-8bfe-b1a581b356a0",
-        "bindingDigests": {
-          "materializationReceiptDigest": "sha256:ed7f614821d24a7590c1e065cc212f38827c371ae9224d71f3c494bfc251b54a",
-          "bindingDigest": "sha256:f40d08cc565d6a7d94cf4ded1f7c6f5184dc82e99b7ac63b1e6e61f258df4296"
+        "lifecycle": "execution-bound",
+        "data": {
+          "binding": {
+            "status": "known",
+            "attemptId": "fc-audit-smoke-a:attempt:88963de3-8214-4f5e-8bfe-b1a581b356a0",
+            "materializationReceiptDigest": "sha256:ed7f614821d24a7590c1e065cc212f38827c371ae9224d71f3c494bfc251b54a",
+            "bindingDigest": "sha256:f40d08cc565d6a7d94cf4ded1f7c6f5184dc82e99b7ac63b1e6e61f258df4296",
+            "descriptor": {
+              "kind": "bridge-session",
+              "transport": "http",
+              "backend": "bridge",
+              "coordination": true
+            }
+          }
         }
       }
     }
   ],
   "sources": [
     {
-      "path": "spawn-journal.jsonl",
-      "sha256": "630b5179bba0015d654b2063a8e25e44176d09b53fb2393e227b75da19f6aee0",
-      "bytes": 2610
+      "path": "kb/pages/experiment--negative-control-pipeline-does-not-falsely-refute-the-proven-zhang-yeung-theorem.md",
+      "bytes": 1878,
+      "sha256": "cd22154fea546ec1e8a7366855ced7b06761d90a0865a9f636caa90cd298922e"
     },
     {
-      "path": "run-input.json",
-      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487",
-      "bytes": 13577
+      "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--bcww-eq-4-6-refuted-by-exact-classical-distribution-on-5-of-16-atoms.md",
+      "bytes": 2157,
+      "sha256": "358d74cb4c1c123ee5d9d9faf207a22c7476132a7aa1909426a970d41738ccdd"
+    },
+    {
+      "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--no-false-positives-all-8-proven-n-5-holographic-facet-orbits-survive-the-hologra.md",
+      "bytes": 1883,
+      "sha256": "7e488dbbded7e62b572399b43c47a9da961607b867eb9a9303d1aaf68fd3b49d"
+    },
+    {
+      "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--scope-boundary-holographic-filter-is-blind-to-both-known-false-general-state-can.md",
+      "bytes": 2604,
+      "sha256": "08f90cd0bb2c7555f51f83685db3b0014b4cfb45dc2f4991f4fba6fa90f555c1"
+    },
+    {
+      "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--second-independent-refutation-general-state-monogamy-of-mutual-information-mmi-f.md",
+      "bytes": 2140,
+      "sha256": "daae0e541691dc6a20c489fd5a4d0c8f0637090c16a1208674796b2009b35381"
     },
     {
       "path": "result.json",
-      "sha256": "79a0adfeddd2e77920ada60ca08df65f3039897b45d36e3401259e2dfd72fa5f",
-      "bytes": 8222
+      "bytes": 8222,
+      "sha256": "79a0adfeddd2e77920ada60ca08df65f3039897b45d36e3401259e2dfd72fa5f"
+    },
+    {
+      "path": "run-input.json",
+      "bytes": 13577,
+      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487"
+    },
+    {
+      "path": "spans.otlp.jsonl",
+      "bytes": 2409,
+      "sha256": "0ee750796645fad66f3b30b1d80767aa9f20f6ed37c77d8db2c92d5a34b16ef0"
+    },
+    {
+      "path": "spawn-journal.jsonl",
+      "bytes": 2610,
+      "sha256": "630b5179bba0015d654b2063a8e25e44176d09b53fb2393e227b75da19f6aee0"
     }
   ],
+  "assignment": {
+    "objective": "Build and validate an entropy-inequality certification instrument on known-answer controls before a larger campaign.",
+    "suppliedKnowledge": "The paper and equation number were supplied. The task explicitly prohibited reading the prior BCWW answer.",
+    "deliverables": "Refute BCWW and a second known-false candidate; retain proven N=5 holographic facets; state scope; produce a machine-readable transcription schema.",
+    "constraints": "Exact rational certificates and cold checks were required. All four stated gates were meant to pass; the later correction invalidated the named BCWW atom set.",
+    "source": {
+      "path": "run-input.json",
+      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487"
+    }
+  },
   "terminal": {
     "kind": "winner",
     "reason": null
   },
   "coverage": {
-    "runtimeNodes": 1,
-    "nativeFiles": 0,
-    "nativeRuntimeJoins": 0,
     "completeOriginalCapture": false,
-    "publicContent": "Reviewed assignments and recorded findings are published where available. Native message bodies outside the August 5 review remain unpublished. Original source hashes and physical line numbers are retained.",
-    "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
-    "cost": "Unavailable: zero-valued legacy counters are not treated as a bill."
+    "publicContent": "No session transcripts were retained.",
+    "categoryMethod": "Activity types come from a fixed map of tool names and shell commands in the agent-runtime adapter. They describe what a call did, not its value.",
+    "cost": "List price from recorded usage; not billed.",
+    "nodes": [
+      {
+        "nodeId": "fc-audit-smoke-a",
+        "channel": "journal",
+        "status": "absent",
+        "reason": "no-conversation-channel"
+      },
+      {
+        "nodeId": "finding:fc-audit-smoke-a",
+        "channel": "kb",
+        "status": "complete",
+        "reason": null
+      }
+    ],
+    "gaps": [
+      {
+        "runId": "fc-audit-smoke-a",
+        "nodeId": "fc-audit-smoke-a",
+        "code": "no-transcript:no-conversation-channel",
+        "detail": "Only lifecycle events are recorded for this agent"
+      }
+    ]
   }
 }

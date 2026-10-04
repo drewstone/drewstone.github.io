@@ -1,0 +1,16 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "fc-audit-smoke-a",
+  "recordDigest": "sha256:d456d996f1aac6474f610dae27234a0b3d419f716dbeed5ccbe658ec885a9244",
+  "overlaySha256": "05d2801f5fa3d69384522e3ae5970a0146370311b2081c1300f0949ee74ca6c0",
+  "publicSha256": "d4f919a94a3cc46723d05a4d89eb977ae457c2b2c08fe70347d4951f9f0319a5",
+  "snapshot": "sha256:209fce62ae43b2e13bc8d9ad87abef8dd1b9036f2fc385a702ef9648cb699e5e",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.7.0",
+    "adapter": "2.0.0",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-04T22:26:43.599Z",
+  "builtOn": "DESKTOP-18IR33V"
+}

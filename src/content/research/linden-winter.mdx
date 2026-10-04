@@ -116,7 +116,9 @@ Four Pi session files survive, including short or incomplete sessions.
 The director configuration declares OpenCode with GLM-5.2; child configurations include Pi and Claude Code.
 The Pi sessions declare GLM-5.2, but their retained assistant records end in errors, leaving the served model unverified.
 
-The director transcript is missing, and native-session identifiers have not been joined reliably to the recorded agents.
+The director transcript is missing.
+The constructor and off-diagonal children are joined to their Pi sessions by exact task digest.
+The other two Pi sessions hold only a session header and remain unjoined.
 Complete attribution of each calculation is therefore unavailable.
 A recorded “winner” label does not establish that each child finished, that the proof was independent, or that the archive is complete.
 
@@ -125,5 +127,5 @@ A recorded “winner” label does not establish that each child finished, that 
   { title: 'Linden–Winter Conjecture 6 counterexample', url: 'https://github.com/drewstone/lw6-counterexample', publication: 'Public note, six-atom family, and dependency-free interval verifier. The retained attempt does not establish first discovery.' },
   { title: 'Exact asymptotic derivation receipt', url: '/research/lw6-asymptotic-receipt.json', publication: 'Rational Taylor coefficients and lower-order cancellations, recomputed October 2, 2026. A symbolic calculation receipt, not a kernel-checked proof certificate.' },
   { title: 'Arbitrary-coefficient verifier correction', url: 'https://github.com/drewstone/lw6-counterexample/pull/1', publication: 'Merged October 2, 2026. Published command replayed successfully after correction.' },
-  { title: 'Linden–Winter family verification pursuit', url: '/research/records/q-q36-lw6-unbounded-ladder.json', publication: 'Retained journal, native-session metadata, and finding projection, August 16, 2026. Partial capture; unresolved native-session attribution.' },
+  { title: 'Linden–Winter family verification pursuit', url: '/research/records/q-q36-lw6-unbounded-ladder.json', publication: 'Retained journal, native-session metadata, and finding projection, August 16, 2026. Partial capture; constructor and off-diagonal sessions joined by task digest.' },
 ]} />

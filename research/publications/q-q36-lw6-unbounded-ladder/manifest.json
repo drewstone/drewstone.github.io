@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "q-q36-lw6-unbounded-ladder",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "q-q36-lw6-unbounded-ladder",
+    "label": "archive-20260923"
+  },
+  "snapshot": "sha256:3ab203eea2a36e08d84f9876a1d922bc0ff4326eb13eec23d8efe2a2cf487e36",
+  "objects": 57,
+  "bytes": 496294,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.7.0",
+    "adapter": "2.0.0",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:8961ca8768d9ac23be955e7ad1424539ec1dbdbd006d0e29c3ec54130f4789d0",
+  "overlay": "overlay.json",
+  "public": "public/research/records/q-q36-lw6-unbounded-ladder.json"
+}

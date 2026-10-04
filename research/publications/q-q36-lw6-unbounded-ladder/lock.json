@@ -1,0 +1,16 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "q-q36-lw6-unbounded-ladder",
+  "recordDigest": "sha256:8961ca8768d9ac23be955e7ad1424539ec1dbdbd006d0e29c3ec54130f4789d0",
+  "overlaySha256": "f801a0b96783b65fbec101d9596351fc10903b387c3221de22ba61023ba23e84",
+  "publicSha256": "9f98030985b4145bd8083c86e64e3de59c3fabbd3ab8bc386e505f4509900793",
+  "snapshot": "sha256:3ab203eea2a36e08d84f9876a1d922bc0ff4326eb13eec23d8efe2a2cf487e36",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.7.0",
+    "adapter": "2.0.0",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-04T22:27:09.377Z",
+  "builtOn": "DESKTOP-18IR33V"
+}
