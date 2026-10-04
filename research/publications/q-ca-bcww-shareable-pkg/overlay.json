@@ -1,0 +1,95 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "q-ca-bcww-shareable-pkg",
+  "title": "Corrected witness finding, September 3",
+  "assignment": {
+    "summary": {
+      "objective": "The complete original input was not recovered. The retained finding resolves a mismatch between the charter atom set and the prior verified witness.",
+      "suppliedKnowledge": "Unknown.",
+      "deliverables": "Unknown.",
+      "constraints": "The prompt, agents, served model and transcript were not recovered."
+    },
+    "source": null
+  },
+  "nodes": {
+    "finding:q-ca-bcww-shareable-pkg": {
+      "label": "Recorded findings",
+      "role": "Findings"
+    }
+  },
+  "defaults": {
+    "metadata": "public",
+    "bodies": "withheld"
+  },
+  "events": {},
+  "findings": {
+    "8bf651428604": {
+      "sourceSha256": "8bf6514286041fa54611892a31052108b39ca0261ab2c588a8b6e911cb5e7317",
+      "assessment": "The corrected atom set independently reproduces the positive sign. The original fixed-order set has negative LHS. Its source run archive is missing.",
+      "attribution": "Run-level only; individual native session unresolved"
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    },
+    {
+      "class": "unrelated-memory"
+    },
+    {
+      "class": "system-reminder"
+    },
+    {
+      "class": "encrypted-message"
+    },
+    {
+      "event": "9a14dba4cbea",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "eb53ebb4a811",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "41de372556bb",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "d856f733b12c",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "c8aaf832dce7",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "a3594f5cb87d",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "98560e342a4e",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "76ebdd07a639",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "be93353fdc7c",
+      "reason": "unreviewed finding"
+    }
+  ],
+  "redactionClasses": [
+    "credential",
+    "third-party-email",
+    "private-path",
+    "nonce",
+    "account-name",
+    "ip-address"
+  ],
+  "coverageText": "No session transcripts were retained.",
+  "reviewer": {
+    "by": "drewstone",
+    "at": "2026-10-02"
+  }
+}

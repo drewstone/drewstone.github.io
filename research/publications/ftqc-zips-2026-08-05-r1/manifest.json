@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "ftqc-zips-2026-08-05-r1",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "ftqc-zips-2026-08-05-r1",
+    "label": "trace-drive-20261004"
+  },
+  "snapshot": "sha256:7bd4ec17b07440fb5163a7550586d15a96ef47aca0bf13a1003744f813d3ca2b",
+  "objects": 50,
+  "bytes": 34118787,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.7.0",
+    "adapter": "2.0.0",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:91a19a3fa39ceba1dfd0667657173157062d7fe940d57c920d55bfaf660d4a02",
+  "overlay": "overlay.json",
+  "public": "public/research/records/ftqc-zips-2026-08-05-r1.json"
+}
