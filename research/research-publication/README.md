@@ -86,10 +86,9 @@ Each failure names its gate, record and reason.
 
 ## Records from other harnesses
 
-`apn-critical-point-r11` combines Claude Code, Codex and OpenCode sessions with a Runtime journal.
-A one-off generator, retained beside the private sources, projected it; `apn-critical-point-receipt.json` lists every source hash, published line range, exclusion and redaction rule.
-Mention-only sessions publish one verified quotation each, and correspondence steps are excluded.
-Native sessions join a Runtime node only through an exact recorded identifier; workflow subagents name their parent session by file location and session ID.
+A record that spans several harnesses is a bundle: the snapshot holds the sessions, workflow journals, runs and finding files, plus a `bundle.json` that names each one, its harness and the line windows it contributes.
+The converter joins a session to an agent only through a recorded identifier, such as a workflow agent ID or a task digest.
+`apn-critical-point-r11` is one: its overlay publishes the lanes, windows and quoted mentions the original review chose, and withholds the rest of both workflows.
 
 ## Counts and visual meaning
 
