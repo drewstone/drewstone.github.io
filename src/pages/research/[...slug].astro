@@ -130,6 +130,12 @@ const records = await Promise.all(
     padding: 1rem;
     font-size: 0.8rem;
   }
+  /* The global table breakout (-3rem each side) would cover the contents column. */
+  .prose :global(table) {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
   .record {
     margin-top: 1.75rem;
   }
