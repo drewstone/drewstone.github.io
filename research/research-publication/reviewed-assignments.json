@@ -25,7 +25,7 @@
     "objective": "Construct and certify an unbounded classical ratio family for Linden\u2013Winter Conjecture 6, or report a bounded-in-grammar ceiling or inconclusive outcome.",
     "suppliedKnowledge": "Prior thin witnesses, coefficient-region findings, and a partial earlier family recovery. Later preserved child assignments supplied W_L explicitly from cited prior knowledge.",
     "deliverables": "A certified ratio ladder, an unbounded/bounded/inconclusive verdict, and off-diagonal coefficient-surface results.",
-    "constraints": "Exact certification, two independent arithmetic engines, and rationalization checks. Four scientific roles were planned; five child attempts were recorded, including a retry.",
+    "constraints": "Exact certification, two independent arithmetic engines, rationalization checks, and four scientific roles.",
     "source": {
       "path": "run-input.json",
       "sha256": "f37994487d82d3f1adaf70ef8ad8d28a5dd76c67a3934fd020df28bed2e31185",
@@ -36,7 +36,7 @@
     "objective": "Find or exclude repairs to the already-refuted BCWW candidate within a bounded grammar.",
     "suppliedKnowledge": "The corrected classical witness, GHZ witness, and earlier no-go findings were supplied.",
     "deliverables": "Check prior art first; then exact witness screening, a copy-lemma proof attempt, or a bounded conjecture with a falsifier battery.",
-    "constraints": "The task forbade re-verifying the settled BCWW refutation. It named an OpenCode director, four roles, a $25 budget, and small storage. These are intended conditions, not measured expenditure.",
+    "constraints": "The task forbade re-verifying the settled BCWW refutation. It named an OpenCode director, four roles, a $25 budget, and small storage. The $25 is a budget, not measured spend.",
     "source": {
       "path": "run-input.json",
       "sha256": "f26ce94cf8498b91feb06e2214a75ef9176f626e954917f78615d42f4e995973",
@@ -45,9 +45,9 @@
   },
   "q-ca-bcww-shareable-pkg": {
     "objective": "The complete original input was not recovered. The retained finding resolves a mismatch between the charter atom set and the prior verified witness.",
-    "suppliedKnowledge": "Only retained post-run finding pages are available in this publication record.",
-    "deliverables": "No complete original acceptance contract is available.",
-    "constraints": "Do not infer an original prompt, topology, served model, or complete transcript from this finding.",
+    "suppliedKnowledge": "Unknown.",
+    "deliverables": "Unknown.",
+    "constraints": "The prompt, agents, served model and transcript were not recovered.",
     "source": null
   }
 }

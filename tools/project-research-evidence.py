@@ -81,6 +81,27 @@ def validate_tool_review(source):
     return reviewed
 
 
+# Bracketed placeholders such as [workspace] already mark redacted paths, and every
+# event cites its source hash and line. Published notes keep only what was cut.
+NOTE_BOILERPLATE = re.compile(
+    r"\s*(?:Private filesystem roots replaced with [^.]*?"
+    r"(?:; (?:scientific|command and argument) content otherwise retained)?\."
+    r"|Only the bracketed filesystem path has been redacted; other text is unchanged\."
+    r"|The omitted middle remains in the retained source identified by SHA-256 and physical line\.)"
+)
+
+
+def public_note(note):
+    if not note:
+        return None
+    note = re.sub(
+        r"Reviewed beginning and ending of this ([\d,]+)-character tool response\.",
+        r"Middle of this \1-character response omitted.",
+        note,
+    )
+    return NOTE_BOILERPLATE.sub("", note).strip() or None
+
+
 def safe_id(value):
     return (
         value
@@ -370,8 +391,12 @@ for run_id, source, title in runs:
                         seen_tool_publications.add(key)
                         detail["publicToolCalls"] = [
                             {
-                                k: call[k] for k in ["id", "name", "input", "publicationNote"]
-                                if k in call
+                                **{k: call[k] for k in ["id", "name", "input"] if k in call},
+                                **(
+                                    {"publicationNote": public_note(call["publicationNote"])}
+                                    if public_note(call.get("publicationNote"))
+                                    else {}
+                                ),
                             }
                             for call in public_calls
                         ]
@@ -381,13 +406,11 @@ for run_id, source, title in runs:
                         seen_tool_publications.add(key)
                 if approved:
                     detail["publicText"] = approved["text"]
-                    detail["publicationNote"] = approved.get("note")
+                    detail["publicationNote"] = public_note(approved.get("note"))
                     if "mode" in approved:
                         detail["publicationMode"] = approved["mode"]
                 elif any(c.get("type") == "text" and c.get("text") for c in content):
-                    detail["contentOmitted"] = (
-                        "This message was outside the reviewed August 5 source set; its body has not been reviewed for publication."
-                    )
+                    detail["contentOmitted"] = "Message body not published."
                 if usage:
                     detail["usage"] = {
                         k: usage[k]
@@ -559,12 +582,15 @@ for run_id, source, title in runs:
             "nativeRuntimeJoins": len(applicable_joins),
             "completeOriginalCapture": False,
             "publicContent": (
-                "All 400 tool inputs and 399 retained tool results in the six August 5 sessions have reviewed public bodies, alongside their ordinary messages. Long outputs use marked excerpts; credentials, unrelated memory previews, and hidden thinking are excluded. The final qLTC search has no retained result. Original source hashes, call IDs, and physical line numbers are preserved."
+                "Messages, tool inputs and tool results are published. Long outputs are marked excerpts; credentials, unrelated memory previews and hidden thinking are excluded. The final qLTC search has no retained result."
                 if run_id == tool_review["runId"] else
-                "Reviewed assignments and recorded findings are published where available. Native message bodies outside the August 5 review remain unpublished. Original source hashes and physical line numbers are retained."
+                "Message and tool bodies are withheld; roles, tool names, timing and token usage are published."
+                if native_files else
+                "No session transcripts were retained."
             ),
-            "categoryMethod": "Tool-name and command keyword rules; these are annotations, not measured research value or evidence of independence.",
-            "cost": "Unavailable: zero-valued legacy counters are not treated as a bill.",
+            "categoryMethod": "Activity types are keyword matches on tool names and commands. They do not measure research value or show independent verification.",
+            "cost": "Not recorded",
+
         },
     }
     (out / (run_id + ".json")).write_text(json.dumps(record, indent=2) + "\n")

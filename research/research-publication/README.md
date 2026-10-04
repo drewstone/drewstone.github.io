@@ -12,7 +12,7 @@ Execution remains owned by Runtime; this repository presents a curated, static p
 5. Review the rendered mathematics, interactions, source links, and mobile layout before delivery.
 
 Human-original essays remain unchanged.
-Research-page curation is AI-assisted authorship and must be disclosed separately from the original research attribution.
+Each research page links to its commit history beside the assessment date.
 Do not claim peer review, complete capture, or first discovery without the supporting source.
 
 ## Event records

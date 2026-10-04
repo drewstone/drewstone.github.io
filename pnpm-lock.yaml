@@ -21,8 +21,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       '@drewstone/agent-record':
-        specifier: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz
-        version: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz
+        version: https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       astro:
         specifier: ^6.1.10
         version: 6.1.10(@types/node@22.20.5)(rollup@4.61.1)(tsx@4.20.6)(typescript@5.9.3)
@@ -227,9 +227,9 @@ packages:
     resolution: {integrity: sha512-zccHj2z2oCCO4yrDiRSlFOxWerGqRiysP7a5jPK6uoI9URKAquwY42Dd/iUP8JWHxEzdRe4TlbvZCo8z1/mhrw==}
     engines: {node: '>= 20.12.0'}
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz':
-    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz}
-    version: 0.2.1
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz':
+    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz}
+    version: 0.3.2
     hasBin: true
     peerDependencies:
       react: '>=18.3.0 <20'
@@ -1160,6 +1160,10 @@ packages:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
 
+  commander@15.0.0:
+    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+    engines: {node: '>=22.12.0'}
+
   commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
@@ -1460,6 +1464,9 @@ packages:
   html-escaper@3.0.3:
     resolution: {integrity: sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ==}
 
+  html-url-attributes@3.0.1:
+    resolution: {integrity: sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ==}
+
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
 
@@ -1533,6 +1540,10 @@ packages:
 
   katex@0.16.38:
     resolution: {integrity: sha512-cjHooZUmIAUmDsHBN+1n8LaZdpmbj03LtYeYPyuYB7OuloiaeaV6N4LcfjcnHVzGWjVQmKrxxTrpDcmSzEZQwQ==}
+    hasBin: true
+
+  katex@0.19.0:
+    resolution: {integrity: sha512-v6Tznz3zJ7u3niRCoDTsumM2+HA2XXcCu+WAacCeHD2z3p9A9Ks987o5FzfTGBN0e8A0vjEgIDvLbICrXpdw/Q==}
     hasBin: true
 
   linebreak@1.1.0:
@@ -1850,6 +1861,12 @@ packages:
     resolution: {integrity: sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==}
     peerDependencies:
       react: ^19.3.0
+
+  react-markdown@10.1.0:
+    resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
+    peerDependencies:
+      '@types/react': '>=18'
+      react: '>=18'
 
   react-refresh@0.18.0:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
@@ -2574,11 +2591,19 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.2.1/drewstone-agent-record-0.2.1.tgz(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.3.2/drewstone-agent-record-0.3.2.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
+      katex: 0.19.0
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
+      react-markdown: 10.1.0(@types/react@19.3.0)(react@19.3.0)
+      rehype-katex: 7.0.1
+      remark-gfm: 4.0.1
+      remark-math: 6.0.0
       zod: 4.6.5
+    transitivePeerDependencies:
+      - '@types/react'
+      - supports-color
 
   '@emnapi/runtime@1.10.0':
     dependencies:
@@ -3352,6 +3377,8 @@ snapshots:
 
   commander@11.1.0: {}
 
+  commander@15.0.0: {}
+
   commander@8.3.0: {}
 
   common-ancestor-path@2.0.0: {}
@@ -3789,6 +3816,8 @@ snapshots:
 
   html-escaper@3.0.3: {}
 
+  html-url-attributes@3.0.1: {}
+
   html-void-elements@3.0.0: {}
 
   http-cache-semantics@4.2.0: {}
@@ -3841,6 +3870,10 @@ snapshots:
   katex@0.16.38:
     dependencies:
       commander: 8.3.0
+
+  katex@0.19.0:
+    dependencies:
+      commander: 15.0.0
 
   linebreak@1.1.0:
     dependencies:
@@ -4441,6 +4474,24 @@ snapshots:
     dependencies:
       react: 19.3.0
       scheduler: 0.28.0
+
+  react-markdown@10.1.0(@types/react@19.3.0)(react@19.3.0):
+    dependencies:
+      '@types/hast': 3.0.4
+      '@types/mdast': 4.0.4
+      '@types/react': 19.3.0
+      devlop: 1.1.0
+      hast-util-to-jsx-runtime: 2.3.6
+      html-url-attributes: 3.0.1
+      mdast-util-to-hast: 13.2.1
+      react: 19.3.0
+      remark-parse: 11.0.0
+      remark-rehype: 11.1.2
+      unified: 11.0.5
+      unist-util-visit: 5.1.0
+      vfile: 6.0.3
+    transitivePeerDependencies:
+      - supports-color
 
   react-refresh@0.18.0: {}
 

@@ -37,7 +37,10 @@ const records = await Promise.all(
     <h1>{entry.data.title}</h1>
     <p class="claim">{entry.data.claim}</p>
     <p class="date">
-      Evidence assessed {entry.data.assessed.toISOString().slice(0, 10)}
+      Evidence assessed {entry.data.assessed.toISOString().slice(0, 10)} ·{' '}
+      <a href="https://github.com/drewstone/drewstone.github.io/commits/main/src/content/research">
+        Page history
+      </a>
     </p>
   </header>
   <div class="article-grid">
@@ -71,18 +74,6 @@ const records = await Promise.all(
       <EvidenceExplorer records={records} />
     </section>
   )}
-  <aside id="publication-note" class="publication-note">
-    <h2>Publication note</h2>
-    <p>
-      Page curated with Codex, October 2, 2026. Research attribution is recorded
-      above.
-    </p>
-    <p>
-      <a href="https://github.com/drewstone/drewstone.github.io/commits/main/src/content/research">
-        Page history
-      </a>
-    </p>
-  </aside>
 </Base>
 <style>
   .breadcrumb,
@@ -138,15 +129,6 @@ const records = await Promise.all(
   }
   .record {
     margin-top: 1.75rem;
-  }
-  .publication-note {
-    max-width: none;
-    margin: 1.2rem 0 0;
-    color: var(--fg-muted);
-    font-size: 0.85rem;
-  }
-  .publication-note h2 {
-    font-size: 1.1rem;
   }
   @media (max-width: 800px) {
     .article-grid {
