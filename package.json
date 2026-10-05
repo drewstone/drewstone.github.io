@@ -21,7 +21,7 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/react": "5.0.7",
-    "@astrojs/rss": "^4.0.18",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.0",
     "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.8.1/drewstone-agent-record-0.8.1.tgz",
     "astro": "^6.1.10",
