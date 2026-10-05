@@ -4,7 +4,7 @@
   "title": "BCWW repair pursuit, August 30",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   "format": "runtime",
   "idScheme": "anchor.v1",
