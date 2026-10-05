@@ -1,9 +1,19 @@
 ---
 import ChoicePicker from './ChoicePicker.astro'
 interface Props {
-  kind: 'bcww' | 'ghz' | 'lw6'
+  kind: 'bcww' | 'ghz' | 'lw6' | 'apn'
 }
 const { kind } = Astro.props
+const captions = {
+  lw6: 'The plotted rows use retained interval certificates. A finite ladder alone does not prove divergence; the analytic argument below does.',
+  apn: 'Exact arithmetic in F₃₂: the reduced polynomial is rebuilt from the 32 table values under the chosen modulus, then its derivative is evaluated at every element. Cells are numbered by their bits in the basis 1, α, …, α⁴.',
+  default: 'The interactive calculation uses ordinary floating point. The exact certificate in the text establishes the sign at the stated witness.',
+}
+const ariaLabels = {
+  lw6: 'Certified finite ratio ladder on a logarithmic axis',
+  apn: 'Derivative of the reduced polynomial at each of the 32 field elements',
+  default: 'Entropy inequality witness calculation',
+}
 ---
 
 <figure class="witness-explorer" data-kind={kind}>
@@ -31,6 +41,30 @@ const { kind } = Astro.props
       <output data-parameter>0.75</output>
     </label>
   )}
+  {kind === 'apn' && (
+    <div class="pickers">
+      <ChoicePicker
+        label="Function"
+        field="apn-function"
+        options={[
+          { value: 'witness', label: '(x + x⁸ + x¹⁶)³' },
+          { value: 'cube', label: 'x³, the power map' },
+        ]}
+      />
+      <ChoicePicker
+        label="Modulus"
+        field="apn-modulus"
+        options={[
+          { value: '37', label: 'x⁵ + x² + 1' },
+          { value: '41', label: 'x⁵ + x³ + 1' },
+          { value: '47', label: 'x⁵ + x³ + x² + x + 1' },
+          { value: '55', label: 'x⁵ + x⁴ + x² + x + 1' },
+          { value: '59', label: 'x⁵ + x⁴ + x³ + x + 1' },
+          { value: '61', label: 'x⁵ + x⁴ + x³ + x² + 1' },
+        ]}
+      />
+    </div>
+  )}
   {kind === 'lw6' && (
     <label>
       Family parameter L{' '}
@@ -42,18 +76,12 @@ const { kind } = Astro.props
     data-plot
     viewBox="0 0 620 250"
     role="img"
-    aria-label={
-      kind === 'lw6'
-        ? 'Certified finite ratio ladder on a logarithmic axis'
-        : 'Entropy inequality witness calculation'
-    }
+    aria-label={ariaLabels[kind in ariaLabels ? (kind as 'lw6' | 'apn') : 'default']}
   ></svg>
   <p data-value></p>
   <div data-table></div>
   <figcaption>
-    {kind === 'lw6'
-      ? 'The plotted rows use retained interval certificates. A finite ladder alone does not prove divergence; the analytic argument below does.'
-      : 'The interactive calculation uses ordinary floating point. The exact certificate in the text establishes the sign at the stated witness.'}
+    {captions[kind in captions ? (kind as 'lw6' | 'apn') : 'default']}
   </figcaption>
   <noscript>
     <p>
@@ -171,6 +199,8 @@ const { kind } = Astro.props
         const p = document.createElement('p')
         p.textContent = `Uniform mass 1/5 on ${atoms.join(', ')}.`
         table.append(p)
+      } else if (kind === 'apn') {
+        drawApn()
       } else if (kind === 'ghz') {
         const p = Number(
           root.querySelector<HTMLInputElement>('[data-mixture]')!.value,
@@ -213,7 +243,95 @@ const { kind } = Astro.props
         value.textContent = `At p = ${p.toFixed(2)}, LHS = ${score(p).toFixed(9)} bits.`
       }
     }
-    root.querySelector('select')?.addEventListener('change', redraw)
+    const sup = (n: number) =>
+      [...String(n)].map((d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[Number(d)]).join('')
+    // Exact F_32 arithmetic on 5-bit integers; the modulus is the bit pattern of an irreducible quintic.
+    const drawApn = () => {
+      const mod = Number(
+        root.querySelector<HTMLSelectElement>('[data-apn-modulus]')!.value,
+      )
+      const witness =
+        root.querySelector<HTMLSelectElement>('[data-apn-function]')!
+          .value === 'witness'
+      const q = 32
+      const mul = (a: number, b: number) => {
+        let r = 0
+        while (b) {
+          if (b & 1) r ^= a
+          b >>= 1
+          a <<= 1
+          if (a & q) a ^= mod
+        }
+        return r
+      }
+      const pow = (a: number, e: number) => {
+        let r = 1
+        for (let i = 0; i < e; i++) r = mul(r, a)
+        return r
+      }
+      const F = Array.from({ length: q }, (_, x) =>
+        pow(witness ? x ^ pow(x, 8) ^ pow(x, 16) : x, 3),
+      )
+      // Reduced representative: a_0 = F(0), a_k = sum over c != 0 of F(c) c^(q-1-k), a_(q-1) = sum of F(c).
+      const coef = Array.from({ length: q }, (_, k) => {
+        if (k === 0) return F[0]
+        if (k === q - 1) return F.reduce((s, v) => s ^ v, 0)
+        let s = 0
+        for (let c = 1; c < q; c++) s ^= mul(F[c], pow(c, q - 1 - k))
+        return s
+      })
+      const deriv = Array.from({ length: q }, (_, a) => {
+        let s = 0
+        for (let k = 1; k < q; k += 2)
+          if (coef[k]) s ^= mul(coef[k], pow(a, k - 1))
+        return s
+      })
+      let uniformity = 0
+      for (let a = 1; a < q; a++) {
+        const count = new Array<number>(q).fill(0)
+        for (let x = 0; x < q; x++) count[F[x ^ a] ^ F[x]]++
+        uniformity = Math.max(uniformity, ...count)
+      }
+      const permutation = new Set(F).size === q
+      const critical = deriv.filter((v) => v === 0).length
+      deriv.forEach((d, a) => {
+        const x = 34 + (a % 8) * 70,
+          y = 12 + Math.floor(a / 8) * 52
+        const cell = shape('rect', {
+          x,
+          y,
+          width: 62,
+          height: 44,
+          rx: 3,
+          class: d ? 'positive' : 'critical',
+          tabindex: 0,
+          role: 'img',
+          'aria-label': `Element ${a}: f prime is ${d}${d ? '' : ', a critical point'}`,
+        })
+        tooltip.bind(cell, `Element ${a} (bits ${a.toString(2).padStart(5, '0')})`, [
+          `F(a) = ${F[a]}`,
+          `f′(a) = ${d}${d ? '' : ', a critical point'}`,
+        ])
+        shape(
+          'text',
+          { x: x + 31, y: y + 27, 'text-anchor': 'middle', class: 'cell-label' },
+          String(a),
+        )
+      })
+      const terms = coef
+        .map((c, k) => [c, k])
+        .filter(([c]) => c)
+        .reverse()
+        .map(([c, k]) =>
+          (c === 1 ? '' : `${c}·`) + (k === 0 ? '1' : k === 1 ? 'x' : `x${sup(k)}`),
+        )
+      value.textContent = `${permutation ? 'Permutation' : 'Not a permutation'}, differential uniformity ${uniformity}. Critical points: ${critical} of ${q}.`
+      const p = document.createElement('p')
+      p.textContent = `Reduced polynomial f = ${terms.join(' + ')}.`
+      table.append(p)
+    }
+    for (const select of root.querySelectorAll('select'))
+      select.addEventListener('change', redraw)
     root.querySelector('input')?.addEventListener('input', redraw)
     if (kind !== 'lw6') redraw()
     else {
@@ -328,6 +446,19 @@ const { kind } = Astro.props
   }
   svg :global(.positive) {
     fill: var(--c-ok);
+  }
+  svg :global(.critical) {
+    fill: var(--c-fail);
+  }
+  svg :global(.cell-label) {
+    fill: var(--bg);
+    font: 13px var(--font-mono);
+    pointer-events: none;
+  }
+  .pickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
   }
   svg :global(.curve) {
     stroke: var(--c-info);

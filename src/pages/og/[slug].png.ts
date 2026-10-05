@@ -14,7 +14,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       figure: post.data.figure?.src,
     } })),
     ...research.map(entry => ({ slug: `research-${entry.id}`, cover: {
-      title: entry.data.title, section: entry.id in researchArt ? 'Quantum information' : 'Research',
+      title: entry.data.title, section: entry.data.area,
       figure: entry.data.figure?.src,
       art: researchArt[entry.id as keyof typeof researchArt] ?? 'text',
     } })),

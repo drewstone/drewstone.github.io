@@ -90,6 +90,12 @@ The site build cannot read the store, so the signature carries the store's verdi
 
 Each failure names its gate, record and reason.
 
+## Records from other harnesses
+
+A record that spans several harnesses is a bundle: the snapshot holds the sessions, workflow journals, runs and finding files, plus a `bundle.json` that names each one, its harness and the line windows it contributes.
+The converter joins a session to an agent only through a recorded identifier, such as a workflow agent ID or a task digest.
+`apn-critical-point-r11` is one: its overlay publishes the lanes, windows and quoted mentions the original review chose, and withholds the rest of both workflows.
+
 ## Counts and visual meaning
 
 Runtime nodes, native files, and findings are different units.

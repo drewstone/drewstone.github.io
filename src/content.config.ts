@@ -178,6 +178,8 @@ const research = defineCollection({
   schema: z.object({
     title: z.string(), description: z.string(), assessed: z.coerce.date(),
     claim: z.string(), limitation: z.string(),
+    /** Field shown in the breadcrumb and link preview. */
+    area: z.string().default('Quantum information'),
     figure: figureSchema.optional(),
     // A cited record exists only as a publication: manifest, review overlay and lock (research/publications).
     record_ids: z.array(
