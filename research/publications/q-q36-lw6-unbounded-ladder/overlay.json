@@ -122,7 +122,7 @@
     "account-name",
     "ip-address"
   ],
-  "coverageText": "The constructor and off-diagonal assignment prompts are published. Other message and tool bodies are withheld; roles, tool names, timing and token usage are published.",
+  "coverageText": "The constructor and off-diagonal assignment prompts are published, and every model request in those two sessions failed. No other conversation was retained.",
   "reviewer": {
     "by": "drewstone",
     "at": "2026-10-04T08:32:28.637068+00:00"

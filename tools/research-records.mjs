@@ -4,24 +4,30 @@
  *
  *   research/publications/<id>/manifest.json  which store snapshot, which converter, which record digest
  *   research/publications/<id>/overlay.json   the review: the only path by which a body becomes public
- *   research/publications/<id>/lock.json      digests of the last build (record, overlay, public projection)
+ *   research/publications/<id>/lock.json      digests of the last build (manifest, record, overlay, public projection),
+ *                                             signed by the build that reproduced them from the store
  *   research/publications/idmap.json          old event ids to current ids, so published links keep resolving
  *   research/publications/published-ids.json every event id ever public, per record (append-only)
+ *   research/publications/attestation-keys.json  public keys whose lock signatures the site build accepts
  *   public/research/records/<id>.json         the public projection, a checked build output
  *
- *   node tools/research-records.mjs check            offline gates G1, G6-G9; runs before every site build, no network
- *   node tools/research-records.mjs build [<id>...]  from the store: materialize, convert, apply the review, write
- *   node tools/research-records.mjs verify [<id>...] store gates G2-G5: objects present, pinned, record and projection
- *                                                    reproduced byte for byte; --run-dir uses a local copy of one
+ *   node tools/research-records.mjs check            offline gates G1, G6-G10; runs before every site build, no network
+ *   node tools/research-records.mjs build [<id>...]  from the store: materialize, convert, apply the review, check the
+ *                                                    pins, write, and sign the lock (G10)
+ *   node tools/research-records.mjs verify [<id>...] store gates G2-G5 and G11: objects present, pinned, record and
+ *                                                    projection reproduced byte for byte, and the research tool's store
+ *                                                    index citing the same snapshot; --run-dir uses a local copy of one
  *                                                    snapshot once every file matches its manifest;
  *                                                    --if-changed skips when no gated path changed (pre-push)
  *
  * build and verify need the evidence store: EVIDENCE_CLI (discovery-lab tools/evidence.mjs) and its credentials
- * (DISCOVERY_EVIDENCE_ENV with DOTENV_KEYS, or DISCOVERY_EVIDENCE_STORE). The site build never downloads evidence.
+ * (DISCOVERY_EVIDENCE_ENV with DOTENV_KEYS, or DISCOVERY_EVIDENCE_STORE). build signs with BLOG_RECORDS_SIGNING_KEY from
+ * the same encrypted file. The site build never downloads evidence: G10 checks that signature instead, so a lock edited
+ * by hand (a re-hashed overlay, a manifest naming another snapshot) fails the deployed build.
  * Every failure names its gate, record and reason; the exit code is non-zero when any gate fails.
  */
 import { execFile } from 'node:child_process'
-import { createHash } from 'node:crypto'
+import { createHash, createPrivateKey, createPublicKey, sign as signBytes, verify as verifyBytes } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { hostname, tmpdir } from 'node:os'
@@ -180,7 +186,8 @@ const LEAKS = [
   ['credential', /\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/],
   ['credential', /\b[Bb]earer\s+[A-Za-z0-9._~+/-]{20,}/],
   ['credential', /\b(?:api[_-]?key|secret|token|password|passwd)\s*[=:]\s*["']?(?![\[<$])[A-Za-z0-9_\-+/]{16,}/i],
-  ['private-path', /\/home\/drew\b|\/Users\/drew\b|\/tmp\/claude-|\/private\/tmp\b/],
+  // Also the dash-encoded form a Pi or Claude Code session directory uses for its working directory (--home-drew-code-…).
+  ['private-path', /[/-](?:home|Users)[/-]drew\b|\/tmp\/claude-|\/private\/tmp\b/],
   ['encrypted-message', /\bgAAAAA[A-Za-z0-9_-]{20,}/],
   ['nonce', /\bnonce["']?\s*[:=]\s*["']?[0-9a-f]{16,}/i],
 ]
@@ -244,9 +251,10 @@ function scanPublic(gate, id, text, record, overlay) {
 // Metadata a public record keeps. Anything else a converter adds stays private until it is listed here.
 const NODE_FIELDS = ['id', 'label', 'parent', 'kind', 'role', 'model', 'modelSource', 'servedModel', 'harness', 'start', 'end', 'status',
   'nativeSessionId', 'agentId', 'joinBasis', 'joinProof', 'sandboxes', 'capture']
-const DETAIL_FIELDS = ['role', 'lifecycle', 'subject', 'atBasis', 'toolCallId', 'isError', 'responseStatus', 'responseReportedModel', 'usage',
-  'usageScope', 'durationMs', 'costListUsd', 'usdKnown', 'costScope', 'rateLimit', 'spent', 'data', 'sidechain', 'synthetic', 'recordType',
-  'recordSubtype', 'nativeRecordId', 'anchorRange', 'title', 'createdAt', 'pageKind', 'bodyLine', 'contentSha256']
+const DETAIL_FIELDS = ['role', 'lifecycle', 'subject', 'atBasis', 'toolCallId', 'isError', 'responseStatus', 'responseReportedModel', 'responseId',
+  'usage', 'usageScope', 'durationMs', 'costListUsd', 'usdKnown', 'costScope', 'rateLimit', 'spent', 'data', 'sidechain', 'synthetic', 'recordType',
+  'recordSubtype', 'nativeRecordId', 'nativeParentId', 'anchorRange', 'title', 'createdAt', 'pageKind', 'bodyLine', 'contentSha256',
+  'contentCharacters']
 const BODY_FIELDS = ['publicText', 'reasoning', 'publicToolCalls', 'clip', 'recordedClaim', 'body', 'content']
 const NATIVE_RECORD_FIELDS = ['version', 'id', 'parentId', 'provider', 'modelId', 'thinkingLevel', 'customType']
 // Prose inside a lifecycle payload is a body too: an error reason, a prompt, captured output.
@@ -256,6 +264,10 @@ function withoutProse(value) {
   if (!value || typeof value !== 'object') return value
   return Object.fromEntries(Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key)).map(([key, inner]) => [key, withoutProse(inner)]))
 }
+// A source path keeps its shape, but not the private home it names: a Pi session directory encodes its working directory
+// (trace/pi-sessions/--home-drew-code-…), which G8 refuses like /home/drew itself.
+const redactPath = (path) =>
+  typeof path === 'string' ? path.replace(/\/(?:home|Users)\/drew\b/g, '[home]').replace(/-(?:home|Users)-drew\b/g, '-[home]') : path
 
 /**
  * The public projection of a converted record: metadata, plus exactly the bodies the overlay approves.
@@ -281,7 +293,7 @@ export function applyOverlay(record, overlay) {
   const thinkingOnly = (event) => {
     const d = event.detail ?? {}
     return event.kind === 'message' && d.role === 'assistant' && !d.publicText && !(d.publicToolCalls ?? []).length &&
-      d.toolCallId === undefined && d.responseStatus === undefined
+      d.toolCallId === undefined && d.responseStatus !== 'error'
   }
   const withholdThinking = (overlay.withhold ?? []).some((w) => w.class === 'hidden-thinking')
   const hiddenEvents = new Set([
@@ -292,15 +304,9 @@ export function applyOverlay(record, overlay) {
 
   for (const id of [...Object.keys(overlay.events ?? {}), ...Object.keys(overlay.findings ?? {})])
     if (hiddenEvents.has(id) || hiddenNodes.has(events.get(id).node)) throw new Error(`overlay both publishes and withholds ${id}`)
-  // "Served" needs an observed response: a node whose record holds no successful assistant message keeps its declared
-  // model only (a materialization receipt or a profile names what was configured, not what answered).
-  const answered = new Set(record.events.filter((event) => event.kind === 'message' && event.detail?.role === 'assistant' &&
-    event.detail?.responseStatus !== 'error').map((event) => event.node))
   const publicNodes = record.nodes.filter((node) => !hiddenNodes.has(node.id)).map((node) => {
     const review = overlay.nodes?.[node.id] ?? {}
-    const fields = pick(node, NODE_FIELDS)
-    if (fields.servedModel && !answered.has(node.id)) fields.servedModel = null
-    return { ...fields, ...pick(review, ['label', 'role', 'assignment']) }
+    return { ...pick(node, NODE_FIELDS), ...pick(review, ['label', 'role', 'assignment']) }
   })
   const publicEvents = record.events.filter((event) => !hiddenEvents.has(event.id) && !hiddenNodes.has(event.node)).map((event) => {
     const detail = pick(event.detail ?? {}, DETAIL_FIELDS)
@@ -334,7 +340,8 @@ export function applyOverlay(record, overlay) {
       detail.assessment = finding.assessment
       delete detail.contentOmitted
     }
-    return { id: event.id, node: event.node, at: event.at, kind: event.kind, category: event.category, label: event.label, source: event.source ?? null, detail }
+    const source = event.source ? { ...event.source, path: redactPath(event.source.path) } : null
+    return { id: event.id, node: event.node, at: event.at, kind: event.kind, category: event.category, label: event.label, source, detail }
   })
   const summary = overlay.assignment?.summary ?? {}
   return {
@@ -344,7 +351,7 @@ export function applyOverlay(record, overlay) {
     ...pick(record, ['producer', 'format', 'idScheme', 'input']),
     nodes: publicNodes,
     events: publicEvents,
-    sources: record.sources ?? [],
+    sources: (record.sources ?? []).map((source) => ({ ...source, path: redactPath(source.path) })),
     assignment: {
       objective: summary.objective ?? '',
       suppliedKnowledge: summary.suppliedKnowledge ?? '',
@@ -398,6 +405,66 @@ export async function checkReviewSources(record, overlay, runDir) {
   return issues
 }
 
+// ---------------------------------------------------------------- G10: the lock is the store build's signed statement
+
+// The site build has no store credentials, so it cannot re-read the evidence. It checks instead that every digest in the
+// lock was signed by `build`, which only signs after reproducing the record from the store (G2, G4, G5) and finding
+// its snapshot pinned (G3). A hand-edited lock, overlay or manifest therefore fails the deployed build.
+const KEYS = join(PUB, 'attestation-keys.json')
+const SIGNING_KEY = 'BLOG_RECORDS_SIGNING_KEY'
+const keyIdOf = (publicKey) => sha256(publicKey.export({ type: 'spki', format: 'der' })).slice(0, 16)
+
+/** The signed statement: the record's inputs and outputs by digest. */
+function attestation(lock, manifestBytes) {
+  return Buffer.from(JSON.stringify({
+    schema: 'publication.attestation.v1',
+    recordId: lock.recordId,
+    manifestSha256: sha256(manifestBytes),
+    snapshot: lock.snapshot,
+    converter: lock.converter,
+    recordDigest: lock.recordDigest,
+    overlaySha256: lock.overlaySha256,
+    publicSha256: lock.publicSha256,
+  }))
+}
+
+async function trustedKeys() {
+  const keys = new Map()
+  if (!existsSync(KEYS)) return keys
+  for (const entry of (await readJson(KEYS)).keys ?? []) {
+    const key = createPublicKey({ key: Buffer.from(entry.publicKey, 'base64'), format: 'der', type: 'spki' })
+    if (keyIdOf(key) === entry.id) keys.set(entry.id, key)
+  }
+  return keys
+}
+
+function checkSignature(gate, id, lock, manifestBytes, keys) {
+  const signed = lock.attestation
+  if (!signed?.keyId || !signed?.signature) {
+    gate.fail('G10', id, 'lock.json is unsigned: run `research-records build` where the evidence store is reachable')
+    return
+  }
+  const key = keys.get(signed.keyId)
+  if (!key) gate.fail('G10', id, `lock.json is signed by key ${signed.keyId}, which attestation-keys.json does not list`)
+  else if (!verifyBytes(null, attestation(lock, manifestBytes), key, Buffer.from(signed.signature, 'base64')))
+    gate.fail('G10', id, 'the lock signature does not cover these manifest, overlay and projection digests (rebuild from the store)')
+}
+
+/** The build host's signing key (BLOG_RECORDS_SIGNING_KEY: base64 PKCS#8 DER), from the environment or the store's vault. */
+async function signingKey() {
+  const env = storeEnvironment()
+  let value = env[SIGNING_KEY]
+  if (!value && env.DISCOVERY_EVIDENCE_ENV) {
+    const { stdout } = await exec('dotenvx', ['get', SIGNING_KEY, '-f', env.DISCOVERY_EVIDENCE_ENV, ...(env.DOTENV_KEYS ? ['-fk', env.DOTENV_KEYS] : [])], { env }).catch(() => ({ stdout: '' }))
+    value = stdout.trim()
+  }
+  if (!value) throw new Error(`${SIGNING_KEY} is not available here; build signs every lock, so it runs only where the store vault is`)
+  const key = createPrivateKey({ key: Buffer.from(value, 'base64'), format: 'der', type: 'pkcs8' })
+  const keyId = keyIdOf(createPublicKey(key))
+  if (!(await trustedKeys()).has(keyId)) throw new Error(`signing key ${keyId} is not in research/publications/attestation-keys.json`)
+  return { key, keyId }
+}
+
 // ---------------------------------------------------------------- G7: links resolve
 
 function resolveId(eventIds, map, id) {
@@ -428,6 +495,7 @@ export async function check({ ids } = {}) {
   const cited = new Set([...posts.values()].flat())
   const idmap = existsSync(join(PUB, 'idmap.json')) ? (await readJson(join(PUB, 'idmap.json'))).records ?? {} : {}
   const ledger = existsSync(join(PUB, 'published-ids.json')) ? (await readJson(join(PUB, 'published-ids.json'))).records ?? {} : {}
+  const keys = await trustedKeys()
   const records = new Map()
 
   for (const id of ids ?? all) {
@@ -446,6 +514,7 @@ export async function check({ ids } = {}) {
     if (m) checkManifest(gate, id, m)
     if (o) checkOverlay(gate, id, o)
     if (l) checkLock(gate, id, l, m)
+    if (l && pub.manifest.bytes) checkSignature(gate, id, l, pub.manifest.bytes, keys)
     if (m && !cited.has(id) && m.unlisted !== true) gate.fail('G1', id, 'no research post cites this record and it is not marked unlisted')
     const publicPath = join(PUBLIC, `${id}.json`)
     if (!existsSync(publicPath)) {
@@ -586,6 +655,14 @@ function converterIdentity(conv, record) {
 
 export async function build({ ids } = {}) {
   const conv = await converter()
+  const signer = await signingKey()
+  // G3 before anything is signed: a record whose snapshot could still be deleted is not published.
+  const pins = new Gate()
+  await checkPins(pins)
+  if (pins.failures.length) {
+    pins.report('pins')
+    throw new Error('the cited snapshots are not pinned; run evidence.mjs pin --from research/publications, then build')
+  }
   const targets = ids?.length ? ids : await recordIds()
   const ledgerPath = join(PUB, 'published-ids.json')
   const ledger = existsSync(ledgerPath) ? await readJson(ledgerPath) : { schema: 'publication.published-ids.v1', records: {} }
@@ -604,6 +681,7 @@ export async function build({ ids } = {}) {
         recordDigest: out.recordDigest,
       }
       const publicText = json(out.projected)
+      const manifestText = json(manifest)
       const lock = {
         schema: 'publication.lock.v1',
         recordId: id,
@@ -615,7 +693,9 @@ export async function build({ ids } = {}) {
         builtAt: new Date().toISOString(),
         builtOn: hostname(),
       }
-      await writeAtomic(join(PUB, id, 'manifest.json'), json(manifest))
+      // Signed only here, after the store reproduced the record and the review matched its sources.
+      lock.attestation = { keyId: signer.keyId, signature: signBytes(null, attestation(lock, Buffer.from(manifestText)), signer.key).toString('base64') }
+      await writeAtomic(join(PUB, id, 'manifest.json'), manifestText)
       await writeAtomic(join(PUBLIC, `${id}.json`), publicText)
       await writeAtomic(join(PUB, id, 'lock.json'), json(lock))
       const known = new Set(ledger.records[id] ?? [])
@@ -665,21 +745,54 @@ export async function verify({ ids, runDir } = {}) {
       await rm(work, { recursive: true, force: true })
     }
   }
-  // G3: pinned for every cited snapshot: a bucket lock rule, no expiring lifecycle rule, and a verified copy in the pin
-  // mirror. The mirror lives on the trace drive of the host that backs it up (GTR); elsewhere only the bucket is checked.
+  await checkPins(gate)
+  await checkStoreIndex(gate, targets)
+  return gate
+}
+
+/**
+ * G11: the research tool converts the snapshot the publication cites, so both show one record (one digest, one set of
+ * event ids). Its store index (discovery-lab tools/evidence.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
+ */
+async function checkStoreIndex(gate, ids) {
+  const path = process.env.DISCO_STORE_INDEX ?? '/mnt/traces/discovery-index/store.jsonl'
+  if (!existsSync(path)) {
+    process.stderr.write(`[research-records] G11: ${path} is not on this host; the research tool's snapshot is checked on GTR\n`)
+    return
+  }
+  const latest = new Map()
+  for (const line of (await readFile(path, 'utf8')).split('\n')) {
+    try {
+      const row = JSON.parse(line)
+      if (row.runId) latest.set(row.runId, row)
+    } catch { /* a torn last line is rewritten by the next append */ }
+  }
+  for (const id of ids) {
+    const manifest = (await readPublication(id)).manifest.value
+    if (!manifest?.snapshot) continue
+    const row = latest.get(id)
+    if (row?.snapshot !== manifest.snapshot)
+      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
+  }
+}
+
+/**
+ * G3: pinned for every cited snapshot: a bucket lock rule, no expiring lifecycle rule, and a verified copy in the pin
+ * mirror. The mirror lives on the trace drive of the host that backs it up (GTR); elsewhere only the bucket is checked.
+ */
+async function checkPins(gate) {
   try {
     const mirror = process.env.EVIDENCE_PIN_MIRROR ?? '/mnt/traces/evidence-pins'
     const [pin] = await evidence(['pin', '--from', PUB, '--check', '--mirror', mirror], { allowFailure: true })
     const mirrorHere = existsSync(mirror)
     const rulesOk = pin && !pin.rules?.missing?.length && !pin.lifecycle?.deleting?.length
     const mirrorOk = pin && !pin.mirrored?.missing?.length && !pin.mirrored?.mismatched?.length
-    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete: ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
+    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
     if (mirrorHere && !mirrorOk) gate.fail('G3', null, `pin mirror incomplete: ${JSON.stringify({ missing: pin?.mirrored?.missing?.slice(0, 3), mismatched: pin?.mirrored?.mismatched?.slice(0, 3) })}`)
     if (!mirrorHere) process.stderr.write(`[research-records] G3: ${mirror} is not on this host; bucket lock and lifecycle rules checked, the mirror is checked on its host\n`)
   } catch (error) {
     gate.fail('G3', null, error.message)
   }
-  return gate
 }
 
 // ---------------------------------------------------------------- command line
