@@ -41,7 +41,7 @@ const originals = posts.filter((p) => p.data.original)
           <li>
             <a href={`/research/${item.id}`}>
               <strong>{item.data.title}</strong>
-              <span>{item.data.claim}</span>
+              <span title={item.data.claim}>{item.data.claim}</span>
             </a>
           </li>
         ))}
@@ -101,7 +101,7 @@ const originals = posts.filter((p) => p.data.original)
   }
   .home-columns {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 2.2rem;
   }
   section {
@@ -138,6 +138,9 @@ const originals = posts.filter((p) => p.data.original)
     font-size: 0.86rem;
     line-height: 1.45;
     margin-top: 0.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .essay-list {
     list-style: none;
