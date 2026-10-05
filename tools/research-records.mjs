@@ -304,9 +304,16 @@ export function applyOverlay(record, overlay) {
 
   for (const id of [...Object.keys(overlay.events ?? {}), ...Object.keys(overlay.findings ?? {})])
     if (hiddenEvents.has(id) || hiddenNodes.has(events.get(id).node)) throw new Error(`overlay both publishes and withholds ${id}`)
+  // A join proof cites its files by path; those paths lose the private home like every other source path.
+  const proofPaths = (value) =>
+    Array.isArray(value) ? value.map(proofPaths)
+      : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, key === 'path' ? redactPath(inner) : proofPaths(inner)]))
+        : value
   const publicNodes = record.nodes.filter((node) => !hiddenNodes.has(node.id)).map((node) => {
     const review = overlay.nodes?.[node.id] ?? {}
-    return { ...pick(node, NODE_FIELDS), ...pick(review, ['label', 'role', 'assignment']) }
+    const fields = pick(node, NODE_FIELDS)
+    if (fields.joinProof) fields.joinProof = proofPaths(fields.joinProof)
+    return { ...fields, ...pick(review, ['label', 'role', 'assignment']) }
   })
   const publicEvents = record.events.filter((event) => !hiddenEvents.has(event.id) && !hiddenNodes.has(event.node)).map((event) => {
     const detail = pick(event.detail ?? {}, DETAIL_FIELDS)
@@ -360,7 +367,12 @@ export function applyOverlay(record, overlay) {
       source: overlay.assignment?.source ?? null,
     },
     terminal: record.terminal ?? null,
-    coverage: { ...(record.coverage ?? {}), publicContent: overlay.coverageText ?? '' },
+    coverage: {
+      ...(record.coverage ?? {}),
+      publicContent: overlay.coverageText ?? '',
+      // A gap names its file; the path loses the private home as sources do.
+      ...(record.coverage?.gaps ? { gaps: record.coverage.gaps.map((gap) => ({ ...gap, detail: redactPath(gap.detail) })) } : {}),
+    },
   }
 }
 
@@ -372,6 +384,16 @@ export async function checkReviewSources(record, overlay, runDir) {
   const bytesOf = async (path) => {
     if (!files.has(path)) files.set(path, await readFile(join(runDir, path)))
     return files.get(path)
+  }
+  // Byte offsets of each physical line (split on LF), per file, computed once.
+  const starts = new Map()
+  const lineStarts = (path, bytes) => {
+    if (!starts.has(path)) {
+      const list = [0]
+      for (let at = bytes.indexOf(0x0a); at >= 0; at = bytes.indexOf(0x0a, at + 1)) list.push(at + 1)
+      starts.set(path, list)
+    }
+    return starts.get(path)
   }
   const reviewed = [
     ...Object.entries(overlay.events ?? {}).map(([id, entry]) => ({ id, entry })),
@@ -393,8 +415,11 @@ export async function checkReviewSources(record, overlay, runDir) {
     // A finding entry on a whole page reviews the page; on a line or JSON value it reviews that line or value.
     let reviewedBytes = bytes
     if (source.line) {
-      const lines = bytes.toString('utf8').split('\n')
-      reviewedBytes = Buffer.from((lines[source.line - 1] ?? '').replace(/\r$/, ''), 'utf8')
+      // One line, decoded on its own: a session over 512 MB cannot be held as one string.
+      const offsets = lineStarts(source.path, bytes)
+      const start = offsets[source.line - 1]
+      const line = start === undefined ? '' : bytes.toString('utf8', start, (offsets[source.line] ?? bytes.length + 1) - 1)
+      reviewedBytes = Buffer.from(line.replace(/\r$/, ''), 'utf8')
     } else if (source.pointer) {
       let value = JSON.parse(bytes.toString('utf8'))
       for (const raw of source.pointer.split('/').slice(1)) value = value?.[raw.replaceAll('~1', '/').replaceAll('~0', '~')]
