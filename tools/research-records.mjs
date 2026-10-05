@@ -14,8 +14,9 @@
  *   node tools/research-records.mjs check            offline gates G1, G6-G10; runs before every site build, no network
  *   node tools/research-records.mjs build [<id>...]  from the store: materialize, convert, apply the review, check the
  *                                                    pins, write, and sign the lock (G10)
- *   node tools/research-records.mjs verify [<id>...] store gates G2-G5: objects present, pinned, record and projection
- *                                                    reproduced byte for byte; --run-dir uses a local copy of one
+ *   node tools/research-records.mjs verify [<id>...] store gates G2-G5 and G11: objects present, pinned, record and
+ *                                                    projection reproduced byte for byte, and the research tool's store
+ *                                                    index citing the same snapshot; --run-dir uses a local copy of one
  *                                                    snapshot once every file matches its manifest;
  *                                                    --if-changed skips when no gated path changed (pre-push)
  *
@@ -745,7 +746,34 @@ export async function verify({ ids, runDir } = {}) {
     }
   }
   await checkPins(gate)
+  await checkStoreIndex(gate, targets)
   return gate
+}
+
+/**
+ * G11: the research tool converts the snapshot the publication cites, so both show one record (one digest, one set of
+ * event ids). Its store index (discovery-lab tools/evidence.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
+ */
+async function checkStoreIndex(gate, ids) {
+  const path = process.env.DISCO_STORE_INDEX ?? '/mnt/traces/discovery-index/store.jsonl'
+  if (!existsSync(path)) {
+    process.stderr.write(`[research-records] G11: ${path} is not on this host; the research tool's snapshot is checked on GTR\n`)
+    return
+  }
+  const latest = new Map()
+  for (const line of (await readFile(path, 'utf8')).split('\n')) {
+    try {
+      const row = JSON.parse(line)
+      if (row.runId) latest.set(row.runId, row)
+    } catch { /* a torn last line is rewritten by the next append */ }
+  }
+  for (const id of ids) {
+    const manifest = (await readPublication(id)).manifest.value
+    if (!manifest?.snapshot) continue
+    const row = latest.get(id)
+    if (row?.snapshot !== manifest.snapshot)
+      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
+  }
 }
 
 /**
