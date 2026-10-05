@@ -1,7 +1,7 @@
 ---
 title: 'A family refuting Linden–Winter Conjecture 6'
 description: 'A six-atom classical family with two exact conditional-independence identities and an unbounded entropy ratio.'
-assessed: '2026-10-02'
+assessed: '2026-10-05'
 claim: 'A six-atom family defeats every finite positive choice of coefficients in the conjectured linear relaxation.'
 limitation: 'The constrained Linden–Winter theorem survives. The public note is not presented as peer-reviewed, and the discovery history remains partial.'
 record_ids: ['q-q36-lw6-unbounded-ladder']
@@ -112,14 +112,18 @@ No peer review or publication acceptance is asserted.
 The preserved constructor and off-diagonal child assignments supplied this family as cited prior knowledge [[5]](#ref-5).
 The saved findings certify and analyze it; they do not identify its first discovery.
 The journal records a director and five child attempts, all five ending down.
-Four Pi session files survive, including short or incomplete sessions.
 The director configuration declares OpenCode with GLM-5.2; child configurations include Pi and Claude Code.
-The Pi sessions declare GLM-5.2, but their retained assistant records end in errors, leaving the served model unverified.
 
-The director transcript is missing.
-The constructor and off-diagonal children are joined to their Pi sessions by exact task digest.
-The other two Pi sessions hold only a session header and remain unjoined.
-Complete attribution of each calculation is therefore unavailable.
+The four surviving Pi session files are joined exactly to children: each session directory is the digest of the bridge session ID in that child’s Runtime receipt, and two first prompts also match registered task digests.
+The constructor and off-diagonal sessions hold their assignments and four failed requests each, with no model output; both children ended on an HTTP 524 bridge error.
+Both certifier sessions contain only a header, and no session was found for the Claude Code child.
+No child session shows a successful response, so the served model remains unverified.
+
+The director’s transcript is still missing.
+Its four steering messages survive in the coordination log.
+At 21:49 UTC it told the first four children that the parent had certified rows $L=2,\ldots,16$ with its own engine, after a Decimal rounding bug corrupted its first attempt at $L=7,\ldots,10$.
+The ladder, off-diagonal and every-coefficient certification pages were written at 21:56 UTC, after those four children had ended.
+These records point to the director for the certification, but without its transcript they do not show each calculation.
 A recorded “winner” label does not establish that each child finished, that the proof was independent, or that the archive is complete.
 
 <ResearchBibliography entries={[
@@ -127,5 +131,5 @@ A recorded “winner” label does not establish that each child finished, that 
   { title: 'Linden–Winter Conjecture 6 counterexample', url: 'https://github.com/drewstone/lw6-counterexample', publication: 'Public note, six-atom family, and dependency-free interval verifier. The retained attempt does not establish first discovery.' },
   { title: 'Exact asymptotic derivation receipt', url: '/research/lw6-asymptotic-receipt.json', publication: 'Rational Taylor coefficients and lower-order cancellations, recomputed October 2, 2026. A symbolic calculation receipt, not a kernel-checked proof certificate.' },
   { title: 'Arbitrary-coefficient verifier correction', url: 'https://github.com/drewstone/lw6-counterexample/pull/1', publication: 'Merged October 2, 2026. Published command replayed successfully after correction.' },
-  { title: 'Linden–Winter family verification pursuit', url: '/research/records/q-q36-lw6-unbounded-ladder.json', publication: 'Retained journal, native-session metadata, and finding projection, August 16, 2026. Partial capture; constructor and off-diagonal sessions joined by task digest.' },
+  { title: 'Linden–Winter family verification pursuit', url: '/research/records/q-q36-lw6-unbounded-ladder.json', publication: 'Retained journal, four exactly joined Pi sessions, the director’s steering messages, and findings, August 16, 2026. The director transcript is missing.' },
 ]} />

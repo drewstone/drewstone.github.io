@@ -17,7 +17,8 @@
   "nodes": {
     "fc-audit-smoke-a": {
       "label": "root",
-      "role": "Director"
+      "role": "Director",
+      "captureNote": "Its Claude Code director ran with its home directory inside the run workspace, which the archive excluded, and the bridge store that served it keeps sessions only from August 20. Only the journal and findings survive."
     }
   },
   "defaults": {
@@ -25,7 +26,23 @@
     "bodies": "withheld"
   },
   "events": {},
-  "findings": {},
+  "findings": {
+    "08f90cd0bb2c": {
+      "sourceSha256": "08f90cd0bb2c7555f51f83685db3b0014b4cfb45dc2f4991f4fba6fa90f555c1"
+    },
+    "358d74cb4c1c": {
+      "sourceSha256": "358d74cb4c1c123ee5d9d9faf207a22c7476132a7aa1909426a970d41738ccdd"
+    },
+    "7e488dbbded7": {
+      "sourceSha256": "7e488dbbded7e62b572399b43c47a9da961607b867eb9a9303d1aaf68fd3b49d"
+    },
+    "cd22154fea54": {
+      "sourceSha256": "cd22154fea546ec1e8a7366855ced7b06761d90a0865a9f636caa90cd298922e"
+    },
+    "daae0e541691": {
+      "sourceSha256": "daae0e541691dc6a20c489fd5a4d0c8f0637090c16a1208674796b2009b35381"
+    }
+  },
   "withhold": [
     {
       "class": "hidden-thinking"
@@ -38,26 +55,6 @@
     },
     {
       "class": "encrypted-message"
-    },
-    {
-      "event": "cd22154fea54",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "358d74cb4c1c",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "7e488dbbded7",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "08f90cd0bb2c",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "daae0e541691",
-      "reason": "unreviewed finding"
     }
   ],
   "redactionClasses": [
@@ -71,6 +68,6 @@
   "coverageText": "No session transcripts were retained.",
   "reviewer": {
     "by": "drewstone",
-    "at": "2026-10-02"
+    "at": "2026-10-05T04:07:45.444Z"
   }
 }
