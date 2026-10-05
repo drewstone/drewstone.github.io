@@ -4,7 +4,7 @@
   "title": "Invalid original witness, August 13",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   "format": "runtime",
   "idScheme": "anchor.v1",
