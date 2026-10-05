@@ -115,7 +115,7 @@ The journal records a director and five child attempts, all five ending down.
 The director configuration declares OpenCode with GLM-5.2; child configurations include Pi and Claude Code.
 
 The four surviving Pi session files are joined exactly to children: each session directory is the digest of the bridge session ID in that child’s Runtime receipt, and two first prompts also match registered task digests.
-The constructor and off-diagonal sessions hold their assignments and four failed requests each, all HTTP 524 with no model output.
+The constructor and off-diagonal sessions hold their assignments and four failed requests each, with no model output; both children ended on an HTTP 524 bridge error.
 Both certifier sessions contain only a header, and no session was found for the Claude Code child.
 No child session shows a successful response, so the served model remains unverified.
 
