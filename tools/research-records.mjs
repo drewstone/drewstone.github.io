@@ -250,7 +250,7 @@ function scanPublic(gate, id, text, record, overlay) {
 
 // Metadata a public record keeps. Anything else a converter adds stays private until it is listed here.
 const NODE_FIELDS = ['id', 'label', 'parent', 'kind', 'role', 'model', 'modelSource', 'servedModel', 'harness', 'start', 'end', 'status',
-  'nativeSessionId', 'agentId', 'joinBasis', 'joinProof', 'sandboxes', 'capture']
+  'nativeSessionId', 'agentId', 'joinBasis', 'joinProof', 'sandboxes', 'capture', 'captureNote']
 const DETAIL_FIELDS = ['role', 'lifecycle', 'subject', 'atBasis', 'toolCallId', 'isError', 'responseStatus', 'responseReportedModel', 'responseId',
   'usage', 'usageScope', 'durationMs', 'costListUsd', 'usdKnown', 'costScope', 'rateLimit', 'spent', 'data', 'sidechain', 'synthetic', 'recordType',
   'recordSubtype', 'nativeRecordId', 'nativeParentId', 'anchorRange', 'title', 'createdAt', 'pageKind', 'bodyLine', 'contentSha256',
@@ -261,13 +261,17 @@ const NATIVE_RECORD_FIELDS = ['version', 'id', 'parentId', 'provider', 'modelId'
 const PROSE_KEYS = new Set(['reason', 'cause', 'detail', 'error', 'message', 'text', 'prompt', 'task', 'instruction', 'output', 'stdout', 'stderr', 'cwd'])
 function withoutProse(value) {
   if (Array.isArray(value)) return value.map(withoutProse)
+  if (typeof value === 'string') return redactPath(value)
   if (!value || typeof value !== 'object') return value
   return Object.fromEntries(Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key)).map(([key, inner]) => [key, withoutProse(inner)]))
 }
 // A source path keeps its shape, but not the private home it names: a Pi session directory encodes its working directory
 // (trace/pi-sessions/--home-drew-code-…), which G8 refuses like /home/drew itself.
 const redactPath = (path) =>
-  typeof path === 'string' ? path.replace(/\/(?:home|Users)\/drew\b/g, '[home]').replace(/-(?:home|Users)-drew\b/g, '-[home]') : path
+  typeof path === 'string'
+    ? path.replace(/\/(?:home|Users)\/drew\b/g, '[home]').replace(/-(?:home|Users)-drew\b/g, '-[home]')
+      .replace(/\/tmp\/claude-[^\s"'`)]*/g, '[tmp]').replace(/\/private\/tmp\b[^\s"'`)]*/g, '[tmp]')
+    : path
 
 /**
  * The public projection of a converted record: metadata, plus exactly the bodies the overlay approves.
@@ -313,7 +317,7 @@ export function applyOverlay(record, overlay) {
     const review = overlay.nodes?.[node.id] ?? {}
     const fields = pick(node, NODE_FIELDS)
     if (fields.joinProof) fields.joinProof = proofPaths(fields.joinProof)
-    return { ...fields, ...pick(review, ['label', 'role', 'assignment']) }
+    return { ...fields, ...pick(review, ['label', 'role', 'assignment', 'captureNote']) }
   })
   const publicEvents = record.events.filter((event) => !hiddenEvents.has(event.id) && !hiddenNodes.has(event.node)).map((event) => {
     const detail = pick(event.detail ?? {}, DETAIL_FIELDS)

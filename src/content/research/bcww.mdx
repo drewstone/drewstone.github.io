@@ -1,10 +1,10 @@
 ---
 title: 'A five-atom counterexample to BCWW'
 description: 'An exact classical witness violating equation (4.6) of Bao, Cao, Walter, and Wang, with corrections and retained verification records.'
-assessed: '2026-10-02'
+assessed: '2026-10-05'
 claim: 'Five equally likely bit strings violate a proposed four-party entropy inequality by 0.0529325 bits.'
 limitation: 'Corpus-origin witness; first discovery is unattributed. The original archived smoke witness was wrong.'
-record_ids: ['ftqc-zips-2026-08-05-r1', 'fc-audit-smoke-a', 'q-ca-bcww-shareable-pkg']
+record_ids: ['ftqc-zips-2026-08-05-r1', 'wf_3b2a5d92-078', 'fc-audit-smoke-a', 'q-ca-bcww-shareable-pkg']
 order: 1
 ---
 import WitnessExplorer from '../../components/WitnessExplorer.astro'
@@ -74,7 +74,11 @@ First discovery remains unattributed.
 The August 5 corpus-verification campaign [[3]](#ref-3) retained six Pi session files and a journal recording a director and five children.
 Its native files report GLM-5.2, contradicting an older DeepSeek attribution.
 That campaign also checked other quantum-information artifacts; it is a verification trace, not the initial search for this point.
-The August 13 smoke archive has no native transcript, and the September 3 package retains findings without a recovered complete source run.
+On August 10, an operator workflow checked the point again with five Claude Code sessions, all retained [[6]](#ref-6).
+Blind hand arithmetic and blind fresh code each derived $(9\log_2 3-14)/5>0$; a transcription audit compiled the paper source and matched equation (4.6); a scope audit found the candidate proposed for general four-party states.
+Its literature audit found the [GHZ-mixture witness](/research/ghz/).
+The August 13 smoke archive has no native transcript.
+The September 3 package retains findings only; its run directory lived inside a lab container and was not retained.
 The retained records therefore do not reconstruct the entire discovery and correction history.
 
 The [GHZ-mixture construction](/research/ghz/) reaches $F\approx0.113302$ bits against the same bound.
@@ -86,4 +90,5 @@ These are two witnesses to one refutation.
   { title: 'Corpus-verification campaign, August 5, 2026', url: '/research/records/ftqc-zips-2026-08-05-r1.json', publication: 'Retained event and finding projection. Source files are identified by SHA-256; capture is incomplete.' },
   { title: 'Earlier BCWW smoke attempt', url: '/research/records/fc-audit-smoke-a.json', publication: 'Retained archive projection, August 13, 2026. The advertised witness was incorrect; no native transcript is retained.' },
   { title: 'Corrected BCWW witness package', url: '/research/records/q-ca-bcww-shareable-pkg.json', publication: 'Retained correction, September 3, 2026. Finding pages survive; the complete source run was not recovered.' },
+  { title: 'Five-arm verification workflow, August 10', url: '/research/records/wf_3b2a5d92-078.json', publication: 'Five Claude Code sessions and the workflow journal, joined by agent ID. Prompts, assistant text, and tool inputs are published; long tool results are excerpts.' },
 ]} />

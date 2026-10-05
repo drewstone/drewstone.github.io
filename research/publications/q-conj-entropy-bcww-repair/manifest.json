@@ -5,18 +5,18 @@
     "bucket": "discovery-evidence",
     "prefix": "runs/",
     "namespace": "q-conj-entropy-bcww-repair",
-    "label": "archive-20260923"
+    "label": "evidence-private-20261004"
   },
-  "snapshot": "sha256:7c01215fe35fb72faa173b209c05724b47ce9a580cd3c4e4cbe7b3875d94702b",
-  "objects": 47,
-  "bytes": 649939,
+  "snapshot": "sha256:49b75fc6d98d9f737231dd8d3c0ec9d2d8ef9cd0672e77d701500b59593c2fd8",
+  "objects": 48,
+  "bytes": 950409,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.8.1",
-    "adapter": "2.1.1",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:7dbff7fa55046a54e53f440a80833beb493d204cb7a9b0d5bf5abbd46e189a64",
+  "recordDigest": "sha256:d0543278dc6459a8080b477154af390aa484e814b653e1928f93b6f673dbeb56",
   "overlay": "overlay.json",
   "public": "public/research/records/q-conj-entropy-bcww-repair.json"
 }

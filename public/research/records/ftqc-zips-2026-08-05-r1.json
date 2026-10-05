@@ -4,7 +4,7 @@
   "title": "Corpus verification, August 5",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.1"
+    "version": "2.2.0"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
@@ -1422,6 +1422,26 @@
       }
     },
     {
+      "id": "9bd706f90501",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:15:23.251Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Discovery env fully equipped for quantum research verification",
+      "source": {
+        "path": "kb/pages/experiment--discovery-env-fully-equipped-for-quantum-research-verification.md",
+        "sha256": "9bd706f90501b72796a1166d0612649fbbcb17f6da44c6a3b5882f94dcf40790"
+      },
+      "detail": {
+        "title": "Discovery env fully equipped for quantum research verification",
+        "createdAt": "2026-08-05T17:15:23.251Z",
+        "pageKind": "experiment",
+        "bodyLine": 16,
+        "contentSha256": "5bc48c28d68a634a4f6fa7101effdde4b47abe6651fabc9cb82f3bddc2dd6e7e",
+        "recordedClaim": "Python 3.12.3 with numpy 2.2.6, scipy 1.18.0, sympy 1.14.0, stim 1.16.0, pytest 9.1.1, networkx 3.6.1, torch 2.12.1+cu130, g++ 13.3.0. All 7 archives extract to 64MB/1349 files. First standalone check (entropy cone counterexample) reproduced successfully."
+      }
+    },
+    {
       "id": "cd9807a74b1b:35",
       "node": "ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:15:42.352Z",
@@ -1989,7 +2009,10 @@
         "data": {
           "expectedTraceId": "88399724602226ac1b4f8f35d6bad6e5",
           "backend": "bridge"
-        }
+        },
+        "publicText": "no-env-channel",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -2009,7 +2032,10 @@
         "data": {
           "expectedTraceId": "88399724602226ac1b4f8f35d6bad6e5",
           "backend": "bridge"
-        }
+        },
+        "publicText": "no-env-channel",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -2029,7 +2055,10 @@
         "data": {
           "expectedTraceId": "88399724602226ac1b4f8f35d6bad6e5",
           "backend": "bridge"
-        }
+        },
+        "publicText": "no-env-channel",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -3428,7 +3457,10 @@
         "data": {
           "expectedTraceId": "88399724602226ac1b4f8f35d6bad6e5",
           "backend": "bridge"
-        }
+        },
+        "publicText": "no-env-channel",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -3448,7 +3480,10 @@
         "data": {
           "expectedTraceId": "88399724602226ac1b4f8f35d6bad6e5",
           "backend": "bridge"
-        }
+        },
+        "publicText": "no-env-channel",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -10397,6 +10432,26 @@
       }
     },
     {
+      "id": "de53877e480f",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:22:18.104Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "huang archive headline theorem not runnable - missing pauli.py",
+      "source": {
+        "path": "kb/pages/pursuit-ftqc-zips-2026-08-05-r1--finding--huang-archive-headline-theorem-not-runnable-missing-pauli-py.md",
+        "sha256": "de53877e480fc521d6973151bf69afb6f7eb6ba4daeaa763c60cadc8a97c6c7a"
+      },
+      "detail": {
+        "title": "huang archive headline theorem not runnable - missing pauli.py",
+        "createdAt": "2026-08-05T17:22:18.104Z",
+        "pageKind": "finding",
+        "bodyLine": 16,
+        "contentSha256": "14e2874a628078f394a9141e44ee3c81069a3d36666f14b2b9b78fa594470533",
+        "recordedClaim": "huang_research: all 3 sub-project test suites broken by missing modules (novel_hamiltonian.pauli, baseline/, huang_frontier.pauli). VERIFICATION_SUMMARY.json claims 17 tests passed but none collectible. 01_deepdive is a stub (only test file, no source). Weakest artifact. Integrity sha256 OK but content incomplete."
+      }
+    },
+    {
       "id": "cd9807a74b1b:79",
       "node": "ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:22:18.111Z",
@@ -15305,6 +15360,26 @@
       }
     },
     {
+      "id": "a432c92110ce",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:25:38.539Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "RobustQEC phase0 Steane code independently verified at rung 5",
+      "source": {
+        "path": "kb/pages/pursuit-ftqc-zips-2026-08-05-r1--finding--robustqec-phase0-steane-code-independently-verified-at-rung-5.md",
+        "sha256": "a432c92110ce5eb10b83612eda02275c7e9affe2d4fdef92fe2ae7fed31a4584"
+      },
+      "detail": {
+        "title": "RobustQEC phase0 Steane code independently verified at rung 5",
+        "createdAt": "2026-08-05T17:25:38.539Z",
+        "pageKind": "finding",
+        "bodyLine": 16,
+        "contentSha256": "4da32643b99673e2297df4db88e2ded0013cf235f140d0b7fc2a7ecab0904478",
+        "recordedClaim": "RobustQEC phase0: Steane [[7,1,3]] distance-3 independently re-derived (rung 5) by enumerating all 16384 Pauli errors. Minimax LP/MILP certificates bit-exact reproduced (randomized 0.041086267035832666, deterministic 0.06415069664924125). Monte Carlo shot stats bit-for-bit across different numpy/scipy/python versions (e.g. adaptive_guarded 3337/380000). 68 tests pass (6 phase0 + 17 obsgate + 37 frontier + 8 industrial). 2/4 suites need PYTHONPATH config fix to run as-shipped. Integrity 397/397 OK."
+      }
+    },
+    {
       "id": "48917e3e42af:63",
       "node": "ftqc-zips-2026-08-05-r1:s3",
       "at": "2026-08-05T17:25:39.065Z",
@@ -19812,6 +19887,45 @@
       }
     },
     {
+      "id": "e3fac3596fe7:1",
+      "node": "ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:30:21.689Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s2",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 1
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "You have done substantial work (independent CSS verifiers in /tmp) but your results/results_qltc.md is still only the 12-line header. WRITE YOUR FINDINGS TO results/results_qltc.md NOW and keep appending as each check settles — your process can be killed at any time and anything only in your context or /tmp is lost. Specifically, record right now: (1) the exit code and output of verify_all.py, (2) which of the 5 named verifiers passed/failed and WHY (missing module name vs real bug), (3) whether the C++ engines compiled, (4) what your independent CSS verifier found. Do not wait until the end to write.",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "ad028bac4eab",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:30:22.123Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "qldpc 16-schedule distance phase diagram independently re-derived rung 5",
+      "source": {
+        "path": "kb/pages/pursuit-ftqc-zips-2026-08-05-r1--finding--qldpc-16-schedule-distance-phase-diagram-independently-re-derived-rung-5.md",
+        "sha256": "ad028bac4eab8a97967a18b4343707e07d33a53a6239116158d78df2a03eba9b"
+      },
+      "detail": {
+        "title": "qldpc 16-schedule distance phase diagram independently re-derived rung 5",
+        "createdAt": "2026-08-05T17:30:22.123Z",
+        "pageKind": "finding",
+        "bodyLine": 16,
+        "contentSha256": "d70321940a9d61467c76eb9593b4d8197ebe9360765f44c0f1f78883dcb39cc0",
+        "recordedClaim": "qldpc_codesign: [[36,2,6]] 16-schedule distance phase diagram CONFIRMED by independent re-derivation. Child compiled exact_location_distance_search.cpp fresh (g++ -std=c++20 -O3) and ran all 16 schedules. Result: 8 schedules distance 6, 6 distance 5, 2 distance 4 — matches claimed 8/6/2 exactly. Full per-schedule table reproduced (S01,S14=d4; S02,S05,S07,S08,S10,S13=d5; rest d6). Integrity 225/225 OK. v1 falsified by Stim documented. latest_integrated_overlay tests NOT green (15 pass,16 fail,12 err) as README warned."
+      }
+    },
+    {
       "id": "cd9807a74b1b:114",
       "node": "ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:30:22.145Z",
@@ -20584,6 +20698,25 @@
             "input": "{\n  \"instruction\": \"STOP EDITING THE ARCHIVE SOURCE. Your job is to VERIFY and REPORT, not to fix the pcftc code so tests pass — modifying the artifact invalidates the verification. You are near your token budget. Immediately write results/results_pcftc.md with everything you have found so far: (1) did `make test` / `make verify` / `make coverage` / `make manifest` pass or fail, with exact exit codes and pass counts, (2) which of the 5 headline numbers (a)-(e) you confirmed, (3) CRITICALLY: did `make verify` exit 0 or not, and if you had to modify source files to get there, say so explicitly and revert your changes. Write the file NOW even if incomplete — a partial result on disk beats a complete result lost.\",\n  \"workerId\": \"ftqc-zips-2026-08-05-r1:s0\"\n}"
           }
         ],
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "e3fac3596fe7:4",
+      "node": "ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:31:16.109Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s0",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 4
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "STOP EDITING THE ARCHIVE SOURCE. Your job is to VERIFY and REPORT, not to fix the pcftc code so tests pass — modifying the artifact invalidates the verification. You are near your token budget. Immediately write results/results_pcftc.md with everything you have found so far: (1) did `make test` / `make verify` / `make coverage` / `make manifest` pass or fail, with exact exit codes and pass counts, (2) which of the 5 headline numbers (a)-(e) you confirmed, (3) CRITICALLY: did `make verify` exit 0 or not, and if you had to modify source files to get there, say so explicitly and revert your changes. Write the file NOW even if incomplete — a partial result on disk beats a complete result lost.",
         "publicationMode": "full",
         "publicationNote": null
       }
@@ -21862,6 +21995,26 @@
         ],
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "5ef6faa57813",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:32:58.275Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "pcftc risk-cert verifier passes 24/24 checks clean copy",
+      "source": {
+        "path": "kb/pages/pursuit-ftqc-zips-2026-08-05-r1--finding--pcftc-risk-cert-verifier-passes-24-24-checks-clean-copy.md",
+        "sha256": "5ef6faa57813dcbb0d038855a62a2c63552a57c458cb2ba0a718c299b60aa91e"
+      },
+      "detail": {
+        "title": "pcftc risk-cert verifier passes 24/24 checks clean copy",
+        "createdAt": "2026-08-05T17:32:58.275Z",
+        "pageKind": "finding",
+        "bodyLine": 16,
+        "contentSha256": "bbc991411e36d096a353aea80c8cf78ddd33fdb3729c88d647376ae61e70bcbc",
+        "recordedClaim": "pcftc_risk_cert_v2: make verify passes on CLEAN copy from original zip (no source edits). accepted=true, 24/24 checks, 140000 mutation attacks rejected. make test 30 passed exit 0. Coverage 77.9%. Headline rationals confirmed: optional-stopping 12205/131072=0.0931, confidence 54813/65536, adaptive 1/2 vs static 3/8. Strongest self-verifying artifact. Child s0 edited source unnecessarily - code passes clean."
       }
     },
     {
@@ -23825,6 +23978,25 @@
       }
     },
     {
+      "id": "e3fac3596fe7:7",
+      "node": "ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:37:05.121Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s1",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 7
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "You are near your token ceiling. The 8/6/2 headline is already saved — good. Now APPEND to results/results_qldpc.md whatever else you have: the v5 pytest exit code/pass count, the latest_integrated_overlay test result, and the S06/S09 minimax certificate finding. If you ran the Stim falsification check, add one sentence. Then STOP — do not start new long computations. Persist what you have and settle.",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
       "id": "cd9807a74b1b:165",
       "node": "ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:37:11.214Z",
@@ -24508,6 +24680,46 @@
         ],
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "c0fbf3d9f3ed",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:38:55.888Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "AI research archives split into runnable vs code-incomplete classes",
+      "source": {
+        "path": "kb/pages/experiment--ai-research-archives-split-into-runnable-vs-code-incomplete-classes.md",
+        "sha256": "c0fbf3d9f3ede7411514bdbcd18e20bac6160cb0ab16bdd4272966b1bec54ae1"
+      },
+      "detail": {
+        "title": "AI research archives split into runnable vs code-incomplete classes",
+        "createdAt": "2026-08-05T17:38:55.888Z",
+        "pageKind": "experiment",
+        "bodyLine": 16,
+        "contentSha256": "ee27bbd4360058bc43f95e41fcb5631b177e75ac2fd07a8f7996dc52236b7a3e",
+        "recordedClaim": "Across 7 AI-generated quantum research zip archives (1349 files): 4 reached rung 4-5 (entropy_cone, qldpc, pcftc, robustqec - had complete code + verifiers), 3 were code-incomplete (huang missing pauli.py/baseline, channel missing cws.py/experiments, qltc missing 7 modules). The code-incomplete ones shipped result JSON + math prose but NOT the regenerating code, and their reproduce scripts/pytest all failed at import. Lesson: for AI research exports, ALWAYS run the cheapest check (py_compile + import + pytest --collect-only) FIRST - it instantly partitions runnable from broken. 340/340 .py parsed but import-time missing-module failures were the dominant blocker."
+      }
+    },
+    {
+      "id": "dc4319328c18",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:38:56.046Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "children skip write-as-you-go despite explicit instruction",
+      "source": {
+        "path": "kb/pages/experiment--children-skip-write-as-you-go-despite-explicit-instruction.md",
+        "sha256": "dc4319328c1813d68cbe4fc41ca0eeed65733a437bf4ddfc4c5dd2cae4e4d182"
+      },
+      "detail": {
+        "title": "children skip write-as-you-go despite explicit instruction",
+        "createdAt": "2026-08-05T17:38:56.046Z",
+        "pageKind": "experiment",
+        "bodyLine": 16,
+        "contentSha256": "5f2a8c9d3efeda397e3b8ca9f9c88adae49468f11bffcb967ce7de075322d825",
+        "recordedClaim": "Of 5 children: s0(pcftc) and s2(qltc) did NOT create their output file despite explicit instructions; s2 persisted nothing (stuck 4+ min on a long search, all work in /tmp lost). s1(qldpc) wrote headline but kept doing MORE work (cubic coeffs) near budget instead of wrapping up, overspent to 3.23M>3M. Root had to verify pcftc and qltc independently as insurance. LESSON: (1) always verify the most important archive yourself rather than trusting a single child; (2) steer children to persist EARLY and hard, before they hit 80% budget; (3) a child stuck on a long bash with frozen token count for >2min is likely hung - stop it and do the work yourself."
       }
     },
     {
@@ -25486,7 +25698,10 @@
             "traceRef": "sha256:9fb578c82cb78ff29c7948c071066b67324e2cc1febd0f8a702762b341cf2698",
             "spanCount": 88
           }
-        }
+        },
+        "publicText": "budget pool: ticket 1 spent 4588247 tokens > reserved 3000000",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -25819,6 +26034,26 @@
       }
     },
     {
+      "id": "96e7bf2ad73d",
+      "node": "finding:ftqc-zips-2026-08-05-r1",
+      "at": "2026-08-05T17:41:57.799Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "FTQC zips campaign complete - 4 of 7 archives verified rung 4-5",
+      "source": {
+        "path": "kb/pages/pursuit-ftqc-zips-2026-08-05-r1--finding--ftqc-zips-campaign-complete-4-of-7-archives-verified-rung-4-5.md",
+        "sha256": "96e7bf2ad73da496ec367adaaa53afc644cc4962f22daad42fddd9beca725493"
+      },
+      "detail": {
+        "title": "FTQC zips campaign complete - 4 of 7 archives verified rung 4-5",
+        "createdAt": "2026-08-05T17:41:57.799Z",
+        "pageKind": "finding",
+        "bodyLine": 16,
+        "contentSha256": "d624bf9fc53ea87120188b0109032094c290161145f8969008aafe50ac2c5178",
+        "recordedClaim": "7-archive FTQC verification campaign complete. RUNG 5 independently re-derived: entropy_cone (BCWW falsification 2^14<3^9), qldpc (16-schedule 8/6/2 distance split via fresh C++ compile), robustqec (Steane [[7,1,3]] d=3 via 16384-error enumeration). RUNG 4 reproduced: pcftc (24/24 verify checks, 140k mutations rejected, clean copy), robustqec frontier separations bit-exact, qldpc S06 cubic coeff + Stim falsification. NOT RUNNABLE (rung 1, missing source modules): huang (pauli.py/baseline), qltc (7 modules), channel (cws.py - PSD sweep portion only; analytic theorems did reach rung 5). Corpus: 340/340 py parse, all sha256 OK. Deliverable FINDINGS.md + 7 per-archive results_*.md."
+      }
+    },
+    {
       "id": "cd9807a74b1b:195",
       "node": "ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:41:57.827Z",
@@ -26143,7 +26378,10 @@
             "traceRef": "sha256:edddd319b0b26425b6426bf5ceb51ff5ca1c85167b0bb423393d467b1056fcc7",
             "spanCount": 31
           }
-        }
+        },
+        "publicText": "execution aborted",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     }
   ],

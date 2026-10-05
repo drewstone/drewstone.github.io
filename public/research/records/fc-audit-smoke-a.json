@@ -4,7 +4,7 @@
   "title": "Invalid original witness, August 13",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.1"
+    "version": "2.2.0"
   },
   "format": "runtime",
   "idScheme": "anchor.v1",
@@ -31,7 +31,8 @@
         "channel": "journal",
         "status": "absent",
         "reason": "no-conversation-channel"
-      }
+      },
+      "captureNote": "Its Claude Code director ran with its home directory inside the run workspace, which the archive excluded, and the bridge store that served it keeps sessions only from August 20. Only the journal and findings survive."
     },
     {
       "id": "finding:fc-audit-smoke-a",
@@ -98,6 +99,106 @@
             "taskDigest": "sha256:0934e7c56a5de13ccae099985d8477656c0e97bc2fa5d293641d537db980d72e"
           }
         }
+      }
+    },
+    {
+      "id": "358d74cb4c1c",
+      "node": "finding:fc-audit-smoke-a",
+      "at": "2026-08-13T09:31:41.312Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "BCWW eq (4.6) refuted by exact classical distribution on 5 of 16 atoms",
+      "source": {
+        "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--bcww-eq-4-6-refuted-by-exact-classical-distribution-on-5-of-16-atoms.md",
+        "sha256": "358d74cb4c1c123ee5d9d9faf207a22c7476132a7aa1909426a970d41738ccdd"
+      },
+      "detail": {
+        "title": "BCWW eq (4.6) refuted by exact classical distribution on 5 of 16 atoms",
+        "createdAt": "2026-08-13T09:31:41.312Z",
+        "pageKind": "finding",
+        "bodyLine": 19,
+        "contentSha256": "83fbbdcf204a4789423e2f2422789f7dd3363df121e94a59c8b30a35d9d21e40",
+        "recordedClaim": "Bao-Cao-Walter-Wang arXiv:1507.05650v2 (JHEP09(2015)203) eq (4.6) [\\label{eqn:cd2}, confirmed by counting \\begin{equation} environments in section 4 of EntropicIneq.tex from source: cd2=4.6], the authors' own candidate \"4-party linear quantum inequality... has not been tested to a greater extent\": S(ABD)+S(ABC)+S(BCD)-2S(BD)-2S(BC)+S(CD)-S(AD)-S(AC)-S(AB)+2S(B)+S(A) <= 0. Derived independently from the arXiv LaTeX source (not from any prior write-up). LP test against the 28 elemental Shannon inequalities for n=4 shows the candidate is NOT a Shannon-cone consequence (feasible violation direction exists). Full EXHAUSTIVE search over all 65534 nonempty non-full subsets of the 16 atoms of {0,1}^4 (uniform classical distributions) finds a global-maximum violation of LHS=+0.052932501298081... (positive => claimed <=0 inequality is FALSE) at K=5 atoms, e.g. binary support {0000,0010,0100,1000,1101} (and several symmetric equivalents, all giving the identical value). Since a classical distribution embeds as a diagonal quantum state, this refutes the general-4-party-quantum-state claim. Entropy values computed in exact closed form (K and per-pattern integer counts -> sum of log2(integer) terms) at 50-digit precision, margin (~0.05) many orders of magnitude above any numerical uncertainty."
+      }
+    },
+    {
+      "id": "daae0e541691",
+      "node": "finding:fc-audit-smoke-a",
+      "at": "2026-08-13T09:31:49.542Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Second independent refutation: general-state Monogamy of Mutual Information (MMI) fails classically",
+      "source": {
+        "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--second-independent-refutation-general-state-monogamy-of-mutual-information-mmi-f.md",
+        "sha256": "daae0e541691dc6a20c489fd5a4d0c8f0637090c16a1208674796b2009b35381"
+      },
+      "detail": {
+        "title": "Second independent refutation: general-state Monogamy of Mutual Information (MMI) fails classically",
+        "createdAt": "2026-08-13T09:31:49.542Z",
+        "pageKind": "finding",
+        "bodyLine": 19,
+        "contentSha256": "5882b4bb2904f2f2f3c7fbb0246b590c061b6aab5b629c7367359550879cb780",
+        "recordedClaim": "Second known-false candidate, found independently of the BCWW search: Monogamy of Mutual Information as a claim for GENERAL quantum/classical states, S(A)+S(B)+S(C)+S(ABC) <= S(AB)+S(AC)+S(BC) (equivalently I3(A:B:C)<=0). Source: Hayden, Headrick, Maloney, \"Holographic Mutual Information is Monogamous\", arXiv:1107.2940, Phys.Rev.D 87 (2013) 046003 -- a different paper, different authors, predates BCWW (which cites it as prior literature), proves MMI ONLY for holographic RT states and explicitly motivates the term \"monogamy\" by its failure for general states. LP test (9 elemental Shannon inequalities for n=3) shows not Shannon-type. Full exhaustive search over all 254 nonempty non-full subsets of {0,1}^3 finds the witness: uniform distribution on {000,111} (3 perfectly-correlated classical bits, A=B=C). All marginal entropies are EXACT integers (1 bit each, since every support size is a power of two): S(A)=S(B)=S(C)=S(AB)=S(AC)=S(BC)=S(ABC)=1 bit exactly. LHS = 1+1+1+1-1-1-1 = +1 exactly (Fraction, not a numerical estimate) -- exact rational certificate, general-state MMI is FALSE. Confirms same content as proven facet MMI1 in the N=5 holographic catalogue (Hernandez Cuenca 1903.09148): true only holographically, false in general -- the intended scope-boundary illustration."
+      }
+    },
+    {
+      "id": "08f90cd0bb2c",
+      "node": "finding:fc-audit-smoke-a",
+      "at": "2026-08-13T09:32:08.527Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Scope boundary: holographic filter is blind to both known-false general-state candidates; classical kill catches both",
+      "source": {
+        "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--scope-boundary-holographic-filter-is-blind-to-both-known-false-general-state-can.md",
+        "sha256": "08f90cd0bb2c7555f51f83685db3b0014b4cfb45dc2f4991f4fba6fa90f555c1"
+      },
+      "detail": {
+        "title": "Scope boundary: holographic filter is blind to both known-false general-state candidates; classical kill catches both",
+        "createdAt": "2026-08-13T09:32:08.527Z",
+        "pageKind": "finding",
+        "bodyLine": 19,
+        "contentSha256": "3a168a48ab76029a01186b73ba814abfc6ca84d12d6ed0284e328303eaf75be6",
+        "recordedClaim": "Concrete, reproducible demonstration of the pipeline's scope limits (gate 4). Ran the holographic graph-min-cut filter (600 trials: 300 random graphs + 300 star graphs) on the two candidates already shown classically FALSE (BCWW eq4.6, general-state MMI): BOTH return max_violation=0, i.e. the holographic filter alone finds NO refutation of either -- 2 of 2 (100%) known-false general-state candidates evade the holographic filter, while the classical-kill stage (LP + exhaustive exact search) catches both (LHS=+0.0529 and +1 respectively). This is expected and instrument-honest, not a bug: holographic graph vectors are believed/constructed to satisfy exactly the identities these candidates were built from (BCWW derived eq4.6 FROM graph combinatorics), so holographic sampling cannot be expected to refute it; only the classical-embedding argument (any inequality claimed for general quantum states must hold for classical distributions too) can. CONCLUSION (scope statement): this pipeline can DECIDE (a) classical-embeddable claims -- general quantum-state or classical-distribution claims, via LP-against-elemental-Shannon + exhaustive uniform-distribution search, exact rational certificates -- and (b) holographic-graph-representable claims -- via the min-cut filter, which can refute but (with finite sampling) cannot prove a claim holds cone-wide, only fail to find a counterexample among sampled graphs. It CANNOT decide claims restricted to stabilizer states, gapped/area-law systems only, or dynamical (HRT/covariant) holography -- those require different, unbuilt instruments -- and a \"survives holographic filter\" verdict is never reported as \"proven true,\" only as \"no violation found among N sampled graph models.\""
+      }
+    },
+    {
+      "id": "7e488dbbded7",
+      "node": "finding:fc-audit-smoke-a",
+      "at": "2026-08-13T09:32:20.704Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "No false positives: all 8 proven N=5 holographic facet orbits survive the holographic filter",
+      "source": {
+        "path": "kb/pages/pursuit-fc-audit-smoke-a--finding--no-false-positives-all-8-proven-n-5-holographic-facet-orbits-survive-the-hologra.md",
+        "sha256": "7e488dbbded7e62b572399b43c47a9da961607b867eb9a9303d1aaf68fd3b49d"
+      },
+      "detail": {
+        "title": "No false positives: all 8 proven N=5 holographic facet orbits survive the holographic filter",
+        "createdAt": "2026-08-13T09:32:20.704Z",
+        "pageKind": "finding",
+        "bodyLine": 19,
+        "contentSha256": "056efb40258457ff459e68cbeea9cc8e1a6959c3399f270854f0e5e721f732a6",
+        "recordedClaim": "Tested all 8 proven-facet orbit representatives of the N=5 holographic entropy cone C_5 (Hernandez Cuenca, \"The Holographic Entropy Cone for Five Regions\", arXiv:1903.09148, Phys.Rev.D 100 (2019) 026004, Table I, verbatim from source .tex: SA, MMI1, MMI2, QCyclic, Q2, Q3, Q4, Q5 -- these 8 orbits generate all 372 facets of the fully-proven C_5) against the holographic graph-min-cut filter: 300 random weighted graphs (0-3 bulk/Steiner nodes, random connected topology, integer weights 1-12), 300 star graphs (single hub to all 5 parties + purifier, random integer weights), and 4 uniform perfect-tensor complete graphs (weights 1,2,3,5) -- 604 trials per facet, 4832 graph evaluations total, all min-cuts computed via networkx max-flow (edmonds_karp) with integer capacities so every entropy value is an EXACT integer (integrality of max-flow/min-cut). Result: max_violation=0 for every one of the 8 facets across all 604 trials each -- ZERO refutations of a proven theorem (N5_FACETS_REFUTED=0 out of N5_FACETS_TESTED=8). This is the pipeline's core \"must not kill a theorem\" gate."
+      }
+    },
+    {
+      "id": "cd22154fea54",
+      "node": "finding:fc-audit-smoke-a",
+      "at": "2026-08-13T09:34:15.543Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Negative control: pipeline does not falsely refute the proven Zhang-Yeung theorem",
+      "source": {
+        "path": "kb/pages/experiment--negative-control-pipeline-does-not-falsely-refute-the-proven-zhang-yeung-theorem.md",
+        "sha256": "cd22154fea546ec1e8a7366855ced7b06761d90a0865a9f636caa90cd298922e"
+      },
+      "detail": {
+        "title": "Negative control: pipeline does not falsely refute the proven Zhang-Yeung theorem",
+        "createdAt": "2026-08-13T09:34:15.543Z",
+        "pageKind": "experiment",
+        "bodyLine": 19,
+        "contentSha256": "0ab9c40f6af4020a8a299d56a4b869397b433ae126d4ff289c229033dc4b581a",
+        "recordedClaim": "Held-out sanity test of the classical-kill pipeline itself, not one of the 4 required deliverables. Zhang-Yeung (1998) is a PROVEN classical theorem, I(A:B)+I(A:CD)+3I(C:D|A)+I(C:D|B)-2I(C:D) >= 0 for all random variables A,B,C,D -- quoted in BCWW arXiv:1507.05650v2 itself as the \"quantum analogue\" comparison point. It is famously NOT derivable from the elemental Shannon/polymatroid inequalities alone (needs a copy-lemma argument), so it is exactly the kind of case where a buggy exhaustive search could spuriously \"refute\" a real theorem. Result: LP test correctly reports NOT Shannon-type (ZY_SHANNON_TYPE=False, a genuine non-elemental inequality), but the SAME exhaustive search machinery used for the BCWW/MMI refutations, run over all 65534 nonempty non-full uniform distributions on {0,1}^4, finds max violation = 7.751e-50 (numerically zero, i.e. no real distribution violates it) -- the theorem survives. This is independent evidence the entropy-computation and search code are not just reporting spurious \"violations\" everywhere; the same code path that refutes BCWW/MMI correctly leaves a real theorem alone."
       }
     },
     {
