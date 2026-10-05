@@ -7,11 +7,3 @@ const { records, idmap } = Astro.props
 ---
 <AgentRecordView records={records} idmap={idmap} client:load />
 <noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>
-<style is:global>
-  .research-agent-record {
-    --ar-background: var(--bg);
-    --ar-foreground: var(--fg);
-    --ar-font: var(--font-body);
-    --ar-mono: var(--font-mono);
-  }
-</style>

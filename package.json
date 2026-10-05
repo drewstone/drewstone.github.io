@@ -19,12 +19,13 @@
     "research:verify": "node tools/research-records.mjs verify"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/react": "5.0.7",
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/react": "7.0.0",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.0",
     "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.8.1/drewstone-agent-record-0.8.1.tgz",
-    "astro": "^6.1.10",
+    "astro": "^7.3.5",
     "katex": "^0.16.38",
     "react": "19.3.0",
     "react-dom": "19.3.0",
