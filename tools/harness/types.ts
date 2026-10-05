@@ -6,38 +6,14 @@
  * file that lives alongside the post it describes.
  */
 
-/** Detailed record of a single tool invocation inside a turn. */
-export type ToolCallDetail = {
-  name: string
-  /** Truncated rendering of the tool input (Bash command, file path, edit args, etc). */
-  input_preview?: string
-  /** File the tool wrote/edited, when applicable. */
-  file_path?: string
-  /** Truncated rendering of the tool result, when captured. */
-  result_preview?: string
-}
-
-/** A single turn of agent activity, lossy-summarized for repo storage. */
-export type Turn = {
-  role: 'user' | 'assistant' | 'system' | 'tool'
-  /** Stable sequence index in the source session (0-based, when available). */
-  seq?: number
-  /** Full text (no truncation). For very long content (>8k) the harness may still trim. */
-  text?: string
-  /** First ~280 chars of assistant prose — kept for compact list views. */
-  text_summary?: string
-  /** Rough count of tool calls issued by this turn (assistant only). */
-  tool_calls?: number
-  /** Names of tools invoked, truncated to first 6. */
-  tool_names?: string[]
-  /** Detailed per-tool records (preferred over `tool_names` going forward). */
-  tool_call_details?: ToolCallDetail[]
-  /** Files mutated (Edit/Write/MultiEdit) in this turn. */
-  files_touched?: string[]
-  /** Whether this turn contained a thinking block (for assistant). */
-  had_thinking?: boolean
-  ts: string
-}
+/**
+ * A turn and its tool-call details are the projection @tangle-network/harness-sessions makes of a
+ * normalized session (`toTurns`): role, text and its 280-character summary, tool calls with input
+ * and result previews, files touched, and for an assistant turn the model that answered it, its
+ * usage and the error its model call ended with.
+ */
+export type { Turn, TurnToolCall as ToolCallDetail } from '@tangle-network/harness-sessions'
+import type { Turn } from '@tangle-network/harness-sessions'
 
 /** Pointer to a session file on disk; harness-specific metadata lives in meta. */
 export type SessionRef = {
