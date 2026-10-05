@@ -1,29 +1,32 @@
 import type { APIRoute, GetStaticPaths } from 'astro'
 import { getCollection } from 'astro:content'
-import { renderOgPng } from '../../../tools/og-render.ts'
+import { renderOgPng, type OgInput } from '../../../tools/og-render'
+import { essayArt, pageCovers } from '../../lib/social-images'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await getCollection('posts', ({ data }) => !data.draft)
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }))
+  const [posts, research] = await Promise.all([
+    getCollection('posts', ({ data }) => !data.draft), getCollection('research'),
+  ])
+  const researchArt = { bcww: 'bcww', ghz: 'ghz', 'linden-winter': 'linden-winter' } as const
+  const covers: { slug: string; cover: OgInput }[] = [
+    ...posts.map(post => ({ slug: post.id, cover: {
+      title: post.data.title, section: 'Essay', art: essayArt(post.id), original: !!post.data.original,
+      figure: post.data.figure?.src,
+    } })),
+    ...research.map(entry => ({ slug: `research-${entry.id}`, cover: {
+      title: entry.data.title, section: entry.data.area,
+      figure: entry.data.figure?.src,
+      art: researchArt[entry.id as keyof typeof researchArt] ?? 'text',
+    } })),
+    ...Object.entries(pageCovers).map(([slug, cover]) => ({ slug, cover })),
+  ]
+  if (new Set(covers.map(c => c.slug)).size !== covers.length) throw new Error('Duplicate social cover slug')
+  return covers.map(({ slug, cover }) => ({ params: { slug }, props: { cover } }))
 }
 
 export const GET: APIRoute = async ({ props }) => {
-  const { post } = props as any
-  const png = await renderOgPng({
-    title: post.data.title,
-    description: post.data.description || undefined,
-    date: post.data.date,
-    tags: post.data.tags ?? [],
-    author: 'Drew Stone',
-    original: !!post.data.original,
-  })
-  return new Response(png, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
+  const { cover } = props as { cover: OgInput }
+  return new Response(new Uint8Array(await renderOgPng(cover)), {
+    headers: { 'Content-Type': 'image/png', 'Cache-Control': 'public, max-age=3600' },
   })
 }

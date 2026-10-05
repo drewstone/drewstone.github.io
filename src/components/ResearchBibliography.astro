@@ -1,0 +1,72 @@
+---
+interface Reference {
+  authors?: string
+  title: string
+  url: string
+  publication: string
+  doi?: string
+}
+interface Props {
+  entries: Reference[]
+}
+const { entries } = Astro.props
+---
+
+<section class="bibliography" aria-labelledby="references">
+  <h2 id="references">References</h2>
+  <ol>
+    {entries.map((entry, index) => (
+      <li id={`ref-${index + 1}`}>
+        <span class="reference-number" aria-hidden="true">
+          [{index + 1}]
+        </span>
+        <span>
+          {entry.authors && <>{entry.authors}. </>}
+          <a href={entry.url}>
+            <cite>{entry.title}</cite>
+          </a>
+          . {entry.publication}
+          {entry.doi && (
+            <>
+              {' '}
+              DOI: <a href={`https://doi.org/${entry.doi}`}>{entry.doi}</a>.
+            </>
+          )}
+        </span>
+      </li>
+    ))}
+  </ol>
+</section>
+<style>
+  .bibliography {
+    margin-top: 1.4rem;
+  }
+  .bibliography h2 {
+    margin-bottom: 0.45rem;
+  }
+  .bibliography ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .bibliography li {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.3rem;
+    margin: 0.3rem 0;
+    line-height: 1.4;
+    scroll-margin-top: 5rem;
+  }
+  .reference-number {
+    font-variant-numeric: tabular-nums;
+  }
+  .bibliography cite {
+    font-style: italic;
+  }
+  .bibliography a {
+    overflow-wrap: anywhere;
+  }
+  .bibliography li:target {
+    background: var(--bg-alt, transparent);
+  }
+</style>

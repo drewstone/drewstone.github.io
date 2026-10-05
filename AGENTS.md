@@ -1,14 +1,19 @@
 # Blog Agent Rules
 
-This repo distinguishes authorship traces from supporting research traces.
+This Astro and MDX blog distinguishes authorship traces from supporting research traces.
+For layout, components, or visual examples, read [DESIGN.md](DESIGN.md).
+For commands and frontmatter fields, inspect `package.json`, `tools/blog-loop.mjs`, and `src/content.config.ts`.
 
 ## Voice
 
-Before drafting, rewriting, or polishing any non-original post, read `VOICE.md`. It is the Drew-specific voice checkpoint. `AGENTS.md` defines hard repo rules; `VOICE.md` defines the style constraints that keep AI-assisted posts from drifting into generic research-wiki prose.
+Before drafting, rewriting, or polishing any non-original post, read `VOICE.md`.
+It owns the author voice; this file owns repository rules.
 
 ## Human-only originals
 
 Never edit the body, add revisions, or capture AI traces for a post with `original: true`.
+Only fix title, description, tags, or date in its frontmatter when the user explicitly requests that change.
+Human originals remain distinct from AI-authored posts in revision history and presentation.
 
 ## Trace lifecycle
 

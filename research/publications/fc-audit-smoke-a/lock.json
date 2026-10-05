@@ -1,0 +1,20 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "fc-audit-smoke-a",
+  "recordDigest": "sha256:a1f267c75d411ea72d75d8c73f809b66ace814863bd0cfff6f823ffd027ec6de",
+  "overlaySha256": "05d2801f5fa3d69384522e3ae5970a0146370311b2081c1300f0949ee74ca6c0",
+  "publicSha256": "944f929acd5600f3b9866ddced333f5c045925d942514ad93e534c1e2dffebf4",
+  "snapshot": "sha256:209fce62ae43b2e13bc8d9ad87abef8dd1b9036f2fc385a702ef9648cb699e5e",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.8.1",
+    "adapter": "2.1.1",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-05T00:58:54.906Z",
+  "builtOn": "drew-GTR-Pro",
+  "attestation": {
+    "keyId": "7566b6e702ec87d4",
+    "signature": "Rh+cU5j1B/+PNu1XY168FSg0o20TqZ92elBWBl3d3oj6godAJNWOfDC5FMVmrsoA61SaizsDh0L7yMe3WB2fBg=="
+  }
+}

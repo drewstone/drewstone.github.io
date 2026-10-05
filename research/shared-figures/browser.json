@@ -1,0 +1,40 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "width": 1280,
+      "theme": "light",
+      "image": {
+        "width": 576,
+        "height": 576,
+        "naturalWidth": 500,
+        "naturalHeight": 500
+      }
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "image": {
+        "width": 336,
+        "height": 336,
+        "naturalWidth": 500,
+        "naturalHeight": 500
+      }
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "image": {
+        "width": 336,
+        "height": 336,
+        "naturalWidth": 500,
+        "naturalHeight": 500
+      }
+    },
+    {
+      "fullSizeFigure": true
+    }
+  ],
+  "existingPageOverflow": 715,
+  "complete": true
+}

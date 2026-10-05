@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "q-ca-bcww-shareable-pkg",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "q-ca-bcww-shareable-pkg",
+    "label": "evidence-private-20261004"
+  },
+  "snapshot": "sha256:8d9fb431708b67b1ac404b98a9774916baede25a1786e6c9ebe566d2f8805f37",
+  "objects": 10,
+  "bytes": 29272,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.8.1",
+    "adapter": "2.1.1",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:282831e9396b5e9952355f99cd683dd159a78b993b18b2d0710a765ee449dfba",
+  "overlay": "overlay.json",
+  "public": "public/research/records/q-ca-bcww-shareable-pkg.json"
+}

@@ -1,0 +1,215 @@
+---
+title: 'A counterexample to the APN critical-point conjecture'
+description: 'An explicit APN permutation of F₃₂ whose reduced polynomial has no critical point, refuting Bartoli–Stănică Conjecture 2, with replayed checks and the agent sessions that found and verified it.'
+assessed: '2026-10-04'
+claim: '(x + x⁸ + x¹⁶)³ is an APN permutation of F₃₂ whose reduced polynomial has no critical point, so Conjecture 2 of Bartoli and Stănică is false.'
+limitation: 'Elementary: about 37% of random F₂-affine relabellings of APN power maps also refute it. The functions are not new APN objects, and no peer review is claimed.'
+area: 'Finite fields'
+record_ids: ['apn-critical-point-r11']
+order: 4
+---
+import WitnessExplorer from '../../components/WitnessExplorer.astro'
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+The cube map on $\mathbb{F}_{32}$, composed with one linear bijection, is an APN permutation whose reduced polynomial has no critical point.
+That refutes Conjecture 2 of Bartoli and Stănică [[1]](#ref-1), and with it the normalized form of a lifting conjecture of Rønjom and Sandrib [[2]](#ref-2).
+The counterexample checks by hand.
+
+## Conjecture
+
+Let $q=2^m$.
+A function $F:\mathbb{F}_q\to\mathbb{F}_q$ is APN (almost perfect nonlinear) when, for every $a\neq0$ and every $b$, the equation $F(x+a)+F(x)=b$ has at most two solutions.
+Every such function is induced by exactly one polynomial of degree below $q$, its reduced representative $f$.
+A critical point is an element $a\in\mathbb{F}_q$ with $f'(a)=0$, where $f'$ is the formal derivative.
+
+Conjecture 2 of [[1]](#ref-1), the Reduced Critical-Point Conjecture, states that for every $q=2^m$ the reduced representative of every APN permutation of $\mathbb{F}_q$ has a critical point in $\mathbb{F}_q$.
+The paper's Theorem 2.2 shows that this is equivalent to its Conjecture 1: no coefficientwise lift of that reduced representative permutes the Galois ring $\mathrm{GR}(2^k,m)$ for any $k>1$.
+Conjecture 1 is the normalized form of Conjecture 2 in [[2]](#ref-2).
+The paper proves the statement for monomials and cubic polynomials and leaves other families open.
+
+## Counterexample
+
+Over $\mathbb{F}_{32}$, let
+
+$$
+L(x)=x+x^{8}+x^{16},\qquad F(x)=L(x)^{3}.
+$$
+
+$L$ is $\mathbb{F}_2$-linear, and its associated polynomial $1+t^3+t^4$ is coprime to $t^5+1=(t+1)(t^4+t^3+t^2+t+1)$, so $L$ is a bijection.
+The Gold map $x^3$ is an APN permutation of $\mathbb{F}_{32}$ because $\gcd(3,31)=1$.
+Composing it with a linear bijection on the input keeps both properties.
+
+On $\mathbb{F}_{32}$ we have $x^{32}=x$, so $L(x)^2=x^2+x^{16}+x$ and
+
+$$
+\begin{aligned}
+F(x)&=(x+x^{2}+x^{16})(x+x^{8}+x^{16})\\
+&=x^{24}+x^{18}+x^{10}+x^{9}+x^{3}+x^{2}+x.
+\end{aligned}
+$$
+
+The two $x^{17}$ terms cancel and $x^{32}$ reduces to $x$.
+No modulus enters the calculation, so this is the reduced representative $f$ under every choice of irreducible quintic.
+In characteristic two only the odd exponents survive differentiation:
+
+$$
+f'(x)=x^{8}+x^{2}+1=(x^{4}+x+1)^{2}.
+$$
+
+The polynomial $x^4+x+1$ is irreducible over $\mathbb{F}_2$, so its roots lie in $\mathbb{F}_{16}\setminus\mathbb{F}_2$.
+Since $\mathbb{F}_{16}\cap\mathbb{F}_{32}=\mathbb{F}_2$, $f'$ has no root in $\mathbb{F}_{32}$, and the APN permutation $F$ has no critical point.
+By the paper's Galois-ring permutation criterion (its Theorem 2.1), every coefficientwise lift of $f$ then permutes $\mathrm{GR}(2^k,5)$ for every $k>1$, which refutes Conjecture 1 directly.
+
+<WitnessExplorer kind="apn" />
+
+The widget rebuilds $f$ from the 32 values of $F$ under the chosen modulus and evaluates $f'$ at every element.
+For comparison, the cube map itself has $f'(x)=x^2$ and one critical point, at $0$.
+
+The public repository [[3]](#ref-3) also holds three value tables from the automated search described below.
+Each is an APN permutation with no critical point, and each is an $\mathbb{F}_2$-affine relabelling of a power map:
+
+| Field | Modulus | Reduced degree | Relabels |
+| --- | --- | --- | --- |
+| $\mathbb{F}_{32}$ | $x^5+x^2+1$ | 28 | $x^{11}$, Kasami class |
+| $\mathbb{F}_{128}$ | $x^7+x+1$ | 112 | $x^{11}$, Welch exponent |
+| $\mathbb{F}_{512}$ | $x^9+x^4+1$ | 384 | $x^{5}$, Gold exponent |
+
+## Why relabelling breaks it
+
+Section 7 of [[1]](#ref-1) treats power maps: for $f=ax^e$ with $e$ odd, $f'(0)=0$.
+Relabelling the output by an $\mathbb{F}_2$-linear map $B$ keeps that critical point, because no exponent of $B(x^e)$ reduces to $1$ unless $x^e$ is itself linear.
+A field-affine map $x\mapsto ax+b$ on either side keeps a critical point or moves it.
+A linear relabelling of the input mixes the Frobenius powers $x^{2^i}$ before the power map acts, and the critical point can disappear.
+Having a critical point is a property of one representative, not of its equivalence class.
+
+The audit measured how often this happens.
+Random two-sided $\mathbb{F}_2$-affine relabellings of APN power maps had no critical point 370,430 times in 1,000,000 at $m=5$, 817,835 times in 2,200,000 at $m=7$, and 242,811 times in 650,000 at $m=9$.
+That is about 37%, near the $1/e$ rate the audit also found for random permutations.
+Output-side and field-affine relabellings never did, in 3,850,000 samples each.
+
+At $m=3$ the conjecture holds: all 10,752 APN permutations among the 40,320 permutations of $\mathbb{F}_8$ have a critical point.
+$\mathbb{F}_4$ and $\mathbb{F}_{16}$ have no APN permutations, so $m=5$ is the smallest field with a counterexample, setting aside $\mathbb{F}_2$, where every map is affine.
+
+## Verification
+
+The published scripts were replayed on October 4, 2026, from a fresh clone of [[3]](#ref-3) at commit `2ae711e`, with Python 3.12.3 and the standard library only.
+
+| Command | Wall time | Result |
+| --- | --- | --- |
+| `python3 check.py` | 0.9 s | exit 0; 30 checks `ok` |
+| `python3 gr_lift.py` | 5.0 s | exit 0; 4 lift checks `ok` |
+| `python3 verify.py` | 5.8 s | exit 0; `VERIFIED` |
+| `python3 verify.py --all` | 398 s | exit 0; `VERIFIED`, including 262,144 distinct values on $\mathrm{GR}(4,9)$ |
+
+<details>
+<summary>Exact output of <code>python3 verify.py --all</code></summary>
+
+```text
+== finite-field checks (check.py)
+apn_m5.json: GF(2^5), modulus x^5 + x^2 + 1
+  ok    modulus irreducible
+  ok    permutation
+  ok    APN (differential uniformity 2)
+  ok    reduced representative reproduces the table at every point
+  ok    reduced degree 28 (expected 28)
+  ok    f' has 0 zeros in the field (a counterexample needs 0)
+  ok    F_2-affine equivalent to x^11 (certificate checked at every point)
+apn_m7.json: GF(2^7), modulus x^7 + x + 1
+  ok    modulus irreducible
+  ok    permutation
+  ok    APN (differential uniformity 2)
+  ok    reduced representative reproduces the table at every point
+  ok    reduced degree 112 (expected 112)
+  ok    f' has 0 zeros in the field (a counterexample needs 0)
+  ok    F_2-affine equivalent to x^11 (certificate checked at every point)
+apn_m9.json: GF(2^9), modulus x^9 + x^4 + 1
+  ok    modulus irreducible
+  ok    permutation
+  ok    APN (differential uniformity 2)
+  ok    reduced representative reproduces the table at every point
+  ok    reduced degree 384 (expected 384)
+  ok    f' has 0 zeros in the field (a counterexample needs 0)
+  ok    F_2-affine equivalent to x^5 (certificate checked at every point)
+hand example F(x) = (x + x^8 + x^16)^3 over GF(32), under each irreducible quintic modulus
+  ok    modulus bits 37: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    modulus bits 41: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    modulus bits 47: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    modulus bits 55: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    modulus bits 59: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    modulus bits 61: L is a bijection, F is an APN permutation, f = x^24 + x^18 + x^10 + x^9 + x^3 + x^2 + x, f' has no zero
+  ok    6 irreducible quintic moduli (expected 6)
+GF(8), modulus x^3 + x + 1: all 40320 permutations
+  ok    10752 APN permutations (expected 10752)
+  ok    10752 of them have a critical point (the conjecture holds at m = 3)
+
+all checks passed: each table and the hand example is an APN permutation whose reduced representative has no critical point, so Conjecture 2 of arXiv:2608.30808 is false
+
+== direct lift checks on GR(4, m) (gr_lift.py)
+  ok    hand example (x + x^8 + x^16)^3, lift permutes: 1024 distinct values on the 1024 elements of GR(4, 5)
+  ok    apn_m5.json, lift permutes: 1024 distinct values on the 1024 elements of GR(4, 5)
+  ok    apn_m7.json, lift permutes: 16384 distinct values on the 16384 elements of GR(4, 7)
+  ok    apn_m9.json, lift permutes: 262144 distinct values on the 262144 elements of GR(4, 9)
+  ok    control x^3 over GF(8), lift does not permute: 57 distinct values on the 64 elements of GR(4, 3)
+all lifts behave as stated
+
+VERIFIED
+```
+
+</details>
+
+This replay exercises one code base: `gr_lift.py` imports the interpolation from `check.py`.
+Independent arithmetic comes from earlier work in the record below.
+The Lab's frozen checker, a separate Lagrange referee written by run c's operator, and five audit lenses each implemented their own field code and exhausted each field.
+The browser calculation above is another implementation, for the hand example only.
+
+The three published tables equal, value for value, the claim files run c wrote.
+That run's own summary misreported their reduced degrees as 25, 97 and 257, which are the highest odd exponents; the true degrees are 28, 112 and 384.
+
+## Scope
+
+Conjecture 2 of arXiv:2608.30808v1 is false as stated, already at $m=5$, and so are its Conjecture 1 and the normalized Rønjom–Sandrib conjecture.
+The witnesses are relabelled textbook power maps, so none is a new APN function, and the failure of critical points to survive relabelling is not claimed as new.
+Corrected forms of the conjecture were not studied.
+A search on September 27, 2026 of arXiv, IACR ePrint, Semantic Scholar, OpenAlex and the web found no earlier counterexample; recent, unindexed or private work cannot be excluded.
+No peer review is asserted.
+
+## Attribution and retained attempt
+
+The Lab chose this statement on September 25, 2026, as a recent claim with a finite counterexample.
+Its portfolio note already suggested searching affine relabellings of known APN permutations; the session that wrote that note was not inspected.
+All times below are September 27, 2026, UTC.
+
+| Session | Harness and model | Contribution |
+| --- | --- | --- |
+| Checker audit, attempts 1 and 2 | Claude Code 2.1.280 workflow subagents, claude-opus-5-5 | 06:04, random affine relabellings at $m=5$, a third without a critical point; 06:05, frozen checker and $\mathrm{GR}(4,5)$ lift; 06:06, the closed form $(x+\alpha\,\mathrm{Tr}(x))^3$; reported 06:29 |
+| Run c worker | OpenCode 1.18.32, glm-5.3 (zai coding plan) | 09:24–09:39, seeded random relabelling search; wrote the three published tables |
+| Run c operator | Codex CLI 0.156.1, gpt-6-sol (high) | Launched run c, stopped an invalid background search, wrote the second referee |
+| Five audit lenses and verdict | Claude Code 2.1.280 workflow subagents, claude-opus-5-5 | 10:09–10:47, scope, equivalence, base rate, prior art and recheck; the recheck lens found $(x+x^8+x^{16})^3$ at 10:18; verdict recorded as Lab result R11 |
+| Repository lane | Claude Code 2.1.280 workflow subagent, claude-opus-5-5 | 10:54–11:11, wrote `check.py` and `gr_lift.py` and published the repository |
+
+The first counterexamples in the retained records came from an audit of the Lab's own checker, three hours before run c started.
+That audit, launched from the operator's Claude Code session, found that about a third of random relabellings of APN power maps at $m=5$ have no critical point, verified one with the frozen checker, and confirmed that its lift permutes $\mathrm{GR}(4,5)$.
+It then derived the closed form $(x+\alpha\,\mathrm{Tr}(x))^3$, where $\alpha$ is a root of $x^5+x^2+1$, and reported the conjecture false at $m=5$ and $m=7$.
+Those functions differ from the published witnesses, and the R11 entry does not cite them.
+
+Run c's worker received the problem statement, the frozen checker with its record table and claim format, the Lab's constitution and four generic skills; none of these suggested a search method.
+Its first candidates failed: an independent check refused a non-permutation and a table with differential uniformity 4.
+The operator stopped a background search that had written 2.9 GB, the worker corrected its code, and its final tables pass.
+Every assistant message in the native session reports glm-5.3; Runtime itself recorded the provider model as unknown and the run as `no-winner`, since acceptance was left to the audit.
+
+The hand-checkable witness is the recheck lens's.
+It searched $F(x)=(x^{2^i}+x^{2^j}+cx)^3$ over $\mathbb{F}_{32}$ and took the solution $(i,j,c)=(4,3,1)$.
+R11 labels this witness operator-origin; the transcript shows the lens computing it.
+Drew asked at 10:53 whether the result deserved a repository like the earlier ones, and the repository lane built it from the audit's evidence.
+
+Four Codex sessions, a checker-maintenance agent and a dependency-inventory workflow mention the result later, through relayed status, documentation, repository listings and a browser tab title.
+They contributed no finding or check and appear in the record as single quotations.
+The record omits hidden reasoning, a discarded search log, correspondence with the authors, the operator sessions outside their relevant windows, and Codex token counts.
+Run c reported 92,379 fresh input, 2,106,816 cache-read and 50,085 output tokens, reasoning included; actual dollars are unknown.
+
+<ResearchBibliography entries={[
+  { authors: 'D. Bartoli and P. Stănică', title: 'Reduced polynomial lifts of APN permutations over Galois rings and effective non-APN bounds', url: 'https://arxiv.org/abs/2608.30808v1', publication: 'arXiv:2608.30808v1, August 31, 2026. Conjectures 1 and 2, Theorems 2.1 and 2.2, Section 7.' },
+  { authors: 'S. Rønjom and A. Sandrib', title: 'On the differential uniformity of polynomials over Galois rings', url: 'https://eprint.iacr.org/2026/1393', publication: 'Cryptography and Communications (2026). IACR ePrint 2026/1393, Conjecture 2.', doi: '10.1007/s12095-026-00895-x' },
+  { title: 'APN critical-point counterexample: witness and verification code', url: 'https://github.com/drewstone/apn-critical-point-counterexample', publication: 'Public repository, commit 2ae711e. Standard-library checker, GR(4, m) lift check and three value tables; replayed October 4, 2026.' },
+  { title: 'Discovery and verification record, September 27, 2026', url: '/research/records/apn-critical-point-r11.json', publication: 'Reviewed projection of the native sessions above. Source files are identified by SHA-256 and physical line; capture is partial.' },
+]} />

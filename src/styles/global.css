@@ -1,7 +1,10 @@
+@import './controls.css';
+
 /* KaTeX fonts loaded via <link> in Base.astro layout */
 
 :root {
-  --font-body: 'CMU Serif', 'Latin Modern Roman', 'Computer Modern', 'Georgia', serif;
+  --font-body:
+    'CMU Serif', 'Latin Modern Roman', 'Computer Modern', 'Georgia', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
   --font-heading: var(--font-body);
 
@@ -43,9 +46,9 @@
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
-  --space-xl: 2.5rem;
-  --space-2xl: 4rem;
-  --space-3xl: 6rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,8 +87,16 @@
 @media (prefers-color-scheme: dark) {
   body {
     background:
-      radial-gradient(circle at 7% -10%, rgba(76, 68, 113, 0.2), transparent 35%),
-      radial-gradient(circle at 93% 8%, rgba(63, 55, 102, 0.18), transparent 38%),
+      radial-gradient(
+        circle at 7% -10%,
+        rgba(76, 68, 113, 0.2),
+        transparent 35%
+      ),
+      radial-gradient(
+        circle at 93% 8%,
+        rgba(63, 55, 102, 0.18),
+        transparent 38%
+      ),
       var(--bg);
   }
 }
@@ -98,7 +109,7 @@
 }
 
 html {
-  font-size: 19px;
+  font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -107,8 +118,16 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--fg);
-  line-height: 1.7;
+  line-height: 1.5;
   min-height: 100dvh;
+  /* Keep the footer at the bottom of the viewport on short pages. */
+  display: flex;
+  flex-direction: column;
+}
+
+body > main {
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 /* Layout */
@@ -125,15 +144,22 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-heading);
   font-weight: 700;
   line-height: 1.25;
 }
 
-h1 { font-size: 2rem; margin-bottom: var(--space-md); letter-spacing: -0.01em; }
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.01em;
+}
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-top: var(--space-2xl);
   margin-bottom: var(--space-md);
   letter-spacing: -0.005em;
@@ -147,7 +173,7 @@ h3 {
 }
 
 p {
-  margin-bottom: var(--space-md);
+  margin-bottom: 0.6rem;
 }
 
 a {
@@ -161,6 +187,10 @@ a {
 
 a:hover {
   text-decoration-color: var(--fg);
+}
+
+.prose a {
+  overflow-wrap: anywhere;
 }
 
 blockquote {
@@ -177,7 +207,8 @@ hr {
   margin: var(--space-xl) 0;
 }
 
-ul, ol {
+ul,
+ol {
   padding-left: var(--space-lg);
   margin-bottom: var(--space-md);
 }
@@ -212,8 +243,10 @@ code {
   border-radius: 2px;
 }
 
+.prose :not(pre) > code { overflow-wrap: anywhere; }
+
 /* Code blocks */
- .prose pre {
+.prose pre {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -272,24 +305,46 @@ pre code {
   }
 }
 
-/* Tables */
-table {
+/* Tables in essays and research articles */
+.prose table {
   width: 100%;
   border-collapse: collapse;
   margin: var(--space-lg) 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
-th, td {
-  padding: var(--space-sm) var(--space-md);
+.prose th,
+.prose td {
+  padding: 0.32rem 0.55rem;
   border-bottom: 1px solid var(--border);
   text-align: left;
+  vertical-align: top;
 }
 
-th {
+.prose th {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   border-bottom: 2px solid var(--fg);
+}
+
+@media (min-width: 800px) {
+  .prose table {
+    width: calc(100% + 6rem);
+    margin-left: -3rem;
+    margin-right: -3rem;
+  }
+}
+
+@media (max-width: 799px) {
+  .prose table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* KaTeX overrides */
@@ -313,7 +368,8 @@ th {
 }
 
 /* Inline prose callouts — scope to .prose so layout asides (sidebars, toc) are unaffected */
-.prose aside, .note {
+.prose aside,
+.note {
   border-left: 2px solid var(--fg);
   padding: 0 var(--space-lg);
   margin: var(--space-lg) 0;
@@ -352,7 +408,9 @@ th {
     font-size: 12pt;
   }
 
-  nav, footer, .no-print {
+  nav,
+  footer,
+  .no-print {
     display: none;
   }
 }

@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content'
 import { glob } from 'astro/loaders'
 import type { Loader } from 'astro/loaders'
+import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -39,6 +40,14 @@ const revisionSchema = z.object({
   scores: z.array(judgeScoreSchema).optional(),
 })
 
+// One local image supplies both the article figure and its generated link preview.
+const figureSchema = z.object({
+  src: z.string().regex(/^\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-][a-zA-Z0-9_.-]*\.(?:svg|png|jpe?g)$/, 'Use an SVG, PNG, or JPEG path under public/'),
+  alt: z.string().trim().min(1),
+  caption: z.string().optional(),
+  source: z.string().url().optional(),
+})
+
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
   schema: z.object({
@@ -49,6 +58,7 @@ const posts = defineCollection({
     tags: z.array(z.string()).optional(),
     draft: z.boolean().optional(),
     featured: z.boolean().optional(),
+    figure: figureSchema.optional(),
     /**
      * `original: true` marks a human-authored post. Distinct color, distinct
      * AuthorBadge treatment, excluded from /traces and /experiment, and
@@ -163,4 +173,23 @@ const traces = defineCollection({
   }),
 })
 
-export const collections = { posts, traces }
+const research = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/research' }),
+  schema: z.object({
+    title: z.string(), description: z.string(), assessed: z.coerce.date(),
+    claim: z.string(), limitation: z.string(),
+    /** Field shown in the breadcrumb and link preview. */
+    area: z.string().default('Quantum information'),
+    figure: figureSchema.optional(),
+    // A cited record exists only as a publication: manifest, review overlay and lock (research/publications).
+    record_ids: z.array(
+      z.string().regex(/^[a-z0-9][a-z0-9._-]*$/).superRefine((id, ctx) => {
+        if (!['manifest.json', 'overlay.json', 'lock.json'].every((name) => existsSync(join('research/publications', id, name))))
+          ctx.addIssue({ code: 'custom', message: `Record ${id} has no manifest, overlay and lock under research/publications/${id}` })
+      }),
+    ).default([]),
+    order: z.number(),
+  }),
+})
+
+export const collections = { posts, traces, research }

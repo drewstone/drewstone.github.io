@@ -1,0 +1,149 @@
+---
+import Base from '../../layouts/Base.astro'
+import Figure from '../../components/Figure.astro'
+import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
+import { getCollection, render } from 'astro:content'
+import { readFile } from 'node:fs/promises'
+import { parseRecord } from '@drewstone/agent-record/record'
+export async function getStaticPaths() {
+  return (await getCollection('research')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }))
+}
+const { entry } = Astro.props
+const { Content, headings } = await render(entry)
+// Each record is the checked public projection of its manifest (tools/research-records.mjs check).
+const records = await Promise.all(
+  entry.data.record_ids.map(async (id: string) =>
+    parseRecord(JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8'))),
+  ),
+)
+const { records: allIds } = JSON.parse(await readFile('research/publications/idmap.json', 'utf8'))
+const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, allIds[id] ?? {}]))
+---
+
+<Base
+  title={entry.data.title}
+  description={entry.data.description}
+  type="article"
+  wide
+>
+  <p class="breadcrumb">
+    <a href="/research">Research</a> / {entry.data.area}
+  </p>
+  <header class="research-header">
+    <h1>{entry.data.title}</h1>
+    <p class="claim">{entry.data.claim}</p>
+    <p class="date">
+      Evidence assessed {entry.data.assessed.toISOString().slice(0, 10)} ·{' '}
+      <a href="https://github.com/drewstone/drewstone.github.io/commits/main/src/content/research">
+        Page history
+      </a>
+    </p>
+  </header>
+  <div class="article-grid">
+    <nav class="contents" aria-label="On this page">
+      <ol>
+        {headings
+          .filter((h) => h.depth === 2)
+          .map((h) => (
+            <li>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        <li>
+          <a href="#references">References</a>
+        </li>
+        {records.length > 0 && (
+          <li>
+            <a href="#agent-record">Agent record</a>
+          </li>
+        )}
+      </ol>
+    </nav>
+    <article class="prose">
+      {entry.data.figure && <Figure {...entry.data.figure} />}
+      <Content />
+    </article>
+  </div>
+  {records.length > 0 && (
+    <section id="agent-record" class="record">
+      <h2>Agent record</h2>
+      <EvidenceExplorer records={records} idmap={idmap} />
+    </section>
+  )}
+</Base>
+<style>
+  .breadcrumb,
+  .date {
+    font: 0.7rem var(--font-mono);
+    color: var(--fg-muted);
+  }
+  .research-header {
+    max-width: 51rem;
+    margin: 0.7rem 0 1.1rem;
+  }
+  h1 {
+    font-size: clamp(1.55rem, 4vw, 1.9rem);
+  }
+  .claim {
+    font-size: 1rem;
+  }
+  .article-grid {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+  .contents {
+    align-self: start;
+    position: sticky;
+    top: 1.5rem;
+    font-size: 0.85rem;
+  }
+  .contents ol {
+    padding: 0;
+    list-style: none;
+  }
+  .contents li {
+    padding: 0.15rem 0;
+  }
+  .prose {
+    min-width: 0;
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(pre) {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  /* The global table breakout (-3rem each side) would cover the contents column. */
+  .prose :global(table) {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .record {
+    margin-top: 1.75rem;
+  }
+  @media (max-width: 800px) {
+    .article-grid {
+      display: block;
+    }
+    .contents {
+      position: static;
+      border-block: 1px solid var(--border);
+      padding: 0.7rem 0;
+      margin-bottom: 1rem;
+    }
+    .contents ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1rem;
+      margin: 0;
+    }
+  }
+</style>

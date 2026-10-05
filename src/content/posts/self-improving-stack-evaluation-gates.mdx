@@ -21,7 +21,10 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-45-37-367Z-gpt-6-luna-self-improving-stack-evaluation-gates-polish' }
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-evaluation-gates-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-evaluation-gates-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-evaluation-gates-publish' }
@@ -57,18 +60,20 @@ A gate is a promotion policy.
 
 Let:
 
-```text
-b = baseline system
-c = candidate system
-x = scenario
-p = agent profile cell
-z = seed or replicate id
-R = task reward or score
-C = measured cost vector
-T = trace integrity predicate
-D_search = search split
-D_holdout = held-out split
-```
+$$
+\begin{aligned}
+  b &= \text{baseline system} \\
+  c &= \text{candidate system} \\
+  x &= \text{scenario} \\
+  p &= \text{agent profile cell} \\
+  z &= \text{seed or replicate id} \\
+  R &= \text{task reward or score} \\
+  C &= \text{measured cost vector} \\
+  T &= \text{trace integrity predicate} \\
+  D_{\text{search}} &= \text{search split} \\
+  D_{\text{holdout}} &= \text{held-out split}
+\end{aligned}
+$$
 
 The gate is a function:
 
@@ -95,15 +100,11 @@ That version is readable, but still too loose. A real gate needs paired observat
 
 A leaderboard asks:
 
-```text
-Which system had the highest score?
-```
+> Which system had the highest score?
 
 A gate asks:
 
-```text
-Should this candidate replace this baseline for this product?
-```
+> Should this candidate replace this baseline for this product?
 
 Those are different questions.
 
@@ -129,26 +130,23 @@ Suppose the baseline sees one sample of tasks and the candidate sees another. A 
 
 The paired comparison fixes that:
 
-```text
-delta_i = R(c, x_i, p_i, z_i) - R(b, x_i, p_i, z_i)
-```
+$$
+\Delta_i = R(c,x_i,p_i,z_i)-R(b,x_i,p_i,z_i)
+$$
 
 where the candidate and baseline are evaluated on the same scenario, profile, and replicate. Then the question becomes:
 
-```text
-Is median(delta_i) reliably positive on held-out items?
-```
+> Is median(delta_i) reliably positive on held-out items?
 
 The median is useful because agent scores often have heavy tails. One catastrophic failure or one lucky success can distort a mean. The median asks whether the typical paired task improved.
 
 A practical promotion rule:
 
-```text
-n_pairs >= n_min
-LCB_95(median(delta)) > epsilon
-```
+$$
+n_{\text{pairs}} \ge n_{\min},\qquad \operatorname{LCB}_{95}(\operatorname{median}(\Delta)) > \epsilon
+$$
 
-`LCB_95` is the lower confidence bound. If the lower bound clears the threshold, the gate has evidence that the lift is not just random luck.
+$\operatorname{LCB}_{95}$ is the lower confidence bound. If the lower bound clears the threshold, the gate has evidence that the lift is not just random luck.
 
 This is where bootstrap confidence intervals are useful. You resample paired deltas, compute the median for each resample, and inspect the lower quantile:
 
@@ -157,9 +155,11 @@ delta = [delta_1, ..., delta_n]
 for r in 1..B:
   sample n deltas with replacement
   m_r = median(sample)
-
-LCB_95 = quantile({m_r}, 0.025)  // two-sided 95 interval
 ```
+
+$$
+\operatorname{LCB}_{95}=Q_{0.025}(m_1,\ldots,m_B)
+$$
 
 The gate promotes only when the pessimistic estimate is still good enough.
 
@@ -171,42 +171,40 @@ Gates need data the optimizer did not tune against.
 
 That gives two split families:
 
-```text
-D_search  = used to propose, mutate, rank, debug, and iterate
-D_holdout = used to decide promotion
-```
+- $D_{\text{search}}$: used to propose, mutate, rank, debug, and iterate.
+- $D_{\text{holdout}}$: used to decide promotion.
 
 The failure mode is:
 
-```text
-score(c, search) goes up
-score(c, holdout) goes down
-```
+- Search score increases.
+- Holdout score decreases.
 
 So the gate needs an overfit check:
 
-```text
-gap_c = mean_score(c, search) - mean_score(c, holdout)
-gap_b = mean_score(b, search) - mean_score(b, holdout)
+$$
+\begin{aligned}
+  \operatorname{gap}_c &= \operatorname{mean\_score}(c,\text{search})-\operatorname{mean\_score}(c,\text{holdout}) \\
+  \operatorname{gap}_b &= \operatorname{mean\_score}(b,\text{search})-\operatorname{mean\_score}(b,\text{holdout})
+\end{aligned}
+$$
 
+```text
 reject(c) if gap_c > gap_b + tau
 ```
 
-This says the candidate may look better on the search split, but it cannot be much more search-specialized than the baseline. `tau` is slack, not forgiveness. It accounts for sampling noise and legitimate split difficulty differences.
+This says the candidate may look better on the search split, but it cannot be much more search-specialized than the baseline. $\tau$ is slack, not forgiveness. It accounts for sampling noise and legitimate split difficulty differences.
 
 The gate configuration has to be fixed before the candidate is scored:
 
-```text
-scenario ids
-split ids
-metric weights
-deterministic checks
-judge versions
-budget ceilings
-minimum paired runs
-epsilon
-alpha
-```
+- scenario ids
+- split ids
+- metric weights
+- deterministic checks
+- judge versions
+- budget ceilings
+- minimum paired runs
+- `epsilon`
+- `alpha`
 
 If those change after seeing the candidate, the run is a new experiment. It is not the same gate.
 
@@ -259,14 +257,12 @@ If a patch fails tests, a judge saying "looks good" does not rescue it. If a wor
 
 Gate precedence is:
 
-```text
-deterministic verifier
-  > trace integrity
-  > backend integrity
-  > cost and latency policy
-  > calibrated semantic judge
-  > aggregate score
-```
+1. deterministic verifier
+2. trace integrity
+3. backend integrity
+4. cost and latency policy
+5. calibrated semantic judge
+6. aggregate score
 
 The order matters. A judge is allowed to score ambiguous quality. It is not allowed to override hard evidence.
 
@@ -282,35 +278,35 @@ The lesson is not "use an LLM judge and trust it."
 
 The lesson is:
 
-```text
-Use judges where deterministic verification is unavailable,
-then evaluate the judge as a measurement instrument.
-```
+- Use judges where deterministic verification is unavailable,
+- then evaluate the judge as a measurement instrument.
 
 Let:
 
-```text
-V(x, y, trace) = judge score
-R(x, y) = true product outcome
-```
+$$
+\begin{aligned}
+V(x,y,\text{trace}) &= \text{judge score} \\
+R(x,y) &= \text{true product outcome}
+\end{aligned}
+$$
 
 A judge gate needs calibration:
 
-```text
-calibration_error = E[R | V = s] - s
-```
+$$
+\operatorname{calibration\_error}=\mathbb{E}[R\mid V=s]-s
+$$
 
 and agreement:
 
-```text
-agreement = P(sign(V_a - V_b) = sign(H_a - H_b))
-```
+$$
+\operatorname{agreement}=\mathbb{P}(\operatorname{sign}(V_a-V_b)=\operatorname{sign}(H_a-H_b))
+$$
 
-where `H` is a human preference or trusted adjudicator. For ordinal rubrics, rank correlation is often more useful than raw score correlation:
+where $H$ is a human preference or trusted adjudicator. For ordinal rubrics, rank correlation is often more useful than raw score correlation:
 
-```text
-rho = Spearman(V, H)
-```
+$$
+\rho=\operatorname{Spearman}(V,H)
+$$
 
 A gate should track judge drift over time. If the judge model, rubric, prompt, or examples change, the score distribution can move even when the agent behavior does not.
 
@@ -324,19 +320,15 @@ Agent evaluation needs the same idea, but with runtime context.
 
 A scorecard cell is keyed by:
 
-```text
-cell = (scenario_id, profile_hash)
-```
+`cell = (scenario_id, profile_hash)`
 
 The profile material covers:
 
-```text
-model
-prompt hash
-harness
-source profile hash
-dimensions
-```
+- `model`
+- prompt hash
+- `harness`
+- source profile hash
+- `dimensions`
 
 Tool surface, skill surface, runtime topology, judge version, backend, and tenant or persona metadata belong in the source profile or dimensions. The important property is not where each field lives. The important property is that behaviorally different runs land in different cells.
 
@@ -356,11 +348,15 @@ This prevents aggregate masking. A candidate can improve the mean while regressi
 
 Regression detection should combine effect size and statistical confidence:
 
-```text
-delta = current - baseline
-d = CohenD(current_scores, baseline_scores)
-p = WelchT(current_scores, baseline_scores)
+$$
+\begin{aligned}
+  \Delta &= \text{current}-\text{baseline} \\
+  d &= \operatorname{CohenD}(\text{current\_scores},\text{baseline\_scores}) \\
+  p &= \operatorname{WelchT}(\text{current\_scores},\text{baseline\_scores})
+\end{aligned}
+$$
 
+```text
 regressed if delta < 0 and abs(d) >= d_min and p <= alpha
 ```
 
@@ -384,11 +380,9 @@ real_backend(record) iff
 
 Then:
 
-```text
-reject if every record is stub
-reject_or_quarantine if records are mixed real and stub
-flag if output tokens exist but cost is zero
-```
+- reject if every record is stub
+- reject_or_quarantine if records are mixed real and stub
+- flag if output tokens exist but cost is zero
 
 The mixed case matters. A partial backend failure is missing data, not agent failure. Treating missing data as bad agent behavior poisons the optimizer. It teaches the system to "fix" a candidate that was never actually evaluated.
 
@@ -396,15 +390,11 @@ The mixed case matters. A partial backend failure is missing data, not agent fai
 
 For agents, the central question is often not:
 
-```text
-Did the output look fluent?
-```
+> Did the output look fluent?
 
 It is:
 
-```text
-Did the system do what the user asked?
-```
+> Did the system do what the user asked?
 
 That needs an intent-match layer. The evaluator should compare user request, available context, trace, and final artifact. It should distinguish:
 
@@ -426,20 +416,18 @@ A failure taxonomy tells the next optimizer where to search.
 
 Examples:
 
-```text
-reasoning_error
-tool_selection_error
-tool_argument_error
-bad_retrieval
-missing_codebase_context
-missing_credentials
-integration_auth_expired
-budget_exceeded
-format_drift
-insufficient_evidence
-ambiguous_user_intent
-knowledge_readiness_blocked
-```
+- `reasoning_error`
+- `tool_selection_error`
+- `tool_argument_error`
+- `bad_retrieval`
+- `missing_codebase_context`
+- `missing_credentials`
+- `integration_auth_expired`
+- `budget_exceeded`
+- `format_drift`
+- `insufficient_evidence`
+- `ambiguous_user_intent`
+- `knowledge_readiness_blocked`
 
 The taxonomy turns eval into diagnosis. A prompt optimizer can respond to instruction-following failures. A skill optimizer can respond to repeated procedure failures. A runtime topology optimizer can respond to tool selection, budget, or missing-context failures. A knowledge system can respond to bad retrieval or stale external data.
 
@@ -451,34 +439,19 @@ The release gate is broader than the held-out gate.
 
 The held-out gate answers:
 
-```text
-Did candidate beat baseline on held-out paired evidence?
-```
+> Did candidate beat baseline on held-out paired evidence?
 
 The release confidence layer asks:
 
-```text
-Is there enough evidence to ship this change?
-```
+> Is there enough evidence to ship this change?
 
 A useful release confidence scorecard has five axes:
 
-```text
-corpus:
-  scenarios, split coverage, manifest integrity
-
-quality:
-  pass rate, mean score, deterministic verifier status
-
-generalization:
-  holdout runs, search-holdout gap, paired gate decision
-
-diagnostics:
-  failure rows have actionable side information
-
-efficiency:
-  mean cost, p95 wall time, budget compliance
-```
+- **Corpus:** scenarios, split coverage, manifest integrity
+- **Quality:** pass rate, mean score, deterministic verifier status
+- **Generalization:** holdout runs, search-holdout gap, paired gate decision
+- **Diagnostics:** failure rows have actionable side information
+- **Efficiency:** mean cost, p95 wall time, budget compliance
 
 The important phrase is fail closed. Missing corpus, missing holdout, missing traces, missing backend evidence, or missing diagnostics is not neutral. It is a reason to reject promotion until the evidence exists.
 
@@ -500,10 +473,8 @@ The release gate composes evidence. It does not average away missing evidence.
 
 Local package audit on June 6, 2026:
 
-```text
-@tangle-network/agent-eval@0.34.1
-@tangle-network/agent-runtime@0.26.0
-```
+- `@tangle-network/agent-eval@0.34.1`
+- `@tangle-network/agent-runtime@0.26.0`
 
 `agent-runtime` spends compute. `agent-eval` decides whether the spend earned promotion.
 
@@ -531,10 +502,8 @@ The relevant `agent-runtime` surface:
 
 The boundary is clean:
 
-```text
-runtime creates candidate behavior
-eval determines whether behavior can replace the baseline
-```
+- runtime creates candidate behavior
+- eval determines whether behavior can replace the baseline
 
 ## Gate Failure Modes
 
@@ -582,19 +551,17 @@ The gate governs.
 
 A self-improving agent system needs a gate that can answer:
 
-```text
-What changed?
-Which baseline did it beat?
-Which held-out tasks did it beat it on?
-How much uncertainty remains?
-Which profiles regressed?
-Which deterministic checks failed?
-Which judge scored it?
-Was the backend real?
-What did it cost?
-What failure modes remain?
-Can the trace prove all of that?
-```
+- What changed?
+- Which baseline did it beat?
+- Which held-out tasks did it beat it on?
+- How much uncertainty remains?
+- Which profiles regressed?
+- Which deterministic checks failed?
+- Which judge scored it?
+- Was the backend real?
+- What did it cost?
+- What failure modes remain?
+- Can the trace prove all of that?
 
 If the answer is missing, the candidate stays a candidate.
 

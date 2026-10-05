@@ -1,0 +1,76 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "fc-audit-smoke-a",
+  "title": "Invalid original witness, August 13",
+  "assignment": {
+    "summary": {
+      "objective": "Build and validate an entropy-inequality certification instrument on known-answer controls before a larger campaign.",
+      "suppliedKnowledge": "The paper and equation number were supplied. The task explicitly prohibited reading the prior BCWW answer.",
+      "deliverables": "Refute BCWW and a second known-false candidate; retain proven N=5 holographic facets; state scope; produce a machine-readable transcription schema.",
+      "constraints": "Exact rational certificates and cold checks were required. All four stated gates were meant to pass; the later correction invalidated the named BCWW atom set."
+    },
+    "source": {
+      "path": "run-input.json",
+      "sha256": "94265d771bf8987ce56b3acc07e6bc8217acffdcece5583f8c060c3b75bdf487"
+    }
+  },
+  "nodes": {
+    "fc-audit-smoke-a": {
+      "label": "root",
+      "role": "Director"
+    }
+  },
+  "defaults": {
+    "metadata": "public",
+    "bodies": "withheld"
+  },
+  "events": {},
+  "findings": {},
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    },
+    {
+      "class": "unrelated-memory"
+    },
+    {
+      "class": "system-reminder"
+    },
+    {
+      "class": "encrypted-message"
+    },
+    {
+      "event": "cd22154fea54",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "358d74cb4c1c",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "7e488dbbded7",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "08f90cd0bb2c",
+      "reason": "unreviewed finding"
+    },
+    {
+      "event": "daae0e541691",
+      "reason": "unreviewed finding"
+    }
+  ],
+  "redactionClasses": [
+    "credential",
+    "third-party-email",
+    "private-path",
+    "nonce",
+    "account-name",
+    "ip-address"
+  ],
+  "coverageText": "No session transcripts were retained.",
+  "reviewer": {
+    "by": "drewstone",
+    "at": "2026-10-02"
+  }
+}

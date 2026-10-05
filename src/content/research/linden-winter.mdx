@@ -1,0 +1,131 @@
+---
+title: 'A family refuting Linden–Winter Conjecture 6'
+description: 'A six-atom classical family with two exact conditional-independence identities and an unbounded entropy ratio.'
+assessed: '2026-10-02'
+claim: 'A six-atom family defeats every finite positive choice of coefficients in the conjectured linear relaxation.'
+limitation: 'The constrained Linden–Winter theorem survives. The public note is not presented as peer-reviewed, and the discovery history remains partial.'
+record_ids: ['q-q36-lw6-unbounded-ladder']
+order: 3
+---
+import WitnessExplorer from '../../components/WitnessExplorer.astro'
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+A six-atom classical family refutes Conjecture 6 of Linden and Winter [[1]](#ref-1): no finite positive coefficient triple makes their proposed linear relaxation valid for all four-party quantum states.
+Their constrained theorem remains valid.
+
+## Conjecture
+
+Linden and Winter proved a four-party entropy inequality under three linear entropy constraints.
+Conjecture 6 asks whether positive constants $k_1,k_2,k_3$ can make
+
+$$
+\begin{aligned}
+f_k={}&k_1 I(A;C\mid B)+k_2 I(C;B\mid A)\\
+&+k_3 I(A;B\mid D)+I(C;D)-I(C;AB)\geq0
+\end{aligned}
+$$
+
+hold for every four-party quantum state.
+Here $I(X;Y\mid Z)=H(XZ)+H(YZ)-H(Z)-H(XYZ)$ denotes conditional mutual information.
+Classical distributions embed as diagonal quantum states, so a classical family suffices.
+
+## Six-atom family
+
+For an integer $L\geq2$, normalize these weights in $(A,B,C,D)$ order:
+
+| Atom | Integer weight |
+| --- | --- |
+| $0000$ | $2\cdot10^{4L+3}$ |
+| $0010$ | $27\cdot10^{4L+3}-27\cdot10^{3L+3}$ |
+| $1101$ | $2\cdot10^{4L}$ |
+| $1111$ | $27\cdot10^{4L}$ |
+| $0101$ | $2\cdot10^{L+3}$ |
+| $0110$ | $27\cdot10^{L+3}$ |
+
+Given $D=0$, $A$ is constant; given $D=1$, $B$ is constant.
+Thus $I(A;B\mid D)=0$.
+For $B=0$, $A$ is constant; for $B=1$, the identity
+
+$$
+w(1101)w(0110)=w(1111)w(0101)=54\cdot10^{5L+3}
+$$
+
+establishes conditional independence of $A$ and $C$, hence $I(A;C\mid B)=0$.
+Writing $y_L=I(C;B\mid A)$ and $e_L=I(C;D)-I(C;AB)$ leaves $f_k=k_2y_L+e_L$.
+The values of $k_1$ and $k_3$ have no effect on this family.
+
+## Unbounded ratio
+
+Set $\delta=10^{-L}$.
+The equivalent weights are $2,27(1-\delta),2/1000,27/1000,2\delta^3,27\delta^3$, with sum $Z=29029/1000-27\delta+29\delta^3$.
+Using natural logarithms, define
+
+$$
+\Phi(a,b)=(a+b)\ln(a+b)-a\ln a-b\ln b.
+$$
+
+Conditional-entropy grouping gives
+
+$$
+\begin{aligned}
+Zy_L={}&\Phi(2+2\delta^3,27(1-\delta)+27\delta^3)\\
+&-\Phi(2,27(1-\delta))-\delta^3\Phi(2,27),\\[3pt]
+Ze_L={}&\Phi(2,27(1-\delta))+\Phi(2/1000,27/1000)\\
+&+\delta^3\Phi(2,27)-\Phi(2,27(1-\delta)+27\delta^3)\\
+&-\Phi(2/1000+2\delta^3,27/1000).
+\end{aligned}
+$$
+
+All arguments of $\Phi$ stay positive near zero, making these expressions analytic there.
+Their Taylor expansions are
+
+$$
+y_L=\frac{27000}{841841}\delta^5+O(\delta^6),\qquad
+ e_L=-\frac{54000}{841841}\delta^4+O(\delta^5).
+$$
+
+The symbolic derivation receipt [[3]](#ref-3) records the lower-order cancellations and exact coefficients; they can also be checked by differentiating the displayed expressions.
+Therefore
+
+$$
+R_L=-e_L/y_L=2/\delta+O(1)\longrightarrow\infty.
+$$
+
+For every finite positive $k_2$, choose $L$ with $R_L>k_2$ to obtain $f_k<0$.
+Analyticity and the leading coefficients establish the universal statement; the finite certificates below verify particular members of the family.
+
+<WitnessExplorer kind="lw6" />
+
+## Verification and scope
+
+The public note and standard-library interval verifier [[2]](#ref-2) check both exact structural identities, entropy signs, ratio bounds for $L=2,\ldots,16$, and explicit coefficient examples.
+The default finite certificates replayed successfully on October 2, 2026.
+The advertised arbitrary-coefficient invocation had a Python conversion defect; its merged correction [[4]](#ref-4) was replayed against the published code and certifies the supplied coefficient triple.
+
+The family has $I(C;B\mid A)>0$, so it refutes the linear relaxation while preserving the original constrained theorem.
+It does not settle the existence of other unconstrained quantum entropy inequalities.
+The retained record includes an operator-supplied copy of correspondence reporting Andreas Winter's confirmation; the original mailbox was not independently inspected.
+No peer review or publication acceptance is asserted.
+
+## Attribution and retained attempt
+
+The preserved constructor and off-diagonal child assignments supplied this family as cited prior knowledge [[5]](#ref-5).
+The saved findings certify and analyze it; they do not identify its first discovery.
+The journal records a director and five child attempts, all five ending down.
+Four Pi session files survive, including short or incomplete sessions.
+The director configuration declares OpenCode with GLM-5.2; child configurations include Pi and Claude Code.
+The Pi sessions declare GLM-5.2, but their retained assistant records end in errors, leaving the served model unverified.
+
+The director transcript is missing.
+The constructor and off-diagonal children are joined to their Pi sessions by exact task digest.
+The other two Pi sessions hold only a session header and remain unjoined.
+Complete attribution of each calculation is therefore unavailable.
+A recorded “winner” label does not establish that each child finished, that the proof was independent, or that the archive is complete.
+
+<ResearchBibliography entries={[
+  { authors: 'N. Linden and A. Winter', title: 'A new inequality for the von Neumann entropy', url: 'https://arxiv.org/abs/quant-ph/0406162v1', publication: 'Commun. Math. Phys. 259 (2005), 129–138. arXiv:quant-ph/0406162v1, Conjecture 6.', doi: '10.1007/s00220-005-1361-2' },
+  { title: 'Linden–Winter Conjecture 6 counterexample', url: 'https://github.com/drewstone/lw6-counterexample', publication: 'Public note, six-atom family, and dependency-free interval verifier. The retained attempt does not establish first discovery.' },
+  { title: 'Exact asymptotic derivation receipt', url: '/research/lw6-asymptotic-receipt.json', publication: 'Rational Taylor coefficients and lower-order cancellations, recomputed October 2, 2026. A symbolic calculation receipt, not a kernel-checked proof certificate.' },
+  { title: 'Arbitrary-coefficient verifier correction', url: 'https://github.com/drewstone/lw6-counterexample/pull/1', publication: 'Merged October 2, 2026. Published command replayed successfully after correction.' },
+  { title: 'Linden–Winter family verification pursuit', url: '/research/records/q-q36-lw6-unbounded-ladder.json', publication: 'Retained journal, native-session metadata, and finding projection, August 16, 2026. Partial capture; constructor and off-diagonal sessions joined by task digest.' },
+]} />

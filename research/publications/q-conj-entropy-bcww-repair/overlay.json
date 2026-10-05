@@ -1,0 +1,78 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "q-conj-entropy-bcww-repair",
+  "title": "BCWW repair pursuit, August 30",
+  "assignment": {
+    "summary": {
+      "objective": "Find or exclude repairs to the already-refuted BCWW candidate within a bounded grammar.",
+      "suppliedKnowledge": "The corrected classical witness, GHZ witness, and earlier no-go findings were supplied.",
+      "deliverables": "Check prior art first; then exact witness screening, a copy-lemma proof attempt, or a bounded conjecture with a falsifier battery.",
+      "constraints": "The task forbade re-verifying the settled BCWW refutation. It named an OpenCode director, four roles, a $25 budget, and small storage. The $25 is a budget, not measured spend."
+    },
+    "source": {
+      "path": "run-input.json",
+      "sha256": "f26ce94cf8498b91feb06e2214a75ef9176f626e954917f78615d42f4e995973"
+    }
+  },
+  "nodes": {
+    "q-conj-entropy-bcww-repair": {
+      "label": "root",
+      "role": "Director"
+    },
+    "q-conj-entropy-bcww-repair:s0": {
+      "label": "gate: prior-art sweep for published BCWW 4.6 repairs",
+      "role": "Worker"
+    },
+    "q-conj-entropy-bcww-repair:s1": {
+      "label": "gate retry: prior-art sweep (crash-safe, out/ only)",
+      "role": "Worker"
+    },
+    "finding:q-conj-entropy-bcww-repair": {
+      "label": "Recorded findings",
+      "role": "Findings"
+    }
+  },
+  "defaults": {
+    "metadata": "public",
+    "bodies": "withheld"
+  },
+  "events": {},
+  "findings": {
+    "fc0e64b7a388": {
+      "sourceSha256": "fc0e64b7a3888d9f0fbc136fcbe047f30465f5ed6e06abb5a6ef951cfdd2a6f3",
+      "assessment": "The agent's claim; the record contains no independent check of it.",
+      "attribution": "Run-level only; individual native session unresolved"
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    },
+    {
+      "class": "unrelated-memory"
+    },
+    {
+      "class": "system-reminder"
+    },
+    {
+      "class": "encrypted-message"
+    },
+    {
+      "event": "a27bf1368980",
+      "reason": "unreviewed finding"
+    }
+  ],
+  "redactionClasses": [
+    "credential",
+    "third-party-email",
+    "private-path",
+    "nonce",
+    "account-name",
+    "ip-address"
+  ],
+  "coverageText": "No session transcripts were retained.",
+  "reviewer": {
+    "by": "drewstone",
+    "at": "2026-10-02"
+  }
+}

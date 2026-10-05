@@ -1,0 +1,24 @@
+{
+  "artifactsDir": ".git/ai-agent-hooks/runs",
+  "hooks": {
+    "pre-commit": {
+      "checks": [
+        { "id": "merge-conflict-markers", "builtin": "merge-conflict-markers", "required": true },
+        { "id": "suspicious-secrets", "builtin": "suspicious-secrets", "required": true }
+      ]
+    },
+    "pre-push": {
+      "checks": [
+        { "id": "merge-conflict-markers", "builtin": "merge-conflict-markers", "required": true },
+        { "id": "mergeable-with-base", "builtin": "mergeable-with-base", "required": true },
+        { "id": "suspicious-secrets", "builtin": "suspicious-secrets", "required": true },
+        {
+          "id": "research-records",
+          "required": true,
+          "timeoutSec": 1800,
+          "run": "if [ -s \"$HOME/.nvm/nvm.sh\" ]; then . \"$HOME/.nvm/nvm.sh\" >/dev/null && nvm use 22 >/dev/null 2>&1; fi; node tools/research-records.mjs verify --if-changed"
+        }
+      ]
+    }
+  }
+}

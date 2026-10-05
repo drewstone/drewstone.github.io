@@ -21,7 +21,10 @@ authors:
   - { model: 'gpt-5.5', role: 'publish', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'rewrite', date: 2026-06-05 }
   - { model: 'gpt-5.5', role: 'polish', date: 2026-06-05 }
+  - { model: 'gpt-6-luna', role: 'polish', date: 2026-10-02 }
 revisions:
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Replaced prose code blocks with lists, equations, and compact flows. Audited recovery: selected public tool inputs from the October 2 editing session, not the complete rollout. Parent integration corrected MDX, display math, and responsive layout; full native records remain private.', commit: '99791a3a1484aedf2f2cda6d56b3421b5c354f0a', trace_id: '2026-10-02T23-45-57-880Z-gpt-6-luna-self-improving-stack-post-training-polish' }
+  - { date: 2026-10-02, model: 'gpt-6-luna', role: 'polish', note: 'Rendered existing equations with KaTeX. Audited recovery from the Luna editing session: selected public messages and tool-input previews, not the complete rollout. Parent integration review corrected prime notation.', commit: 'a68bc06ef65efe0e41ede1d33205cda3a494f38e', trace_id: '2026-10-02T22-42-45-776Z-gpt-6-luna-self-improving-stack-post-training-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'polish', note: 'let''s track a section for each of these map items, and eventually a full article too, but i want a directory we can use to checkpoint our kn · 37 asst turns · 23 tool calls', commit: 'fb31e1c764d9711386702764aaf1c2c5cf9886aa', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-polish' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'rewrite', note: '60/40 voice rewrite: grounded openings in concrete agent-work failures, removed scaffold headings, added falsification pressure, and tightened paragraph rhythm while preserving source trails.', commit: 'd5bba9f0c633e5d2794e9b8e062ab48b15bbd1f5', trace_id: '2026-06-05T12-35-48-868Z-gpt-5.5-self-improving-stack-post-training-rewrite' }
   - { date: 2026-06-05, model: 'gpt-5.5', role: 'publish', note: 'Published the self-improving stack series at Drew''s request, marking human takeover complete and flipping the post live.', trace_id: '2026-06-05T12-08-35-196Z-gpt-5.5-self-improving-stack-post-training-publish' }
@@ -45,24 +48,20 @@ supporting_trace_ids:
   - '2026-06-05T12-08-35-196Z-gpt-5.5'
 ---
 
+import Steps from '../../components/Steps.astro'
+
+
 Most self-improving agent systems that product teams can actually ship do not change model weights. They change prompts, skills, tools, traces, memory, runtime topology, harness code, and promotion gates. That is external-state self-improvement: legible, reversible, and usually cheap enough to iterate.
 
 Post-training changes the model itself, which means it changes the power level and the burden of proof.
 
 The loop looks familiar:
 
-```text
-collect behavior
-score behavior
-construct training signal
-update candidate
-evaluate candidate
-promote or reject
-```
+<Steps layout="flow" items={[{title: "Collect behavior"}, {title: "Score behavior"}, {title: "Construct training signal"}, {title: "Update candidate"}, {title: "Evaluate candidate"}, {title: "Promote or reject"}]} />
 
-But the mutable surface is no longer a prompt file or a worktree. It is `theta`, the model parameters, or some parameterized adapter attached to the model.
+But the mutable surface is no longer a prompt file or a worktree. It is $\theta$, the model parameters, or some parameterized adapter attached to the model.
 
-Once `theta` moves, the boundary changes. The behavior becomes harder to inspect, harder to patch locally, harder to roll back partially, and harder to explain from a single trace. It can also generalize better than any prompt edit when the signal is strong enough.
+Once $\theta$ moves, the boundary changes. The behavior becomes harder to inspect, harder to patch locally, harder to roll back partially, and harder to explain from a single trace. It can also generalize better than any prompt edit when the signal is strong enough.
 
 That is why this layer deserves separate treatment.
 
@@ -70,29 +69,29 @@ That is why this layer deserves separate treatment.
 
 The previous posts treated the model as mostly fixed:
 
-```text
-y = model_theta(prompt, tools, memory, trace_context)
-```
+$$
+y=\operatorname{model}_{\theta}(\text{prompt},\text{tools},\text{memory},\text{trace\_context})
+$$
 
-External optimization changed everything around `theta`:
+External optimization changed everything around $\theta$:
 
-```text
-prompt
-skill
-retrieval corpus
-tool description
-driver topology
-verifier
-selector
-harness
-```
+- prompt
+- skill
+- retrieval corpus
+- tool description
+- driver topology
+- verifier
+- selector
+- harness
 
-Post-training changes `theta`, or a learned delta attached to it:
+Post-training changes $\theta$, or a learned delta attached to it:
 
-```text
-theta_{t+1} = Update(theta_t, data, objective)
-theta' = theta_base + Delta_adapter
-```
+$$
+\begin{aligned}
+  \theta_{t+1}&=\operatorname{Update}(\theta_t,\text{data},\text{objective}) \\
+  \theta'&=\theta_{\text{base}}+\Delta_{\text{adapter}}
+\end{aligned}
+$$
 
 That small notation hides the whole difference.
 
@@ -129,15 +128,15 @@ Supervised fine-tuning is the simplest objective.
 
 Given demonstrations:
 
-```text
-D = {(x_i, y_i)}
-```
+$$
+D=\{(x_i,y_i)\}
+$$
 
 train the model to put probability mass on the demonstrated output:
 
-```text
-L_SFT(theta) = - sum_i log pi_theta(y_i | x_i)
-```
+$$
+\mathcal{L}_{\text{SFT}}(\theta)=-\sum_i\log\pi_\theta(y_i\mid x_i)
+$$
 
 This is powerful when demonstrations are clean and the task distribution is stable.
 
@@ -145,12 +144,10 @@ It is weak when the demonstration only shows the final artifact but not the deci
 
 For agents, SFT is often best viewed as initialization:
 
-```text
-teach the format
-teach the domain language
-teach basic tool conventions
-teach common interaction patterns
-```
+- teach the format
+- teach the domain language
+- teach basic tool conventions
+- teach common interaction patterns
 
 It is not a full self-improvement loop unless the system keeps collecting new demonstrations, filtering them, validating them, and retraining.
 
@@ -160,36 +157,27 @@ RLHF adds a preference model.
 
 The canonical shape is:
 
-```text
-1. collect demonstrations
-2. train an SFT policy
-3. collect preference comparisons
-4. train reward model r_phi(x, y)
-5. optimize pi_theta against r_phi with a KL penalty
-```
+<Steps layout="flow" items={[{title: "Collect demonstrations"}, {title: "Train an SFT policy"}, {title: "Collect preference comparisons"}, {title: "Train reward model r_phi(x, y)"}, {title: "Optimize pi_theta against r_phi with a KL penalty"}]} />
 
 Preference data looks like:
 
-```text
-(x, y_w, y_l)
-```
+$$
+(x,y_w,y_l)
+$$
 
-where `y_w` is preferred over `y_l`.
+where $y_w$ is preferred over $y_l$.
 
 A common reward-model loss is:
 
-```text
-L_RM(phi) =
-  - log sigma(r_phi(x, y_w) - r_phi(x, y_l))
-```
+$$
+\mathcal{L}_{\text{RM}}(\phi)=-\log\sigma(r_\phi(x,y_w)-r_\phi(x,y_l))
+$$
 
 Then the policy objective becomes:
 
-```text
-max_theta E_{y ~ pi_theta(. | x)}[
-  r_phi(x, y) - beta KL(pi_theta(. | x) || pi_ref(. | x))
-]
-```
+$$
+\max_\theta\mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)}\left[r_\phi(x,y)-\beta\,D_{\mathrm{KL}}(\pi_\theta(\cdot\mid x)\Vert\pi_{\mathrm{ref}}(\cdot\mid x))\right]
+$$
 
 The reward says "move toward preferred behavior." The KL term says "do not drift too far from the reference policy."
 
@@ -203,18 +191,20 @@ The gate has to test the trained policy on held-out tasks, adversarial probes, c
 
 PPO is the familiar online optimizer in many RLHF pipelines. It samples from the current policy, scores the samples, estimates an advantage, and updates the policy while clipping large policy-ratio moves:
 
-```text
-rho = pi_theta(y | x) / pi_old(y | x)
-L_PPO(theta) = E[min(rho A, clip(rho, 1 - eps, 1 + eps) A)]
-```
+$$
+\begin{aligned}
+  \rho&=\frac{\pi_\theta(y\mid x)}{\pi_{\text{old}}(y\mid x)} \\
+  \mathcal{L}_{\text{PPO}}(\theta)&=\mathbb{E}[\min(\rho A,\operatorname{clip}(\rho,1-\epsilon,1+\epsilon)A)]
+\end{aligned}
+$$
 
 The clipped objective is an engineering answer to a stability problem: if the policy moves too far in one update, the reward model can be exploited and the policy can drift.
 
 GRPO-style training changes the advantage estimate. Instead of training a separate critic to estimate value, sample a group of outputs for the same prompt and normalize rewards inside the group:
 
-```text
-A_i = (r_i - mean(r_1, ..., r_G)) / (std(r_1, ..., r_G) + eps)
-```
+$$
+A_i=\frac{r_i-\operatorname{mean}(r_1,\ldots,r_G)}{\operatorname{std}(r_1,\ldots,r_G)+\epsilon}
+$$
 
 That group-relative signal is why GRPO has become prominent in reasoning and tool-use RL discussions. It is not a free lunch. The reward still has to be meaningful, the group has to contain useful variation, and the heldout gate still has to catch reward hacking.
 
@@ -232,14 +222,12 @@ If the evaluator has the same blind spot as the policy, the loop can amplify it.
 
 For agent systems, RLAIF should be treated like any other judge channel:
 
-```text
-pin the judge
-calibrate against human labels
-test inter-rater reliability
-track judge drift
-separate judge reward from deterministic verifiers
-keep heldout tasks hidden
-```
+- pin the judge
+- calibrate against human labels
+- test inter-rater reliability
+- track judge drift
+- separate judge reward from deterministic verifiers
+- keep heldout tasks hidden
 
 AI feedback is not automatically objective feedback.
 
@@ -247,17 +235,11 @@ AI feedback is not automatically objective feedback.
 
 Direct Preference Optimization removes the explicit reward-model and online-RL stages.
 
-For a preferred output `y_w` and rejected output `y_l`, DPO optimizes a classification-style objective over log-probability differences:
+For a preferred output $y_w$ and rejected output $y_l$, DPO optimizes a classification-style objective over log-probability differences:
 
-```text
-L_DPO(theta) =
-  - log sigma(
-      beta [
-        log pi_theta(y_w | x) - log pi_ref(y_w | x)
-        - log pi_theta(y_l | x) + log pi_ref(y_l | x)
-      ]
-    )
-```
+$$
+\mathcal{L}_{\text{DPO}}(\theta)=-\log\sigma\!\left(\beta\left[\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\right]\right)
+$$
 
 The reference policy still matters. The preference pair still matters. The quality of the pair dataset becomes the training signal.
 
@@ -271,10 +253,7 @@ Distillation transfers behavior from one model to another.
 
 The usual shape is:
 
-```text
-teacher model produces y_teacher
-student model trains on (x, y_teacher)
-```
+<Steps layout="flow" items={[{title: "Teacher model produces y_teacher"}, {title: "Student model trains on (x, y_teacher)"}]} />
 
 That can reduce cost, latency, or deployment size. It can also import the teacher's blind spots, refusals, shortcuts, and style artifacts.
 
@@ -290,33 +269,31 @@ Process supervision scores intermediate steps.
 
 If an agent run is:
 
-```text
-tau = (x, a_1, o_1, a_2, o_2, ..., y)
-```
+$$
+\tau=(x,a_1,o_1,a_2,o_2,\ldots,y)
+$$
 
 then outcome reward is:
 
-```text
-R(tau)
-```
+$$
+R(\tau)
+$$
 
 Process reward is:
 
-```text
-R_process(tau) = sum_t gamma^t r_t(a_t, o_t, state_t)
-```
+$$
+R_{\text{process}}(\tau)=\sum_t\gamma^t r_t(a_t,o_t,\text{state}_t)
+$$
 
 The 2023 "Let's Verify Step by Step" result made this concrete for math reasoning: step-level feedback can outperform final-answer-only feedback when training reward models for hard reasoning.
 
 For agents, process supervision is even more natural. The system already has trace spans:
 
-```text
-planner chose wrong tool
-retrieval returned stale context
-tool argument was invalid
-verifier caught missing artifact
-retry repeated the same failed action
-```
+- planner chose wrong tool
+- retrieval returned stale context
+- tool argument was invalid
+- verifier caught missing artifact
+- retry repeated the same failed action
 
 Those are process labels.
 
@@ -328,13 +305,15 @@ The strongest RL signals are not vibes. They are checks.
 
 For code, math, theorem proving, schemas, and tool tasks, some rewards are decidable:
 
-```text
-r = 1[tests_pass]
-r = 1[schema_valid]
-r = 1[proof_checks]
-r = 1[compile_succeeds]
-r = fraction_of_assertions_passed
-```
+$$
+\begin{aligned}
+r &= \mathbb{1}[\text{tests pass}] \\
+r &= \mathbb{1}[\text{schema valid}] \\
+r &= \mathbb{1}[\text{proof checks pass}] \\
+r &= \mathbb{1}[\text{compilation succeeds}] \\
+r &= \text{fraction of assertions passed}
+\end{aligned}
+$$
 
 This is why tool-use and coding RL are attractive. The environment can score behavior without a subjective judge for at least part of the task.
 
@@ -344,21 +323,17 @@ The lesson is not "RL fixes reasoning."
 
 The lesson is:
 
-```text
-RL becomes much more credible when the reward is verifiable.
-```
+> RL becomes much more credible when the reward is verifiable.
 
 For product agents, that means the best training signals often come from verifiers already used in the harness:
 
-```text
-tests
-typechecks
-schema validation
-permission checks
-policy checks
-live smoke tests
-human acceptance events
-```
+- tests
+- typechecks
+- schema validation
+- permission checks
+- policy checks
+- live smoke tests
+- human acceptance events
 
 ## Frontier Tuning
 
@@ -366,11 +341,9 @@ Microsoft's June 2, 2026 Frontier Tuning announcement is the current commercial 
 
 Microsoft describes Frontier Tuning as applying reinforcement learning inside a customer's compliance boundary using the customer's data, processes, and conventions. Their developer blog says the system has three parts:
 
-```text
-managed reinforcement learning environment
-customer workflow and domain inputs
-tuned output models, skills, and harness
-```
+- managed reinforcement learning environment
+- customer workflow and domain inputs
+- tuned output models, skills, and harness
 
 It also says the RLE is used for both post-training and inference: during training it learns from workflows, tool usage, and eval signals; at inference it explores multiple frontier and fine-tuned models across turns to find stronger candidate paths before returning an answer.
 
@@ -378,24 +351,20 @@ That is not just fine-tuning a prompt.
 
 It is an environment-level adaptation loop:
 
-```text
-enterprise workflows -> RLE -> model updates
-enterprise traces -> eval signals -> skill and harness updates
-enterprise data controls -> compliance boundary -> access-scoped model behavior
-```
+- **enterprise workflows** → RLE -> model updates
+- **enterprise traces** → eval signals -> skill and harness updates
+- **enterprise data controls** → compliance boundary -> access-scoped model behavior
 
 Microsoft's MAI announcement frames the same direction as a "hill-climbing machine" and explicitly points to traces of real work as valuable training data: steps, decisions, and actions that define how tasks get done inside an organization.
 
 That maps directly onto the stack:
 
-```text
-traces become training data
-evals become reward
-tools become environment
-skills become reusable policy
-harness becomes runtime substrate
-weights become another mutable surface
-```
+- traces become training data
+- evals become reward
+- tools become environment
+- skills become reusable policy
+- harness becomes runtime substrate
+- weights become another mutable surface
 
 The difference is access. Most product teams can ship the first five layers. Frontier labs and large enterprise tuning systems can also move weights.
 
@@ -405,27 +374,23 @@ External-state loops are weaker but auditable.
 
 They can edit:
 
-```text
-prompt files
-skill files
-knowledge bases
-retrieval corpora
-tool manifests
-runtime drivers
-harness code
-eval gates
-```
+- prompt files
+- skill files
+- knowledge bases
+- retrieval corpora
+- tool manifests
+- runtime drivers
+- harness code
+- eval gates
 
 They are easy to inspect:
 
-```text
-git diff
-trace replay
-scorecard diff
-rollback commit
-feature flag
-heldout gate
-```
+- git diff
+- trace replay
+- scorecard diff
+- rollback commit
+- feature flag
+- heldout gate
 
 Weight-level loops are stronger but less locally inspectable.
 
@@ -433,11 +398,9 @@ They can change behavior in ways no prompt diff shows. A model may become better
 
 The practical rule:
 
-```text
-Keep behavior external when auditability matters more than compression.
-Move behavior into weights when the signal is strong, repeated, privacy-safe,
-and valuable enough to justify harder inspection.
-```
+- Keep behavior external when auditability matters more than compression.
+- Move behavior into weights when the signal is strong, repeated, privacy-safe,
+- and valuable enough to justify harder inspection.
 
 Not every successful trace should become a gradient update.
 
@@ -447,31 +410,27 @@ Model training changes the risk surface because training data is not just contex
 
 A training-ready record needs:
 
-```text
-source provenance
-license and ownership
-privacy classification
-access boundary
-split tag
-deduplication hash
-synthetic-data marker
-reward source
-verifier version
-judge version
-contamination status
-```
+- source provenance
+- license and ownership
+- privacy classification
+- access boundary
+- split tag
+- deduplication hash
+- synthetic-data marker
+- reward source
+- verifier version
+- judge version
+- contamination status
 
 Generated data is especially tricky. Synthetic examples can help, but recursive training on model outputs can collapse diversity and accumulate errors. The 2024 Nature model-collapse paper shows the failure mode directly: repeated training on generated data can make models forget low-probability events and drift into their own distorted distribution.
 
 For self-improving agents, this means:
 
-```text
-do not train blindly on your own outputs
-do not mix search traces into holdout
-do not treat judge rationales as ground truth
-do not backpropagate private data outside its boundary
-do not let synthetic data lose its label
-```
+- do not train blindly on your own outputs
+- do not mix search traces into holdout
+- do not treat judge rationales as ground truth
+- do not backpropagate private data outside its boundary
+- do not let synthetic data lose its label
 
 The post-training layer needs a data firewall, not just a dataset.
 
@@ -483,56 +442,48 @@ They produce the artifacts a training system would need.
 
 Local source audit on June 6, 2026:
 
-```text
-@tangle-network/agent-eval package source: 0.34.1
-@tangle-network/agent-runtime package source: 0.26.0
-```
+- `@tangle-network/agent-eval package source`: 0.34.1
+- `@tangle-network/agent-runtime package source`: 0.26.0
 
 `agent-eval` provides the bridge from eval campaigns to training data:
 
-```text
-RunRecord
-trialsToRunRecords
-verificationReportToRunRecord
-extractPreferences
-extractVerifiableReward
-extractVerifiableRewardsFromRecords
-extractStepRewards
-prmTrainingPairs
-exportRewardModel
-off-policy estimators
-contamination probes
-compute curves
-reward-hacking checks
-training-data exporters
-```
+- RunRecord
+- trialsToRunRecords
+- verificationReportToRunRecord
+- extractPreferences
+- extractVerifiableReward
+- extractVerifiableRewardsFromRecords
+- extractStepRewards
+- prmTrainingPairs
+- exportRewardModel
+- off-policy estimators
+- contamination probes
+- compute curves
+- reward-hacking checks
+- training-data exporters
 
 That is the right boundary. The package is not a training cluster. It converts traces, verifier reports, preferences, and scorecards into clean signals for a downstream trainer.
 
 `agent-runtime` provides the execution side:
 
-```text
-runLoop
-tool and sandbox execution
-driver topology
-agent surfaces
-worktree candidate lifecycle
-analyst loop
-OTLP export
-```
+- runLoop
+- tool and sandbox execution
+- driver topology
+- agent surfaces
+- worktree candidate lifecycle
+- analyst loop
+- OTLP export
 
 Together they approximate the enterprise RLE shape without moving weights:
 
-```text
-runtime executes workflows
-eval captures traces and rewards
-analysts diagnose failures
-external surfaces mutate
-gates promote candidates
-RL bridge exports training signal
-```
+- runtime executes workflows
+- eval captures traces and rewards
+- analysts diagnose failures
+- external surfaces mutate
+- gates promote candidates
+- RL bridge exports training signal
 
-The final step, updating `theta`, remains outside the public product loop unless a real training backend is wired.
+The final step, updating $\theta$, remains outside the public product loop unless a real training backend is wired.
 
 ## The Promotion Gate Gets Stricter
 
@@ -542,33 +493,29 @@ A model rollback is a model artifact rollback.
 
 That means the promotion gate has to be stricter:
 
-```text
-heldout quality lift
-profile-cell regression checks
-safety regression checks
-privacy leak probes
-contamination probes
-reward-hacking probes
-cost and latency checks
-calibration checks
-domain expert review for high-stakes use
-artifact lineage
-rollback plan
-```
+- heldout quality lift
+- profile-cell regression checks
+- safety regression checks
+- privacy leak probes
+- contamination probes
+- reward-hacking probes
+- cost and latency checks
+- calibration checks
+- domain expert review for high-stakes use
+- artifact lineage
+- rollback plan
 
 The release unit is not a clever answer. It is a model snapshot:
 
-```text
-model_id
-base_model_id
-training_data_manifest
-reward_manifest
-eval_manifest
-policy_manifest
-artifact_hash
-access_policy
-deprecation_plan
-```
+- `model_id`
+- `base_model_id`
+- `training_data_manifest`
+- `reward_manifest`
+- `eval_manifest`
+- `policy_manifest`
+- `artifact_hash`
+- `access_policy`
+- `deprecation_plan`
 
 Without that lineage, model-level self-improvement is not a controlled system. It is just drift with a training budget.
 
@@ -588,9 +535,7 @@ The difference is reversibility.
 
 When the mutable surface is external state, the system remains legible. When the mutable surface is model behavior, the system can become more capable, but the operator owes a stronger data boundary, stronger heldout discipline, stronger artifact lineage, and a clearer answer to one question:
 
-```text
 Why does this behavior belong in weights instead of in the harness?
-```
 
 That is the post-training question.
 

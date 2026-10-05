@@ -1,0 +1,16 @@
+{
+  "public/research/records/ftqc-zips-2026-08-05-r1.json": "eaca6f51114ccea5c3213d39b83ae69f4b61f14d8ea4d1c4df0408152227b700",
+  "public/research/records/fc-audit-smoke-a.json": "e27c234486cb357cd70682e4e7e698e98eb872960addcdce31acb7db468a02b1",
+  "public/research/records/q-conj-entropy-bcww-repair.json": "2695c79b8395528e7fcdf2b107239acfd278d5b6130283cd8ec2cdd735952183",
+  "public/research/records/q-ca-bcww-shareable-pkg.json": "58100876469a06a97f92dae15dc08e76abd617e9acd53272cce4f14e1c9f456a",
+  "public/research/records/q-q36-lw6-unbounded-ladder.json": "51915bfa96d7aa608a73a0f9773b24aab56a4b720c87e0e9cfffd18c9519c92f",
+  "src/components/EvidenceExplorer.astro": "c995adeba25db2b061f82d9b02cb71eae61eb620c65e54746dbd25a58515b59a",
+  "src/components/ResearchConversation.astro": "3fa314a0bedc313cf3f22ac4e6a7f70e40bf86dc1111fbfeb674d66509d4caab",
+  "src/lib/chat-icons.ts": "e401eb28cf6fc5a2f3e22ce8d3495ef7c304e12a28833030c9ca674d2b0b2bef",
+  "src/components/ChatBlock.astro": "346d4e6fea7e1bb1f050d862e414688b7bd5c09126e17e314a9d13483b0e55c6",
+  "src/lib/research-evidence.ts": "3ebb86eabebecd3a61b23dfce00004fdaafdf9e7eb0df46be54475b6948357e4",
+  "src/pages/index.astro": "24373dd904b4e0ef75e0a2ffc063b605ae7b6777eab6fa4bc959ae643e7fd579",
+  "src/pages/posts/index.astro": "1c81a9711a4b480cf7e337ed20c078b56ebdd14c7d800072eb6beac8515efabf",
+  "src/pages/research/index.astro": "5ee73a4184c116fe0b7b3dcd961274e2ddca1c959737775580213abdb5209dfa",
+  "tools/project-research-evidence.py": "25ad39756994f25f62876d3f215185b593a3f3b1d8dfe302dd322babb04da98b"
+}

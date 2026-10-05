@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "fc-audit-smoke-a",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "fc-audit-smoke-a",
+    "label": "archive-20260923"
+  },
+  "snapshot": "sha256:209fce62ae43b2e13bc8d9ad87abef8dd1b9036f2fc385a702ef9648cb699e5e",
+  "objects": 29,
+  "bytes": 178870,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.8.1",
+    "adapter": "2.1.1",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:a1f267c75d411ea72d75d8c73f809b66ace814863bd0cfff6f823ffd027ec6de",
+  "overlay": "overlay.json",
+  "public": "public/research/records/fc-audit-smoke-a.json"
+}

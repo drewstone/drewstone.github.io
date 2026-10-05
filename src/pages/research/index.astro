@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro'
+import { getCollection } from 'astro:content'
+const results = (await getCollection('research')).sort(
+  (a, b) => a.data.order - b.data.order,
+)
+---
+
+<Base
+  title="Proofs & counterexamples"
+  description="Explicit counterexamples, proofs, verification artifacts, and the recorded agent work behind them."
+  wide
+>
+  <header class="opening">
+    <h1>Proofs &amp; counterexamples</h1>
+  </header>
+  <ol class="results">
+    {results.map((item, i) => (
+      <li>
+        <span class="number">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h2>
+            <a href={`/research/${item.id}`}>{item.data.title}</a>
+          </h2>
+          <p>{item.data.claim}</p>
+          <p class="limit">{item.data.limitation}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</Base>
+<style>
+  .opening {
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  .results {
+    list-style: none;
+    padding: 0;
+  }
+  .results li {
+    display: grid;
+    grid-template-columns: 1.4rem 1fr;
+    gap: 0.7rem;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .number {
+    font: 0.72rem var(--font-mono);
+    color: var(--fg-faint);
+    padding-top: 0.2rem;
+  }
+  h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.12rem;
+  }
+  .results p {
+    margin-bottom: 0.25rem;
+  }
+  .limit {
+    color: var(--fg-muted);
+    font-size: 0.86rem;
+  }
+</style>

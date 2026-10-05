@@ -1,0 +1,11 @@
+{
+  "schema": "publication.attestation-keys.v1",
+  "note": "Ed25519 public keys (SPKI DER, base64) whose lock signatures tools/research-records.mjs check accepts. The private key is BLOG_RECORDS_SIGNING_KEY in tangle-devops secrets/agent-state.env.",
+  "keys": [
+    {
+      "id": "7566b6e702ec87d4",
+      "publicKey": "MCowBQYDK2VwAyEAZwqLP6RHs8t4OUF32UgR6P3OZJD9bdIZGChxcpqiKPw=",
+      "added": "2026-10-04"
+    }
+  ]
+}

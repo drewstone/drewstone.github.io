@@ -16,15 +16,17 @@ interface Step {
 
 interface Props {
   items: Step[]
+  layout?: 'steps' | 'flow'
 }
 
-const { items } = Astro.props
+const { items, layout = 'steps' } = Astro.props
+const isLongFlow = layout === 'flow' && items.length > 5
 ---
 
-<ol class="steps">
+<ol class:list={['steps', { 'steps-flow': layout === 'flow', 'steps-flow-long': isLongFlow }]} role="list">
   {items.map((s, i) => (
     <li class="step">
-      <span class="step-num">{String(i + 1).padStart(2, '0')}</span>
+      {(layout === 'steps' || layout === 'flow') && <span class="step-num">{String(i + 1).padStart(2, '0')}</span>}
       <div class="step-content">
         <div class="step-head">
           <span class="step-title">{s.title}</span>
@@ -114,5 +116,68 @@ const { items } = Astro.props
     font-size: 0.98rem;
     line-height: 1.55;
     color: var(--fg-muted);
+  }
+  .steps-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+    gap: 1rem 1.2rem;
+    margin: var(--space-lg) 0;
+  }
+
+  .steps-flow::before {
+    display: none;
+  }
+
+  .steps-flow .step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.55rem;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .steps-flow .step:not(:last-child)::after {
+    display: none;
+  }
+
+  .steps-flow .step-num {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--fg-faint);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.45;
+    background: none;
+    align-items: flex-start;
+  }
+
+  .steps-flow .step-content {
+    padding: 0;
+  }
+
+  .steps-flow .step-head {
+    display: block;
+    margin: 0;
+  }
+
+  .steps-flow .step-title {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .steps-flow-long {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    .steps-flow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.45rem;
+    }
   }
 </style>

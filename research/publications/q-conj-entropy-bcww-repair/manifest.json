@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "q-conj-entropy-bcww-repair",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "q-conj-entropy-bcww-repair",
+    "label": "archive-20260923"
+  },
+  "snapshot": "sha256:7c01215fe35fb72faa173b209c05724b47ce9a580cd3c4e4cbe7b3875d94702b",
+  "objects": 47,
+  "bytes": 649939,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.8.1",
+    "adapter": "2.1.1",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:7dbff7fa55046a54e53f440a80833beb493d204cb7a9b0d5bf5abbd46e189a64",
+  "overlay": "overlay.json",
+  "public": "public/research/records/q-conj-entropy-bcww-repair.json"
+}

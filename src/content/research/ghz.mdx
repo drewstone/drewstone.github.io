@@ -1,0 +1,73 @@
+---
+title: 'A GHZ-mixture witness against BCWW'
+description: 'An explicit four-qubit state violating the BCWW candidate inequality, with an exact entropy reduction and a replayable verifier.'
+assessed: '2026-10-02'
+claim: 'A four-qubit GHZ mixture violates the same proposed inequality by 0.113302 bits.'
+limitation: 'The relevant marginals are classical. This does not establish a quantum advantage; the original discovery fleet trace is incomplete.'
+record_ids: ['q-conj-entropy-bcww-repair']
+order: 2
+---
+import WitnessExplorer from '../../components/WitnessExplorer.astro'
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+A mixture of a four-qubit GHZ state and two basis states violates the BCWW candidate inequality [[1]](#ref-1) by $0.113302\ldots$ bits.
+The relevant marginal entropies are classical, so this construction does not establish a quantum advantage.
+
+## State and marginal entropies
+
+Define
+
+$$
+|\mathrm{GHZ}_4\rangle=\frac{|0000\rangle+|1111\rangle}{\sqrt2},
+\qquad
+\rho=\frac34|\mathrm{GHZ}_4\rangle\!\langle\mathrm{GHZ}_4|
++\frac18|1010\rangle\!\langle1010|
++\frac18|1001\rangle\!\langle1001|.
+$$
+
+The [BCWW functional](/research/bcww/#inequality) uses only proper subsystems.
+Tracing out a nonempty complement removes the GHZ off-diagonal term.
+Every required entropy therefore equals the Shannon entropy of the corresponding marginal of
+
+$$
+P(0000)=P(1111)=\frac38,\qquad
+P(1010)=P(1001)=\frac18.
+$$
+
+With logarithms in base two, substitution gives
+
+$$
+F=\frac{25}{4}-\frac98\log_2 3-\frac{15}{8}\log_2 5
+ =0.113302008774\ldots>0.
+$$
+
+The exact sign certificate is
+
+$$
+2^{50}=1125899906842624>600677490234375=3^9 5^{15}.
+$$
+
+The retained standard-library verifier reconstructs each marginal and checks the closed form [[2]](#ref-2).
+Its October 2 replay succeeded.
+
+<WitnessExplorer kind="ghz" />
+
+The slider assigns weight $p$ to the GHZ projector and $(1-p)/2$ to each basis-state projector.
+The integer certificate applies at $p=3/4$; other plotted values use floating point.
+
+## Attribution and retained attempt
+
+The provenance note credits the fifth arm of an operator-led verification fleet dated August 10, 2026, and records five verification approaches, including blind arithmetic and fresh code.
+The complete original fleet transcripts were not recovered, so this attribution cannot be reconstructed from a complete discovery trace.
+
+The retained pursuit [[3]](#ref-3) began on August 30 and revisited the witness and surrounding claim.
+Its two child attempts ended down after rate-limit and incomplete-stream failures.
+The archive contains journal events and the witness artifact, but no native session JSONL.
+The viewer shows this later repair attempt, not the August 10 fleet; it does not certify complete capture of the original messages, children, or source bytes.
+This is a second witness to the [same BCWW refutation](/research/bcww/).
+
+<ResearchBibliography entries={[
+  { authors: 'N. Bao, C. Cao, M. Walter, and Z. Wang', title: 'Holographic entropy inequalities and gapped phases of matter', url: 'https://arxiv.org/abs/1507.05650v2', publication: 'J. High Energy Phys. 09 (2015), 203. arXiv:1507.05650v2, Eq. (4.6).', doi: '10.1007/JHEP09(2015)203' },
+  { title: 'GHZ-mixture entropy verifier', url: '/research/verify-ghz.py', publication: 'Exact retained Python source. Standard-library reconstruction and closed-form check; replayed October 2, 2026.' },
+  { title: 'BCWW repair pursuit', url: '/research/records/q-conj-entropy-bcww-repair.json', publication: 'Retained event and finding projection, August 30, 2026. A later attempt, distinct from the August 10 verification fleet. Source hashes identify the inspected files.' },
+]} />

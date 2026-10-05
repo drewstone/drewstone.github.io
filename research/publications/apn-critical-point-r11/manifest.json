@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "apn-critical-point-r11",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "apn-critical-point-r11",
+    "label": "publication-20261004b"
+  },
+  "snapshot": "sha256:6ed094d88a3370b607b0535fe1ac0c1da40aa9403e94a79d3d864c5f7809e8e5",
+  "objects": 184,
+  "bytes": 894847513,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.8.1",
+    "adapter": "2.1.1",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:bbc00ea507aa6e412ed5a257ebf57e8798d1d1c43d6dc11621bc8b320e3e9644",
+  "overlay": "overlay.json",
+  "public": "public/research/records/apn-critical-point-r11.json"
+}
