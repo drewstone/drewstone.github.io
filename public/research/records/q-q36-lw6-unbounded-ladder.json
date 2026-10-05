@@ -4,7 +4,7 @@
   "title": "Linden–Winter ladder certification, August 16",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.0"
+    "version": "2.1.1"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
