@@ -2,6 +2,8 @@
   "schema": "publication.published-ids.v1",
   "records": {
     "apn-critical-point-r11": [
+      "0a8068743ea2:32309",
+      "0a8068743ea2:49148",
       "0dd643741ea8:5",
       "22196e908be9:1",
       "22196e908be9:100",
@@ -170,6 +172,7 @@
       "33e8dcdbebea:24173",
       "33e8dcdbebea:24174",
       "33e8dcdbebea:24191",
+      "41b8ae6a1a62",
       "4b03263dcb03:/parts/0/data",
       "4b03263dcb03:/parts/103/data",
       "4b03263dcb03:/parts/104/data.0",
@@ -875,6 +878,7 @@
       "9d8102853602:95",
       "9d8102853602:97",
       "9d8102853602:98",
+      "aaca7047785c",
       "aba3b85d7969:1",
       "aba3b85d7969:2",
       "aba3b85d7969:3",

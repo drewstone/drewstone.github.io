@@ -1,16 +1,20 @@
 {
   "schema": "publication.lock.v1",
   "recordId": "apn-critical-point-r11",
-  "recordDigest": "sha256:159956a492f7dd89946042ec6684e5e10b2f6cbf0fafc033ab832e6093e4d176",
-  "overlaySha256": "d96650ace08c6202fc36fe53ba40a05a4fa911311b23829979a44180311fa7d7",
-  "publicSha256": "0194c1f9cfa7b5fe5dacbd948383014ebb359ea091666d9836584e08b47fa9a8",
-  "snapshot": "sha256:85380cfadfeb756c9c0dac05be9ec785ab1d957bb1485becae27e76166e2e416",
+  "recordDigest": "sha256:e39d84474eb6e4babb43d7cdca5cd1772364eeda86a45e0cd228b44cd8ea543c",
+  "overlaySha256": "0f32831be7a3362606907ecddd1682afe88a849f74667032b72db9f18ffc7047",
+  "publicSha256": "e3e519d9f9abf52001025df1f264aac782d8d0581535de030b7ec45181c4826f",
+  "snapshot": "sha256:6ed094d88a3370b607b0535fe1ac0c1da40aa9403e94a79d3d864c5f7809e8e5",
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.7.0",
-    "adapter": "2.0.0",
+    "version": "0.8.0",
+    "adapter": "2.1.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-04T22:40:42.713Z",
-  "builtOn": "DESKTOP-18IR33V"
+  "builtAt": "2026-10-05T00:22:23.997Z",
+  "builtOn": "drew-GTR-Pro",
+  "attestation": {
+    "keyId": "7566b6e702ec87d4",
+    "signature": "Rn/EkfrJfXCeBQ+uLfEaCPAoy6OhzNKeFfLAXPh8z9s2eOcdYu617Vrht8/FVPV5wTRBeFxQa5OOxYMI+o0pBw=="
+  }
 }
