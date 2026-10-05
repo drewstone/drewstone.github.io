@@ -41,7 +41,8 @@ node tools/research-records.mjs verify <record id>  # reproduce it from the stor
 
 `build` and `verify` read the store through discovery-lab `tools/evidence.mjs` (`EVIDENCE_CLI`) with the credentials the research tool uses.
 `build` signs each lock with `BLOG_RECORDS_SIGNING_KEY` from the same encrypted file (tangle-devops `secrets/agent-state.env`); `research/publications/attestation-keys.json` lists the public keys the site build accepts.
-Upload a new run with `evidence.mjs put` and pin it with `evidence.mjs pin --from research/publications` before citing it.
+Upload a new run with `evidence.mjs put`, pin it with `evidence.mjs pin --from research/publications`, and on GTR make it the research tool's snapshot of that run with `evidence.mjs index <namespace> <snapshot>` before citing it.
+The research tool then converts the same snapshot with the same converter release, so the Discovery workspace and this site show one record with one digest and one set of event IDs.
 
 ## Review overlay
 
@@ -85,6 +86,7 @@ The site build cannot read the store, so the signature carries the store's verdi
 - each cited namespace is locked against deletion, and its objects are mirrored to `/mnt/traces/evidence-pins` on GTR for backup (the mirror is checked where it lives);
 - the pinned converter reproduces the manifest's record digest from the materialized snapshot;
 - every overlay entry still matches its source bytes, and the regenerated projection equals the committed one.
+- on GTR, the research tool's store index names the cited snapshot for the record.
 
 Each failure names its gate, record and reason.
 
