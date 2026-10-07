@@ -26,6 +26,9 @@ importers:
       '@drewstone/agent-record':
         specifier: https://github.com/drewstone/agent-record/releases/download/v0.9.0/drewstone-agent-record-0.9.0.tgz
         version: https://github.com/drewstone/agent-record/releases/download/v0.9.0/drewstone-agent-record-0.9.0.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tangle-network/harness-sessions':
+        specifier: 0.1.0
+        version: 0.1.0
       astro:
         specifier: ^7.3.5
         version: 7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@22.20.5)(tsx@4.20.6)
@@ -972,6 +975,14 @@ packages:
   '@shuding/opentype.js@1.4.0-beta.0':
     resolution: {integrity: sha512-3NgmNyH3l/Hv6EvsWJbsvpcpUba6R8IREQ83nH83cyakCw7uM1arZKNfHwv1Wz6jgqrF/j4x5ELvR6PnK9nTcA==}
     engines: {node: '>= 8.0.0'}
+    hasBin: true
+
+  '@tangle-network/agent-trace-contract@2.0.0':
+    resolution: {integrity: sha512-lq2hp3gg8FsNVA3yZAyuj3NvL57pJTsI6sUF8cYwVsUXA8QZlrO78SqRPRslWxf/sMFHxXhusOuDQ3YxVv12bw==}
+
+  '@tangle-network/harness-sessions@0.1.0':
+    resolution: {integrity: sha512-yIRqrZerxRFl4WByFsRHob9Pq5XXh6wmtQRpTHZCjw2U0GyLDUWN+n0ohhfblKQays1t4pXvbuXz/uMSa9jzhA==}
+    engines: {node: '>=22.13.0'}
     hasBin: true
 
   '@tybys/wasm-util@0.10.4':
@@ -3026,6 +3037,12 @@ snapshots:
     dependencies:
       fflate: 0.7.4
       string.prototype.codepointat: 0.2.1
+
+  '@tangle-network/agent-trace-contract@2.0.0': {}
+
+  '@tangle-network/harness-sessions@0.1.0':
+    dependencies:
+      '@tangle-network/agent-trace-contract': 2.0.0
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
