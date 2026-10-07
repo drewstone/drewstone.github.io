@@ -31,16 +31,16 @@ if ! git show --name-only --pretty=format: HEAD | grep -qE '^src/content/posts/.
 fi
 
 # Forced trace capture via environment directive.
-BLOG_TRACE_POSTS="${BLOG_TRACE_POSTS:-}"
-BLOG_TRACE_HARNESS="${BLOG_TRACE_HARNESS:-}"
-BLOG_TRACE_ROLE="${BLOG_TRACE_ROLE:-polish}"
-BLOG_TRACE_KIND="${BLOG_TRACE_KIND:-post}"
-BLOG_TRACE_MARKER="${BLOG_TRACE_MARKER:-}"
-BLOG_TRACE_NOTE="${BLOG_TRACE_NOTE:-}"
+BLOG_TRACE_POSTS="\${BLOG_TRACE_POSTS:-}"
+BLOG_TRACE_HARNESS="\${BLOG_TRACE_HARNESS:-}"
+BLOG_TRACE_ROLE="\${BLOG_TRACE_ROLE:-polish}"
+BLOG_TRACE_KIND="\${BLOG_TRACE_KIND:-post}"
+BLOG_TRACE_MARKER="\${BLOG_TRACE_MARKER:-}"
+BLOG_TRACE_NOTE="\${BLOG_TRACE_NOTE:-}"
 
 if [ -n "$BLOG_TRACE_POSTS" ]; then
   IFS=',' read -r -a BLOG_POSTS <<< "$BLOG_TRACE_POSTS"
-  for post in "${BLOG_POSTS[@]}"; do
+  for post in "\${BLOG_POSTS[@]}"; do
     if command -v pnpm >/dev/null 2>&1; then
       cmd=(pnpm tsx tools/trace-capture.ts capture --post="$post" --role="$BLOG_TRACE_ROLE" --kind="$BLOG_TRACE_KIND" --attach=revision --commit=HEAD)
       if [ -n "$BLOG_TRACE_HARNESS" ]; then
@@ -52,7 +52,7 @@ if [ -n "$BLOG_TRACE_POSTS" ]; then
       if [ -n "$BLOG_TRACE_NOTE" ]; then
         cmd+=(--note="$BLOG_TRACE_NOTE")
       fi
-      "${cmd[@]}" 2>/dev/null || true
+      "\${cmd[@]}" 2>/dev/null || true
     fi
   done
   exit 0
