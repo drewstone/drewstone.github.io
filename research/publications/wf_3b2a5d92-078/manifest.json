@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "wf_3b2a5d92-078",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "wf_3b2a5d92-078",
+    "label": "bundle-20261004"
+  },
+  "snapshot": "sha256:178086aa68494f4dbed3628df399d1b526622e2361ec86f20462c65bfce7b8df",
+  "objects": 14,
+  "bytes": 762359,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:beccd7cb148361ab24e738e29100ed1b67bf1476dc62b7f00f380645b0569007",
+  "overlay": "overlay.json",
+  "public": "public/research/records/wf_3b2a5d92-078.json"
+}

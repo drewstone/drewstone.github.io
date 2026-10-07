@@ -179,32 +179,30 @@ const websiteJsonLd = isHome
         </span>
       </div>
     </footer>
+    <script>
+      const proseTables = document.querySelectorAll<HTMLTableElement>('.prose table')
+      const updateScrollableTableFocus = () => {
+        proseTables.forEach((table) => {
+          if (table.scrollWidth > table.clientWidth + 1) table.tabIndex = 0
+          else table.removeAttribute('tabindex')
+        })
+      }
+
+      proseTables.forEach((table) => {
+        table.addEventListener('keydown', (event) => {
+          if (table.tabIndex !== 0 || event.target !== table) return
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            table.scrollBy({ left: event.key === 'ArrowRight' ? 96 : -96 })
+            event.preventDefault()
+          }
+        })
+      })
+
+      updateScrollableTableFocus()
+      window.addEventListener('resize', updateScrollableTableFocus, { passive: true })
+    </script>
   </body>
 </html>
-
-<script>
-  const proseTables = document.querySelectorAll<HTMLTableElement>('.prose table')
-  const updateScrollableTableFocus = () => {
-    proseTables.forEach((table) => {
-      if (table.scrollWidth > table.clientWidth + 1) table.tabIndex = 0
-      else table.removeAttribute('tabindex')
-    })
-  }
-
-  proseTables.forEach((table) => {
-    table.addEventListener('keydown', (event) => {
-      if (table.tabIndex !== 0 || event.target !== table) return
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        table.scrollBy({ left: event.key === 'ArrowRight' ? 96 : -96 })
-        event.preventDefault()
-      }
-    })
-  })
-
-  updateScrollableTableFocus()
-  window.addEventListener('resize', updateScrollableTableFocus, { passive: true })
-</script>
-
 <style>
   .site-header {
     padding: 1.1rem 0 0.6rem;

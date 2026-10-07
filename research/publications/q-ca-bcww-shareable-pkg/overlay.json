@@ -23,10 +23,37 @@
   },
   "events": {},
   "findings": {
+    "41de372556bb": {
+      "sourceSha256": "41de372556bb0359eccf0d90eb8a564d370d309ee270b5e93771e43344a5916e"
+    },
+    "76ebdd07a639": {
+      "sourceSha256": "76ebdd07a6390779170fcfeedb35872fee7ee554f74b1ac59f0b993813c1bb78"
+    },
     "8bf651428604": {
       "sourceSha256": "8bf6514286041fa54611892a31052108b39ca0261ab2c588a8b6e911cb5e7317",
       "assessment": "The corrected atom set independently reproduces the positive sign. The original fixed-order set has negative LHS. Its source run archive is missing.",
       "attribution": "Run-level only; individual native session unresolved"
+    },
+    "98560e342a4e": {
+      "sourceSha256": "98560e342a4e8a481e66f1758630324fe2671f110a1ee2b28a8fc986c76d31e0"
+    },
+    "9a14dba4cbea": {
+      "sourceSha256": "9a14dba4cbeab43dd3746077458a6b4dcbd1e37c9dcf17c34514fd8230cf4d1f"
+    },
+    "a3594f5cb87d": {
+      "sourceSha256": "a3594f5cb87d011480b1b3753cdac01d86addffe36899d1db97531c1ea977673"
+    },
+    "be93353fdc7c": {
+      "sourceSha256": "be93353fdc7c7034204a81764b23e3f0e87cfc9843cac461374685d4dc3702a3"
+    },
+    "c8aaf832dce7": {
+      "sourceSha256": "c8aaf832dce70daa17a2f9ef37a04137d32824653a5e4da060d5363bcff913de"
+    },
+    "d856f733b12c": {
+      "sourceSha256": "d856f733b12c02ac6a869aee67a7e7baeaee29a1762e8e4edde155c2ce7204f2"
+    },
+    "eb53ebb4a811": {
+      "sourceSha256": "eb53ebb4a811692bba70e905a3f42a101776a8e176ecab06d12263fdce6111fc"
     }
   },
   "withhold": [
@@ -41,42 +68,6 @@
     },
     {
       "class": "encrypted-message"
-    },
-    {
-      "event": "9a14dba4cbea",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "eb53ebb4a811",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "41de372556bb",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "d856f733b12c",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "c8aaf832dce7",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "a3594f5cb87d",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "98560e342a4e",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "76ebdd07a639",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "be93353fdc7c",
-      "reason": "unreviewed finding"
     }
   ],
   "redactionClasses": [
@@ -90,6 +81,6 @@
   "coverageText": "No session transcripts were retained.",
   "reviewer": {
     "by": "drewstone",
-    "at": "2026-10-02"
+    "at": "2026-10-05T04:07:45.465Z"
   }
 }

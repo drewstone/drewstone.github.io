@@ -845,6 +845,41 @@
       "mode": "full",
       "text": "The verification is complete. Here is the summary.\n\n## Verification Complete — `results/results_channel.md` (315 lines)\n\n### Integrity\n- **SHA256: 82 OK / 0 FAILED** — all files unmodified.\n\n### Reproduce scripts — ALL FAIL (key finding)\n| script | exit | cause |\n|---|---|---|\n| `reproducible/reproduce_full.sh` | **5** | no `tests/`, `experiments/`, or `src/` shipped — pytest \"no tests ran\" |\n| `frontier/reproduce_full.sh` | **1** | 5× \"No such file or directory\" (no `experiments/`) + \"no tests ran\" |\n| `lab/reproduce.sh verify` | **2** | aborts at pytest |\n| `pytest -q` (lab) | **2** | `ModuleNotFoundError: No module named 'pauli_sc.cws'` |\n\n**Root cause:** the packages are *results archives with orphaned code*, not reproducible builds. Missing: `pauli_sc/__init__.py`, `pauli_sc/cws.py` (4 functions entirely absent), and several experiment files. I had to reconstruct an `__init__.py` to run any verification.\n\n### CWS audit CSV (item 5)\n**3 123 orbits** = 3 116 nonlinear + 7 affine. Reconciles cleanly with the npz (3 116 reps), the \"2 629 575 normalized codebooks,\" and 120 symmetry maps. The per-orbit SDP gap is ~0.0256 (numerical witness sweep, not the exact certificate).\n\n### npz (item 6)\nLoads cleanly; 21 keys; p=9/50; both cited archive SHA256s match the actual files exactly.\n\n### Strongest surviving claim — verified to **rung 5**\nA **restricted** asymptotic strong converse: for product five-cycle CWS blocks over `D_p` in the above-capacity window, `F_e ≤ β^m` with **β = 7099041002941/12813746670000**, `E > 0.11811`/use. I **independently re-derived** β, α, all endpoint `A(p)` values, and the optimality margins with exact rational arithmetic, and the verifier script ran to **EXIT 0/PASS**. Theorem 1 (regular-monomial SDP reduction) also confirmed to rung 5 via my own generic solver (max gap 1.0e-14); APN no-go energy `3d²−2d` exact for m=2…7.\n\n### Withdrawn vs surviving\n- **Withdrawn/falsified:** \"high recovery fidelity ⟹ high additive energy / large affine subset\" — killed by the APN family (Prop 5).\n- **Explicitly OPEN (confirmed):** the unrestricted strong converse for arbitrary Pauli-channel codes, and a strong converse for *every* CWS code — the archive does **not** claim these, and the README says so.\n- **Not independently runnable:** the 99 712-block exact PSD verifier and the continuous-interval theorem depend on the missing `pauli_sc.cws` — documented & hash-consistent, but the verification code is absent."
     },
+    "649fb660ebed:10": {
+      "sourceSha256": "3b1b1789db527809b960705c01803180a5be6e3c0f64f85eab73efc2b0f20596",
+      "text": "no-env-channel",
+      "mode": "full"
+    },
+    "649fb660ebed:19": {
+      "sourceSha256": "2a1180c3f5e4da68039cd4a922d7b7fbec7c2bfc5ae1f121d996913affba9278",
+      "text": "no-env-channel",
+      "mode": "full"
+    },
+    "649fb660ebed:20": {
+      "sourceSha256": "12720d73e99f8117165fcb87f0b7fbd5dc8f5f8a35d858829d2206b2be9a3fb6",
+      "text": "no-env-channel",
+      "mode": "full"
+    },
+    "649fb660ebed:28": {
+      "sourceSha256": "fdc10d4c012ed4d100254b304788adf79d1eec99b2a4c3723fb899e664f7e603",
+      "text": "budget pool: ticket 1 spent 4588247 tokens > reserved 3000000",
+      "mode": "full"
+    },
+    "649fb660ebed:30": {
+      "sourceSha256": "e61301778100a44734e734faa5765f90f9cce17963b1e3bd7b186229724fc68e",
+      "text": "execution aborted",
+      "mode": "full"
+    },
+    "649fb660ebed:8": {
+      "sourceSha256": "5ad0c11033e8d786497a04f722d93a5e66825d6cb0dce444f17f5e1f45b47e9a",
+      "text": "no-env-channel",
+      "mode": "full"
+    },
+    "649fb660ebed:9": {
+      "sourceSha256": "bb5a67716785bf0883b812551282b2710bac05271f37a093bbc46b9ab9e525c4",
+      "text": "no-env-channel",
+      "mode": "full"
+    },
     "8c06b92b2c8d:10": {
       "sourceSha256": "2eb481dac389c1cfd0931b836b51a29e33af58985218e9a0397faa3b777a2d32",
       "mode": "excerpt",
@@ -5450,6 +5485,21 @@
       "text": "===== qltc_lab tree =====\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/cpp/exact_sparse_logical_search.cpp\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/cpp/exact_sparse_logical_search_filtered.cpp\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/cpp/exact_sparse_logical_search_v2.cpp\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/certify_cubical_endpoint_toy.py\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/certify_pgl2_transport_degree1_z_distance.py\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/certify_cubical_endpoint_toy.cpython-312.pyc\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/certify_pgl2_transport_degree1_z_distance.cpython-312.pyc\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/run_twisted_graphs.cpython-312.pyc\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/verify_all.cpython-312.pyc\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/verify_hyperplane_k32_exact_distance.cpython-312.pyc\nextracted/qltc_research_bundle_2026-08-04/qltc_research_bundle_2026-08-04/qltc_lab/experiments/__pycache__/verify_k3_distance_lower_bound_15.cpython-312.pyc\n\n[Publication excerpt: middle of the long tool response omitted.]\n\n\n===== top-level of bundle (above qltc_lab) =====\ntotal 36\ndrwxr-xr-x 4 drew drew  4096 Aug  4 19:18 .\ndrwxrwxr-x 3 drew drew  4096 Aug  5 11:13 ..\n-rw-r--r-- 1 drew drew 15064 Aug  4 19:18 MANIFEST_SHA256.txt\ndrwxr-xr-x 7 drew drew  4096 Aug  4 19:18 qltc_lab\n-rw-r--r-- 1 drew drew  1804 Aug  4 19:18 README_BUNDLE.md\ndrwxr-xr-x 3 drew drew  4096 Aug  5 11:15 supplemental_recovered_files\n",
       "note": "Middle of this 18,607-character response omitted."
     },
+    "e3fac3596fe7:1": {
+      "sourceSha256": "8ea2f55b04d6b43854361094224d08f08ec1633b15e1e8f6e69430b51efa0455",
+      "text": "You have done substantial work (independent CSS verifiers in /tmp) but your results/results_qltc.md is still only the 12-line header. WRITE YOUR FINDINGS TO results/results_qltc.md NOW and keep appending as each check settles — your process can be killed at any time and anything only in your context or /tmp is lost. Specifically, record right now: (1) the exit code and output of verify_all.py, (2) which of the 5 named verifiers passed/failed and WHY (missing module name vs real bug), (3) whether the C++ engines compiled, (4) what your independent CSS verifier found. Do not wait until the end to write.",
+      "mode": "full"
+    },
+    "e3fac3596fe7:4": {
+      "sourceSha256": "3283948553c2a5b0cf01f311875ce7ced76a704689c713dd89c2e12b9f8726c4",
+      "text": "STOP EDITING THE ARCHIVE SOURCE. Your job is to VERIFY and REPORT, not to fix the pcftc code so tests pass — modifying the artifact invalidates the verification. You are near your token budget. Immediately write results/results_pcftc.md with everything you have found so far: (1) did `make test` / `make verify` / `make coverage` / `make manifest` pass or fail, with exact exit codes and pass counts, (2) which of the 5 headline numbers (a)-(e) you confirmed, (3) CRITICALLY: did `make verify` exit 0 or not, and if you had to modify source files to get there, say so explicitly and revert your changes. Write the file NOW even if incomplete — a partial result on disk beats a complete result lost.",
+      "mode": "full"
+    },
+    "e3fac3596fe7:7": {
+      "sourceSha256": "5d4a4c54725d5cec857d45330d7c7684cead68ef79872c8e8b552c78cc724fba",
+      "text": "You are near your token ceiling. The 8/6/2 headline is already saved — good. Now APPEND to results/results_qldpc.md whatever else you have: the v5 pytest exit code/pass count, the latest_integrated_overlay test result, and the S06/S09 minimax certificate finding. If you ran the Stim falsification check, add one sentence. Then STOP — do not start new long computations. Persist what you have and settle.",
+      "mode": "full"
+    },
     "f564e03121e6:10": {
       "sourceSha256": "5fdfdb4fc605d24093f6779cf3e77465dcc5c6e676239d1f7ee3f8d923a3c751",
       "mode": "full",
@@ -6173,10 +6223,34 @@
     }
   },
   "findings": {
+    "5ef6faa57813": {
+      "sourceSha256": "5ef6faa57813dcbb0d038855a62a2c63552a57c458cb2ba0a718c299b60aa91e"
+    },
     "7e923d5e0963": {
       "sourceSha256": "7e923d5e09631ea624543b970a0d51c1a7e0fcfd353f3e8c448fe9495c23d2af",
       "assessment": "The agent's claim; the record contains no independent check of it.",
       "attribution": "Run-level only; individual native session unresolved"
+    },
+    "96e7bf2ad73d": {
+      "sourceSha256": "96e7bf2ad73da496ec367adaaa53afc644cc4962f22daad42fddd9beca725493"
+    },
+    "9bd706f90501": {
+      "sourceSha256": "9bd706f90501b72796a1166d0612649fbbcb17f6da44c6a3b5882f94dcf40790"
+    },
+    "a432c92110ce": {
+      "sourceSha256": "a432c92110ce5eb10b83612eda02275c7e9affe2d4fdef92fe2ae7fed31a4584"
+    },
+    "ad028bac4eab": {
+      "sourceSha256": "ad028bac4eab8a97967a18b4343707e07d33a53a6239116158d78df2a03eba9b"
+    },
+    "c0fbf3d9f3ed": {
+      "sourceSha256": "c0fbf3d9f3ede7411514bdbcd18e20bac6160cb0ab16bdd4272966b1bec54ae1"
+    },
+    "dc4319328c18": {
+      "sourceSha256": "dc4319328c1813d68cbe4fc41ca0eeed65733a437bf4ddfc4c5dd2cae4e4d182"
+    },
+    "de53877e480f": {
+      "sourceSha256": "de53877e480fc521d6973151bf69afb6f7eb6ba4daeaa763c60cadc8a97c6c7a"
     }
   },
   "withhold": [
@@ -6191,38 +6265,6 @@
     },
     {
       "class": "encrypted-message"
-    },
-    {
-      "event": "c0fbf3d9f3ed",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "dc4319328c18",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "9bd706f90501",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "96e7bf2ad73d",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "de53877e480f",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "5ef6faa57813",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "ad028bac4eab",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "a432c92110ce",
-      "reason": "unreviewed finding"
     }
   ],
   "redactionClasses": [
@@ -6236,6 +6278,6 @@
   "coverageText": "Messages, tool inputs and tool results are published. Long outputs are marked excerpts; credentials, unrelated memory previews and hidden thinking are excluded. The final qLTC search has no retained result.",
   "reviewer": {
     "by": "drewstone",
-    "at": "2026-10-02T09:18:17.226266+00:00"
+    "at": "2026-10-05T04:07:45.519Z"
   }
 }

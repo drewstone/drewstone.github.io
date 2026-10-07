@@ -17,7 +17,8 @@
   "nodes": {
     "q-q36-lw6-unbounded-ladder": {
       "label": "root",
-      "role": "Director"
+      "role": "Director",
+      "captureNote": "The director ran OpenCode with its home directory inside the run workspace, which the run archive excluded, and the bridge store that served it keeps sessions only from August 19. Its four instructions to the workers survive in the Runtime coordination log and are shown here."
     },
     "q-q36-lw6-unbounded-ladder:s0": {
       "label": "constructor-ladder",
@@ -25,7 +26,8 @@
     },
     "q-q36-lw6-unbounded-ladder:s1": {
       "label": "certifier-verdict",
-      "role": "Worker"
+      "role": "Worker",
+      "captureNote": "Its Pi session file holds only the session header: no prompt or reply was written."
     },
     "q-q36-lw6-unbounded-ladder:s2": {
       "label": "offdiag-surface",
@@ -33,19 +35,13 @@
     },
     "q-q36-lw6-unbounded-ladder:s3": {
       "label": "analyst-asymptotics",
-      "role": "Worker"
+      "role": "Worker",
+      "captureNote": "This child ran Claude Code with its home directory inside the run workspace, which the archive excluded. No session file was found on the lab host, the operator's Mac, either beelink, or in the trace archive."
     },
     "q-q36-lw6-unbounded-ladder:s4": {
       "label": "certifier-verdict-retry",
-      "role": "Worker"
-    },
-    "pi:b7172ce4-7dbc-441f-8dd1-ac46560ebd39": {
-      "label": "Pi b7172ce4",
-      "role": "Session"
-    },
-    "pi:f25a42fd-c557-4c35-af16-2044a2538f22": {
-      "label": "Pi f25a42fd",
-      "role": "Session"
+      "role": "Worker",
+      "captureNote": "Its Pi session file holds only the session header: no prompt or reply was written."
     },
     "finding:q-q36-lw6-unbounded-ladder": {
       "label": "Recorded findings",
@@ -62,6 +58,51 @@
       "mode": "full",
       "text": "SEAT O (off-diagonal surface), run q-q36-lw6-unbounded-ladder. Workspace root $DISCOVERY_RUN_WORKSPACE (absolute paths in checks; grader runs from a foreign CWD).\n\nMISSION: build the certified OFF-DIAGONAL kill surface of LW6 in coefficient space k=(k1,k2,k3): rows at (k1,k2) off the diagonal with certified max-k3 reach, in two honestly-labeled tiers, plus the closure statement that the family slabs kill the previously-open surface points.\n\nCONTEXT (KB-cited, never re-derive): f_k = k1*x + k2*y + k3*z + E; x=I(A;C|B)=S(AB)+S(BC)-S(B)-S(ABC); y=I(C;B|A)=S(AB)+S(AC)-S(A)-S(ABC); z=I(A;B|D)=S(AD)+S(BD)-S(D)-S(ABD); E=S(ABC)+S(D)-S(AB)-S(CD); parties = 4 bits MSB-first (A,B,C,D). A witness w kills k when interval-upper-bound of f_k(w) < 0. KB-cited kill infrastructure: halfspace union H = {k1<1} U {k2<1} U {k3<1} U {k1+k2<3.97743} (exact, from W2: atoms (0100),(1100),(1110),(0001),(0011),(0111) w (0.118687,0.071970,0.309343,0.309343,0.071970,0.118687)/10^6, threshold 3.9774295326437793488652038465902970699380108305768938194639); diagonal certified kills t <= 3.555e9 by a witness with KB-recorded digits x=2.4373764e-35, y=2.4373249e-35, z=9.1790e-38, e=-1.7360207e-25 (pursuit-q-qb-quantum-kill-beyond-classical). KB page pursuit-q-qb-classical-critical-surface-r3 certified k*=(3977/125, 3977/125, 1)=(31.816,31.816,1) as OPEN w.r.t. that run's on-disk witnesses.\n\nFAMILY W_L (KB page pursuit-q-q36-u5-weights-recover; the unboundedness object): support (MSB) {0000,0010,1101,1111,0101,0110}; w(0000)=2*10^(4L+3); w(0010)=27*10^(4L+3)-27*10^(3L+3); w(1101)=2*10^(4L); w(1111)=27*10^(4L); w(0101)=2*10^(L+3); w(0110)=27*10^(L+3); probabilities w/N_L. SUPPORT THEOREMS (machine-check yourself; tooling): z=0 identically (A const on D=0 atoms; B const on D=1 atoms); x=0 iff w(1101)*w(0110)=w(1111)*w(0101) (exact integers for W_L). Hence f_k(W_L) = k2*y_L + E_L: the certified kill region is the SLAB {k2 < R_L = -E_L/y_L}, k1,k3 ARBITRARY (>= 0), for every L with a certified R_L interval. Engine anchors before family rows: (a) (1/3,1/6,1/6,1/3) at (1000),(1110),(1101),(0111): f_(1,1,1)=3-2*log2(3)=-0.169925001442312...; (b) W2 (above): x=y=0.04742814163445661480..., E=-0.18864209... Your own engine: Fraction weights -> Decimal directed-rounding interval entropies (write it yourself; parent's work/smoke_wl.py is float conventions only). Precision per row: prec >= 5L+100. KB claims R_L >= 1.9*10^L (L>=3), R_12 in [1999999999999.356320, 1999999999999.356322].\n\nDELIVERABLES:\n1. work/results/offdiag_surface.json (create FIRST, status in_progress, append per row). TIER-EXACT rows (rung 4-5, your own certificates): for L in {3,6,9,12}: certified R_L interval and slab row {k2 < R_L(lo)} for all k1,k3>=0; certified anchor kills f<0 at off-diagonal points: (10^30, 100, 10^30) at L=3; (1, 1.89*10^12, 10^50) at L=12; (10^3, 10^3, 10^3) at the shallowest L whose certified R_L(lo) exceeds 10^3; (10^9, 10^9, 10^9) at shallowest L with R_L(lo) > 10^9. Also certify: k*=(3977/125, 3977/125, 1) is killed by the L=2 slab (k2=31.816 < R_2 ~ 189) - i.e. the KB's certified-open point is now closed, with exact Fractions for k*. TIER-DIGIT rows (rung 3, labeled 'digit-interval; digits inherited from source-run certificates, +/-5ulp slack'): incumbents r9 (x=1.3830845e-4, y=1.3829639e-4, z=2.476e-8, e=-2.9586245e-3), r14 (x=4.37832256e-5, y=4.37810146e-5, z=0, e=-1.3702750751e-3), mp3.5e9 (x=2.4373764e-35, y=2.4373249e-35, z=9.1790e-38, e=-1.7360207e-25): for each, at (k1,k2) in {(100,100),(1000,100),(100,1000),(10^6,10^6)}: certified interval of max k3 killed = -(k1*x+k2*y+e)/z (interval arithmetic; if the z-interval contains 0: row is 'k3-unbounded' when hi(k1*x+k2*y+e)<0 else 'undecidable-at-digits'). Also W2 exact row: k1+k2 < 3.9774295326437793488652038465902970699380108305768938194639, any k3 (cited exact; your interval re-check of the threshold at your precision).\n2. work/checks/check_offdiag.py — any-CWD-safe, recomputes the TIER-EXACT anchors it reports (does not trust stored arithmetic), prints EXACTLY ONE line: OFFDIAG_SURFACE=<n_exact_rows> exact rows, slab L3..L12, kstar_closed=True|False, <n_digit_rows> digit rows and exits 0 iff all TIER-EXACT anchors re-certify and k* is certified killed; else prints OFFDIAG_SURFACE=BLOCKED:<reason> exit 1.\n3. work/seat-o/CLAIMS.md (claims + check commands + expected substrings), including the honest tier labeling.\n\nRULES: WRITE AS YOU GO (files before work, append as rows settle). No shared code with other seats (parent's smoke_wl.py conventions only). Do not read large files. Do not re-derive KB-cited results (H, the diagonal frontier) - you USE them with citations; your new content is the off-diagonal rows and the k* closure. ~5M tokens. Record nothing to the KB; the parent re-runs your checks and records."
     },
+    "beaf2ad2e084:15": {
+      "sourceSha256": "b3bd357af08173307382fa725deae2b5ccb6a1eae80ba3ff04588b26b3eabcee",
+      "text": "bridgeExecutor: bridge stream error: pi assistant turn failed: 524 status code (no body)",
+      "mode": "full"
+    },
+    "beaf2ad2e084:16": {
+      "sourceSha256": "6bb474ba9e3a4a85fd695bd207d92e71e32437c02f582bb4385ebe9c926e1677",
+      "text": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=2). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+      "mode": "full"
+    },
+    "beaf2ad2e084:17": {
+      "sourceSha256": "daabd1ef8f8ffcb80529504fc20955094160c37af2697952330c6261a76085a8",
+      "text": "bridgeExecutor: bridge stream error: pi assistant turn failed: 524 status code (no body)",
+      "mode": "full"
+    },
+    "beaf2ad2e084:18": {
+      "sourceSha256": "261f865d4326107e11e63f71e0874cf5ab0be0712558cf6a962dd658fa5c81da",
+      "text": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=1). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+      "mode": "full"
+    },
+    "beaf2ad2e084:26": {
+      "sourceSha256": "505d62862d15a6c92d109dbabb2d28efdc09c505ec15fde361bf29661f9f7e27",
+      "text": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=0). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+      "mode": "full"
+    },
+    "c677d8f21c5c:1": {
+      "sourceSha256": "77a6b0ca52b77dcd5047860762b22bab314e82915d830a479d2773a0e1350361",
+      "text": "PARENT BULLETIN (read before continuing; affects your engine design). Two facts you must act on: (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every operation that happens OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` or `a*b` between with-blocks rounds to the default prec 28 and silently corrupts deep-cancellation quantities (this exact bug produced deterministic WRONG E values ~1e-31-scale in the parent's first engine at rows L=7..10 while L<=6 and L>=11 looked fine). Fix: perform EVERY Decimal operation (especially negations and interval endpoints) inside a directed context at your working precision, or set the global context to your working precision for the whole run. Decimal.ln() itself is correctly rounded (verified vs atanh series, <=2 ulp) but appears to ignore context rounding direction - budget >=20 guard digits. (2) CROSS-CHECK STANDARD: the parent has certified the W_L rows L=2..16 with an independent fixed engine, saved at work/results/parent_reference.json (exact Decimal strings for R_lo/R_hi, E, y per L). Reference values: R_12 = 1999999999999.35632183807935579..., R_16 = 19999999999999999.35632183908035966..., R_2 = 189.4773957843194031476..., gap 2*10^L - R_L converges to ~0.64367816. Your certified rows must agree with these to your certified precision (you are an independent implementation; agreement is the point). If your engine disagrees, find YOUR bug first (start with the negation bug), then report genuine contradiction. Continue your assigned unit after acting on this.",
+      "mode": "full"
+    },
+    "c677d8f21c5c:10": {
+      "sourceSha256": "3c7b2b92cbd7eb265c858d6f017f658c535b50d9f8ad615ac0439dadbae69aed",
+      "text": "PARENT BULLETIN (read before continuing; affects your engine). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every operation OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` or `a*b` between with-blocks rounds to default prec 28 and silently corrupts deep-cancellation quantities (this exact bug gave the parent's first engine deterministic WRONG E values at family rows L=7..10 while other rows looked fine). Fix: EVERY Decimal op (negations included) inside a directed context at working precision, or pin the global context for the whole run. Decimal.ln() is correctly rounded (verified vs atanh series) but seems to ignore context rounding direction - keep >=20 guard digits. (2) CROSS-CHECK DATA: parent's independent certified rows L=2..16 at work/results/parent_reference.json: R_2=189.4773957843194031476..., R_3=1998.3565066..., R_8=199999999.35631..., R_12=1999999999999.356321838... For your TIER-EXACT slab rows: the family has x=z=0 exactly (integer det certificate), so kills are slabs {k2 < R_L}; k*=(3977/125,3977/125,1) is closed by L=2 (R_2 ~ 189.5 > 31.816). Continue your unit; compare your certified anchors against the parent file (independent implementations agreeing is the deliverable).",
+      "mode": "full"
+    },
+    "c677d8f21c5c:4": {
+      "sourceSha256": "e89b5340f6d449b4faf5eb750217361cf03a6c212ff5937aca8337e2dda7ec5c",
+      "text": "PARENT BULLETIN (read before continuing). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every op OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` between with-blocks rounds to prec 28 and silently corrupts deep-cancellation values (this bug gave the parent deterministic wrong E at L=7..10, stable across precisions - a convincing wrong number). Fix: every Decimal op inside a directed context, or pin the global context; keep >=20 guard digits. (2) DATA FOR YOUR ASYMPTOTICS: parent's independent certified rows L=2..16 at work/results/parent_reference.json (exact Decimal strings). Established: R_L = 2*10^L - gap_L with gap_L strictly decreasing from gap_2=10.522604216, gap_4=0.743775672, gap_6=0.644679264, gap_8=0.643688172, gap_10=0.643676758, gap_12=0.6436781619..., gap_16=0.6436781609... - the float-level reversal around L=10..12 (0.643676758 vs 0.64367816) is exactly the regime where you need full Decimal precision, so derive the gap limit G* with certified intervals (my L=12/16 full-precision values suggest G* ~ 0.64367816..; the KB page said 0.643678). Your Tasks 1-4 stand. Note E_L = -9.254186028954...*10^(-4L-2)*(1+o(1)) and y_L ~ 4.62709...*10^(-5L-1.33) are the two scales; the R_L -> 2*10^L mechanism is E/y ~ 2*10^L*(1+O(10^-L)). Recheck my claim, do not trust it.",
+      "mode": "full"
+    },
+    "c677d8f21c5c:7": {
+      "sourceSha256": "2c6fe39bbc18af783fb9da1e42d8337f64acb636a2343698be2307bb1ba9e83e",
+      "text": "PARENT BULLETIN (read before continuing). (1) ENGINE BUG WARNING for any Decimal you use (display, endpoint conversion, cross-checks): Python Decimal applies the AMBIENT context to every op OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` between contexts rounds to prec 28 and silently corrupts deep-cancellation values (this bug cost the parent's first engine rows L=7..10: E came out ~7.2e-31 instead of ~9.25e-34, deterministic and stable across precisions - a convincing wrong number). Your Fraction-atanh core is immune; any Decimal side-path is not. (2) CROSS-CHECK DATA: parent's independent certified rows L=2..16 are at work/results/parent_reference.json. Key values: R_12 = 1999999999999.35632183807935579... (KB claim interval [1999999999999.356320, 1999999999999.356322] REPRODUCES), R_16 = 19999999999999999.35632183908035966..., R_2 = 189.4773957843194031476..., gap 2*10^L - R_L -> ~0.64367816 from above (gap_2=10.5226, gap_4=0.74378, gap_8=0.6436882, gap_12=0.64367816). Per-step ratios R_(L+1)/R_L are ~10.008 (2->3) rising to ~10.0000; the >=1.9 bar should pass trivially - certify what you actually get. Continue your assigned unit (ratios, slab kills, UNBOUNDED_VERDICT) using the parent file as comparison data, never as input you trust blindly - recompute everything yourself.",
+      "mode": "full"
+    },
     "cd00c624d710:4": {
       "sourceSha256": "a566f607664e09b5a1a8e5407887aa22614fd0ab16f50ec5e35afdff07244593",
       "mode": "full",
@@ -69,10 +110,25 @@
     }
   },
   "findings": {
+    "01b3006753f0": {
+      "sourceSha256": "01b3006753f06235c7c124afe0a48e4229f8864d7d9f58607d832ce4a368e208"
+    },
+    "2ac0a2d0dd78": {
+      "sourceSha256": "2ac0a2d0dd78c9181df813891a3535c9f865aa0fce3e86ae28bc07867f15e51f"
+    },
+    "448daf14fa0a": {
+      "sourceSha256": "448daf14fa0a1d5fd494dd6b3d7db87c66e4d926262d357094fec996186d0408"
+    },
     "58e39ba584af": {
       "sourceSha256": "58e39ba584afd38ddd6dd0d829f6ea7e103783dd88d278c06f233636208487ba",
       "assessment": "The source claims universal divergence from finite certificates and a tail argument. A finite ladder alone does not prove this. The analytic derivation on the result page supplies the universal argument. The failed children did not complete an independent review.",
       "attribution": "Run-level only; individual native session unresolved"
+    },
+    "7b2bb0fc3452": {
+      "sourceSha256": "7b2bb0fc34521b8658d3f2730e90e6a5658da059c6bf96e5b71e60a74bbe4da1"
+    },
+    "b366d3a574d9": {
+      "sourceSha256": "b366d3a574d9132e48ec0de5232619d4e14ecec6faf0b39f383cd7ca75edc1bd"
     },
     "e0839fb145ae": {
       "sourceSha256": "e0839fb145ae6946682d886eeb55b7961a3265f016643fdc3b5a9028986614c4",
@@ -92,26 +148,6 @@
     },
     {
       "class": "encrypted-message"
-    },
-    {
-      "event": "b366d3a574d9",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "2ac0a2d0dd78",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "01b3006753f0",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "7b2bb0fc3452",
-      "reason": "unreviewed finding"
-    },
-    {
-      "event": "448daf14fa0a",
-      "reason": "unreviewed finding"
     }
   ],
   "redactionClasses": [
@@ -122,9 +158,9 @@
     "account-name",
     "ip-address"
   ],
-  "coverageText": "The constructor and off-diagonal assignment prompts are published, and every model request in those two sessions failed. No other conversation was retained.",
+  "coverageText": "All four Pi session files are joined to their children by bridge session directory. The constructor and off-diagonal assignment prompts, their failed model requests, and the director's four instructions to its workers are published. The director's OpenCode transcript and the Claude Code child's session were not retained.",
   "reviewer": {
     "by": "drewstone",
-    "at": "2026-10-04T08:32:28.637068+00:00"
+    "at": "2026-10-05T04:07:45.367Z"
   }
 }

@@ -186,6 +186,7 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    white-space: nowrap;
     color: var(--fg);
   }
 
@@ -193,6 +194,7 @@ const ordered = [...revisions].sort((a, b) => b.date.valueOf() - a.date.valueOf(
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--fg-muted);
+    white-space: nowrap;
   }
 
   .rev-chev {

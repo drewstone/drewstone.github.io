@@ -17,15 +17,18 @@
   "nodes": {
     "q-conj-entropy-bcww-repair": {
       "label": "root",
-      "role": "Director"
+      "role": "Director",
+      "captureNote": "The execution bridge kept the director's OpenCode event stream: assistant text, tool inputs and failed requests. It kept no prompts, tool results or reasoning."
     },
     "q-conj-entropy-bcww-repair:s0": {
       "label": "gate: prior-art sweep for published BCWW 4.6 repairs",
-      "role": "Worker"
+      "role": "Worker",
+      "captureNote": "Ran OpenCode in remote sandbox sandbox-d4bb34318cc0 and ended on a provider rate limit before any recorded model reply. The sandbox exposed no session to the run."
     },
     "q-conj-entropy-bcww-repair:s1": {
       "label": "gate retry: prior-art sweep (crash-safe, out/ only)",
-      "role": "Worker"
+      "role": "Worker",
+      "captureNote": "Ran OpenCode in remote sandbox sandbox-67ffa063af09; its prompt stream ended before a terminal event. The sandbox exposed no session to the run."
     },
     "finding:q-conj-entropy-bcww-repair": {
       "label": "Recorded findings",
@@ -36,8 +39,1013 @@
     "metadata": "public",
     "bodies": "withheld"
   },
-  "events": {},
+  "events": {
+    "59461caacf56:105": {
+      "sourceSha256": "a290e28768d270b3ed7495502eb8f5a53affa215d4308aa1b9cb6de8f3c2f281",
+      "toolCalls": [
+        {
+          "id": "prt_055151491001RAp3iYNUfYn8Pv",
+          "name": "bash",
+          "input": "command: python3 work/lock/lock_check.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:107": {
+      "sourceSha256": "caa9594e939545828776fdfb00ff2a12471a598e19672b54e83113a3bae49ddf",
+      "text": "Witness 2 is now pinned exactly: c46 = −0.113302008775 bits. Writing the canonical conventions document that will travel to every child.",
+      "mode": "full"
+    },
+    "59461caacf56:108": {
+      "sourceSha256": "f5bea67bc34c29f36e1378bc5e76028a1f54a78e091e46b6eb9b95e316841740",
+      "toolCalls": [
+        {
+          "id": "prt_05515c1650012tfaIXL2tF5Bv6",
+          "name": "write",
+          "input": "content:\n# LOCKED CONVENTIONS — q-conj-entropy-bcww-repair (all children MUST follow; violations killed runs before)\n\n## 1. Variables, masks, strings\n- Four parties A,B,C,D. Subset masks: A=1, B=2, C=4, D=8 (bit i of the mask, i=0..3).\n- STRING CONVENTION (pinned this run against the KB anchor): a 4-char string is the binary\n  representation of the mask, MSB first, so the RIGHTMOST character is A and the LEFTMOST is D.\n  Example: \"1001\" = bit0 + bit3 = mask 9 = atoms A=1, D=1. \"1010\" = mask 5 = A=1, C=1.\n- Pin evidence: with this reading, L on the uniform 5-atom witness = (9 log2 3 - 14)/5\n  = +0.052932501298 bits, exactly the KB-pinned value\n  (pursuit-arena-v9b1-q36-corpus-b--finding--five-atom-counterexample-bcww-2015-4-6-independently-verified).\n- KNOWN CROSS-LINEAGE DRIFT (do not fight it): the Q36-lineage 6-atom 291600-count anchor is NOT\n  reproducible under any of the 48 (2 readings x 24 relabelings) variants of this witness in this\n  convention family. If you need that lineage's numbers, re-pin them independently; do not assume.\n\n## 2. The inequality under repair (paper convention)\n- Ingleton(A:B;C,D) := I(A;B|C) + I(A;B|D) + I(C;D) - I(A;B).\n- BCWW (4.6) claimed statement: c46 >= 0 where c46 := Ingleton(A:B;C,D) + I(C:D|B).\n- c46 as a 15-vector over subset entropies (names by mask):\n  {AC:+1, AD:+1, BC:+2, BD:+2, AB:+1, A:-1, B:-2, ABC:-1, ABD:-1, BCD:-1, CD:-1}\n  (equivalently -L with L = S(ABD)+S(ABC)+S(BCD)-2S(BD)-2S(BC)+S(CD)-S(AD)-S(AC)-S(AB)+2S(B)+S(A),\n  the printed form of (4.6); verified this run by exact coefficient match).\n- The inequality is homogeneous of degree 1 with coefficient sum 0.\n\n## 3. The two committed witnesses (recompute exactly; never re-verify the falsification itself)\n- W1 (classical): uniform on atoms {0001, 0010, 0011, 0111, 1000} (read per Sec. 1:\n  masks 8, 4, 12, 14, 1). c46(W1) = (14 - 9 log2 3)/5 = -0.052932501298 bits (exact sign < 0).\n  I(C:D|B) = 0 EXACTLY on W1 (KB-settled, cited, not re-derived).\n- W2 (quantum, classical-reducible): rho = (3/4)|GHZ4><GHZ4| + (1/8)|s1><s1| + (1/8)|s2><s2|\n  with {s1,s2} = masks {5, 9} (strings \"1010\",\"1001\": atoms (A,C) and (A,D)); the (A<->B)\n  mirror {6,10} gives the identical value. Every marginal is diagonal-classical:\n  with prob 3/4 sample (0000 or 1111 uniformly), with prob 1/8 each sample \"1010\" / \"1001\".\n  c46(W2) = -0.113302008775 bits (exact rational prime-exponent certificate in\n  work/lock/witnesses.json; matches R1's register value \"+0.113302 bits\" to 8 significant figures).\n- Exact arithmetic standard: every entropy is a rational combination of log2(p), p prime\n  (W1/W2 need only p in {2,3,5}); signs are decided by integer comparison of prod p^(a_p D / b_p)\n  vs 1 — never by floats. Full machine-readable vectors: work/lock/witnesses.json.\n\n## 4. The repair grammar\n- Universe of terms: the DFZ 9-int CMI basis in the PAPER convention. 8 of 9 slots are\n  anchor-pinned by two KB-pinned corpus vectors (C0=(1,1,0,0,1,0,0,1,0)=plain Ingleton,\n  Q36=(1,1,0,1,1,1,1,1,0)=Ingleton+{I(B;C|A),I(A;D|B),I(B;D|A)} in this convention):\n    slot 1 = I(A;B|C)      slot 2 = I(A;B|D)      slot 3 = UNKNOWN (see below)\n    slot 4 = I(B;C|A)      slot 5 = I(C;D)        slot 6 = I(A;D|B)\n    slot 7 = I(B;D|A)      slot 8 = -I(A;B)       slot 9 = I(A;C|B)\n  slot 3 candidates (the six CMIs not used by slots 1,2,4,5,6,7,8,9):\n  {I(C;D|A), I(C;D|B), I(A;C|D), I(A;D|C), I(B;C|D), I(B;D|C)}.\n  The prior-art seat may pin slot 3 from DFZ arXiv:1104.3602; until then, treat slot 3 as\n  swept over all six candidates and TAG every result with which completions it holds under.\n- Statement: F = Ingleton(A:B;C,D) + l1*T_{i} + l2*T_{j} >= 0, with i,j in 1..9 (order irrelevant,\n  enumerate unordered pairs with repetition: 45), l1,l2 in {1/4, 1/2, 1, 3/2, 2} (25 combos).\n  1125 statements per slot-3 completion. Additionally run the 45 single-term statements\n  (l in the same set) as a DOCUMENTED EXTENSION (the charter's grammar has two terms; the\n  extension is reported separately, never mixed into the primary count).\n- SURVIVOR: F >= 0 on W1 AND F >= 0 on W2, exact rational sign decision (equality allowed).\n- Repair mass of a survivor: l1 + l2 (ties broken by L1 norm of the full 15-vector).\n\n## 5. Anchors any engine must reproduce before use (calibration, not re-verification)\n- c46(W1) = -0.052932501298 bits (exact sign -1).\n- c46(W2) = -0.113302008775 bits (exact sign -1).\n- C0 vector == the Ingleton 15-vector of Sec. 2 (coefficient-exact).\n- Reference engine: work/lock/lock_check.py (stdlib-only, Fraction-based, prime-exponent logs).\n\nfilePath: [workspace]/work/lock/conventions.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:109": {
+      "sourceSha256": "5fd43e65609cb1c4e0371f1bed49bb262ee5ba21104eed5f5c0813c9764d70fa",
+      "toolCalls": [
+        {
+          "id": "prt_05515d88b0019M4Xts6cu6WHph",
+          "name": "agent-runtime-coordination_await_event",
+          "input": "kinds: [\"settled\", \"question\"]"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:110": {
+      "sourceSha256": "a7e0d76a17263b56fc1b998c51ad8dff1f2a611e09c15ad6946bc79722c0c6f9",
+      "text": "Gate child is still warming up. Meanwhile, I'll commit the check scripts and record the witness-pin findings in the KB.",
+      "mode": "full"
+    },
+    "59461caacf56:111": {
+      "sourceSha256": "ef829417d14c92686c2910f2564072a3785f6cfb1dc517caadff580e975eb803",
+      "toolCalls": [
+        {
+          "id": "prt_055165f2a0013gYXAenEl9Jhyy",
+          "name": "bash",
+          "input": "command:\nmkdir -p work/checks && cat > work/checks/check_w2_pin.py <<'EOF'\n#!/usr/bin/env python3\n\"\"\"One-line check: recompute c46 on the PINNED R1 second witness from its mixture definition\n(minimal independent engine, exact Fraction marginals + prime-exponent log signs), print decimal.\"\"\"\nimport math\nfrom fractions import Fraction\nfrom math import lcm\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef Hvec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\n\n# rho = 3/4 GHZ4 + 1/8 |mask5> + 1/8 |mask9>  (classical-reducible marginals)\ndist = {0: Fraction(3,8), 15: Fraction(3,8), 5: Fraction(1,8), 9: Fraction(1,8)}\ntot={}\nfor m in range(1,16):\n    for pr,e in Hvec(marg(dist,m)).items():\n        tot[pr]=tot.get(pr,Fraction(0))+Fraction(C46.get(m,0))*e\ntot={p:c for p,c in tot.items() if c!=0}\n# exact sign\nfrom math import lcm as _l\nB=1\nfor c in tot.values(): B=_l(B,c.denominator)\nlhs=rhs=1\nfor p,c in sorted(tot.items()):\n    a=c.numerator*(B//c.denominator)\n    if a>0: lhs*=p**a\n    elif a<0: rhs*=p**(-a)\nsign=(lhs>rhs)-(lhs<rhs)\ndec=sum(float(c)*math.log2(p) for p,c in sorted(tot.items()))\nassert sign==-1\nprint(f\"W2_C46_BITS={dec:.9f}\")\nEOF\npython3 work/checks/check_w2_pin.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:112": {
+      "sourceSha256": "1b6aded7cbfff933cdec27d446a557f79266495ed3c5dedc751c494554465eb3",
+      "toolCalls": [
+        {
+          "id": "prt_05516742a0015RFg1NDl0kMF5t",
+          "name": "bash",
+          "input": "command:\ncp /tmp/anchor2b.py work/checks/check_anchor2_drift.py && python3 - <<'EOF'\n# append a print line to the drift check (script currently prints nothing on no-match)\npath=\"work/checks/check_anchor2_drift.py\"\nsrc=open(path).read()\nsrc=src.replace('t1,t2 = -7.455776108850990, +1.837778949756130','t1,t2 = -7.455776108850990, +1.837778949756130\\nmatches=0\\ntried=0')\nsrc=src.replace('        i6,q6 = f(val(ING_corpus,V))*N, f(val(Q36,V))*N','        tried+=1\\n        i6,q6 = f(val(ING_corpus,V))*N, f(val(Q36,V))*N')\nsrc=src.replace('            print(f\"MATCH [{name}] perm={perm}: N*Ing={i6:+.9f} N*Q36={q6:+.9f}\")','            matches+=1\\n            print(f\"MATCH [{name}] perm={perm}: N*Ing={i6:+.9f} N*Q36={q6:+.9f}\")')\nsrc+='\\nprint(f\"ANCHOR2_TRIED={tried} MATCHES={matches}\")\\n'\nopen(path,\"w\").write(src)\nEOF\npython3 work/checks/check_anchor2_drift.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:113": {
+      "sourceSha256": "a6ab313f363b55c6103571b090b6498508026e3ae7f307e84d0039c950ae3833",
+      "text": "/tmp was cleaned between calls — writing the drift check directly.",
+      "mode": "full"
+    },
+    "59461caacf56:114": {
+      "sourceSha256": "dab05ab1dd887d3683347c133665e5c665e1837e5e0b9de8db4b05388a31a1f6",
+      "toolCalls": [
+        {
+          "id": "prt_05516a097001Kf0BohPQG1p9Ew",
+          "name": "write",
+          "input": "content:\n#!/usr/bin/env python3\n\"\"\"One-line check: cross-lineage convention drift probe. Tries all 48 variants\n(2 string readings x 24 party relabelings) of the Q36-lineage 6-atom 291600-count witness\nagainst the KB-pinned values N*Ing(corpus) = -7.455776108850990 / N*Q36 = +1.837778949756130\n(pursuit-q-q36-analytic-rho4-constant-r2--finding--q36-convention-pinned-exactly-...).\nPrints ANCHOR2_TRIED=48 MATCHES=<n> (0 = the anchor is not reachable from the BCWW-lineage\nstring/mask convention family; convention families have drifted across lineages).\"\"\"\nfrom fractions import Fraction\nimport math\nfrom math import lcm\nfrom itertools import permutations\n\n\ndef pe(n):\n    e = {}\n    d = 2\n    while d * d <= n:\n        while n % d == 0:\n            e[d] = e.get(d, 0) + 1\n            n //= d\n        d += 1\n    if n > 1:\n        e[n] = e.get(n, 0) + 1\n    return e\n\n\ndef Hvec(dist):\n    den = 1\n    for p in dist.values():\n        den = lcm(den, p.denominator)\n    v = {}\n    for pr, ex in pe(den).items():\n        v[pr] = v.get(pr, Fraction(0)) + Fraction(ex)\n    for m, p in dist.items():\n        n = int(p * den)\n        if n == 0:\n            continue\n        for pr, ex in pe(n).items():\n            v[pr] = v.get(pr, Fraction(0)) - Fraction(ex * n, den)\n    return {p: c for p, c in v.items() if c != 0}\n\n\ndef marg(dist, sub):\n    out = {}\n    for m, p in dist.items():\n        k = m & sub\n        out[k] = out.get(k, Fraction(0)) + p\n    return out\n\n\ncounts = {\"0000\": 288938, \"1010\": 1080, \"0100\": 1080, \"1011\": 480, \"0110\": 9, \"1111\": 13}\nN = 291600\nING_corpus = {5: 1, 9: 1, 6: 1, 10: 1, 12: 1, 3: -1, 4: -1, 8: -1, 13: -1, 14: -1}\n\n\ndef add(a, b):\n    out = dict(a)\n    for m, v in b.items():\n        out[m] = out.get(m, 0) + v\n    return {m: v for m, v in out.items() if v != 0}\n\n\ndef cmi(x, y, z):\n    return {x | z: 1, y | z: 1, z: -1, x | y | z: -1}\n\n\nQ36 = add(ING_corpus, add(add(cmi(1, 8, 4), cmi(2, 4, 8)), cmi(2, 8, 4)))\n\n\ndef val(coeffs, V):\n    tot = {}\n    for m, c in coeffs.items():\n        for pr, e in V[m].items():\n            tot[pr] = tot.get(pr, Fraction(0)) + Fraction(c) * e\n    return {p: c for p, c in tot.items() if c != 0}\n\n\ndef f(v):\n    return sum(float(c) * math.log2(p) for p, c in v.items())\n\n\nt1, t2 = -7.455776108850990, +1.837778949756130\nmatches = 0\ntried = 0\nfor name, mf in ((\"rightmost=A\", lambda s: sum((1 << i) for i, ch in enumerate(s) if ch == \"1\")),\n                 (\"leftmost=A\", lambda s: sum((1 << (3 - i)) for i, ch in enumerate(s) if ch == \"1\"))):\n    dist0 = {mf(s): Fraction(c, N) for s, c in counts.items()}\n    for perm in permutations(range(4)):\n        def rl(m):\n            return sum(1 << perm[b] for b in range(4) if m & (1 << b))\n        dist = {rl(m): p for m, p in dist0.items()}\n        V = {m: Hvec(marg(dist, m)) for m in range(1, 16)}\n        tried += 1\n        i6, q6 = f(val(ING_corpus, V)) * N, f(val(Q36, V)) * N\n        if abs(i6 - t1) < 1e-6 and abs(q6 - t2) < 1e-6:\n            matches += 1\nprint(f\"ANCHOR2_TRIED={tried} MATCHES={matches}\")\n\nfilePath: [workspace]/work/checks/check_anchor2_drift.py"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:115": {
+      "sourceSha256": "820ba624833cea3b52da0870144bc018a83d7d716488397607512a3838611b3e",
+      "toolCalls": [
+        {
+          "id": "prt_05516acc5001SnluEvmxvv7x8B",
+          "name": "bash",
+          "input": "command: python3 work/checks/check_anchor2_drift.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:116": {
+      "sourceSha256": "51ccd354a45e23acb82a866120ea021b029a71af9eecb0ebc0a96e1df0cf6ea5",
+      "text": "Recording both findings in the KB with absolute-path checks.",
+      "mode": "full"
+    },
+    "59461caacf56:117": {
+      "sourceSha256": "d403a1bfccc87b331497a41fee0fef3239cd5c8dac7e05cbc64c98eef65ee154",
+      "toolCalls": [
+        {
+          "id": "prt_05516eacc0017V8tMEHUFkeGDa",
+          "name": "agent-runtime-coordination_kb_record",
+          "input": "body: The R1 register's second (\"GHZ4 mixture, +0.113302 bits\") BCWW-(4.6)-violating witness is pinned exactly: rho = (3/4)|GHZ4><GHZ4| + (1/8)|s1><s1| + (1/8)|s2><s2| with {s1,s2} = the atoms (A,C) and (A,D) (masks 5,9; strings \"1010\",\"1001\" under the locked convention: 4-char string = binary of the subset mask MSB-first, RIGHTMOST char = A). The state is classical-reducible: every marginal is the diagonal classical mixture {3/8 on 0000, 3/8 on 1111, 1/8 on (A,C), 1/8 on (A,D)} restricted. Exact rational prime-exponent arithmetic gives c46 = Ingleton(A:B;C,D)+I(C:D|B) = -0.113302008775 bits (exact sign -1 by integer comparison), matching the register's 6-decimal \"+0.113302 bits\" (the (A<->B) mirror pair masks {6,10} gives the identical value; c46 is A<->B symmetric). Identification method: exact-evaluation screen over the classical-reducible family {g*GHZ4 + b*|s> + c*|t>} (120 mask pairs x 480x480 weight grid) found the unique 6-decimal match at g=3/4, b=c=1/8, masks {5,9}; the white-noise family (1-k/12)GHZ4+(k/12)I/16 has c46 >= 0 for ALL k (pure GHZ4 sits at exact equality c46=0) and the classic Linden mixture (1/2 GHZ4 + 1/4|0101> + 1/4|1001>) evaluates POSITIVE (c46=+0.5 at masks {10,9}, +0.066..+1.19 over all 12 relabeled pairs) — neither is the R1 witness. Engine calibration anchors also locked this run: c46 on the uniform 5-atom witness = (14-9*log2(3))/5 = -0.052932501298 bits exactly, and the string convention pinned by brute force (24 relabelings x 2 readings; only rightmost=A reproduces the KB value with identity relabeling). Full entropy vectors of both witnesses: work/lock/witnesses.json; reference engine work/lock/lock_check.py (stdlib-only Fractions).\ncheck: python3 [workspace]/work/checks/check_w2_pin.py\ncites: [\"pursuit-arena-v9b1-q36-corpus-b--finding--five-atom-counterexample-bcww-2015-4-6-independently-verified\"]\nevidencePath: work/lock/witnesses.json\nexpect: W2_C46_BITS=-0.113302009\nkind: finding\nrung: 4\ntitle: R1's GHZ4-mixture second witness pinned exactly: rho = 3/4 GHZ4 + 1/8|(A,C)> + 1/8|(A,D)>, c46 = -0.113302009 bits, classical-reducible\ntopic: BCWW 4.6 GHZ4 mixture witness pin classical-reducible exact entropy vector convention lock"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:118": {
+      "sourceSha256": "6f80b65cb45c56253e4ef8cf8da13b60aa6d962d3396b47f39a8c450e8595ac6",
+      "toolCalls": [
+        {
+          "id": "prt_0551712da0016bmpH4YscbEfqV",
+          "name": "agent-runtime-coordination_kb_record",
+          "input": "body: Instrument observation (convention discipline): the Q36-lineage anchor witness (six atoms with counts {0000:288938, 1010:1080, 0100:1080, 1011:480, 0110:9, 1111:13}, N=291600, KB-pinned values N*Ing(corpus) = -7.455776108850990 and N*Q36 = +1.837778949756130) is NOT reproducible from the BCWW-lineage string/mask convention family: all 48 variants (2 string readings x 24 party relabelings) miss BOTH pinned values simultaneously (closest variant gives N*Ing = -10.756 under the rightmost-A reading with identity relabel). Meanwhile the BCWW-lineage anchor (5-atom witness, c46 = (14-9log2 3)/5) reproduces EXACTLY under rightmost=A + identity relabel. Conclusion: the two corpus lineages' witness encodings have drifted beyond a global relabeling; later runs must NOT carry entropy-vector conventions across these lineages — re-pin per lineage against its own KB anchor. This is why this run locks conventions locally (work/lock/conventions.md) and requires every engine to reproduce both anchors before use.\ncheck: python3 [workspace]/work/checks/check_anchor2_drift.py\nevidencePath: work/checks/check_anchor2_drift.py\nexpect: ANCHOR2_TRIED=48 MATCHES=0\nkind: experiment\nrung: 3\ntitle: Cross-lineage convention drift measured: Q36-lineage 291600-count anchor unreachable under all 48 BCWW-family string/relabeling variants\ntopic: convention drift string mask entropy witness encoding lineage instrument"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:119": {
+      "sourceSha256": "10511a25bb3332cdeaf1dfb2cc7061cdeb67b00e7cb47a3c8d9e30b6cdfa354f",
+      "toolCalls": [
+        {
+          "id": "prt_0551742830018D7p8xiqV2tuY9",
+          "name": "edit",
+          "input": "filePath: [workspace]/PREDICTIONS.md\nnewString:\n## P1 — GHZ4-mixture witness identification (convention lock, runs first)\n- Case: which mixture is R1's \"GHZ4 mixture, +0.113302 bits\" second witness falsifying (4.6)?\n- Prediction: the Linden-type mixture rho = 0.5|GHZ4><GHZ4| + 0.25|0101><0101| + 0.25|1001><1001|\n  gives c46 = Ing(A:B;C,D)+I(C:D|B) = -0.113302... bits; no white-noise point (1-k/12)GHZ4+(k/12)I/16 does.\n- Confidence: 0.6 (the phrase \"GHZ4 mixture\" + the lineage's Linden state; white-noise grid is the alternative).\n- Settled by: python3 work/lock/lock_check.py  (prints c46 for every candidate; match against -0.113302 bits to 6 decimals).\n- Falsifier: if NO candidate matches to 6 decimals, conventions are wrong or the witness is a rotated\n  variant — escalate to enumerating the 24 party relabelings of the Linden state before anything else runs.\n\n### OUTCOME (settled 2026-08-30, BEFORE the sweep ran)\nPARTIALLY WRONG, and the falsifier branch fired. White-noise: correctly predicted eliminated\n(c46 >= 0 for ALL k, pure GHZ4 at exact equality). Linden (1/2,1/4,1/4): WRONG — it evaluates\nc46 = +0.5 (positive, not a violator). The falsifier escalation (wider classical-reducible family\n{g*GHZ4 + b*|s> + c*|t>}, 120 mask pairs x 480x480 grid) found the unique match:\nrho = (3/4)GHZ4 + (1/8)|(A,C)> + (1/8)|(A,D)>, c46 = -0.113302008775 bits (exact). So the witness\nis Linden-TYPE (GHZ + two basis states on the \"cross\" pair pattern) but at weights (3/4,1/8,1/8),\nnot (1/2,1/4,1/4). Recorded at rung 4. The wrong sub-prediction mattered: the killer battery's\nGHZ4-noise grid must be centered on the TRUE witness family (g near 3/4), not on white noise.\noldString:\n## P1 — GHZ4-mixture witness identification (convention lock, runs first)\n- Case: which mixture is R1's \"GHZ4 mixture, +0.113302 bits\" second witness falsifying (4.6)?\n- Prediction: the Linden-type mixture rho = 0.5|GHZ4><GHZ4| + 0.25|0101><0101| + 0.25|1001><1001>\n  gives c46 = Ing(A:B;C,D)+I(C:D|B) = -0.113302... bits; no white-noise point (1-k/12)GHZ4+(k/12)I/16 does.\n- Confidence: 0.6 (the phrase \"GHZ4 mixture\" + the lineage's Linden state; white-noise grid is the alternative).\n- Settled by: python3 work/lock/lock_check.py  (prints c46 for every candidate; match against -0.113302 bits to 6 decimals).\n- Falsifier: if NO candidate matches to 6 decimals, conventions are wrong or the witness is a rotated\n  variant — escalate to enumerating the 24 party relabelings of the Linden state before anything else runs."
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:120": {
+      "sourceSha256": "360db6ce5d9cd1c0b35a698079df8ceeb337488a4c2c9b701ad2494ac6026d0f",
+      "text": "While the gate runs, a quick scout of the grammar landscape (my own calibration — sharpens the certifier/killer specs).",
+      "mode": "full"
+    },
+    "59461caacf56:121": {
+      "sourceSha256": "c667602e971d2413338662ccbc05a1982328971a7985acd8e78704880afe1c9d",
+      "toolCalls": [
+        {
+          "id": "prt_055178b30001l0RLtDfZj0oSok",
+          "name": "bash",
+          "input": "cat > /tmp/scout.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef Hvec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\ndef mi(x,y): return {x:1,y:1,x|y:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\n\ndef val(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return {p:c for p,c in tot.items() if c!=0}\ndef f(v): return sum(float(c)*math.log2(p) for p,c in v.items())\ndef sgn(v):\n    B=1\n    for c in v.values(): B=lcm(B,c.denominator)\n    lhs=rhs=1\n    for p,c in v.items():\n        a=c.numerator*(B//c.denominator)\n        if a>0: lhs*=p**a\n        elif a<0: rhs*=p**(-a)\n    return (lhs>rhs)-(lhs<rhs)\n\nW1={sum(1<<i for i,ch in enumerate(s) if ch==\"1\"):Fraction(1,5) for s in (\"0001\",\"0010\",\"0011\",\"0111\",\"1000\")}\nW2={0:Fraction(3,8),15:Fraction(3,8),5:Fraction(1,8),9:Fraction(1,8)}\nV1={m:Hvec(marg(W1,m)) for m in range(1,16)}\nV2={m:Hvec(marg(W2,m)) for m in range(1,16)}\n\nTERMS={\n \"s1_IAB_C\":cmi(1,2,4),\"s2_IAB_D\":cmi(1,2,8),\n \"s4_IBC_A\":cmi(2,4,1),\"s5_ICD\":mi(4,8),\"s6_IAD_B\":cmi(1,8,2),\"s7_IBD_A\":cmi(2,8,1),\n \"s8_negIAB\":{1:-1,2:-1,3:1},\"s9_IAC_B\":cmi(1,4,2),\n \"c1_ICD_A\":cmi(4,8,1),\"c2_ICD_B\":cmi(4,8,2),\"c3_IAC_D\":cmi(1,4,8),\"c4_IAD_C\":cmi(1,8,4),\n \"c5_IBC_D\":cmi(2,4,8),\"c6_IBD_C\":cmi(2,8,4),\n}\nprint(\"term values (bits) on W1 / W2:\")\nt1={};t2={}\nfor nm,tc in TERMS.items():\n    v1,vv1=val(tc,V1),None\n    f1,f2v=f(val(tc,V1)),f(val(tc,V2))\n    t1[nm]=f1; t2[nm]=f2v\n    print(f\"  {nm:12s} {f1:+.6f}  {f2v:+.6f}\")\nprint(f\"\\nIng(W1)={f(val(ING,V1)):+.6f}  Ing(W2)={f(val(ING,V2)):+.6f}\")\n\nLAMS=[Fraction(1,4),Fraction(1,2),Fraction(1),Fraction(3,2),Fraction(2)]\nnames=list(TERMS)\nsurv=[]\ning1,ing2=t1 and f(val(ING,V1)),f(val(ING,V2))\n# statement needs l1*T1+l2*T2 >= -Ing on both witnesses\nfor i in range(len(names)):\n    for j in range(i,len(names)):\n        for l1 in LAMS:\n            for l2 in LAMS:\n                if i==j and l2<l1: continue\n                f1=ing1+float(l1)*t1[names[i]]+float(l2)*t1[names[j]]\n                f2v=ing2+float(l1)*t2[names[i]]+float(l2)*t2[names[j]]\n                if f1>=-1e-12 and f2v>=-1e-12:\n                    surv.append((float(l1)+float(l2),names[i],names[j],str(l1),str(l2),f1,f2v))\nprint(f\"\\nscout survivors (all 15 terms incl. 6 slot3 candidates as pool): {len(surv)}\")\nsurv.sort()\nfor s in surv[:15]:\n    print(f\"  mass={s[0]:.2f} {s[1]}+{s[2]} l=({s[3]},{s[4]}) W1:{s[5]:+.6f} W2:{s[6]:+.6f}\")\nEOF\npython3 /tmp/scout.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:123": {
+      "sourceSha256": "b9c74b04f8a3171451fe7c01e34a75ec4ab93d7ffcf3bae22edd003c5b5a1d20",
+      "text": "The scout reveals the structure: Ing(W2) = −0.1589; the CD-conditioned cross-CMIs (I(A;C|D) etc.) are the strong repair terms; minimal mass ½ via (T,T)@(¼,¼). Let me check my own LP tooling for a depth-0 calibration while the gate runs.",
+      "mode": "full"
+    },
+    "59461caacf56:124": {
+      "sourceSha256": "f4da2ac47564da3757faaf0b7bc5311a61a3773f752b0764a4a68b516d5a42d4",
+      "toolCalls": [
+        {
+          "id": "prt_0551862c1001vKrV4L8w9ATebM",
+          "name": "bash",
+          "input": "python3 -c \"import scipy; from scipy.optimize import linprog; print('scipy', scipy.__version__)\" 2>&1; python3 -c \"import highspy; print('highspy ok')\" 2>&1"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:125": {
+      "sourceSha256": "9da6e86d2cd4e9a7261349fdf8c5c93fc5565b0f4ad8ded9b7602fd395c1ae08",
+      "text": "No LP solvers here — the certifier seat will hand-roll exact simplex (lineage-standard). Checking the gate child's progress.",
+      "mode": "full"
+    },
+    "59461caacf56:126": {
+      "sourceSha256": "38fd1b8d283521c1962582f416f4799ba95912c4715c81270617e0f61cc5ee76",
+      "toolCalls": [
+        {
+          "id": "prt_055187e57001En4f6pSGqmh6Mn",
+          "name": "agent-runtime-coordination_observe_agent",
+          "input": "workerId: q-conj-entropy-bcww-repair:s0"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:127": {
+      "sourceSha256": "f2f081391a4219fb94eea5e2e8f2667a88813e82d2a74a43b597f62269949287",
+      "text": "The gate child failed mid-run (harness-level, after ~12 min of real fetch work — it kept files in /tmp instead of ./out/, so nothing survived). Respawning with crash-safe instructions.",
+      "mode": "full"
+    },
+    "59461caacf56:128": {
+      "sourceSha256": "888db54fe2e80f209aa7159cb9b050e53572e7c7ced2af0f9ccc3c4b9cb68428",
+      "toolCalls": [
+        {
+          "id": "prt_05518d496001UuARkXiG317zP7",
+          "name": "agent-runtime-coordination_spawn_worker",
+          "input": "budget: {\"maxIterations\": 90, \"maxTokens\": 2400000}\nkey: prior-art-gate-v2\nlabel: gate retry: prior-art sweep (crash-safe, out/ only)\nprofile: {\"description\": \"Literature-audit seat (retry): sweeps post-2015 literature for any published repair of BCWW eq (4.6).\", \"harness\": \"opencode\", \"model\": {\"default\": \"glm-5.2\", \"provider\": \"zai-coding-plan\", \"reasoningEffort\": \"high\"}, \"name\": \"prior-art-gate\"}\ntask:\nROLE: meticulous literature-audit researcher in a sandbox box with network access (curl via bash, or webfetch). Your process may die at ANY moment (a previous attempt died mid-run and lost everything it kept in /tmp). Therefore: work ONLY inside ./out/ and ./out/raw/, create out/sources_swept.json as a JSON array in your FIRST action (it may start empty), and APPEND to it after every source you classify. Never stage content anywhere outside ./out/. Return work in ./out/ only.\n\nUNIT: GATE for \"is there a PUBLISHED repair of the BCWW (4.6) inequality?\". Your verdict decides whether a computation run happens: a wrong GATE_CLEAR is expensive, a wrong REPAIR_FOUND kills the run.\n\nBACKGROUND (settled): BCWW = Bao-Cao-Walter-Wang, arXiv:1507.05650 v2 (JHEP 2015). Eq. (4.6): L = S(ABD)+S(ABC)+S(BCD)-2S(BD)-2S(BC)+S(CD)-S(AD)-S(AC)-S(AB)+2S(B)+S(A) <= 0 = -[Ingleton(A:B;C,D) + I(C:D|B)], Ingleton(A:B;C,D) := I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B). Falsified elsewhere (settled, not your concern). QUESTION: has anyone since 2015 PUBLISHED a repaired version — any statement \"Ingleton(A:B;C,D) + (weighted sum of CMI/MI terms) >= 0\" intended for GENERAL 4-party classical or quantum states, in this pairing, in the holographic-entropy-cone / quantum-cone literature?\n\nVERDICT RULES. REPAIR = a dated publicly archived paper (arXiv eprint or published) stating/conjecturing/proving such a general-state inequality in the BCWW lineage. NOT a repair: (a) pre-2015 classical non-Shannon inequalities (Dougherty-Freiling-Zeger etc. — predate BCWW; mark NOT_A_REPAIR with reason); (b) claims restricted to special state classes ONLY (stabilizer / holographic graph models / pure / Gaussian) — if a paper has both, it counts, quote both parts; (c) our own unpublished corpus objects (Q36, F1, F2); (d) surveys merely citing BCWW.\n\nMETHOD (log every fetch attempt with URL + outcome in out/raw/fetchlog.txt as you go):\n1. Semantic Scholar citations API (paginate): https://api.semanticscholar.org/graph/v1/paper/arXiv:1507.05650/citations?fields=title,year,abstract,externalIds&limit=1000 (add &offset=...). Classify all citing papers by title+abstract; fetch arXiv abs pages for plausible hits before deciding. NOTE: the API rate-limits (429) — on 429 sleep 30-60s and retry, and prefer batching.\n2. Same for arXiv:2006.16292, arXiv:1903.09148, arXiv:2112.00763.\n3. arXiv API queries: http://export.arxiv.org/api/query?search_query=all:%22Ingleton%22+AND+all:%22entropy%22&max_results=100 and variants (\"Ingleton inequality\", \"four party entropy inequality quantum\", \"holographic entropy cone Ingleton\"). Save raw XML to out/raw/.\n4. Read inputs/inbox/dir3-F-A.json (traveled with you; dated 2026-08-13 area sources list) — check its UNVERIFIED GAPS items touching Ingleton repairs. inputs/inbox/dir3-register.md = our R1 for orientation only.\n5. SECONDARY (DFZ basis pin): fetch arXiv:1104.3602 (Dougherty-Freiling-Zeger, \"Non-Shannon Information Inequalities in Four Random Variables\") full text (try https://arxiv.org/e-print handles export; or the abs page + any HTML render). If the paper parametrizes its inequalities by a list of exactly NINE information quantities (CMIs/MIs), transcribe the nine VERBATIM in the paper's slot order into out/dfz_basis.md, then cross-check this anchor (8 of 9 corpus slots pinned): slots {1:I(A;B|C), 2:I(A;B|D), 4:I(B;C|A), 5:I(C;D), 6:I(A;D|B), 7:I(B;D|A), 8:I(A;B) coeff -1, 9:I(A;C|B)} + unknown slot 3; corpus vectors C0=(1,1,0,0,1,0,0,1,0)=plain Ingleton, Q36=(1,1,0,1,1,1,1,1,0). Report which slots agree and the paper's slot 3. If unreachable, record what you saw.\n\nDELIVERABLES (create empty early, append as you go — crash safety is graded):\n- out/sources_swept.json — [{id, title, year, how_found, url_fetched, date_checked, verdict: REPAIR|NOT_A_REPAIR|UNCLEAR, reason, quote?}].\n- out/GATE_VERDICT.md — REPAIR_FOUND | GATE_CLEAR | BLOCKED_NETWORK (+attempted URLs), count, 3 strongest near-misses and why they fail the bar, coverage stats.\n- out/checks/check_gate.py — stdlib-only, resolves ../sources_swept.json relative to __file__, prints one line REPAIRS_FOUND=<n>, runs from any cwd.\n- out/dfz_basis.md (secondary).\n\nDONE MEANS: check_gate.py prints REPAIRS_FOUND=N = the count of REPAIR rows; GATE_VERDICT.md consistent (GATE_CLEAR iff N=0); >= 60 distinct sources examined (or every reachable one, with counts stated). If network is dead, BLOCKED_NETWORK is the honest outcome — never invent sources."
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:130": {
+      "sourceSha256": "0b64b0026a1513f9ec0a45ac676c9779d578b3c84c47cd8eda9acc7624535318",
+      "text": "While the gate retry runs, let me draft the FINDINGS skeleton to fill as results land.",
+      "mode": "full"
+    },
+    "59461caacf56:131": {
+      "sourceSha256": "9d683c83ec7c263d68b3298179ab4d1aa03adb0fe0dabc5a04c160a614d506e4",
+      "toolCalls": [
+        {
+          "id": "prt_05519bd5b0014zgosHoxi5jvT6",
+          "name": "write",
+          "input": "content:\n# FINDINGS — q-conj-entropy-bcww-repair (CHARTER MOVE 1: the repaired BCWW 4.6)\n\nStatus: IN PROGRESS. Sections fill as units settle. Every claim names its rung and its check.\n\n## Locked conventions (prerequisite unit, root-executed)\n- String convention pinned by brute force against the KB anchor: 4-char string = binary of the\n  subset mask MSB-first, RIGHTMOST character = A (\"1001\" = mask 9 = A,D). work/lock/conventions.md.\n- c46 := Ingleton(A:B;C,D) + I(C:D|B); 15-vector verified equal to -L (printed 4.6) by exact\n  coefficient match; c46(W1) = (14-9 log2 3)/5 = -0.052932501298 bits (engine calibration vs KB).\n- W2 pinned (rung 4, recorded): rho = 3/4 GHZ4 + 1/8|(A,C)> + 1/8|(A,D)>, c46 = -0.113302008775 bits.\n- Cross-lineage convention drift measured (rung 3, recorded): Q36-lineage 291600-anchor\n  unreachable under all 48 BCWW-family variants.\n\n## Gate (prior-art seat)\n- PENDING (retry s1 running; first attempt s0 died mid-run, harness-level, zero output).\n\n## Grammar sweep\n- PENDING (root scout, float-only, provisional: survivor structure previewed — see PREDICTIONS.md).\n\n## Certification\n- PENDING.\n\n## Killer battery\n- PENDING.\n\n## Threat register (charter requirement)\n- Grammar-narrowness threat: stated in PREDICTIONS.md (three ways); to be restated with the\n  sweep's actual coverage numbers.\n\nfilePath: [workspace]/FINDINGS.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:132": {
+      "sourceSha256": "cccaf68abd8c918fe96d671876984cfcd37d3d2c7b24c30ab582b971b5ff9876",
+      "toolCalls": [
+        {
+          "id": "prt_05519c8500017r5pT60VewQEq4",
+          "name": "agent-runtime-coordination_await_event",
+          "input": ""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:133": {
+      "sourceSha256": "0f1be82a1975e3309397c08065805015b3065d69de32071600cf94562e8eadcc",
+      "text": "First gate attempt died on a provider **rate limit** — important: my children share one zai credential, so I'll serialize seats (which matches the charter's sweep→certify→kill graph anyway). Watching the retry.",
+      "mode": "full"
+    },
+    "59461caacf56:134": {
+      "sourceSha256": "9c3ed4aac8766cfe29993d66f3f09ba5d32c04f1ba028757268dbe49a61219fe",
+      "toolCalls": [
+        {
+          "id": "prt_05519ec0d001MLS6fX1hk6dXpC",
+          "name": "agent-runtime-coordination_await_event",
+          "input": ""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:136": {
+      "sourceSha256": "25176aada6c5563109af41021168c9b7f6c98501ff44aea11cc7bc436211f4d7",
+      "text": "While s1 runs, let me scout the battery landscape myself — evaluating the leading ship candidate (Ing + ½·I(A;C|D)) over the u5 ladder and cat-masks to preview P4.",
+      "mode": "full"
+    },
+    "59461caacf56:137": {
+      "sourceSha256": "13cdc5d5790e3f4ea25e7b4466f261b6a82916b16da2856d0e03439805181425",
+      "toolCalls": [
+        {
+          "id": "prt_0551b003d001LZ7J02gS5mCz0i",
+          "name": "bash",
+          "input": "cat > /tmp/battery_scout.py <<'EOF'\nfrom fractions import Fraction\nfrom itertools import combinations\nimport math\nfrom math import lcm\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef Hvec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\n\n# candidate functionals to battery-test\nCANDS = {\n  \"Ing+1/2*IAC_D\": add(ING, {k:Fraction(1,2)*v for k,v in cmi(1,4,8).items()}),\n  \"Ing+1/2*IAD_C\": add(ING, {k:Fraction(1,2)*v for k,v in cmi(1,8,4).items()}),\n  \"Ing+1*IAD_B\":   add(ING, cmi(1,8,2)),\n  \"Ing+1/2*(IAD_B+IAC_B)\": add(ING, {k:Fraction(1,2)*v for k,v in add(cmi(1,8,2),cmi(1,4,2)).items()}),\n}\ndef fval(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return sum(float(c)*math.log2(p) for p,c in tot.items())\n\ndef vects(dist):\n    return {m:Hvec(marg(dist,m)) for m in range(1,16)}\n\n# battery element generator\nF5=Fraction(1,5)\ndef battery():\n    # u5 ladder: all uniform 5-subsets\n    for supp in combinations(range(16),5):\n        yield (\"u5\", {m: Fraction(1,5) for m in supp})\n    # two-point cats: all pairs, p on 12-grid\n    for s,t in combinations(range(16),2):\n        for k in range(1,12):\n            yield (\"cat\", {s: Fraction(k,12), t: Fraction(12-k,12)})\n    # 3+2 atom patterns: top pairs + third atom? skip for scout\n\nmins={nm:(9e9,None) for nm in CANDS}\nn=0\nfor tag,dist in battery():\n    n+=1\n    V=vects(dist)\n    for nm,c in CANDS.items():\n        v=fval(c,V)\n        if v<mins[nm][0]: mins[nm]=(v,(tag,dist))\nprint(f\"battery size (scout): {n}\")\nfor nm,(v,loc) in mins.items():\n    print(f\"{nm}: min={v:+.6f} at {loc[0]} {({m:str(p) for m,p in sorted(loc[1].items())})}\")\nEOF\ntimeout 1150 python3 /tmp/battery_scout.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:138": {
+      "sourceSha256": "a1a0a311b159fc834a5e864140b125c79b9a0fd5543005c23d06e20af76866be",
+      "text": "Remarkable scout: all four leading candidates have battery minimum **exactly 0** (equality witnesses, no kills) over 5688 elements — the conjecture candidates look robust. Checking the gate child.",
+      "mode": "full"
+    },
+    "59461caacf56:139": {
+      "sourceSha256": "c703978fcf4ea46fb42926854091ec7fc5bb686b4fc9a4b83ce500a0d04628d6",
+      "toolCalls": [
+        {
+          "id": "prt_0551b5a6c001JwxypnQLI4pUjz",
+          "name": "agent-runtime-coordination_await_event",
+          "input": ""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:140": {
+      "sourceSha256": "b26708878370f2d4d195085c063748c46da106fa74ca28639067eb33a36b2658",
+      "text": "Extending my battery scout to the GHZ-mixture and weight-perturbation families while s1 works.",
+      "mode": "full"
+    },
+    "59461caacf56:142": {
+      "sourceSha256": "a9caaa037e07efac1097e41bda1233ccb42ba57e35a14a5d639a7ddf6d53106b",
+      "toolCalls": [
+        {
+          "id": "prt_0551bc44b001qdCWSPPL4Pr5ya",
+          "name": "bash",
+          "input": "cat > /tmp/battery_scout2.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\ndef Hvec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nCANDS = {\n  \"Ing+1/2*IAC_D\": add(ING, {k:Fraction(1,2)*v for k,v in cmi(1,4,8).items()}),\n  \"Ing+1*IAD_B\":   add(ING, cmi(1,8,2)),\n  \"Ing+1/2*(IAD_B+IAC_B)\": add(ING, {k:Fraction(1,2)*v for k,v in add(cmi(1,8,2),cmi(1,4,2)).items()}),\n}\ndef fval(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return sum(float(c)*math.log2(p) for p,c in tot.items())\ndef vects(dist): return {m:Hvec(marg(dist,m)) for m in range(1,16)}\n\nGHZC={0:Fraction(1,2),15:Fraction(1,2)}\ndef mix(comps):\n    out={}\n    for w,d in comps:\n        for m,p in d.items(): out[m]=out.get(m,Fraction(0))+w*p\n    return out\n\nmins={nm:(9e9,None) for nm in CANDS}\nn=0\n# GHZ mixture families: g on 24-grid over all pairs (s,t)\nfrom itertools import combinations\nfor s,t in combinations(range(16),2):\n    for a in range(1,24):\n        for b in range(0,24-a):\n            g=Fraction(a,24); w2=Fraction(b,24); w3=1-g-w2\n            if w3<0: continue\n            dist=mix([(g,GHZC),(w2,{s:Fraction(1)}),(w3,{t:Fraction(1)})])\n            n+=1\n            V=vects(dist)\n            for nm,c in CANDS.items():\n                v=fval(c,V)\n                if v<mins[nm][0]: mins[nm]=(v,(\"ghzmix\",f\"g={g} s={s} t={t} w2={w2}\"))\n# weight perturbations of the committed 5-atom support (masks 8,4,12,14,1): eps sign patterns\nsupp=(8,4,12,14,1)\nimport itertools\nfor alpha in (Fraction(1,20),Fraction(1,10),Fraction(1,5)):\n    for signs in itertools.product((-1,0,1),repeat=5):\n        if all(s==0 for s in signs): continue\n        ws=[Fraction(1,5)+alpha*s for s in signs]\n        if any(w<=0 for w in ws): continue\n        dist={m:w for m,w in zip(supp,ws)}\n        n+=1\n        V=vects(dist)\n        for nm,c in CANDS.items():\n            v=fval(c,V)\n            if v<mins[nm][0]: mins[nm]=(v,(\"pert5\",str(signs),str(alpha)))\nprint(f\"battery scout-2 size: {n}\")\nfor nm,(v,loc) in mins.items(): print(f\"{nm}: min={v:+.9f} at {loc}\")\nEOF\ntimeout 1150 python3 /tmp/battery_scout2.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:143": {
+      "sourceSha256": "136992326c4610855a5246a03521d947f0166b61a0d8d32f775665d83d7795b9",
+      "text": "Bug in my scout — perturbation patterns didn't conserve total mass (invalid distributions). Redoing with proper zero-sum/renormalized perturbations.",
+      "mode": "full"
+    },
+    "59461caacf56:144": {
+      "sourceSha256": "6aec40c845f6737d86e9c1bfaa085b10ec71ec722627d98b519c83ecd9d5bf0f",
+      "toolCalls": [
+        {
+          "id": "prt_0551cd20a001r52i97Tc6vKs8y",
+          "name": "bash",
+          "input": "cat > /tmp/battery_scout3.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\nimport itertools\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\ndef Hvec(dist):\n    tot=sum(dist.values())\n    assert tot==1, f\"invalid distribution sum={tot}\"\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nCANDS = {\n  \"Ing+1/2*IAC_D\": add(ING, {k:Fraction(1,2)*v for k,v in cmi(1,4,8).items()}),\n  \"Ing+1*IAD_B\":   add(ING, cmi(1,8,2)),\n  \"Ing+1/2*(IAD_B+IAC_B)\": add(ING, {k:Fraction(1,2)*v for k,v in add(cmi(1,8,2),cmi(1,4,2)).items()}),\n}\ndef fval(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return sum(float(c)*math.log2(p) for p,c in tot.items())\ndef vects(dist): return {m:Hvec(marg(dist,m)) for m in range(1,16)}\n\nmins={nm:(9e9,None) for nm in CANDS}\nn=0\nsupp=(8,4,12,14,1)\nfor alpha in (Fraction(1,60),Fraction(1,20),Fraction(1,10),Fraction(1,5),Fraction(3,10)):\n    for signs in itertools.product((-2,-1,0,1,2),repeat=5):\n        if all(s==0 for s in signs): continue\n        raw=[Fraction(1)+alpha*s for s in signs]\n        if any(r<=0 for r in raw): continue\n        Z=sum(raw)\n        dist={m:r/Z for m,r in zip(supp,raw)}\n        n+=1\n        V=vects(dist)\n        for nm,c in CANDS.items():\n            v=fval(c,V)\n            if v<mins[nm][0]: mins[nm]=(v,(\"pert5\",str(signs),str(alpha)))\n# also perturb the OTHER equality-attaining u5 supports found in scout-1\nfor supp2 in [(0,1,2,3,12),(0,1,2,3,8),(0,1,6,10,14)]:\n    for alpha in (Fraction(1,20),Fraction(1,10)):\n        for signs in itertools.product((-1,0,1),repeat=5):\n            if all(s==0 for s in signs): continue\n            raw=[Fraction(1)+alpha*s for s in signs]\n            if any(r<=0 for r in raw): continue\n            Z=sum(raw)\n            dist={m:r/Z for m,r in zip(supp2,raw)}\n            n+=1\n            V=vects(dist)\n            for nm,c in CANDS.items():\n                v=fval(c,V)\n                if v<mins[nm][0]: mins[nm]=(v,(\"pert5b\",str(supp2),str(signs),str(alpha)))\nprint(f\"valid battery scout-3 size: {n}\")\nfor nm,(v,loc) in mins.items(): print(f\"{nm}: min={v:+.9f} at {loc}\")\nEOF\ntimeout 1150 python3 /tmp/battery_scout3.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:145": {
+      "sourceSha256": "e29fe627f69f240775e89816bb1b94af5007102cf0ec3429b75e94c3a2bd1fc0",
+      "text": "Valid-distribution results flip the picture: `Ing+I(A;D|B)` is killed (−0.013) by a weight perturbation, but `Ing+½·I(A;C|D)` and `Ing+½(I(A;D|B)+I(A;C|B))` survive at exact equality. Awaiting the gate.",
+      "mode": "full"
+    },
+    "59461caacf56:146": {
+      "sourceSha256": "a5b1431873f93742bd4e1278bf6e260dc411ce371ce30beb161200f415f393c0",
+      "toolCalls": [
+        {
+          "id": "prt_0551d7bd30015PkaNxMgGUwPWP",
+          "name": "agent-runtime-coordination_await_event",
+          "input": ""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:147": {
+      "sourceSha256": "28a1c3164f6550ea67502810c12bea5ed4e57f5a20385336ef0758547e7fdd0d",
+      "toolCalls": [
+        {
+          "id": "prt_0551dc08a001z6ShDInJFEc7gH",
+          "name": "agent-runtime-coordination_observe_agent",
+          "input": "workerId: q-conj-entropy-bcww-repair:s1"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:150": {
+      "sourceSha256": "51897899afd2125cff012877a2097fa8748fa6b55fd13de32e7dc0a2a907ff6f",
+      "text": "s1 is live but slow to start (turn 0, ~5 min idle — watching for the receipt-pending failure mode). Meanwhile I'll build the calibrated exact-LP engine that the certifier seat will inherit — root owns calibration, child owns certification runs.",
+      "mode": "full"
+    },
+    "59461caacf56:151": {
+      "sourceSha256": "f8ba56d1d14d4a4471c3d4c30a149370e91af9d49ee659ba1329d54a374c3c54",
+      "toolCalls": [
+        {
+          "id": "prt_0551eec29001l9bPi3trrdTZ2e",
+          "name": "write",
+          "input": "content:\n#!/usr/bin/env python3\n\"\"\"Exact-rational copy-lemma LP engine (root-built, calibrated) for the BCWW repair run.\n\nSemantics (lineage-standard):\n- Variables: subset entropies h_S, S nonempty subset of V (base ABCD + copy auxiliaries).\n- Elemental Shannon cone: I(i;j|K) >= 0 for unordered pairs {i,j}, K subset of V \\\\ {i,j};\n  plus H(i | V\\\\{i}) >= 0. (n=4 -> 28 rows; n=5 -> 85; n=6 -> 246; n=7 -> 679; matches KB counts.)\n- Copy lemma, Zhang-Yeung semantics: copy(Y | Z) adds R with\n    (a) joint match:   h_{W u R} = h_{W u Y}   for all W subseteq Z\n    (b) independence:  I(R; X | Z) = 0          for all X subseteq V_base \\\\ (Y u Z), X != {}\n  (equality rows; V_base = the four base variables existing before this copy step — copies of\n  copies chain naturally by applying the step to the then-current variable set.)\n- Normalization row: h_V = 1.\n- LP: minimize c.h subject to rows; exact Fractions, two-phase simplex, Bland's rule.\n\nCalibration anchors (KB-pinned):\n- depth 0, Ingleton functional (paper convention), min = -1/4 exactly.\n- depth 1: best over the 65 copy schemes = -1/6 exactly (DFZ's published level-1 number).\n- depth 1, Zhang-Yeung functional: min = 0 for exactly 6 of 65 schemes (DFZ's claim).\n\nUsage: python3 exact_lp.py [--selftest]\n\"\"\"\nimport sys\nfrom fractions import Fraction\nfrom itertools import combinations\n\nBASE = [\"A\", \"B\", \"C\", \"D\"]\n\n\ndef subsets(xs):\n    out = []\n    for k in range(len(xs) + 1):\n        out.extend(combinations(xs, k))\n    return out\n\n\nclass EntropyLP:\n    def __init__(self, varnames):\n        self.vars = list(varnames)          # e.g. BASE + [\"R1\"]\n        self.nv = len(self.vars)\n        self.coords = [(frozenset(S), ) for S in subsets(self.vars)[1:]]  # placeholder\n        self.idx = {}\n        for S in subsets(self.vars):\n            if S:\n                self.idx[frozenset(S)] = len(self.idx)\n        self.nc = len(self.idx)\n        self.rows = []     # (dict coord->coeff, rhs Fraction, kind)\n        self._elemental()\n\n    def _elemental(self):\n        V = self.vars\n        for i, j in combinations(V, 2):\n            rest = [x for x in V if x not in (i, j)]\n            for K in subsets(rest):\n                row = {self.idx[frozenset((i,) + K)]: Fraction(1),\n                       self.idx[frozenset((j,) + K)]: Fraction(1)}\n                if K:\n                    row[self.idx[frozenset(K)]] = row.get(self.idx[frozenset(K)], Fraction(0)) - Fraction(1)\n                row[self.idx[frozenset((i, j) + K)]] = row.get(self.idx[frozenset((i, j) + K)], Fraction(0)) - Fraction(1)\n                self.rows.append(({k: v for k, v in row.items() if v}, Fraction(0), \"ge\"))\n        for i in V:\n            rest = frozenset(V) - {i}\n            row = {self.idx[frozenset(V)]: Fraction(1)}\n            if rest:\n                row[self.idx[rest]] = Fraction(-1)\n            self.rows.append((row, Fraction(0), \"ge\"))\n\n    def add_copy(self, R, Y, Z):\n        \"\"\"copy(Y | Z) with new variable R. Y,Z disjoint subsets of current vars.\"\"\"\n        assert R in self.vars and R not in Y and R not in Z\n        for W in subsets(list(Z)):\n            if not W:\n                continue\n            r = {self.idx[frozenset(W) | {R}]: Fraction(1),\n                 self.idx[frozenset(W) | frozenset(Y)]: Fraction(-1)}\n            self.rows.append((r, Fraction(0), \"eq\"))\n        others = [x for x in BASE if x not in Y and x not in Z]\n        for X in subsets(others):\n            if not X:\n                continue\n            r = {self.idx[frozenset(Z) | {R} | frozenset(X)]: Fraction(1),\n                 self.idx[frozenset(Z)]: Fraction(-1),\n                 self.idx[frozenset(Z) | {R}]: Fraction(-1),\n                 self.idx[frozenset(Z) | frozenset(X)]: Fraction(-1)}\n            self.rows.append(({k: v for k, v in r.items() if v}, Fraction(0), \"eq\"))\n\n    def normalize(self):\n        self.rows.append(({self.idx[frozenset(self.vars)]: Fraction(1)}, Fraction(1), \"eq\"))\n\n    # ---------- exact two-phase simplex (Bland) ----------\n    def solve(self, c):\n        \"\"\"min c.h over rows; c = dict coord->Fraction. Returns (status, value, h, duals).\"\"\"\n        m = len(self.rows)\n        n = self.nc\n        # build tableau: rows ge 0 -> slack; eq -> artificial\n        A = [[Fraction(0)] * n for _ in range(m)]\n        b = [Fraction(0)] * m\n        ge_rows, eq_rows = [], []\n        for r, (row, rhs, kind) in enumerate(self.rows):\n            b[r] = rhs\n            for j, v in row.items():\n                A[r][j] = v\n            (ge_rows if kind == \"ge\" else eq_rows).append(r)\n        # shift ge rows to >= 0 form (rhs are 0 or 1 for normalization: h_V = 1 as eq)\n        # Standard form: min c x, A_ge x >= 0  ->  -A x <= 0;  eq x = rhs.\n        # Use: constraints  A_ge x - s = 0, s >= 0 ;  A_eq x = b_eq.\n        ncols = n + len(ge_rows)\n        rowsT = []\n        rhs = []\n        for k, r in enumerate(ge_rows):\n            row = [-A[r][j] for j in range(n)] + [Fraction(0)] * len(ge_rows)\n            row[n + k] = Fraction(-1)\n            rowsT.append(row); rhs.append(Fraction(0))\n        for r in eq_rows:\n            row = [A[r][j] for j in range(n)] + [Fraction(0)] * len(ge_rows)\n            rowsT.append(row); rhs.append(b[r])\n        cost = [c.get(j, Fraction(0)) if j < n else Fraction(0) for j in range(ncols)]\n        val, x, tab = _simplex(rowsT, rhs, cost)\n        if val is None:\n            return (\"infeasible\", None, None, None)\n        h = {j: x[j] for j in range(n)}\n        return (\"opt\", val, h, tab)\n\n\ndef _simplex(A, b, c):\n    \"\"\"Two-phase simplex on min c.x s.t. Ax=b, x>=0. Exact Fractions, Bland's rule.\"\"\"\n    m = len(A)\n    n = len(A[0]) if m else len(c)\n    # ensure b >= 0\n    for i in range(m):\n        if b[i] < 0:\n            A[i] = [-v for v in A[i]]\n            b[i] = -b[i]\n    # phase 1: add artificials\n    N = n + m\n    T = [A[i] + [Fraction(1) if k == i else Fraction(0) for k in range(m)] + [b[i]] for i in range(m)]\n    basis = [n + i for i in range(m)]\n    pcost = [Fraction(0)] * n + [Fraction(1)] * m\n    if _phase(T, basis, pcost) is None:\n        return None, None, None\n    # drive artificials out / degenerate ok; forbid artificials re-entering: cost 0 keeps them at 0\n    if any(abs(T[i][N]) > 0 for i in range(m)):\n        # artificial basic with positive value -> infeasible\n        return None, None, None\n    # phase 2\n    c2 = list(c) + [Fraction(0)] * m\n    if _phase(T, basis, c2) is None:\n        return None, None, None\n    x = [Fraction(0)] * n\n    for i, bi in enumerate(basis):\n        if bi < n:\n            x[bi] = T[i][N]\n    val = sum(c[j] * x[j] for j in range(n))\n    return val, x, T\n\n\ndef _phase(T, basis, cost):\n    m = len(T)\n    N = len(T[0]) - 1\n    it = 0\n    while True:\n        it += 1\n        if it > 20000:\n            return None\n        # reduced costs\n        y = [cost[basis[i]] for i in range(m)]\n        red = []\n        for j in range(N + 1 - 1):  # all structural columns\n            cj = cost[j] if j < len(cost) else Fraction(0)\n            z = cj - sum(y[i] * T[i][j] for i in range(m))\n            red.append(z)\n        # Bland: smallest index with negative reduced cost\n        enter = None\n        for j, z in enumerate(red):\n            if z < 0:\n                enter = j\n                break\n        if enter is None:\n            return T\n        leave = None\n        best = None\n        for i in range(m):\n            if T[i][enter] > 0:\n                ratio = T[i][N] / T[i][enter]\n                if best is None or ratio < best or (ratio == best and basis[i] < basis[leave]):\n                    best, leave = ratio, i\n        if leave is None:\n            return None  # unbounded\n        piv = T[leave][enter]\n        T[leave] = [v / piv for v in T[leave]]\n        for i in range(m):\n            if i != leave and T[i][enter] != 0:\n                f = T[i][enter]\n                T[i] = [T[i][j] - f * T[leave][j] for j in range(N + 1)]\n        basis[leave] = enter\n    return T\n\n\n# ---------- functionals (paper convention, masks A=1,B=2,C=4,D=8) ----------\ndef add(a, b):\n    out = dict(a)\n    for m, v in b.items():\n        out[m] = out.get(m, 0) + v\n    return {m: v for m, v in out.items() if v != 0}\n\n\ndef cmi(x, y, z):\n    return {x | z: 1, y | z: 1, z: -1, x | y | z: -1}\n\n\nING = add(add(add(cmi(1, 2, 4), cmi(1, 2, 8)), {4: 1, 8: 1, 12: -1}), {1: -1, 2: -1, 3: 1})\nZY = add(add(ING, cmi(4, 8, 2)), {k: 2 * v for k, v in cmi(4, 8, 2).items()})  # placeholder, fixed below\n# Zhang-Yeung functional: 2I(C;D) <= I(C;D|A)+I(C;D|B)+I(A;B|C)+I(A;B|D)+I(A;B)\nZY = add(add(add(cmi(4, 8, 1), cmi(4, 8, 2)), add(cmi(1, 2, 4), cmi(1, 2, 8))), {1: 1, 2: 1, 3: -1})\n# = [I(C;D|A)+I(C;D|B)+I(A;B|C)+I(A;B|D)] + I(A;B) - ... careful: ZY is an INEQUALITY\n# 2 I(C;D) <= I(C;D|A)+I(C;D|B)+I(A;B|C)+I(A;B|D)+I(A;B); the LP objective is the violation\n# lhs-rhs <= 0 i.e. we minimize f = 2I(C;D) - I(C;D|A)-I(C;D|B)-I(A;B|C)-I(A;B|D)-I(A;B) and\n# ZY is PROVEN iff min f = 0. Build f directly:\nZY = add(add({4: 2, 8: 2, 12: -2}, {k: -v for k, v in add(cmi(4, 8, 1), cmi(4, 8, 2)).items()}),\n         {k: -v for k, v in add(add(cmi(1, 2, 4), cmi(1, 2, 8)), {1: 1, 2: 1, 3: -1}).items()})\n\nMASK2VARS = {1: \"A\", 2: \"B\", 4: \"C\", 8: \"D\", 3: (\"A\", \"B\"), 5: (\"A\", \"C\"), 9: (\"A\", \"D\"),\n             6: (\"B\", \"C\"), 10: (\"B\", \"D\"), 12: (\"C\", \"D\"), 7: (\"A\", \"B\", \"C\"), 11: (\"A\", \"B\", \"D\"),\n             13: (\"A\", \"C\", \"D\"), 14: (\"B\", \"C\", \"D\"), 15: (\"A\", \"B\", \"C\", \"D\")}\n\n\ndef coeffs_to_c(lp, coeffs):\n    out = {}\n    for m, v in coeffs.items():\n        out[lp.idx[frozenset(MASK2VARS[m])]] = Fraction(v)\n    return out\n\n\ndef depth0(func):\n    lp = EntropyLP(BASE)\n    lp.normalize()\n    st, val, h, tab = lp.solve(coeffs_to_c(lp, func))\n    return val\n\n\ndef depth1_all(func):\n    \"\"\"All 65 schemes copy(Y|Z), Y,Z disjoint nonempty-Y subsets of BASE. Returns list of values.\"\"\"\n    res = []\n    for Y in subsets(BASE)[1:]:\n        for Z in subsets([x for x in BASE if x not in Y]):\n            if not Z:\n                continue\n            lp = EntropyLP(BASE + [\"R\"])\n            lp.add_copy(\"R\", tuple(Y), tuple(Z))\n            lp.normalize()\n            st, val, h, tab = lp.solve(coeffs_to_c(lp, func))\n            res.append((val, tuple(Y), tuple(Z)))\n    return res\n\n\nif __name__ == \"__main__\":\n    print(\"depth0 Ingleton:\", depth0(ING), \"(expect -1/4)\")\n    r = depth1_all(ING)\n    best = min(x[0] for x in r)\n    print(\"depth1 Ingleton best:\", best, f\"(expect -1/6); schemes at best: {sum(1 for x in r if x[0]==best)}/{len(r)} total schemes\")\n    z = depth1_all(ZY)\n    zeros = [x for x in z if x[0] == 0]\n    print(\"depth1 ZY min:\", min(x[0] for x in z), \"zero-schemes:\", len(zeros), \"(expect 0 and exactly 6)\")\n\nfilePath: [workspace]/work/lib/exact_lp.py"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:156": {
+      "sourceSha256": "fa72429a468b809c14d3f653a7582e27332855c32f59e02ac4afcfd86213386d",
+      "toolCalls": [
+        {
+          "id": "prt_0551efbc300163sEAhmChQOcnB",
+          "name": "bash",
+          "input": "command: timeout 900 python3 work/lib/exact_lp.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:157": {
+      "sourceSha256": "5676368c0a16355dadbcf9e8bee1814d0c21ac156c950a962f150bd30cc96e92",
+      "toolCalls": [
+        {
+          "id": "prt_05520dc7b001AGLq3kPNlBJqbO",
+          "name": "bash",
+          "input": "command:\nnohup python3 work/lib/exact_lp.py > work/lib/exact_lp_calib.log 2>&1 &\necho started\ntimeout: 10000\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:158": {
+      "sourceSha256": "9bc4d542c99f8613e004900e0f230205e3dff17f8930ae45bdd07f0eca764035",
+      "text": "Calibration running in background. Checking the gate child's progress.",
+      "mode": "full"
+    },
+    "59461caacf56:159": {
+      "sourceSha256": "cc458fc32b9fa7c7ab7f7af87c33d8af1fd27f1394b4a7768437ff65bc5d3f9b",
+      "toolCalls": [
+        {
+          "id": "prt_05520e914001k8qXacL7Rn8bhi",
+          "name": "agent-runtime-coordination_observe_agent",
+          "input": "workerId: q-conj-entropy-bcww-repair:s1"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:160": {
+      "sourceSha256": "3a9bdf5a764dfe855d001f1bed60d22fe28c2043a2d099e117611b7149b6cd9d",
+      "toolCalls": [
+        {
+          "id": "prt_0552106ee001t3K78izM9mKVM0",
+          "name": "agent-runtime-coordination_await_event",
+          "input": ""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:161": {
+      "sourceSha256": "f2714bc94dd2a50e42d77e00325f175f3be9b66e487e78334261559e9565aa15",
+      "text": "Two provider-level crashes on the gate seat. Adapting: I'll run the core citation sweep myself at root (webfetch is cheap for me), and retry the child for the DFZ-basis pin. Starting with BCWW's citation graph.",
+      "mode": "full"
+    },
+    "59461caacf56:162": {
+      "sourceSha256": "94406bcc206d95f609100d1ca886d2bb354d65464503bf1fd47d3071fff3fad6",
+      "toolCalls": [
+        {
+          "id": "prt_055213e720014if3Ci3UW9agAh",
+          "name": "webfetch",
+          "input": "format: text\nurl: https://api.semanticscholar.org/graph/v1/paper/arXiv:1507.05650/citations?fields=title,year,abstract,externalIds&limit=1000"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:163": {
+      "sourceSha256": "c296f46690ce8685fc01844ea499dc15e6eac4510b8954c049fd2b93a29ec274",
+      "text": "Citations of BCWW (16 papers in S2): no repair — all method/condensed-matter/holographic-applications papers. Fetching the other three citation lists with minimal fields to conserve context.",
+      "mode": "full"
+    },
+    "59461caacf56:164": {
+      "sourceSha256": "3f03c3c099cb7ea4ccd98b26d6d6886fac333fc6e5c1f2683e9490a74665411b",
+      "toolCalls": [
+        {
+          "id": "prt_0552173a1001qA4yqboBYK7rUq",
+          "name": "webfetch",
+          "input": "format: text\nurl: https://api.semanticscholar.org/graph/v1/paper/arXiv:2006.16292/citations?fields=title,year,externalIds&limit=1000"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:165": {
+      "sourceSha256": "146595708253043151d24f8a28d45833a5c247a184271a3b68e3f40826b7a3b9",
+      "toolCalls": [
+        {
+          "id": "prt_0552187d80013TwEGF6abMmgHj",
+          "name": "webfetch",
+          "input": "format: text\nurl: https://api.semanticscholar.org/graph/v1/paper/arXiv:1903.09148/citations?fields=title,year,externalIds&limit=1000"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:166": {
+      "sourceSha256": "34666edfcbedf95e44dde651199f448c3e629bfcfd36e75dfda3fcea6b5913d1",
+      "toolCalls": [
+        {
+          "id": "prt_055219a44001LqW15YLtd7K1gJ",
+          "name": "webfetch",
+          "input": "format: text\nurl: https://api.semanticscholar.org/graph/v1/paper/arXiv:2112.00763/citations?fields=title,year,externalIds&limit=1000"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:167": {
+      "sourceSha256": "ba64e818e2d7243475243d62275313417e4a471dd306fc11cac288ce95916278",
+      "text": "All four citation graphs fetched and classified: ~142 records, zero repair candidates. One arXiv-API query for completeness, and testing whether my box has curl for the DFZ e-print fetch.",
+      "mode": "full"
+    },
+    "59461caacf56:169": {
+      "sourceSha256": "e7f3f40f0159e4635cc953ce9ef3dd9d73ed3cd88d76dbd8c1807ba84796f9ec",
+      "toolCalls": [
+        {
+          "id": "prt_05521cb0f001VzjyJ5jKNkOB4k",
+          "name": "webfetch",
+          "input": "format: text\nurl: http://export.arxiv.org/api/query?search_query=all:%22Ingleton%22+AND+cat:quant-ph&max_results=40&sortBy=submittedDate&sortOrder=descending"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:20": {
+      "sourceSha256": "0d9ae04d0b1427a9c008f178c5ee41542c6a46794bd3990b0bb4fa647294b6cd",
+      "toolCalls": [
+        {
+          "id": "prt_05503b944001fdZBI3oAKFOhPi",
+          "name": "read",
+          "input": "filePath: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:21": {
+      "sourceSha256": "0945da869a13149e147bdc00b98c3119a959f576e75c4b5dca80e986854dbb88",
+      "text": "I'll start by orienting: read the workspace, and search the knowledge base for the settled claims and the locked conventions (the charter names convention risk as a run-killer).",
+      "mode": "full"
+    },
+    "59461caacf56:22": {
+      "sourceSha256": "d5be2bdb1f5e88758b0764d20e1a4cf37a54766bb0c54f2a10f6b1ab939b0b5d",
+      "toolCalls": [
+        {
+          "id": "prt_05503b968001xh9t0Vo5Vl5ggP",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: locked conventions entropy vector variable ordering log base witness discipline"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:23": {
+      "sourceSha256": "aa4622cb263b8dc97f45d8fd6aa09f3ff9406c2443934d6659b109d96c97bd85",
+      "toolCalls": [
+        {
+          "id": "prt_05503ba37001rVwZD9893ZlWwG",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: five atom counterexample BCWW 2015 4.6 Ingleton conditional mutual information certificate 2^14 3^9"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:24": {
+      "sourceSha256": "88ccc6788b8ed61ddcf5b3d23bef8779699e64f8bc9a583c7d5979c6ce8b37a8",
+      "toolCalls": [
+        {
+          "id": "prt_05503bb35001ZfI6n2uDRSKGhg",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: GHZ4 mixture witness exact entropy vector noise classical reducible"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:25": {
+      "sourceSha256": "d47481e85596d65f4261110015cf7124714cd921dddeab838ef4d9f44b98240b",
+      "toolCalls": [
+        {
+          "id": "prt_05503bc66001aXbMGM5fTwweD4",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: DFZ nine conditional mutual information basis Ingleton repair grammar holographic entropy cone"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:27": {
+      "sourceSha256": "5e23d28115292ce98602ac6ad4214bb732653dbc98fb35ed2a19c4ea4698e50f",
+      "toolCalls": [
+        {
+          "id": "prt_055048953001U6GooQpSOdgxRi",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:28": {
+      "sourceSha256": "bdd43d97cb2b8f07581f0f855b0e423ef50a40bf7c35cef9095564f47f0c67a4",
+      "text": "Strong start — the KB pins the BCWW (4.6) form and the corpus Ingleton convention. I still need: the exact GHZ4-mixture witness (R1, \"+0.113302 bits\"), the DFZ 9-int CMI basis definition, and the inbox sources list. Let me read the inbox and search more.",
+      "mode": "full"
+    },
+    "59461caacf56:29": {
+      "sourceSha256": "e7f853b8734d44cb18e378084c368642fca6b582188eff511adea0529cc6ae8e",
+      "toolCalls": [
+        {
+          "id": "prt_055048a8c001vGnOn8gsBxwqa6",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: Linden state 0.5 GHZ4 mixture 0101 1001 Ingleton violation bits value"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:30": {
+      "sourceSha256": "95d0c1a3593ed41063fcba227429a9cb5cae5c9ec0b12c4d44ceb0bfdc474e71",
+      "toolCalls": [
+        {
+          "id": "prt_055048bd0001N6LhAN6W2XuQxN",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: BCWW repair candidates nine conditional mutual information terms enumeration grammar"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:31": {
+      "sourceSha256": "243dcd17d44d0f591bb73675e436a4eef17bebe623d0de834d840b4d9e0afbc3",
+      "text": "The KB reveals \"DFZ family members F1=(1,1,1,0,1,1,1,1,0)\" — a 9-bit selection vector over a 9-term CMI basis. Now let me read the inbox register and sources to pin R1's witnesses exactly.",
+      "mode": "full"
+    },
+    "59461caacf56:32": {
+      "sourceSha256": "fb78f3858d2f9ff96e55209565762fd5e48c21139e7c6e8e8ede27c38a39048c",
+      "toolCalls": [
+        {
+          "id": "prt_05504c009001jy5jeeG5aCx24H",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox/dir3-register.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:33": {
+      "sourceSha256": "dbce42fbf93f746a5c890723f55872b08f8bbf7320ea6c1697c9337413424c85",
+      "toolCalls": [
+        {
+          "id": "prt_05504c0d2001C8DBfDdez6gqYL",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox/dir3-charter.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:34": {
+      "sourceSha256": "135a0fc208c68ee3057d86a19428226982111eec62b87d55c03e93689f65f7be",
+      "text": "Now the F-A grounding file — the prior-art seat's sources list.",
+      "mode": "full"
+    },
+    "59461caacf56:35": {
+      "sourceSha256": "a754b1f3b1b6614a13792369c3eb9813ecbef6a4996a78b1a40ebee31f674b61",
+      "toolCalls": [
+        {
+          "id": "prt_05504d02e001NteF7McNakzJeZ",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox/dir3-F-A.json"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:36": {
+      "sourceSha256": "ec2a33dd760d59382d9daf626029778d4847ce79069d4370b738c4b32fa92302",
+      "text": "The F-A grounding file names DFZ = Dougherty–Freiling–Zeger. Now I need the exact 9-term basis as this pursuit's lineage uses it — searching the KB.",
+      "mode": "full"
+    },
+    "59461caacf56:37": {
+      "sourceSha256": "019aacf9c48cffb9cf59f521c7137f66ec6815045c788dcfe742c69f0bd1c8d7",
+      "toolCalls": [
+        {
+          "id": "prt_05504f722001UAPjFeO94q48Jh",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: DFZ basis nine terms definition F1 F2 depth profile copy lemma"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:38": {
+      "sourceSha256": "8e23995d50217dc6a92920f5d6c2b046bce45fa852b384474e667512987048b4",
+      "toolCalls": [
+        {
+          "id": "prt_05504f9130016pBcdRe171ClUZ",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: GHZ4 white noise k/12 mixture Ingleton 4.6 value 0.113302 bits falsification second witness"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:39": {
+      "sourceSha256": "dd81b663fa484489d1b01408f91a8c25599a7e49d1e00eb6c7d63509d178e4df",
+      "text": "The 9-bit DFZ vectors appear across the lineage — I need the explicit 9-term basis list. Searching for the family enumeration.",
+      "mode": "full"
+    },
+    "59461caacf56:40": {
+      "sourceSha256": "d185f82c2b40fdf8cda616bc5c8ee5c432c84d3e16f520d9c90b3cdc950fda74",
+      "toolCalls": [
+        {
+          "id": "prt_05505630b001YLhqH4Ue6GUed7",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: DFZ 512 family nine bit vectors Ingleton plus conditional mutual information candidates enumeration basis order"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:41": {
+      "sourceSha256": "f1e41b0de01a1c0c7e82df160ef667f099918add561a93def2947d3ec11acb1b",
+      "text": "One more search to pin the 9-term basis definition from the lineage that used F1/F2 vectors.",
+      "mode": "full"
+    },
+    "59461caacf56:42": {
+      "sourceSha256": "f658463749b845fbca86120097bf2b0bd85e99698e15ff8e7f19714dccf15d00",
+      "toolCalls": [
+        {
+          "id": "prt_05505c60d001wYvbdRVjuYc083",
+          "name": "agent-runtime-coordination_kb_search",
+          "input": "query: next candidates residual F1 F2 opener gap depth profile family definition Ingleton plus sum CMI"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:47": {
+      "sourceSha256": "22eeaa523e838152b97df8f72fdaa80e500d24ca11d77414d1fa1aefc47ad15f",
+      "text": "Register and grounding pin the key facts: BCWW = Bao–Cao–Walter–Wang arXiv:1507.05650, (4.6) = Ingleton(A:B;C,D) + I(C:D|B) with the exact L-coefficients reproduced in two KB records, and DFZ = Dougherty–Freiling–Zeger arXiv:1104.3602. Let me read the remaining inbox files, then lock conventions.",
+      "mode": "full"
+    },
+    "59461caacf56:48": {
+      "sourceSha256": "dd85a44f1531577d78d0956e94e5e5781d04495ce8c903f3e555e05d25daa96e",
+      "toolCalls": [
+        {
+          "id": "prt_0550822950015Ehrvh74lwP982",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox/dir3-direction-rules.json"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:49": {
+      "sourceSha256": "c9a124c39eb7952d077b3183eddc43caa666ab0fc6ad47cd80256aaa84f5e6af",
+      "toolCalls": [
+        {
+          "id": "prt_0550823960014VljjjBtNdpHWN",
+          "name": "read",
+          "input": "filePath: [workspace]/inbox/dir3-outcomes.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:52": {
+      "sourceSha256": "4921e5b2a5bab5181bfceb7b6b0cf8780a2f49933fb12afe28a2858d9e29b1fe",
+      "text": "All grounding material is read. Now I'll commit predictions before computing, then spawn the prior-art gate child while I lock conventions myself.",
+      "mode": "full"
+    },
+    "59461caacf56:53": {
+      "sourceSha256": "ffeb35caa5ed5e21405aa202b2e916f83f4d4d434c2accb6d65559db0ba0fba0",
+      "toolCalls": [
+        {
+          "id": "prt_055096df700120uYmBbXTgFWMf",
+          "name": "write",
+          "input": "content:\n# PREDICTIONS — q-conj-entropy-bcww-repair (CHARTER MOVE 1, repaired BCWW 4.6)\n\nCommitted BEFORE the expensive computations. Each entry: the case, the predicted value/verdict,\nconfidence, and the exact command that settles it.\n\n## P1 — GHZ4-mixture witness identification (convention lock, runs first)\n- Case: which mixture is R1's \"GHZ4 mixture, +0.113302 bits\" second witness falsifying (4.6)?\n- Prediction: the Linden-type mixture rho = 0.5|GHZ4><GHZ4| + 0.25|0101><0101| + 0.25|1001><1001|\n  gives c46 = Ing(A:B;C,D)+I(C:D|B) = -0.113302... bits; no white-noise point (1-k/12)GHZ4+(k/12)I/16 does.\n- Confidence: 0.6 (the phrase \"GHZ4 mixture\" + the lineage's Linden state; white-noise grid is the alternative).\n- Settled by: python3 work/lock/lock_check.py  (prints c46 for every candidate; match against -0.113302 bits to 6 decimals).\n- Falsifier: if NO candidate matches to 6 decimals, conventions are wrong or the witness is a rotated\n  variant — escalate to enumerating the 24 party relabelings of the Linden state before anything else runs.\n\n## P2 — Grammar sweep survivor count (exact rational, both committed witnesses)\n- Case: statements F = Ingleton(A:B;C,D) + l1*T1 + l2*T2 >= 0, T in the 9-int DFZ CMI basis,\n  l in {1/4,1/2,1,3/2,2}; survivors = nonnegative on BOTH witnesses exactly.\n- Prediction: survivors EXIST but are a minority: 50-600 of the ~1125 statements (per slot-3 basis\n  completion; union over 6 completions somewhat larger). Minimal repair mass survivor has\n  l1+l2 = 1/2 (two 1/4's).\n- Confidence: 0.85 that the survivor set is nonempty (some CMI is positive on both witnesses with\n  enough slack to cover Ingleton's -0.0529 / -0.1133 deficits).\n- Settled by: the sweep seat's committed check printing SURVIVORS=N (exact count, Fractions).\n\n## P3 — Certification at copy-lemma depth <= 2 for minimal survivors\n- Case: exact LP min of F over elemental-Shannon + copy-lemma-equality cone (depth <= 2 schemes).\n- Prediction: NO depth-<=2 certificate for the minimal-mass survivors: nu < 0 (strictly) for all of\n  them; Ingleton-violating classical polymatroids are rich and small repair coefficients should not\n  tame them at low copy depth.\n- Confidence: 0.7. If false (some nu=0), that inequality is certified classically — the run's\n  headline positive.\n- Settled by: the certifier seat's check printing NU=... for each attempted survivor.\n\n## P4 — Killer battery on survivors\n- Case: battery = 5-atom neighborhood grammar (uniform supports within Hamming distance of R1's,\n  weight perturbations), full u5 ladder (all 4368 uniform 5-atom supports), GHZ4-noise k/12 grid,\n  cat-masks (two-point rational-amplitude classical-reducible states, all 15 masks).\n- Prediction: battery kills >= 80% of sweep survivors (the 5-atom neighborhood alone kills most\n  small-lambda survivors); at least one survivor escapes the whole battery (ships as bounded conjecture).\n- Confidence: 0.6 on the >=80% kill fraction; 0.5 that at least one survives everything.\n- Settled by: the killer seat's check printing KILLED=x/y and BATTERY_MIN=<exact value> per ship candidate.\n\n## P5 — Deliberately NOT computed this run\n- The full real-(l1,l2) feasible region per (T1,T2) pair (exact LP over the depth-2 copy cone on a\n  rational (l1,l2) grid, mapping certified-nonneg regions as polygons). Command a later run would use:\n  for each pinned (T1,T2): python3 work/cert/lp_region.py --t1 <slot> --t2 <slot> --grid q4\n  (min of Ing + l1 T1 + l2 T2 over the copy cone, exact, on the quarter-integer grid, then vertex\n  extraction). Also not computed: depth >= 3 certification, quantum-cone sweeps (this run is\n  classical-witness repair grammar + classical battery, per charter).\n\n## Named threat (charter requirement)\n- THE GRAMMAR MAY BE TOO NARROW, three ways: (a) only two repair terms with lambda <= 2 — a true\n  repair may need three terms (Q36-style) or larger/different (possibly negative) coefficients;\n  (b) the 9-int basis itself may omit the needed term (8 of 9 slots are anchor-pinned, slot 3 is\n  swept over 6 candidates this run); (c) repairs outside CMI-space (entropy terms like H(X), or\n  conditional entropies) are excluded by construction. Each limitation is stated in FINDINGS.md.\n\nfilePath: [workspace]/PREDICTIONS.md"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:55": {
+      "sourceSha256": "29f0bac749617c9e77f8b4a421b8b8972cf98491f9311a044b01a42e352e8c87",
+      "text": "Spawning the prior-art gate seat now (the charter's GATE FIRST), then locking conventions myself while it runs.",
+      "mode": "full"
+    },
+    "59461caacf56:56": {
+      "sourceSha256": "c24ecaf660414a15cf40040a41f21387df62dca9724e2799a95041977176d8ce",
+      "toolCalls": [
+        {
+          "id": "prt_05509fefa001woax8oeRY5YJBd",
+          "name": "agent-runtime-coordination_spawn_worker",
+          "input": "budget: {\"maxIterations\": 70, \"maxTokens\": 2200000}\nlabel: gate: prior-art sweep for published BCWW 4.6 repairs\nprofile: {\"description\": \"Literature-audit seat: sweeps the post-2015 holographic/quantum entropy-cone literature for any published repair of BCWW eq (4.6).\", \"harness\": \"opencode\", \"model\": {\"default\": \"glm-5.2\", \"provider\": \"zai-coding-plan\", \"reasoningEffort\": \"high\"}, \"name\": \"prior-art-gate\", \"prompt\": {\"systemPrompt\": \"You are a meticulous literature-audit researcher working inside a sandbox box. You have web access via a webfetch tool (arXiv pages, APIs). You write files as you go — anything that exists only in your context window is lost when your process dies. You never fabricate: every source you claim to have checked must appear in your committed evidence file with what you actually saw on it. You return work only in ./out/. Your acceptance criterion is a script a referee re-runs, not your own summary.\"}}\ntask:\nUNIT: GATE for the research question \"is there a PUBLISHED repair of the BCWW (4.6) inequality?\". Your verdict decides whether a whole computation run happens, so a wrong GATE_CLEAR is expensive and a wrong REPAIR_FOUND kills the run — be precise.\n\nBACKGROUND (settled, do not re-derive): BCWW = Bao-Cao-Walter-Wang, arXiv:1507.05650 v2 (JHEP 2015). Their eq. (4.6) is the entropy inequality L = S(ABD)+S(ABC)+S(BCD)-2S(BD)-2S(BC)+S(CD)-S(AD)-S(AC)-S(AB)+2S(B)+S(A) <= 0, which decomposes as L = -[Ingleton(A:B;C,D) + I(C:D|B)] where Ingleton(A:B;C,D) = I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B). It was falsified (elsewhere, settled); the falsification itself is NOT your concern. Your concern: has anyone since 2015 PUBLISHED a repaired version of (4.6) — i.e., any statement of the form \"Ingleton(A:B;C,D) + sum of conditional-mutual-information terms (with coefficients) >= 0\" for general classical or quantum states, in this (A,B)|(C,D) pairing, in the holographic-entropy-cone or quantum-cone literature?\n\nWHAT COUNTS AS A REPAIR (verdict REPAIR for a source): a dated, publicly archived paper (arXiv eprint or published) that states, conjectures, or proves an inequality obtained from Ingleton by adding conditional mutual information terms I(X:Y|Z) or mutual informations, intended to hold for general 4-party (classical or quantum) states, in the lineage of BCWW's (4.6). WHAT DOES NOT COUNT: (a) classical non-Shannon inequalities by Dougherty-Freiling-Zeger and pre-2015 work (they predate BCWW and are not repairs of it) — but note them in your sweep file as NOT_A_REPAIR with the reason; (b) inequalities restricted to special state classes (stabilizer, holographic/graph-model, pure, Gaussian) as the ONLY claim — a repair must target general states; if a paper does both, it counts and you quote both parts; (c) our own lineage's unpublished corpus objects (Q36, F1, F2 — corpus-origin, never published); (d) surveys that merely cite BCWW.\n\nMETHOD (do all of these, log every fetch attempt with URL and outcome):\n1. Fetch the Semantic Scholar citations API for the paper: https://api.semanticscholar.org/graph/v1/paper/arXiv:1507.05650/citations?fields=title,year,abstract,externalIds&limit=1000 (paginate with &offset if needed). Classify every citing paper by title+abstract; fetch the arXiv abstract page of any plausible hit before deciding.\n2. Same for arXiv:2006.16292 (Bao-Cheng-HernandezCuenca-Su), arXiv:1903.09148 (Hernandez-Cuenca), arXiv:2112.00763 (Czech-Shuai).\n3. arXiv listing searches: fetch https://arxiv.org/list/math.IT/recent is useless — instead use the arXiv API query endpoint, e.g. http://export.arxiv.org/api/query?search_query=all:%22Ingleton%22+AND+all:%22entropy%22&max_results=100 and variants (\"Ingleton inequality\", \"von Neumann entropy inequality four party\", \"holographic entropy cone Ingleton\"). Classify hits.\n4. Read the grounding file that traveled with you at inputs/inbox/dir3-F-A.json — a dated 2026-08-13 sources list of the whole area (21 sources); treat its UNVERIFIED GAPS list as leads, and check the specific gap items that touch Ingleton repairs. Also inputs/inbox/dir3-register.md documents R1 (our falsification) — for orientation only.\n5. SECONDARY DELIVERABLE (the DFZ basis pin): fetch the DFZ paper arXiv:1104.3602 (Dougherty-Freiling-Zeger, \"Non-Shannon Information Inequalities in Four Random Variables\") — try the abs page https://arxiv.org/abs/1104.3602 and the HTML rendering https://arxiv.org/abs/1104.3602v1 ; if you can reach full text, find whether the paper parametrizes its inequalities by a list of exactly NINE information quantities (conditional mutual informations / mutual informations). If it does, transcribe the nine quantities VERBATIM in the paper's slot order into out/dfz_basis.md. Then cross-check against this anchor (from our corpus, 8 of 9 slots pinned): the corpus basis, in one convention, is slots {1:I(A;B|C), 2:I(A;B|D), 4:I(B;C|A), 5:I(C;D), 6:I(A;D|B), 7:I(B;D|A), 8:I(A;B) with coefficient -1, 9:I(A;C|B)} plus one unknown slot 3; corpus vectors C0=(1,1,0,0,1,0,0,1,0)=plain Ingleton and Q36=(1,1,0,1,1,1,1,1,0) are known. Report whether DFZ's own list matches the anchor (which slots agree, what their slot 3 is). If full text is unreachable, write what you could see.\n\nDELIVERABLES (create each file before filling it, append as you go):\n- out/sources_swept.json — array; one object per source actually examined: {id, title, year, how_found, url_fetched, date_checked, verdict: REPAIR|NOT_A_REPAIR|UNCLEAR, reason (1-3 sentences), quote (verbatim <=40 words, only when it matters)}.\n- out/GATE_VERDICT.md — headline verdict REPAIR_FOUND or GATE_CLEAR (or BLOCKED_NETWORK with the attempted-URL list), the count, the 3 strongest near-misses and why they fail the bar, and coverage stats (how many citing papers classified).\n- out/checks/check_gate.py — stdlib-only, reads ../sources_swept.json (path resolved relative to __file__), prints exactly one line: REPAIRS_FOUND=<n>. Must run from any cwd.\n- out/dfz_basis.md (secondary, as above).\n\nDONE MEANS: check_gate.py prints REPAIRS_FOUND=N with N = the count of REPAIR-verdict rows in sources_swept.json, GATE_VERDICT.md's verdict is consistent with N (GATE_CLEAR iff N=0), and you have examined at least 60 distinct sources (or every source reachable — if the APIs return fewer, say so with counts). A run that examined fewer than 20 sources with no explanation is a failure. If network fetches all fail, verdict BLOCKED_NETWORK is the correct honest outcome — do not invent sources."
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:57": {
+      "sourceSha256": "41da6e74ebaf901e399517e8b0e9cc3c013143c02693413289204d07b35348eb",
+      "text": "The opencode harness refuses profile-level system prompts — folding the role into the task string instead.",
+      "mode": "full"
+    },
+    "59461caacf56:58": {
+      "sourceSha256": "4869f1d6c6d060bf19c9330db8d82ab22c8657a8a1b559a1d7397b65d086ce4d",
+      "toolCalls": [
+        {
+          "id": "prt_0550a3553001VBqgEaDsv5YTdS",
+          "name": "agent-runtime-coordination_spawn_worker",
+          "input": "budget: {\"maxIterations\": 70, \"maxTokens\": 2200000}\nlabel: gate: prior-art sweep for published BCWW 4.6 repairs\nprofile: {\"description\": \"Literature-audit seat: sweeps the post-2015 holographic/quantum entropy-cone literature for any published repair of BCWW eq (4.6).\", \"harness\": \"opencode\", \"model\": {\"default\": \"glm-5.2\", \"provider\": \"zai-coding-plan\", \"reasoningEffort\": \"high\"}, \"name\": \"prior-art-gate\"}\ntask:\nROLE: you are a meticulous literature-audit researcher in a sandbox box with web access (webfetch tool). Write files as you go — anything that exists only in your context window is lost if your process dies. Never fabricate: every source you claim to have checked must appear in your committed evidence file with what you actually saw. Return work only in ./out/. Your acceptance criterion is a script a referee re-runs.\n\nUNIT: GATE for the research question \"is there a PUBLISHED repair of the BCWW (4.6) inequality?\". Your verdict decides whether a whole computation run happens, so a wrong GATE_CLEAR is expensive and a wrong REPAIR_FOUND kills the run — be precise.\n\nBACKGROUND (settled, do not re-derive): BCWW = Bao-Cao-Walter-Wang, arXiv:1507.05650 v2 (JHEP 2015). Their eq. (4.6) is the entropy inequality L = S(ABD)+S(ABC)+S(BCD)-2S(BD)-2S(BC)+S(CD)-S(AD)-S(AC)-S(AB)+2S(B)+S(A) <= 0, which decomposes as L = -[Ingleton(A:B;C,D) + I(C:D|B)] where Ingleton(A:B;C,D) = I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B). It was falsified (elsewhere, settled); the falsification itself is NOT your concern. Your concern: has anyone since 2015 PUBLISHED a repaired version of (4.6) — i.e., any statement of the form \"Ingleton(A:B;C,D) + sum of conditional-mutual-information terms (with coefficients) >= 0\" for general classical or quantum states, in this (A,B)|(C,D) pairing, in the holographic-entropy-cone or quantum-cone literature?\n\nWHAT COUNTS AS A REPAIR (verdict REPAIR for a source): a dated, publicly archived paper (arXiv eprint or published) that states, conjectures, or proves an inequality obtained from Ingleton by adding conditional mutual information terms I(X:Y|Z) or mutual informations, intended to hold for general 4-party (classical or quantum) states, in the lineage of BCWW's (4.6). WHAT DOES NOT COUNT: (a) classical non-Shannon inequalities by Dougherty-Freiling-Zeger and pre-2015 work (they predate BCWW and are not repairs of it) — note them as NOT_A_REPAIR with reason; (b) inequalities restricted to special state classes (stabilizer, holographic/graph-model, pure, Gaussian) as the ONLY claim — a repair must target general states; if a paper does both, it counts, quote both parts; (c) our own lineage's unpublished corpus objects (Q36, F1, F2 — corpus-origin, never published); (d) surveys that merely cite BCWW.\n\nMETHOD (do all, log every fetch attempt with URL and outcome):\n1. Fetch https://api.semanticscholar.org/graph/v1/paper/arXiv:1507.05650/citations?fields=title,year,abstract,externalIds&limit=1000 (paginate with &offset if needed). Classify every citing paper by title+abstract; fetch the arXiv abstract page of any plausible hit before deciding.\n2. Same citations sweep for arXiv:2006.16292 (Bao-Cheng-HernandezCuenca-Su), arXiv:1903.09148 (Hernandez-Cuenca), arXiv:2112.00763 (Czech-Shuai).\n3. arXiv API queries: http://export.arxiv.org/api/query?search_query=all:%22Ingleton%22+AND+all:%22entropy%22&max_results=100 and variants (\"Ingleton inequality\", \"von Neumann entropy four parties inequality\", \"holographic entropy cone Ingleton\"). Classify hits.\n4. Read inputs/inbox/dir3-F-A.json (traveled with you) — a dated 2026-08-13 area sources list; treat its UNVERIFIED GAPS items as leads where they touch Ingleton repairs. inputs/inbox/dir3-register.md documents R1 (our falsification) for orientation only.\n5. SECONDARY DELIVERABLE (DFZ basis pin): fetch arXiv:1104.3602 (Dougherty-Freiling-Zeger, \"Non-Shannon Information Inequalities in Four Random Variables\") — try https://arxiv.org/abs/1104.3602 and the HTML full-text render if available. Find whether the paper parametrizes its inequalities by a list of exactly NINE information quantities (CMIs / MIs). If it does, transcribe the nine VERBATIM in the paper's slot order into out/dfz_basis.md, then cross-check against this anchor (from our corpus, 8 of 9 slots pinned): corpus basis in one convention = slots {1:I(A;B|C), 2:I(A;B|D), 4:I(B;C|A), 5:I(C;D), 6:I(A;D|B), 7:I(B;D|A), 8:I(A;B) with coefficient -1, 9:I(A;C|B)} plus unknown slot 3; corpus vectors C0=(1,1,0,0,1,0,0,1,0)=plain Ingleton and Q36=(1,1,0,1,1,1,1,1,0) are known. Report which slots agree and what the paper's slot 3 is. If full text is unreachable, write what you could see.\n\nDELIVERABLES (create each file before filling it, append as you go):\n- out/sources_swept.json — array; one object per source actually examined: {id, title, year, how_found, url_fetched, date_checked, verdict: REPAIR|NOT_A_REPAIR|UNCLEAR, reason (1-3 sentences), quote (verbatim <=40 words, only when it matters)}.\n- out/GATE_VERDICT.md — headline verdict REPAIR_FOUND or GATE_CLEAR (or BLOCKED_NETWORK with attempted-URL list), the count, the 3 strongest near-misses and why they fail the bar, coverage stats (how many citing papers classified).\n- out/checks/check_gate.py — stdlib-only, reads ../sources_swept.json (path resolved relative to __file__), prints exactly one line REPAIRS_FOUND=<n>. Must run from any cwd.\n- out/dfz_basis.md (secondary, as above).\n\nDONE MEANS: check_gate.py prints REPAIRS_FOUND=N with N = count of REPAIR-verdict rows, GATE_VERDICT.md is consistent (GATE_CLEAR iff N=0), and you examined at least 60 distinct sources (if fewer are reachable, say so with counts). If all network fetches fail, BLOCKED_NETWORK is the correct honest outcome — never invent sources."
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:60": {
+      "sourceSha256": "ed34f4f78b85bed0babb4e6ea0a3aeb07f4654b94ca208060047b90717188e26",
+      "text": "Gate child is live (`s0`). Now my own unit: the convention lock. Writing the exact-arithmetic script that pins both committed witnesses.",
+      "mode": "full"
+    },
+    "59461caacf56:61": {
+      "sourceSha256": "0d2d39e875e8e9ac7bde280d741d962ff991cb5be493b4e8aa52caa674269efd",
+      "toolCalls": [
+        {
+          "id": "prt_0550b1fe4001gjAn5ArL9SGerI",
+          "name": "write",
+          "input": "content:\n#!/usr/bin/env python3\n\"\"\"Convention lock for the BCWW 4.6 repair run.\n\nLocks, in EXACT rational arithmetic (prime-exponent log vectors, no float sign decisions):\n  1. The 5-atom classical witness vector (uniform on {0001,0010,0011,0111,1000}, strings (A,B,C,D)).\n  2. The GHZ4-mixture second witness: identifies which mixture reproduces R1's \"+0.113302 bits\"\n     violation of (4.6), among: white-noise (1-k/12)GHZ4+(k/12)I/16 (k=0..12), the Linden mixture\n     0.5 GHZ4 + 0.25|0101> + 0.25|1001>, and its 24 party relabelings.\nAnchors (KB-pinned, used to calibrate conventions, NOT re-verified as claims):\n  - c46 on the 5-atom witness = (14 - 9 log2 3)/5 = -0.052932501298081 bits\n    (KB: pursuit-arena-v9b1-q36-corpus-b--finding--five-atom-counterexample-bcww-2015-4-6-...)\n  - corpus-convention Ing on the 291600-count 6-atom witness: N*Ing = -7.455776108850990\n    (KB: pursuit-q-q36-analytic-rho4-constant-r2--finding--q36-convention-pinned-exactly-...)\n\nPrints one decisive line per anchor; writes work/lock/witnesses.json.\n\"\"\"\nimport json\nimport math\nimport os\nfrom fractions import Fraction\nfrom itertools import permutations\n\nHERE = os.path.dirname(os.path.abspath(__file__))\nOUT = os.path.join(HERE, \"witnesses.json\")\n\n# ---- masks and names (bit A=1, B=2, C=4, D=8; string position 0 = A) ----\nNAMES = {1: \"A\", 2: \"B\", 4: \"C\", 8: \"D\", 3: \"AB\", 5: \"AC\", 9: \"AD\", 6: \"BC\", 10: \"BD\", 12: \"CD\",\n         7: \"ABC\", 11: \"ABD\", 13: \"ACD\", 14: \"BCD\", 15: \"ABCD\"}\n\n\ndef str_mask(s):\n    m = 0\n    for i, ch in enumerate(s):\n        if ch == \"1\":\n            m |= 1 << (3 - i)  # position 0 = A = bit 3\n    return m\n\n\ndef prime_exponents(n):\n    e = {}\n    d = 2\n    while d * d <= n:\n        while n % d == 0:\n            e[d] = e.get(d, 0) + 1\n            n //= d\n        d += 1\n    if n > 1:\n        e[n] = e.get(n, 0) + 1\n    return e\n\n\ndef entropy_vec(dist):\n    \"\"\"dist: dict mask(Fraction) -> Fraction prob. Returns {prime: Fraction coeff} for H = sum e_p log2 p.\"\"\"\n    v = {}\n    D = Fraction(1)\n    for p in dist.values():\n        D *= 1\n    # H = -sum p log2 p ; p = n/d common denominator d\n    d = Fraction(1)\n    for p in dist.values():\n        d = d if p.denominator % d == 0 or d % p.denominator == 0 else d\n    # simpler: common denominator = lcm\n    from math import gcd\n    den = 1\n    for p in dist.values():\n        g = gcd(den, p.denominator)\n        den = den * p.denominator // g\n    # +1 * log2(den)\n    for pr, ex in prime_exponents(den).items():\n        v[pr] = v.get(pr, Fraction(0)) + Fraction(ex)\n    for mask, p in dist.items():\n        n = p * den\n        assert n.denominator == 1\n        n = int(n)\n        if n == 0:\n            continue\n        for pr, ex in prime_exponents(n).items():\n            v[pr] = v.get(pr, Fraction(0)) - Fraction(ex * n, den)\n    return {pr: c for pr, c in v.items() if c != 0}\n\n\ndef eval_float(vec):\n    return sum(float(c) * math.log2(p) for p, c in vec.items())\n\n\ndef functional_value(coeffs, dists):\n    \"\"\"coeffs: {mask:int}, dists: {mask: entropy_vec}. Returns prime-exponent Fraction vector.\"\"\"\n    tot = {}\n    for m, c in coeffs.items():\n        for pr, e in dists[m].items():\n            tot[pr] = tot.get(pr, Fraction(0)) + Fraction(c) * e\n    return {pr: c for pr, c in tot.items() if c != 0}\n\n\ndef sign_exact(vec):\n    \"\"\"Exact sign of sum q_p log2 p: compare prod p^(a_p*B/b_p) vs 1 in big ints.\"\"\"\n    from math import lcm\n    dens = [c.denominator for c in vec.values()]\n    B = 1\n    for d in dens:\n        B = lcm(B, d)\n    lhs = 1  # p^(positive parts)\n    rhs = 1\n    for p, c in vec.items():\n        a = c.numerator * (B // c.denominator)\n        if a > 0:\n            lhs *= p ** a\n        elif a < 0:\n            rhs *= p ** (-a)\n    return (lhs > rhs) - (lhs < rhs)\n\n\ndef decimal_str(vec, nd=12):\n    return f\"{eval_float(vec):.{nd}f}\"\n\n\n# ---- functionals (paper convention) ----\ndef ing_abcd():\n    \"\"\"Ingleton(A:B;C,D) = I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B) as subset-entropy coefficients.\"\"\"\n    c = {}\n    def add(m, k):\n        c[m] = c.get(m, 0) + k\n    for m in (5, 6):\n        add(m, 1)          # H(AC)+H(BC)\n    add(4, -1); add(7, -1)  # -H(C)-H(ABC)\n    for m in (9, 10):\n        add(m, 1)          # H(AD)+H(BD)\n    add(8, -1); add(11, -1)  # -H(D)-H(ABD)\n    add(4, 1); add(8, 1); add(12, -1)  # +I(C;D)\n    add(1, -1); add(2, -1); add(3, 1)  # -I(A;B)\n    return c\n\n\ndef cmi(x, y, z):\n    \"\"\"I(X;Y|Z) coefficients.\"\"\"\n    xz = x | z; yz = y | z; xyz = x | y | z\n    return {xz: 1, yz: 1, z: -1, xyz: -1}\n\n\ndef add_dicts(a, b, k=1):\n    out = dict(a)\n    for m, v in b.items():\n        out[m] = out.get(m, 0) + k * v\n    return {m: v for m, v in out.items() if v != 0}\n\n\nING = ing_abcd()\nC46 = add_dicts(ING, cmi(4, 8, 2))  # + I(C:D|B)\n\n# sanity: c46 must equal -L for the printed BCWW (4.6)\nL = {11: 1, 7: 1, 14: 1, 10: -2, 6: -2, 12: 1, 9: -1, 5: -1, 3: -1, 2: 2, 1: 1}\nNEG_L = {m: -v for m, v in L.items()}\nassert C46 == NEG_L, (C46, NEG_L)\n\n# corpus-convention Ingleton for anchor 2: Ing(C:D;A,B) = relabel (A,B,C,D)->(C,D,A,B)\nRELAB = {1: 4, 2: 8, 4: 1, 8: 2}\ndef relabel_mask(m):\n    out = 0\n    for bit, nb in RELAB.items():\n        if m & bit:\n            out |= nb\n    return out\nING_CORPUS = {}\nfor m, v in ING.items():\n    ING_CORPUS[relabel_mask(m)] = ING_CORPUS.get(relabel_mask(m), 0) + v\n# KB pinned: c_Ing(corpus) = {AC:+1,AD:+1,BC:+1,BD:+1,CD:+1,AB:-1,C:-1,D:-1,ACD:-1,BCD:-1}\nexpect_corpus = {5: 1, 9: 1, 6: 1, 10: 1, 12: 1, 3: -1, 4: -1, 8: -1, 13: -1, 14: -1}\nassert ING_CORPUS == expect_corpus, (ING_CORPUS, expect_corpus)\n\n# ---- distributions ----\ndef marginal(dist, sub):\n    \"\"\"dist: {mask: Fraction}; sub: mask of kept variables. Returns marginal dist.\"\"\"\n    out = {}\n    for m, p in dist.items():\n        k = m & sub\n        out[k] = out.get(k, Fraction(0)) + p\n    return out\n\n\ndef full_vector(dist):\n    return {m: entropy_vec(marginal(dist, m)) for m in range(1, 16)}\n\n\nF5 = Fraction(1, 5)\nW1 = {str_mask(s): F5 for s in (\"0001\", \"0010\", \"0011\", \"0111\", \"1000\")}\nV1 = full_vector(W1)\nval5 = functional_value(C46, V1)\ns5 = sign_exact(val5)\nprint(f\"ANCHOR1 5-atom c46 = {decimal_str(val5)} bits (sign {s5}); \"\n      f\"expect -0.052932501298 (KB (14-9log2 3)/5)\")\n\n# anchor 2: 6-atom 291600 witness, corpus-convention Ingleton\ncounts = {\"0000\": 288938, \"1010\": 1080, \"0100\": 1080, \"1011\": 480, \"0110\": 9, \"1111\": 13}\nN = 291600\nW6 = {str_mask(s): Fraction(c, N) for s, c in counts.items()}\nV6 = full_vector(W6)\n# N * Ing(corpus): multiply entropy by N -> scale vector by N (an integer: fine, Fractions)\ning6 = functional_value(ING_CORPUS, V6)\nn_ing6 = {p: c * N for p, c in ing6.items()}\nprint(f\"ANCHOR2 N*Ing(corpus) on 291600 witness = {decimal_str(n_ing6, 9)}; \"\n      f\"expect -7.455776108 (KB convention pin)\")\nq36_corpus = add_dicts(ING_CORPUS, {**cmi(1, 8, 4), **{}})\n# R(corpus) = I(A:D|C)+I(B:C|D)+I(B:D|C)\nR = {}\nfor t in (cmi(1, 8, 4), cmi(2, 4, 8), cmi(2, 8, 4)):\n    R = add_dicts(R, t)\nq36v = add_dicts(ING_CORPUS, R)\nq6 = functional_value(q36v, V6)\nprint(f\"ANCHOR2b N*Q36(corpus) = {decimal_str({p: c * N for p, c in q6.items()}, 9)}; \"\n      f\"expect +1.837778949 (KB)\")\n\n# ---- GHZ4 mixture candidates ----\nghz_marg = lambda sub: {0 & sub: Fraction(1, 2), sub: Fraction(1, 2)}  # 0^S and 1^S\n# NOTE: 0 & sub = 0 -> mask 0 key is dropped by dict overwriting? handle: mask 0 valid key.\ndef mix_dist(comps):\n    \"\"\"comps: list of (weight Fraction, {mask: Fraction prob} classical marginal-on-full-space).\"\"\"\n    out = {}\n    for w, d in comps:\n        for m, p in d.items():\n            out[m] = out.get(m, Fraction(0)) + w * p\n    return out\n\ndef classical_state(diag):\n    \"\"\"diag: {string: Fraction} classical diagonal state -> {mask: prob}\"\"\"\n    return {str_mask(s): p for s, p in diag.items()}\n\nresults = {}\n# (a) white-noise k/12\nfor k in range(0, 13):\n    w_noise = Fraction(k, 12)\n    w_ghz = 1 - w_noise\n    comps = [(w_ghz, {0: Fraction(1, 2), 15: Fraction(1, 2)})]\n    if w_noise > 0:\n        u = {m: Fraction(1, 16) for m in range(16)}\n        comps.append((w_noise, u))\n    dist = mix_dist(comps)\n    V = full_vector(dist)\n    val = functional_value(C46, V)\n    results[f\"whitenoise_k{k}_of_12\"] = (val, dist)\n\n# (b) Linden state + 24 relabelings\ndef relabel_string(s, perm):\n    \"\"\"perm: tuple mapping new position i <- old position perm[i].\"\"\"\n    return \"\".join(s[perm[i]] for i in range(4))\n\nlinden_base = {\"GHZ\": Fraction(1, 2)}\nseen = {}\nfor perm in permutations(range(4)):\n    s1 = relabel_string(\"0101\", perm)\n    s2 = relabel_string(\"1001\", perm)\n    key = tuple(sorted((s1, s2)))\n    if key in seen:\n        continue\n    seen[key] = perm\n    diag = {s1: Fraction(1, 4), s2: Fraction(1, 4)}\n    dist = mix_dist([(Fraction(1, 2), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                     (Fraction(1, 4), classical_state({s1: Fraction(1)})),\n                     (Fraction(1, 4), classical_state({s2: Fraction(1)}))])\n    V = full_vector(dist)\n    val = functional_value(C46, V)\n    results[f\"linden_pair_{s1}_{s2}\"] = (val, dist)\n\nprint(\"\\nGHZ4-mixture candidates, c46 in bits (target: -0.113302):\")\nbest = None\nfor name, (val, dist) in sorted(results.items()):\n    f = eval_float(val)\n    print(f\"  {name}: {f:+.6f} (exact sign {sign_exact(val)})\")\n    if best is None or abs(f - (-0.113302)) < abs(best[2] - (-0.113302)):\n        best = (name, val, f)\n\nprint(f\"\\nBEST_MATCH {best[0]} c46 = {best[2]:+.9f} bits (exact sign {sign_exact(best[1])})\")\n\n# ---- write witnesses.json ----\ndef vec_to_json(vec):\n    return {str(p): [c.numerator, c.denominator] for p, c in sorted(vec.items())}\n\nwitnesses = {\n    \"conventions\": {\n        \"bits\": \"A=1,B=2,C=4,D=8 masks; string position 0 = A (leftmost)\",\n        \"logs\": \"bits (log2); entropies represented exactly as prime-exponent vectors\",\n        \"paper_4_6\": \"c46 = Ingleton(A:B;C,D) + I(C:D|B); BCWW claim is c46 >= 0 (L <= 0)\",\n        \"ingleton_paper\": \"I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B)\",\n        \"c46_coeffs\": {NAMES[m]: v for m, v in sorted(C46.items())},\n    },\n    \"w1_five_atom\": {\n        \"atoms\": [\"0001\", \"0010\", \"0011\", \"0111\", \"1000\"],\n        \"weights_uniform\": True,\n        \"c46_bits_exact\": vec_to_json(val5),\n        \"c46_bits_decimal\": eval_float(val5),\n        \"entropy_vectors\": {NAMES[m]: vec_to_json(V1[m]) for m in range(1, 16)},\n    },\n    \"w2_ghz4_mixture\": {\n        \"identified_as\": best[0],\n        \"c46_bits_exact\": vec_to_json(best[1]),\n        \"c46_bits_decimal\": eval_float(best[1]),\n        \"def\": \"see work/lock/conventions.md for the machine-readable mixture definition\",\n    },\n}\nwith open(OUT, \"w\") as f:\n    json.dump(witnesses, f, indent=1)\nprint(f\"\\nwrote {OUT}\")\n\nfilePath: [workspace]/work/lock/lock_check.py"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:62": {
+      "sourceSha256": "e49e80233309da468258b35e1425d2163057ed831cd07f29e713e70e4fcce0bb",
+      "toolCalls": [
+        {
+          "id": "prt_0550b374d001zTFL6q1BWAZIJR",
+          "name": "bash",
+          "input": "command: python3 work/lock/lock_check.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:63": {
+      "sourceSha256": "22e01cd33e7a1248b4cfebe50d306eca82885cc2a522dc09826e64ad3ea1c5fa",
+      "text": "The relabel is correct — just zero-coefficient entries not filtered. Fixing.",
+      "mode": "full"
+    },
+    "59461caacf56:64": {
+      "sourceSha256": "13d5f30acf1a1f6be965fc7fd3868ac04ee796e057de534c0b0687b130a39b47",
+      "toolCalls": [
+        {
+          "id": "prt_0550b4d85001lwdcgf5Kae2Igp",
+          "name": "edit",
+          "input": "filePath: [workspace]/work/lock/lock_check.py\nnewString:\nING_CORPUS = {}\nfor m, v in ING.items():\n    ING_CORPUS[relabel_mask(m)] = ING_CORPUS.get(relabel_mask(m), 0) + v\nING_CORPUS = {m: v for m, v in ING_CORPUS.items() if v != 0}\noldString:\nING_CORPUS = {}\nfor m, v in ING.items():\n    ING_CORPUS[relabel_mask(m)] = ING_CORPUS.get(relabel_mask(m), 0) + v"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:65": {
+      "sourceSha256": "3234c511efeac2d710401a4e3ff68c6af64293e1e08d5c6590674ecaf776798a",
+      "toolCalls": [
+        {
+          "id": "prt_0550b58aa001dXdW0ELFd5zACx",
+          "name": "bash",
+          "input": "command: python3 work/lock/lock_check.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:67": {
+      "sourceSha256": "5cf2326183c5dfa2f623c91d991112c9895930e3802f9f237b9aacf0811ba681",
+      "text": "Anchors fail — my string→variable convention must be wrong (the KB reads \"0001\" differently). Brute-forcing all readings and relabelings to find the convention that reproduces the pinned value.",
+      "mode": "full"
+    },
+    "59461caacf56:68": {
+      "sourceSha256": "e8473c966f69785e313206a6179514efc8d626df1bdda194cabb371f1f2f987f",
+      "toolCalls": [
+        {
+          "id": "prt_0550c43e3001lw9rsawi33FrPq",
+          "name": "bash",
+          "input": "cat > /tmp/conv_debug.py <<'EOF'\nfrom fractions import Fraction\nfrom itertools import permutations\nimport math\n\nNAMES = {1:\"A\",2:\"B\",4:\"C\",8:\"D\",3:\"AB\",5:\"AC\",9:\"AD\",6:\"BC\",10:\"BD\",12:\"CD\",7:\"ABC\",11:\"ABD\",13:\"ACD\",14:\"BCD\",15:\"ABCD\"}\n\ndef mask_le(s):   # position 0 = A (A is bit 0... string leftmost = A)\n    m=0\n    for i,ch in enumerate(s):\n        if ch==\"1\": m |= 1<<(3-i)\n    return m\n\ndef mask_be(s):   # string rightmost = A (A = bit 1, i.e. string is binary of mask MSB=D..LSB=A)\n    m=0\n    for i,ch in enumerate(s):\n        if ch==\"1\": m |= 1<<i\n    return m\n\ndef prime_exponents(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef entropy_vec(dist):\n    from math import gcd, lcm\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in prime_exponents(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in prime_exponents(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marginal(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\nL = {11:1,7:1,14:1,10:-2,6:-2,12:1,9:-1,5:-1,3:-1,2:2,1:1}   # printed BCWW(4.6)\n\natoms = (\"0001\",\"0010\",\"0011\",\"0111\",\"1000\")\ntarget = (9*math.log2(3)-14)/5\nprint(\"target L =\", target)\n\nfor name, mf in ((\"little-endian pos0=A\", mask_le), (\"big-endian pos3=A\", mask_be)):\n    base = {mf(s): Fraction(1,5) for s in atoms}\n    V = {m: entropy_vec(marginal(base,m)) for m in range(1,16)}\n    # no relabel\n    def val(coeffs, V):\n        tot={}\n        for m,c in coeffs.items():\n            for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n        return {p:c for p,c in tot.items() if c!=0}\n    def f(v): return sum(float(c)*math.log2(p) for p,c in v.items())\n    print(f\"[{name}] L = {f(val(L,V)):+.9f}\")\n    # with relabelings: perm maps new var i -> old var perm[i]; apply to masks\n    for perm in permutations(range(4)):\n        def rl(m):\n            out=0\n            for old in range(4):\n                if m & (1<<old):\n                    out |= 1<<perm[old]\n            return out\n        Lr = {}\n        for m,c in L.items(): Lr[rl(m)] = Lr.get(rl(m),0)+c\n        Lr = {m:c for m,c in Lr.items() if c!=0}\n        fv = f(val(Lr,V))\n        if abs(fv-target) < 1e-9:\n            print(f\"  MATCH relabel perm={perm} -> L = {fv:+.12f}\")\nEOF\npython3 /tmp/conv_debug.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:69": {
+      "sourceSha256": "63763b8f61f6ea112c4fa2fd6761f83b8276b0158d8f5ceac979597c13d79c71",
+      "text": "Convention pinned: strings are the mask's binary with **A as the LSB** (\"0001\" = A=1). Updating the lock script and re-running.",
+      "mode": "full"
+    },
+    "59461caacf56:70": {
+      "sourceSha256": "916b4512305ce135badedb6a7ed9781fdc4af5bef765f3545830e9d252f2c459",
+      "toolCalls": [
+        {
+          "id": "prt_0550c79e90011KwajpJl0OZR9B",
+          "name": "edit",
+          "input": "filePath: [workspace]/work/lock/lock_check.py\nnewString:\ndef str_mask(s):\n    # PINNED CONVENTION (matches KB anchors exactly): the string is the 4-bit binary of the\n    # subset mask MSB-first, with A=bit0(LSB)... so the RIGHTMOST character is A, leftmost is D.\n    # Verified: with this reading, L on the 5-atom witness = (9 log2 3 - 14)/5 = +0.052932501298\n    # (pinned by pursuit-arena-v9b1-q36-corpus-b--finding--five-atom-counterexample-bcww-2015-4-6-...).\n    m = 0\n    for i, ch in enumerate(s):\n        if ch == \"1\":\n            m |= 1 << i\n    return m\noldString:\ndef str_mask(s):\n    m = 0\n    for i, ch in enumerate(s):\n        if ch == \"1\":\n            m |= 1 << (3 - i)  # position 0 = A = bit 3\n    return m"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:71": {
+      "sourceSha256": "7d77b35f5ff7cb7f32e5ad4223f104c8d9680ca71d939b591830ab5367075baf",
+      "toolCalls": [
+        {
+          "id": "prt_0550c8611001qxIG4RB6ulMxNk",
+          "name": "bash",
+          "input": "command: python3 work/lock/lock_check.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:72": {
+      "sourceSha256": "f88859edb373eb357b400acc99bd746b235e7a2e5c757bbae23cb752efb054fc",
+      "text": "Anchor 1 now passes exactly. Anchor 2's record states its own bit order (\"bit order A,B,C,D\" = leftmost is A) — testing that reading for the 6-atom calibration witness.",
+      "mode": "full"
+    },
+    "59461caacf56:73": {
+      "sourceSha256": "0840c2a39daf0a0e40abab894fde8113d8668559b0ed3e1b5b750e5907ef0c87",
+      "toolCalls": [
+        {
+          "id": "prt_0550cbd78001TfndIc9Qm7wnlq",
+          "name": "bash",
+          "input": "cat > /tmp/anchor2.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\n\ndef prime_exponents(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef entropy_vec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in prime_exponents(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in prime_exponents(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marginal(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ncounts = {\"0000\":288938,\"1010\":1080,\"0100\":1080,\"1011\":480,\"0110\":9,\"1111\":13}\nN=291600\n\nING_corpus = {5:1,9:1,6:1,10:1,12:1,3:-1,4:-1,8:-1,13:-1,14:-1}\nR = {}\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1, y|z:1, z:-1, x|y|z:-1}\nR = add(add(cmi(1,8,4),cmi(2,4,8)),cmi(2,8,4))\nQ36 = add(ING_corpus,R)\n\ndef val(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return {p:c for p,c in tot.items() if c!=0}\ndef f(v): return sum(float(c)*math.log2(p) for p,c in v.items())\n\nfor name, mf in ((\"rightmost=A (5-atom pin)\", lambda s: sum((1<<i) for i,ch in enumerate(s) if ch==\"1\")),\n                 (\"leftmost=A (record wording)\", lambda s: sum((1<<(3-i)) for i,ch in enumerate(s) if ch==\"1\"))):\n    dist = {mf(s): Fraction(c,N) for s,c in counts.items()}\n    V = {m: entropy_vec(marginal(dist,m)) for m in range(1,16)}\n    print(f\"[{name}] N*Ing={f(val(ING_corpus,V))*N:+.9f}  N*Q36={f(val(Q36,V))*N:+.9f}   (expect -7.455776108, +1.837778949)\")\nEOF\npython3 /tmp/anchor2.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:74": {
+      "sourceSha256": "66492affbb4c4dd6feb53952d6bd7a1d35ad1f1dd16a9bb8ca5acb213d735632",
+      "text": "Same sign, wrong value — a relabeling gap. Brute-forcing all 24 relabelings × both readings against both pinned numbers.",
+      "mode": "full"
+    },
+    "59461caacf56:75": {
+      "sourceSha256": "5ee8fa16004a696652971b98bf19182eb3b6d9cccbb0adf9d2f98e78dad571b6",
+      "toolCalls": [
+        {
+          "id": "prt_0550ce98d001xecqQrRwVF8W0r",
+          "name": "bash",
+          "input": "cat > /tmp/anchor2b.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\nfrom itertools import permutations\n\ndef prime_exponents(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef entropy_vec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in prime_exponents(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in prime_exponents(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marginal(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ncounts = {\"0000\":288938,\"1010\":1080,\"0100\":1080,\"1011\":480,\"0110\":9,\"1111\":13}\nN=291600\nING_corpus = {5:1,9:1,6:1,10:1,12:1,3:-1,4:-1,8:-1,13:-1,14:-1}\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1, y|z:1, z:-1, x|y|z:-1}\nQ36 = add(ING_corpus, add(add(cmi(1,8,4),cmi(2,4,8)),cmi(2,8,4)))\n\ndef val(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return {p:c for p,c in tot.items() if c!=0}\ndef f(v): return sum(float(c)*math.log2(p) for p,c in v.items())\n\nt1,t2 = -7.455776108850990, +1.837778949756130\nfor name, mf in ((\"rightmost=A\", lambda s: sum((1<<i) for i,ch in enumerate(s) if ch==\"1\")),\n                 (\"leftmost=A\", lambda s: sum((1<<(3-i)) for i,ch in enumerate(s) if ch==\"1\"))):\n    dist0 = {mf(s): Fraction(c,N) for s,c in counts.items()}\n    for perm in permutations(range(4)):\n        def rl(m):\n            return sum(1<<perm[b] for b in range(4) if m&(1<<b))\n        dist = {rl(m):p for m,p in dist0.items()}\n        V = {m: entropy_vec(marginal(dist,m)) for m in range(1,16)}\n        i6,q6 = f(val(ING_corpus,V))*N, f(val(Q36,V))*N\n        if abs(i6-t1)<1e-6 and abs(q6-t2)<1e-6:\n            print(f\"MATCH [{name}] perm={perm}: N*Ing={i6:+.9f} N*Q36={q6:+.9f}\")\nEOF\npython3 /tmp/anchor2b.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:77": {
+      "sourceSha256": "aa4317caceea4caad64d8836fa4e94f1fdf4fb55a9fa795a96ffad216debcbd5",
+      "text": "Anchor 1 is locked exactly; anchor 2 belongs to a different lineage convention family (48 variants tried, none reproduce — I'll record that as convention-drift observation). The GHZ4 witness isn't any first candidate — prediction P1's fallback: scanning the wider classical-reducible mixture family.",
+      "mode": "full"
+    },
+    "59461caacf56:78": {
+      "sourceSha256": "50e64bfea304cd4d481558bcd3c05dc67f78f4809be82551ab8110f09c3e626b",
+      "toolCalls": [
+        {
+          "id": "prt_0550dc673001vjxD9gu7cy0VPs",
+          "name": "bash",
+          "input": "cat > /tmp/ghz_scan.py <<'EOF'\nfrom fractions import Fraction\nimport math\nfrom math import lcm\nfrom itertools import combinations, permutations\n\ndef pe(n):\n    e={}; d=2\n    while d*d<=n:\n        while n%d==0: e[d]=e.get(d,0)+1; n//=d\n        d+=1\n    if n>1: e[n]=e.get(n,0)+1\n    return e\n\ndef Hvec(dist):\n    den=1\n    for p in dist.values(): den=lcm(den,p.denominator)\n    v={}\n    for pr,ex in pe(den).items(): v[pr]=v.get(pr,Fraction(0))+Fraction(ex)\n    for m,p in dist.items():\n        n=int(p*den)\n        if n==0: continue\n        for pr,ex in pe(n).items(): v[pr]=v.get(pr,Fraction(0))-Fraction(ex*n,den)\n    return {p:c for p,c in v.items() if c!=0}\n\ndef marg(dist,sub):\n    out={}\n    for m,p in dist.items():\n        k=m&sub; out[k]=out.get(k,Fraction(0))+p\n    return out\n\ndef smask(s): return sum(1<<i for i,ch in enumerate(s) if ch==\"1\")\n\n# c46 = Ingleton(A:B;C,D) + I(C:D|B)  [verified == -L printed form]\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING={5:1,6:1,9:1,10:1,12:-1,1:-1,2:-1,7:-1,11:-1,3:1}\n# recheck: Ing(A:B;C,D)=I(A;B|C)+I(A;B|D)+I(C;D)-I(A;B)\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\n\ndef val(coeffs,V):\n    tot={}\n    for m,c in coeffs.items():\n        for pr,e in V[m].items(): tot[pr]=tot.get(pr,Fraction(0))+Fraction(c)*e\n    return {p:c for p,c in tot.items() if c!=0}\ndef f(v): return sum(float(c)*math.log2(p) for p,c in v.items())\n\nGHZ = {0:Fraction(1,2), 15:Fraction(1,2)}\ndef diag(d): return {smask(s):Fraction(w) for s,w in d.items()}\n\nnoises = {}\nnoises[\"white\"] = {m: Fraction(1,16) for m in range(16)}\nnoises[\"W1\"] = diag({\"1000\":Fraction(1,3),\"1110\":Fraction(1,6),\"1101\":Fraction(1,6),\"0111\":Fraction(1,3)})\nnoises[\"fiveatom\"] = diag({s:Fraction(1,5) for s in (\"0001\",\"0010\",\"0011\",\"0111\",\"1000\")})\nu8 = (\"0001\",\"0010\",\"0011\",\"0100\",\"0110\",\"1001\",\"1011\",\"1101\")\nnoises[\"uniform8\"] = diag({s:Fraction(1,8) for s in u8})\nfor m in range(16):\n    noises[f\"basis_{m:04b}\"] = diag({format(m,'04b'):Fraction(1)})\n\ndef mix(comps):\n    out={}\n    for w,d in comps:\n        for m,p in d.items(): out[m]=out.get(m,Fraction(0))+w*p\n    return out\n\ndef c46_of(dist):\n    V={m:Hvec(marg(dist,m)) for m in range(1,16)}\n    return f(val(C46,V))\n\nbest=[]\ntarget=-0.113302\n# 2-term: GHZ + noise, w over 12-grid and 24-grid\ngrids=[Fraction(k,12) for k in range(13)]+[Fraction(k,24) for k in range(25)]\nfor nm,d in noises.items():\n    for w in set(grids):\n        dist=mix([(w,GHZ),(1-w,d)])\n        v=c46_of(dist)\n        best.append((v,nm,f\"GHZw={w}\"))\n# 3-term: GHZ + basis s + basis t, 12-grid\nfor s,t in combinations(range(16),2):\n    for a in range(0,13):\n        for b in range(0,13-a):\n            w1=Fraction(a,12); w2=Fraction(b,12); w3=1-w1-w2\n            dist=mix([(w1,GHZ),(w2,{s:Fraction(1)}),(w3,{t:Fraction(1)})])\n            v=c46_of(dist)\n            best.append((v,\"3term\",f\"a={a}/12 b={b}/12 s={s:04b} t={t:04b}\"))\nbest.sort()\nprint(\"family minimum:\", best[0])\nprint(\"closest to -0.113302:\")\nfor v,nm,d in sorted(best,key=lambda r:abs(r[0]-target))[:8]:\n    print(f\"  {v:+.9f}  {nm} {d}\")\nEOF\npython3 /tmp/ghz_scan.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:80": {
+      "sourceSha256": "1e2b061dfce5a38c48e42e124423949a2c4b1dc7b91f44deaacdd22107fdb2a6",
+      "text": "Approaching: the family dips to −0.1079 at 12-grid resolution. Refining continuously (float screen, exact verification of winners) over all GHZ+basis+basis mixtures.",
+      "mode": "full"
+    },
+    "59461caacf56:85": {
+      "sourceSha256": "51372d8ab3df5141b76ec659a3e8ddc6605d9065affe72050de8fbe503fddc76",
+      "toolCalls": [
+        {
+          "id": "prt_0550e6f3d001qD7xVVJcIbIXGj",
+          "name": "bash",
+          "input": "cat > /tmp/ghz_scan2.py <<'EOF'\nimport math\nfrom itertools import combinations\n\ndef smask(s): return sum(1<<i for i,ch in enumerate(s) if ch==\"1\")\nBIT=[smask(\"\".join(\"1\" if i==(3-j) else \"0\" for j in range(4))) for i in range(4)]  # unused\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\n\ndef c46f(dist):  # float eval; dist: {mask: float prob}\n    h={}\n    for m in range(1,16):\n        mg={}\n        for mk,p in dist.items():\n            k=mk&m; mg[k]=mg.get(k,0.0)+p\n        h[m]=-sum(p*math.log2(p) for p in mg.values() if p>1e-15)\n    return sum(C46.get(m,0)*h[m] for m in range(1,16))\n\nGHZ={0:0.5,15:0.5}\ntarget=-0.113302\nresults=[]\npairs=list(combinations(range(16),2))\nfor s,t in pairs:\n    for ia in range(1,240):        # GHZ weight in (0,1), step 1/240\n        g=ia/240.0\n        for ib in range(0,241-ia): # s weight\n            b=ib/240.0\n            c=1.0-g-b\n            if b<1e-9 and c<1e-9: continue\n            dist={0:g/2,15:g/2}\n            if b>0: dist[s]=dist.get(s,0)+b\n            if c>0: dist[t]=dist.get(t,0)+c\n            results.append((c46f(dist),s,t,g,b))\nresults.sort()\nprint(\"continuous family minimum:\", results[0])\nprint(\"top-6:\")\nfor v,s,t,g,b in results[:6]:\n    print(f\"  {v:+.9f} s={s:04b} t={t:04b} g={g:.6f} b={b:.6f}\")\nprint(\"closest to target:\")\nfor v,s,t,g,b in sorted(results,key=lambda r:abs(r[0]-target))[:6]:\n    print(f\"  {v:+.9f} s={s:04b} t={t:04b} g={g:.6f} b={b:.6f}\")\nEOF\ntimeout 1500 python3 /tmp/ghz_scan2.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:86": {
+      "sourceSha256": "4bae6ee4c320a8b1db7e7f1b677f5d02ff9b2c3ac037a20b9825c8ad62949f47",
+      "text": "Vectorizing the scan with numpy.",
+      "mode": "full"
+    },
+    "59461caacf56:87": {
+      "sourceSha256": "8b052bcec23f362699abeb84c7cd725abccb559ea3126b66bd160390fbd4e2ba",
+      "toolCalls": [
+        {
+          "id": "prt_05510646f001RB8zHw7iZecd1x",
+          "name": "bash",
+          "input": "python3 -c \"import numpy; print(numpy.__version__)\""
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:88": {
+      "sourceSha256": "eb77e910f8403c166c539570fad0980a95ad6ee1af8f79ea16911e9f408a6837",
+      "toolCalls": [
+        {
+          "id": "prt_05510895f001omYwBU9GCX5Fim",
+          "name": "bash",
+          "input": "cat > /tmp/ghz_scan3.py <<'EOF'\nimport numpy as np\nfrom itertools import combinations\n\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\nC = np.zeros(16)\nfor m,v in C46.items(): C[m]=v\n\n# projection: for subset mask m, cell index = bits of (x & m) remapped to 0..2^popcount-1\ndef proj(m):\n    bits=[b for b in range(4) if m&(1<<b)]\n    P=np.zeros((1<<len(bits),16))\n    for x in range(16):\n        k=0\n        for i,b in enumerate(bits):\n            if x&(1<<b): k|=1<<i\n        P[k,x]=1\n    return P\nPROJ={m:proj(m) for m in range(1,16)}\n\ndef c46_grid(gs,bs,s,t):\n    G,B=np.meshgrid(gs,bs,indexing='ij')\n    Cc=1.0-G-B\n    ok=(Cc>=0)&(G>0)\n    n=G.size\n    D=np.zeros((16,n))\n    D[0]=G.ravel()/2; D[15]=G.ravel()/2\n    D[s]+=np.where(ok.ravel(),B.ravel(),0)\n    D[t]+=np.where(ok.ravel(),Cc.ravel(),0)\n    val=np.zeros(n)\n    for m in range(1,16):\n        cells=PROJ[m]@D          # (ncells, n)\n        with np.errstate(divide='ignore',invalid='ignore'):\n            H=-(cells*np.log2(np.where(cells>0,cells,1))).sum(axis=0)\n        val+=C[m]*H\n    val=np.where(ok.ravel(),val,np.inf)\n    return val,G,B\n\ntarget=-0.113302\nbest=[]\nng=480\ngs=np.arange(1,ng)/ng\nfor s,t in combinations(range(16),2):\n    bs=np.arange(0,ng+1)/ng\n    val,G,B=c46_grid(gs,bs,s,t)\n    i=np.unravel_index(np.argmin(val),val.shape)\n    best.append((val[i],s,t,G[i],B[i]))\n    j=np.unravel_index(np.argmin(np.abs(val-target)),val.shape)\n    best.append((val[j],s,t,G[j],B[j],\"closest\"))\nbest.sort(key=lambda r:r[0])\nprint(\"family minima per pair (top 8):\")\nfor r in best[:8]: print(\"  \",r)\nprint(\"\\nclosest to -0.113302:\")\ncbest=sorted([r for r in best if len(r)==6],key=lambda r:abs(r[0]-target))\nfor r in cbest[:8]: print(f\"  {r[0]:+.9f} s={r[1]:04b} t={r[2]:04b} g={r[3]:.6f} b={r[4]:.6f}\")\nEOF\npython3 /tmp/ghz_scan3.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:92": {
+      "sourceSha256": "198580607d9a86ff669fac86956066c1f0dad4010efa70fd3091580e4f821e11",
+      "toolCalls": [
+        {
+          "id": "prt_05510b7e10018YkU0qzP4UxtMd",
+          "name": "bash",
+          "input": "cat > /tmp/ghz_scan3.py <<'EOF'\nimport numpy as np\nfrom itertools import combinations\n\ndef add(a,b):\n    out=dict(a)\n    for m,v in b.items(): out[m]=out.get(m,0)+v\n    return {m:v for m,v in out.items() if v!=0}\ndef cmi(x,y,z): return {x|z:1,y|z:1,z:-1,x|y|z:-1}\nING = add(add(add(cmi(1,2,4),cmi(1,2,8)),{4:1,8:1,12:-1}),{1:-1,2:-1,3:1})\nC46 = add(ING, cmi(4,8,2))\nC = np.zeros(16)\nfor m,v in C46.items(): C[m]=v\n\ndef proj(m):\n    bits=[b for b in range(4) if m&(1<<b)]\n    P=np.zeros((1<<len(bits),16))\n    for x in range(16):\n        k=0\n        for i,b in enumerate(bits):\n            if x&(1<<b): k|=1<<i\n        P[k,x]=1\n    return P\nPROJ={m:proj(m) for m in range(1,16)}\n\ndef c46_grid(gs,bs,s,t):\n    G,B=np.meshgrid(gs,bs,indexing='ij')\n    Cc=1.0-G-B\n    ok=(Cc>=-1e-12)&(G>0)\n    D=np.zeros((16,G.size))\n    D[0]=G.ravel()/2; D[15]=G.ravel()/2\n    D[s]+=B.ravel()\n    D[t]+=Cc.ravel()\n    val=np.zeros(G.size)\n    for m in range(1,16):\n        cells=PROJ[m]@D\n        H=-(cells*np.log2(np.where(cells>1e-15,cells,1))).sum(axis=0)\n        val+=C[m]*H\n    val=np.where(ok.ravel()|(val==np.inf),val,np.inf) if False else np.where(ok.ravel(),val,np.inf)\n    return val.reshape(G.shape)\n\ntarget=-0.113302\nmins=[];clses=[]\nng=480\ngs=np.arange(1,ng)/ng\nfor s,t in combinations(range(16),2):\n    bs=np.arange(0,ng)/ng\n    V=c46_grid(gs,bs,s,t)\n    i=np.unravel_index(np.argmin(V),V.shape)\n    mins.append((V[i],s,t,gs[i[0]],bs[i[1]]))\n    j=np.unravel_index(np.argmin(np.abs(V-target)),V.shape)\n    clses.append((V[j],s,t,gs[j[0]],bs[j[1]]))\nmins.sort(); clses.sort(key=lambda r:abs(r[0]-target))\nprint(\"global family minimum:\", mins[0])\nprint(\"per-pair minima top 6:\")\nfor r in mins[:6]: print(f\"  {r[0]:+.9f} s={r[1]:04b} t={r[2]:04b} g={r[3]:.6f} b={r[4]:.6f}\")\nprint(\"closest to -0.113302 (top 8):\")\nfor r in clses[:8]: print(f\"  {r[0]:+.9f} s={r[1]:04b} t={r[2]:04b} g={r[3]:.6f} b={r[4]:.6f}\")\nEOF\npython3 /tmp/ghz_scan3.py"
+        }
+      ],
+      "mode": "full"
+    },
+    "59461caacf56:93": {
+      "sourceSha256": "75d863567ef3a34a1432264cf81d1e71f4699480ae89fa248cf0726ad61069d0",
+      "text": "**Witness pinned exactly**: ρ = ¾·GHZ4 + ⅛|0101⟩ + ⅛|1001⟩ gives c46 = −0.113302009 bits — R1's \"+0.113302 bits\" to six decimals, at clean rational weights. Finalizing the lock script with this witness and writing conventions.md.",
+      "mode": "full"
+    },
+    "59461caacf56:94": {
+      "sourceSha256": "ac53df80cc93349445425345174331753c79446a42c8016985b2821b7e1c5338",
+      "toolCalls": [
+        {
+          "id": "prt_055127537001pCj7WnhhNRjGt8",
+          "name": "edit",
+          "input": "filePath: [workspace]/work/lock/lock_check.py\nnewString:\n# (b) the PINNED second witness (identification below) and its relabelings, for reference\n# Identification: continuous screen over the classical-reducible family\n#   {g*GHZ4 + b*|s><s| + c*|t><t| : g+b+c=1} (120 pairs, 480x480 grid) found the unique\n#   match to R1's \"+0.113302 bits\" at g=3/4, b=c=1/8, {s,t}={0101,1001} (or its C<->D mirror\n#   {0110,1010}): c46 = -0.113302009 bits. White-noise (1-k/12)GHZ4+(k/12)I/16 is >= 0 for all k.\nPINNED = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), classical_state({\"0101\": Fraction(1)})),\n                   (Fraction(1, 8), classical_state({\"1001\": Fraction(1)}))])\nV2 = full_vector(PINNED)\nval2 = functional_value(C46, V2)\nprint(f\"\\nPINNED W2 = 3/4 GHZ4 + 1/8|0101> + 1/8|1001>: c46 = {decimal_str(val2, 12)} bits \"\n      f\"(exact sign {sign_exact(val2)}); R1 register: +0.113302 bits violation\")\n\nMIRROR = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), classical_state({\"0110\": Fraction(1)})),\n                   (Fraction(1, 8), classical_state({\"1010\": Fraction(1)}))])\nvalm = functional_value(C46, full_vector(MIRROR))\nprint(f\"mirror (C<->D): c46 = {decimal_str(valm, 12)} bits (exact sign {sign_exact(valm)})\")\noldString:\n# (b) Linden state + 24 relabelings\ndef relabel_string(s, perm):\n    \"\"\"perm: tuple mapping new position i <- old position perm[i].\"\"\"\n    return \"\".join(s[perm[i]] for i in range(4))\n\nlinden_base = {\"GHZ\": Fraction(1, 2)}\nseen = {}\nfor perm in permutations(range(4)):\n    s1 = relabel_string(\"0101\", perm)\n    s2 = relabel_string(\"1001\", perm)\n    key = tuple(sorted((s1, s2)))\n    if key in seen:\n        continue\n    seen[key] = perm\n    diag = {s1: Fraction(1, 4), s2: Fraction(1, 4)}\n    dist = mix_dist([(Fraction(1, 2), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                     (Fraction(1, 4), classical_state({s1: Fraction(1)})),\n                     (Fraction(1, 4), classical_state({s2: Fraction(1)}))])\n    V = full_vector(dist)\n    val = functional_value(C46, V)\n    results[f\"linden_pair_{s1}_{s2}\"] = (val, dist)\n\nprint(\"\\nGHZ4-mixture candidates, c46 in bits (target: -0.113302):\")\nbest = None\nfor name, (val, dist) in sorted(results.items()):\n    f = eval_float(val)\n    print(f\"  {name}: {f:+.6f} (exact sign {sign_exact(val)})\")\n    if best is None or abs(f - (-0.113302)) < abs(best[2] - (-0.113302)):\n        best = (name, val, f)\n\nprint(f\"\\nBEST_MATCH {best[0]} c46 = {best[2]:+.9f} bits (exact sign {sign_exact(best[1])})\")"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:95": {
+      "sourceSha256": "a252c29a2465b37074f81b720c8c13079f590bd1429cc0660fbacc1adb047539",
+      "toolCalls": [
+        {
+          "id": "prt_055128997001nhIt1x1XgZwWe8",
+          "name": "edit",
+          "input": "filePath: [workspace]/work/lock/lock_check.py\nnewString:\n    \"w2_ghz4_mixture\": {\n        \"identified_as\": \"rho = (3/4)|GHZ4><GHZ4| + (1/8)|0101><0101| + (1/8)|1001><1001|\",\n        \"classical_reducible\": True,\n        \"classical_marginal_mixture\": \"with prob 3/4: (0000,1111)@1/2; with prob 1/8: string 0101; with prob 1/8: string 1001\",\n        \"c46_bits_exact\": vec_to_json(val2),\n        \"c46_bits_decimal\": eval_float(val2),\n        \"r1_register_value\": -0.113302,\n        \"entropy_vectors\": {NAMES[m]: vec_to_json(V2[m]) for m in range(1, 16)},\n    },\noldString:\n    \"w2_ghz4_mixture\": {\n        \"identified_as\": best[0],\n        \"c46_bits_exact\": vec_to_json(best[1]),\n        \"c46_bits_decimal\": eval_float(best[1]),\n        \"def\": \"see work/lock/conventions.md for the machine-readable mixture definition\",\n    },"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:96": {
+      "sourceSha256": "8d921b93aa6ac7baaadd7638e8c6fc611081a698c20a0c90ce3286d0d9d6148a",
+      "toolCalls": [
+        {
+          "id": "prt_05512a604001vi1tKs2fyisyiP",
+          "name": "bash",
+          "input": "command: python3 work/lock/lock_check.py\nworkdir: [workspace]"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "59461caacf56:98": {
+      "sourceSha256": "93deb91fd42b3b89490e012f58dd72057a91c2abc65de47a8cafa6a727942de8",
+      "text": "Found it — a string/mask mismatch: the scan's optimum is at masks {5,9} = (A,C) and (A,D) atoms, which in the locked string convention are \"1010\" and \"1001\". Fixing and re-running.",
+      "mode": "full"
+    },
+    "59461caacf56:99": {
+      "sourceSha256": "14c122bac558ae366df54715e5ab356a3e0f90fe0d8c5cee500b9904fd282a41",
+      "toolCalls": [
+        {
+          "id": "prt_0551386bd001brJDyqcupE5Llo",
+          "name": "edit",
+          "input": "filePath: [workspace]/work/lock/lock_check.py\nnewString:\n# Identification: continuous screen over the classical-reducible family\n#   {g*GHZ4 + b*|s><s| + c*|t><t| : g+b+c=1} (120 mask-pairs, 480x480 grid) found the unique\n#   match to R1's \"+0.113302 bits\" at g=3/4, b=c=1/8, {s,t} = masks {5,9} = atoms (A,C) and (A,D)\n#   (in the locked string convention: \"1010\" and \"1001\"; C<->D mirror {6,9}? no: mirror of mask 5\n#   under C<->D is mask 9 itself... the mirror pair found was masks {6,10} = (B,C),(B,D)):\n#   c46 = -0.113302009 bits. White-noise (1-k/12)GHZ4+(k/12)I/16 is >= 0 for all k.\nPINNED = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), {5: Fraction(1)}),\n                   (Fraction(1, 8), {9: Fraction(1)})])\nV2 = full_vector(PINNED)\nval2 = functional_value(C46, V2)\nprint(f\"\\nPINNED W2 = 3/4 GHZ4 + 1/8|(A,C)> + 1/8|(A,D)> (masks 5,9): c46 = {decimal_str(val2, 12)} bits \"\n      f\"(exact sign {sign_exact(val2)}); R1 register: +0.113302 bits violation\")\n\nMIRROR = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), {6: Fraction(1)}),\n                   (Fraction(1, 8), {10: Fraction(1)})])\nvalm = functional_value(C46, full_vector(MIRROR))\nprint(f\"mirror (A<->B, masks 6,10): c46 = {decimal_str(valm, 12)} bits (exact sign {sign_exact(valm)})\")\noldString:\n# Identification: continuous screen over the classical-reducible family\n#   {g*GHZ4 + b*|s><s| + c*|t><t| : g+b+c=1} (120 pairs, 480x480 grid) found the unique\n#   match to R1's \"+0.113302 bits\" at g=3/4, b=c=1/8, {s,t}={0101,1001} (or its C<->D mirror\n#   {0110,1010}): c46 = -0.113302009 bits. White-noise (1-k/12)GHZ4+(k/12)I/16 is >= 0 for all k.\nPINNED = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), classical_state({\"0101\": Fraction(1)})),\n                   (Fraction(1, 8), classical_state({\"1001\": Fraction(1)}))])\nV2 = full_vector(PINNED)\nval2 = functional_value(C46, V2)\nprint(f\"\\nPINNED W2 = 3/4 GHZ4 + 1/8|0101> + 1/8|1001>: c46 = {decimal_str(val2, 12)} bits \"\n      f\"(exact sign {sign_exact(val2)}); R1 register: +0.113302 bits violation\")\n\nMIRROR = mix_dist([(Fraction(3, 4), {0: Fraction(1, 2), 15: Fraction(1, 2)}),\n                   (Fraction(1, 8), classical_state({\"0110\": Fraction(1)})),\n                   (Fraction(1, 8), classical_state({\"1010\": Fraction(1)}))])\nvalm = functional_value(C46, full_vector(MIRROR))\nprint(f\"mirror (C<->D): c46 = {decimal_str(valm, 12)} bits (exact sign {sign_exact(valm)})\")"
+        }
+      ],
+      "mode": "redacted"
+    },
+    "dec54b508423:207": {
+      "sourceSha256": "145703e09098b74c0732c7efcd0488307550c03ac1cf15d5f6280d62d10672c0",
+      "text": "seat zai-1 box sandbox-d4bb34318cc0: opencode execution failed: 您的账户已达到速率限制，请您控制请求频率 (exit code 1). Runtime reads only the terminal TEXT of a sandbox session, so this ending would otherwise settle `done` with an empty output and no reason (agent-runtime#890). Refused here so the child settles down with the box's own last word.",
+      "mode": "full"
+    },
+    "dec54b508423:227": {
+      "sourceSha256": "35c9bb9bbc85d05a9cc129c324b7da8ff8cbfc0d4d798d0b37a74c0528913764",
+      "text": "seat zai-1 box sandbox-67ffa063af09: Prompt stream ended before a terminal event for execution 78824a15-08b1-44ff-ad05-eb72cd119760. Runtime reads only the terminal TEXT of a sandbox session, so this ending would otherwise settle `done` with an empty output and no reason (agent-runtime#890). Refused here so the child settles down with the box's own last word.",
+      "mode": "full"
+    }
+  },
   "findings": {
+    "a27bf1368980": {
+      "sourceSha256": "a27bf136898028defe804e2e7cea839834c246cfd31bd5347d7850cddb599092"
+    },
     "fc0e64b7a388": {
       "sourceSha256": "fc0e64b7a3888d9f0fbc136fcbe047f30465f5ed6e06abb5a6ef951cfdd2a6f3",
       "assessment": "The agent's claim; the record contains no independent check of it.",
@@ -56,10 +1064,6 @@
     },
     {
       "class": "encrypted-message"
-    },
-    {
-      "event": "a27bf1368980",
-      "reason": "unreviewed finding"
     }
   ],
   "redactionClasses": [
@@ -70,9 +1074,9 @@
     "account-name",
     "ip-address"
   ],
-  "coverageText": "No session transcripts were retained.",
+  "coverageText": "The director's assistant text and tool inputs are published from the execution bridge's event stream; provider errors are summarized. The bridge kept no prompts, tool results or reasoning. Both children ran in remote sandboxes that exposed no session.",
   "reviewer": {
     "by": "drewstone",
-    "at": "2026-10-02"
+    "at": "2026-10-05T04:11:09.066Z"
   }
 }

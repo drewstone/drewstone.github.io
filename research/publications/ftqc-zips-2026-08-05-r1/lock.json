@@ -1,20 +1,20 @@
 {
   "schema": "publication.lock.v1",
   "recordId": "ftqc-zips-2026-08-05-r1",
-  "recordDigest": "sha256:7ce85463e9a5cdabafb552d7dcb527d76456b9db646e211ee833a67670fd94b0",
-  "overlaySha256": "9a805c5027d45709bbf73e83c024f1ceac0872d411c78e28d8787e4984ea9d0e",
-  "publicSha256": "0986b45f4d6aca6afc9a3196e436a23e5b5bb622679428cf9e11f796a0073bc2",
+  "recordDigest": "sha256:4ff1a2dec21bd09cc836ac96305305bdc690a7c4300635fb028e1cbd6d92cb7d",
+  "overlaySha256": "137145f6527c67683ddee6acbb696dc6f2cd0b5c42531fb28e9a35c8ab5e73bd",
+  "publicSha256": "9e4023159457879e2b12a6dafe99507d7a8eee14117d83b536c3367b540cf867",
   "snapshot": "sha256:7bd4ec17b07440fb5163a7550586d15a96ef47aca0bf13a1003744f813d3ca2b",
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.8.1",
-    "adapter": "2.1.1",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-05T00:59:08.833Z",
+  "builtAt": "2026-10-05T04:30:01.080Z",
   "builtOn": "drew-GTR-Pro",
   "attestation": {
     "keyId": "7566b6e702ec87d4",
-    "signature": "FmAhFikf8EJTekC8YMx6kHG3BTmi/ZZRb1czlCIemHLTeqoOmkT31c594yjyxmAXYZlYN3kpCt4Trrj2A1cCCg=="
+    "signature": "vAtr6Bl8xq80AAC17c2rqzJ3zyPGBrntjSatJ4UL3TThdVlYxAPb7ljqbphfZ2KZCMA8F7kHPbrcQedg6PuPAg=="
   }
 }

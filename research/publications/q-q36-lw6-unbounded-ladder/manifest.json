@@ -12,11 +12,11 @@
   "bytes": 496294,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.8.1",
-    "adapter": "2.1.1",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:b1526d11fb3441f7a7757fde8feebe89fd5d5fc56590cdf39d00aeef72a06c90",
+  "recordDigest": "sha256:331f17e107e2196fd7225c3ed0992a2e20337139accb7c0d402de4320338184e",
   "overlay": "overlay.json",
   "public": "public/research/records/q-q36-lw6-unbounded-ladder.json"
 }

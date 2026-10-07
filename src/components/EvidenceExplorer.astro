@@ -5,8 +5,6 @@ import '@drewstone/agent-record/styles.css'
 interface Props { records: RunRecord[]; idmap: EventIdMap }
 const { records, idmap } = Astro.props
 ---
-<AgentRecordView records={records} idmap={idmap} client:load />
-<noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>
 <style is:global>
   .research-agent-record {
     --ar-background: var(--bg);
@@ -15,3 +13,5 @@ const { records, idmap } = Astro.props
     --ar-mono: var(--font-mono);
   }
 </style>
+<AgentRecordView records={records} idmap={idmap} client:load />
+<noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>

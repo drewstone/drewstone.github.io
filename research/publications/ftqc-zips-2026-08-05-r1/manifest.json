@@ -12,11 +12,11 @@
   "bytes": 34118787,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.8.1",
-    "adapter": "2.1.1",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:7ce85463e9a5cdabafb552d7dcb527d76456b9db646e211ee833a67670fd94b0",
+  "recordDigest": "sha256:4ff1a2dec21bd09cc836ac96305305bdc690a7c4300635fb028e1cbd6d92cb7d",
   "overlay": "overlay.json",
   "public": "public/research/records/ftqc-zips-2026-08-05-r1.json"
 }

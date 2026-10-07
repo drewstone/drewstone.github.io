@@ -1,10 +1,10 @@
 ---
 title: 'A GHZ-mixture witness against BCWW'
 description: 'An explicit four-qubit state violating the BCWW candidate inequality, with an exact entropy reduction and a replayable verifier.'
-assessed: '2026-10-02'
+assessed: '2026-10-05'
 claim: 'A four-qubit GHZ mixture violates the same proposed inequality by 0.113302 bits.'
-limitation: 'The relevant marginals are classical. This does not establish a quantum advantage; the original discovery fleet trace is incomplete.'
-record_ids: ['q-conj-entropy-bcww-repair']
+limitation: 'The relevant marginals are classical, so this does not establish a quantum advantage. Novelty rests on one session’s literature search.'
+record_ids: ['wf_3b2a5d92-078', 'q-conj-entropy-bcww-repair']
 order: 2
 ---
 import WitnessExplorer from '../../components/WitnessExplorer.astro'
@@ -55,19 +55,30 @@ Its October 2 replay succeeded.
 The slider assigns weight $p$ to the GHZ projector and $(1-p)/2$ to each basis-state projector.
 The integer certificate applies at $p=3/4$; other plotted values use floating point.
 
-## Attribution and retained attempt
+## Attribution and retained attempts
 
-The provenance note credits the fifth arm of an operator-led verification fleet dated August 10, 2026, and records five verification approaches, including blind arithmetic and fresh code.
-The complete original fleet transcripts were not recovered, so this attribution cannot be reconstructed from a complete discovery trace.
+The provenance note credits the fifth arm of an operator verification workflow dated August 10, 2026 (Mountain time; it ran from 04:06 UTC on August 11).
+That workflow's five Claude Code sessions survive [[3]](#ref-3), and the literature-audit session is the arm that found this state.
+Its responses report the model `claude-fable-5`.
+Asked to find any published refutation, confirmation, or discussion of the inequality, it found none.
+It then varied the weights of the Ingleton-violating mixture of Linden, Matúš, Ruskai, and Winter [[4]](#ref-4), whose weights $(\tfrac12,\tfrac14,\tfrac14)$ satisfy the bound.
+At 04:17 UTC on August 11 it evaluated $p=3/4$, $q=r=1/8$ at $+0.113302$ bits; the largest value it found in that family was $+0.114511$ bits near $p\approx0.773$.
+Its report that the state is new reflects that search, not a proof of first discovery.
+The other four sessions checked the five-atom witness, the transcription, and the scope of the inequality.
+The operator session that launched the workflow is not published.
 
-The retained pursuit [[3]](#ref-3) began on August 30 and revisited the witness and surrounding claim.
-Its two child attempts ended down after rate-limit and incomplete-stream failures.
-The archive contains journal events and the witness artifact, but no native session JSONL.
-The viewer shows this later repair attempt, not the August 10 fleet; it does not certify complete capture of the original messages, children, or source bytes.
+The August 30 repair pursuit [[5]](#ref-5) later revisited the witness.
+Its director's OpenCode session survives as the execution bridge's event stream: assistant text and tool inputs, without prompts, tool results, or reasoning.
+Its inputs named the witness only by the value $+0.113302$ bits, so it reconstructed the state by scanning GHZ-plus-basis mixtures, and its knowledge-base call wrote the finding shown in that record.
+Both children ran in remote sandboxes whose sessions were not retained; they ended down after rate-limit and incomplete-stream failures.
+The director's stream ends after thirteen consecutive failed provider requests.
+Neither record certifies complete capture.
 This is a second witness to the [same BCWW refutation](/research/bcww/).
 
 <ResearchBibliography entries={[
   { authors: 'N. Bao, C. Cao, M. Walter, and Z. Wang', title: 'Holographic entropy inequalities and gapped phases of matter', url: 'https://arxiv.org/abs/1507.05650v2', publication: 'J. High Energy Phys. 09 (2015), 203. arXiv:1507.05650v2, Eq. (4.6).', doi: '10.1007/JHEP09(2015)203' },
   { title: 'GHZ-mixture entropy verifier', url: '/research/verify-ghz.py', publication: 'Exact retained Python source. Standard-library reconstruction and closed-form check; replayed October 2, 2026.' },
-  { title: 'BCWW repair pursuit', url: '/research/records/q-conj-entropy-bcww-repair.json', publication: 'Retained event and finding projection, August 30, 2026. A later attempt, distinct from the August 10 verification fleet. Source hashes identify the inspected files.' },
+  { title: 'Five-arm verification workflow, August 10', url: '/research/records/wf_3b2a5d92-078.json', publication: 'Five Claude Code sessions and the workflow journal, joined by agent ID. Prompts, assistant text, and tool inputs are published; long tool results are excerpts.' },
+  { authors: 'N. Linden, F. Matúš, M. B. Ruskai, and A. Winter', title: 'The quantum entropy cone of stabiliser states', url: 'https://arxiv.org/abs/1302.5453', publication: 'Proc. TQC 2013, LIPIcs 22. arXiv:1302.5453, Eq. (6).', doi: '10.4230/LIPIcs.TQC.2013.270' },
+  { title: 'BCWW repair pursuit', url: '/research/records/q-conj-entropy-bcww-repair.json', publication: 'Retained journal, findings, and the director’s bridge event stream, August 30, 2026. A later attempt; its children left no sessions.' },
 ]} />

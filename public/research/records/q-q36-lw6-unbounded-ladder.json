@@ -4,7 +4,7 @@
   "title": "Linden–Winter ladder certification, August 16",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.1.1"
+    "version": "2.2.0"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
@@ -28,10 +28,11 @@
       "status": "winner",
       "sandboxes": [],
       "capture": {
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
-      }
+        "channel": "coordination",
+        "status": "lossy",
+        "reason": "instructions-to-workers-only"
+      },
+      "captureNote": "The director ran OpenCode with its home directory inside the run workspace, which the run archive excluded, and the bridge store that served it keeps sessions only from August 19. Its four instructions to the workers survive in the Runtime coordination log and are shown here."
     },
     {
       "id": "q-q36-lw6-unbounded-ladder:s0",
@@ -47,7 +48,17 @@
       "end": "2026-08-16T21:50:37.429Z",
       "status": "down",
       "nativeSessionId": "8a60a79c-cf22-47d3-a855-437c7388e2f6",
-      "joinBasis": "task-digest",
+      "joinBasis": "bridge-session-directory",
+      "joinProof": {
+        "journal": {
+          "path": "spawn-journal.jsonl",
+          "line": 11
+        },
+        "session": {
+          "path": "trace/pi-sessions/cli-bridge/e685deeaddbcf8ec2c70cdb1e67860e5a37880f183bfc97d91cda485cbb1d839/8a60a79c-cf22-47d3-a855-437c7388e2f6.jsonl"
+        },
+        "sessionId": "supervised-worker-61e307db101f6eda46a65b9031823ddfa19ce9f0122c15f65e76c042e76a81d6"
+      },
       "sandboxes": [],
       "capture": {
         "channel": "pi",
@@ -64,16 +75,29 @@
       "model": "pi/tangle-router/glm-5.2",
       "modelSource": "materialization receipt",
       "servedModel": null,
-      "harness": null,
+      "harness": "pi",
       "start": "2026-08-16T21:00:41.049Z",
       "end": "2026-08-16T21:50:48.527Z",
       "status": "down",
+      "nativeSessionId": "f25a42fd-c557-4c35-af16-2044a2538f22",
+      "joinBasis": "bridge-session-directory",
+      "joinProof": {
+        "journal": {
+          "path": "spawn-journal.jsonl",
+          "line": 6
+        },
+        "session": {
+          "path": "trace/pi-sessions/cli-bridge/d04f6ebe58f5f2a34d84e2e52884e53f8a1bc92b9ed62beaed7bdc5446660010/f25a42fd-c557-4c35-af16-2044a2538f22.jsonl"
+        },
+        "sessionId": "supervised-worker-53526a83ea25cd55997836a1a399f2ded01cbcd4ea0a74c24f1de96033d21340"
+      },
       "sandboxes": [],
       "capture": {
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
-      }
+        "channel": "pi",
+        "status": "complete",
+        "reason": null
+      },
+      "captureNote": "Its Pi session file holds only the session header: no prompt or reply was written."
     },
     {
       "id": "q-q36-lw6-unbounded-ladder:s2",
@@ -89,7 +113,17 @@
       "end": "2026-08-16T21:50:55.481Z",
       "status": "down",
       "nativeSessionId": "98c40952-79cb-4223-8f56-ab25a617c67b",
-      "joinBasis": "task-digest",
+      "joinBasis": "bridge-session-directory",
+      "joinProof": {
+        "journal": {
+          "path": "spawn-journal.jsonl",
+          "line": 13
+        },
+        "session": {
+          "path": "trace/pi-sessions/cli-bridge/af8ab961959fe5b5b68a93282e73b7e11b207b598d5c04df22b4ec43add17b7b/98c40952-79cb-4223-8f56-ab25a617c67b.jsonl"
+        },
+        "sessionId": "supervised-worker-256d12c06bc818c775d760724336e36f6ef119973b3c7095878071b42b386fde"
+      },
       "sandboxes": [],
       "capture": {
         "channel": "pi",
@@ -115,7 +149,8 @@
         "channel": "journal",
         "status": "absent",
         "reason": "no-conversation-channel"
-      }
+      },
+      "captureNote": "This child ran Claude Code with its home directory inside the run workspace, which the archive excluded. No session file was found on the lab host, the operator's Mac, either beelink, or in the trace archive."
     },
     {
       "id": "q-q36-lw6-unbounded-ladder:s4",
@@ -126,56 +161,29 @@
       "model": "pi/tangle-router/glm-5.2",
       "modelSource": "materialization receipt",
       "servedModel": null,
-      "harness": null,
+      "harness": "pi",
       "start": "2026-08-16T21:51:31.910Z",
       "end": "2026-08-16T22:00:32.763Z",
       "status": "down",
-      "sandboxes": [],
-      "capture": {
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
-      }
-    },
-    {
-      "id": "pi:b7172ce4-7dbc-441f-8dd1-ac46560ebd39",
-      "label": "Pi b7172ce4",
-      "parent": null,
-      "kind": "session",
-      "role": "Session",
-      "model": null,
-      "servedModel": null,
-      "harness": "pi",
-      "start": "2026-08-16T21:51:33.147Z",
-      "end": "2026-08-16T21:51:33.147Z",
       "nativeSessionId": "b7172ce4-7dbc-441f-8dd1-ac46560ebd39",
-      "joinBasis": "unresolved",
+      "joinBasis": "bridge-session-directory",
+      "joinProof": {
+        "journal": {
+          "path": "spawn-journal.jsonl",
+          "line": 20
+        },
+        "session": {
+          "path": "trace/pi-sessions/cli-bridge/aa43e46833953e4f601bbceb3801bc1ffb2b7e02f8d7360751ba0c70d79e3a45/b7172ce4-7dbc-441f-8dd1-ac46560ebd39.jsonl"
+        },
+        "sessionId": "supervised-worker-95ac0ed970cf2cf3b976b5766e3bb1d2f14c0158ee43c7b03603a51da9b475cd"
+      },
       "sandboxes": [],
       "capture": {
         "channel": "pi",
         "status": "complete",
         "reason": null
-      }
-    },
-    {
-      "id": "pi:f25a42fd-c557-4c35-af16-2044a2538f22",
-      "label": "Pi f25a42fd",
-      "parent": null,
-      "kind": "session",
-      "role": "Session",
-      "model": null,
-      "servedModel": null,
-      "harness": "pi",
-      "start": "2026-08-16T21:00:42.088Z",
-      "end": "2026-08-16T21:00:42.088Z",
-      "nativeSessionId": "f25a42fd-c557-4c35-af16-2044a2538f22",
-      "joinBasis": "unresolved",
-      "sandboxes": [],
-      "capture": {
-        "channel": "pi",
-        "status": "complete",
-        "reason": null
-      }
+      },
+      "captureNote": "Its Pi session file holds only the session header: no prompt or reply was written."
     },
     {
       "id": "finding:q-q36-lw6-unbounded-ladder",
@@ -329,7 +337,7 @@
     },
     {
       "id": "b29c49d9cc4a:1",
-      "node": "pi:f25a42fd-c557-4c35-af16-2044a2538f22",
+      "node": "q-q36-lw6-unbounded-ladder:s1",
       "at": "2026-08-16T21:00:42.088Z",
       "kind": "record",
       "category": "lifecycle",
@@ -1000,6 +1008,122 @@
       }
     },
     {
+      "id": "c677d8f21c5c:1",
+      "node": "q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:49:13.018Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s0",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 1
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "PARENT BULLETIN (read before continuing; affects your engine design). Two facts you must act on: (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every operation that happens OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` or `a*b` between with-blocks rounds to the default prec 28 and silently corrupts deep-cancellation quantities (this exact bug produced deterministic WRONG E values ~1e-31-scale in the parent's first engine at rows L=7..10 while L<=6 and L>=11 looked fine). Fix: perform EVERY Decimal operation (especially negations and interval endpoints) inside a directed context at your working precision, or set the global context to your working precision for the whole run. Decimal.ln() itself is correctly rounded (verified vs atanh series, <=2 ulp) but appears to ignore context rounding direction - budget >=20 guard digits. (2) CROSS-CHECK STANDARD: the parent has certified the W_L rows L=2..16 with an independent fixed engine, saved at work/results/parent_reference.json (exact Decimal strings for R_lo/R_hi, E, y per L). Reference values: R_12 = 1999999999999.35632183807935579..., R_16 = 19999999999999999.35632183908035966..., R_2 = 189.4773957843194031476..., gap 2*10^L - R_L converges to ~0.64367816. Your certified rows must agree with these to your certified precision (you are an independent implementation; agreement is the point). If your engine disagrees, find YOUR bug first (start with the negation bug), then report genuine contradiction. Continue your assigned unit after acting on this.",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "c677d8f21c5c:4",
+      "node": "q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:49:13.133Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s3",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 4
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "PARENT BULLETIN (read before continuing). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every op OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` between with-blocks rounds to prec 28 and silently corrupts deep-cancellation values (this bug gave the parent deterministic wrong E at L=7..10, stable across precisions - a convincing wrong number). Fix: every Decimal op inside a directed context, or pin the global context; keep >=20 guard digits. (2) DATA FOR YOUR ASYMPTOTICS: parent's independent certified rows L=2..16 at work/results/parent_reference.json (exact Decimal strings). Established: R_L = 2*10^L - gap_L with gap_L strictly decreasing from gap_2=10.522604216, gap_4=0.743775672, gap_6=0.644679264, gap_8=0.643688172, gap_10=0.643676758, gap_12=0.6436781619..., gap_16=0.6436781609... - the float-level reversal around L=10..12 (0.643676758 vs 0.64367816) is exactly the regime where you need full Decimal precision, so derive the gap limit G* with certified intervals (my L=12/16 full-precision values suggest G* ~ 0.64367816..; the KB page said 0.643678). Your Tasks 1-4 stand. Note E_L = -9.254186028954...*10^(-4L-2)*(1+o(1)) and y_L ~ 4.62709...*10^(-5L-1.33) are the two scales; the R_L -> 2*10^L mechanism is E/y ~ 2*10^L*(1+O(10^-L)). Recheck my claim, do not trust it.",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "c677d8f21c5c:7",
+      "node": "q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:49:13.324Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s1",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 7
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "PARENT BULLETIN (read before continuing). (1) ENGINE BUG WARNING for any Decimal you use (display, endpoint conversion, cross-checks): Python Decimal applies the AMBIENT context to every op OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` between contexts rounds to prec 28 and silently corrupts deep-cancellation values (this bug cost the parent's first engine rows L=7..10: E came out ~7.2e-31 instead of ~9.25e-34, deterministic and stable across precisions - a convincing wrong number). Your Fraction-atanh core is immune; any Decimal side-path is not. (2) CROSS-CHECK DATA: parent's independent certified rows L=2..16 are at work/results/parent_reference.json. Key values: R_12 = 1999999999999.35632183807935579... (KB claim interval [1999999999999.356320, 1999999999999.356322] REPRODUCES), R_16 = 19999999999999999.35632183908035966..., R_2 = 189.4773957843194031476..., gap 2*10^L - R_L -> ~0.64367816 from above (gap_2=10.5226, gap_4=0.74378, gap_8=0.6436882, gap_12=0.64367816). Per-step ratios R_(L+1)/R_L are ~10.008 (2->3) rising to ~10.0000; the >=1.9 bar should pass trivially - certify what you actually get. Continue your assigned unit (ratios, slab kills, UNBOUNDED_VERDICT) using the parent file as comparison data, never as input you trust blindly - recompute everything yourself.",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "c677d8f21c5c:10",
+      "node": "q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:49:13.646Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "steer → s2",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 10
+      },
+      "detail": {
+        "role": "assistant",
+        "publicText": "PARENT BULLETIN (read before continuing; affects your engine). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every operation OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` or `a*b` between with-blocks rounds to default prec 28 and silently corrupts deep-cancellation quantities (this exact bug gave the parent's first engine deterministic WRONG E values at family rows L=7..10 while other rows looked fine). Fix: EVERY Decimal op (negations included) inside a directed context at working precision, or pin the global context for the whole run. Decimal.ln() is correctly rounded (verified vs atanh series) but seems to ignore context rounding direction - keep >=20 guard digits. (2) CROSS-CHECK DATA: parent's independent certified rows L=2..16 at work/results/parent_reference.json: R_2=189.4773957843194031476..., R_3=1998.3565066..., R_8=199999999.35631..., R_12=1999999999999.356321838... For your TIER-EXACT slab rows: the family has x=z=0 exactly (integer det certificate), so kills are slabs {k2 < R_L}; k*=(3977/125,3977/125,1) is closed by L=2 (R_2 ~ 189.5 > 31.816). Continue your unit; compare your certified anchors against the parent file (independent implementations agreeing is the deliverable).",
+        "publicationMode": "full",
+        "publicationNote": null
+      }
+    },
+    {
+      "id": "b366d3a574d9",
+      "node": "finding:q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:50:16.899Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Decimal ambient-context trap: out-of-context unary minus truncates to prec 28; corrupted 4 certified rows deterministically; detector = Fraction-series cross-check",
+      "source": {
+        "path": "kb/pages/experiment--decimal-ambient-context-trap-out-of-context-unary-minus-truncates-to-prec-28-cor.md",
+        "sha256": "b366d3a574d9132e48ec0de5232619d4e14ecec6faf0b39f383cd7ca75edc1bd"
+      },
+      "detail": {
+        "title": "Decimal ambient-context trap: out-of-context unary minus truncates to prec 28; corrupted 4 certified rows deterministically; detector = Fraction-series cross-check",
+        "createdAt": "2026-08-16T21:50:16.899Z",
+        "pageKind": "experiment",
+        "bodyLine": 20,
+        "contentSha256": "e4ae5c8340a13fea5530459750878d0e93bb689d117d3dedb6d95fe2cbaf4e2a",
+        "recordedClaim": "MEASURED INSTRUMENT TRAP (cost the parent's first engine 4 of 15 certified rows): Python's decimal module applies the AMBIENT context to every Decimal operation executed OUTSIDE an explicit context - including UNARY MINUS on an existing Decimal. A bare `-x` between with-blocks rounds x to the default prec 28 (or whatever the ambient happens to be), silently. Symptom in our engine: E = S(ABC)+S(D)-S(AB)-S(CD) for the W_L family came out deterministic-but-wrong (~-7.2e-31 instead of ~-9.25e-34) exactly at rows L=7..10 while L<=6 and L>=11 certified fine, STABLE across working precisions 170..220 - because the corruption size (ambient-28 truncation of a 1e-3-scale ln) is value-dependent, not precision-dependent, so it masquerades as a real signal and survives precision-doubling checks. Two engines agreeing at every precision can BOTH be wrong the same way only if both share the bare-op pattern; the detector that caught it was a pure-Fraction atanh-series evaluator (no contexts at all). Fleet rule going forward: (a) every Decimal op - negations, additions, endpoint assembly - inside the directed context at working precision (or pin the global context once for the whole run); (b) any engine certifying deep-cancellation quantities (differences of O(1) entropies at 1e-30+) must cross-validate at least one row against a context-free Fraction-series evaluator; (c) Decimal.ln() itself measured correctly rounded (<=2 ulp vs atanh series on args 1e-26..0.999, both roundings give identical results - it ignores context rounding direction; budget guard digits)."
+      }
+    },
+    {
+      "id": "448daf14fa0a",
+      "node": "finding:q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:50:17.196Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "W_L ladder re-derived by third independent engine: R_12 reproduces KB interval exactly; rows extended certified to L=16 (R_16=2e16-0.6437), R_L>=1.9eL for L=3..16",
+      "source": {
+        "path": "kb/pages/pursuit-q-q36-lw6-unbounded-ladder--finding--w-l-ladder-re-derived-by-third-independent-engine-r-12-reproduces-kb-interval-ex.md",
+        "sha256": "448daf14fa0a1d5fd494dd6b3d7db87c66e4d926262d357094fec996186d0408"
+      },
+      "detail": {
+        "title": "W_L ladder re-derived by third independent engine: R_12 reproduces KB interval exactly; rows extended certified to L=16 (R_16=2e16-0.6437), R_L>=1.9eL for L=3..16",
+        "createdAt": "2026-08-16T21:50:17.196Z",
+        "pageKind": "finding",
+        "bodyLine": 20,
+        "contentSha256": "961773f2d6517d6443e438eb178019d6508b9a0ed06b105de625e41b0a195282",
+        "recordedClaim": "INDEPENDENT RE-DERIVATION + EXTENSION (parent engine, zero-shared-code with both KB source engines): the 6-atom integer family W_L = [2*10^(4L+3), 27*10^(4L+3)-27*10^(3L+3), 2*10^(4L), 27*10^(4L), 2*10^(L+3), 27*10^(L+3)] on support (A,B,C,D)-MSB {0000,0010,1101,1111,0101,0110} certifies R_L = -E/(x+y+z) = 2*10^L - gap_L for every L=2..16 with gap_2=10.522604216, gap_4=0.743775672, gap_8=0.643688172, gap_12=0.6436781619, gap_16=0.6436781609 (converging to ~0.64367816; KB page said 0.643678). DECISIVE REPRODUCTION: R_12 = 1999999999999.35632183807935579... lies INSIDE the KB-recorded certified interval [1999999999999.356320, 1999999999999.356322] (page pursuit-q-q36-u5-weights-recover) - the prior run's R_12 claim reproduces on a third engine. NEW certified rows beyond the KB's L=12: R_13=19999999999999.3563218..., R_14=199999999999999.3563218..., R_15=1999999999999999.3563218..., R_16=19999999999999999.35632183908035966... (kills diagonal k=(t,t,t) for all integer t <= 2*10^16-1, in particular (10^15,10^15,10^15) and (10^16-1,...)). Every row: exact-integer support certificates T1 (z=I(A;B|D)=0 identically: A const on D=0 atoms, B const on D=1 atoms) and T2 (x=I(A;C|B)=0: integer product identity w(1101)*w(0110)=w(1111)*w(0101), det=0) machine-checked; E<0, y>0 directed intervals; R_L >= 1.9*10^L for all L>=3 (per-step ratios ~10.008 rising to 10.0000). Cross-validation: rows L=7..10 additionally verified against a pure-Fraction atanh-series evaluator (agreement to 1e-14 relative) after the parent's first engine was caught with a deterministic corruption at those rows (see companion instrument record on the Decimal ambient-context trap). With x=z=0 exact, f_k(W_L) = k2*y_L + E_L: every k=(k1,k2,k3) with k2 < R_L is killed, k1,k3 arbitrary - the charter's sup-R question is INFINITE on this evidence."
+      }
+    },
+    {
       "id": "beaf2ad2e084:15",
       "node": "q-q36-lw6-unbounded-ladder:s0",
       "at": "2026-08-16T21:50:37.429Z",
@@ -1056,7 +1180,10 @@
           "trace": {
             "status": "unavailable"
           }
-        }
+        },
+        "publicText": "bridgeExecutor: bridge stream error: pi assistant turn failed: 524 status code (no body)",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -1110,7 +1237,10 @@
           "trace": {
             "status": "unavailable"
           }
-        }
+        },
+        "publicText": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=2). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -1170,7 +1300,10 @@
           "trace": {
             "status": "unavailable"
           }
-        }
+        },
+        "publicText": "bridgeExecutor: bridge stream error: pi assistant turn failed: 524 status code (no body)",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -1224,7 +1357,10 @@
           "trace": {
             "status": "unavailable"
           }
-        }
+        },
+        "publicText": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=1). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     },
     {
@@ -1261,7 +1397,7 @@
     },
     {
       "id": "f1cabba8b796:1",
-      "node": "pi:b7172ce4-7dbc-441f-8dd1-ac46560ebd39",
+      "node": "q-q36-lw6-unbounded-ladder:s4",
       "at": "2026-08-16T21:51:33.147Z",
       "kind": "record",
       "category": "lifecycle",
@@ -1345,6 +1481,46 @@
       }
     },
     {
+      "id": "7b2bb0fc3452",
+      "node": "finding:q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:56:28.437Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Off-diagonal surface: family slabs {k2<R_L} with k1,k3 arbitrary; KB certified-open k*=(31.816,31.816,1) CLOSED by L=2; incumbent digit rows",
+      "source": {
+        "path": "kb/pages/pursuit-q-q36-lw6-unbounded-ladder--finding--off-diagonal-surface-family-slabs-k2-r-l-with-k1-k3-arbitrary-kb-certified-open-.md",
+        "sha256": "7b2bb0fc34521b8658d3f2730e90e6a5658da059c6bf96e5b71e60a74bbe4da1"
+      },
+      "detail": {
+        "title": "Off-diagonal surface: family slabs {k2<R_L} with k1,k3 arbitrary; KB certified-open k*=(31.816,31.816,1) CLOSED by L=2; incumbent digit rows",
+        "createdAt": "2026-08-16T21:56:28.437Z",
+        "pageKind": "finding",
+        "bodyLine": 20,
+        "contentSha256": "91efae2677e45852debfac3a5876f23ffcbb18a8ab68118bd2994230620e64a7",
+        "recordedClaim": "CERTIFIED OFF-DIAGONAL SURFACE (parent engine; work/results/offdiag_surface.json carries all rows). TIER-EXACT: the W_L family's kill region is the slab {k2 < R_L} with k1,k3 ARBITRARY >= 0 (x=z=0 exact via integer support certificates): certified slab floors L3:1998.356..., L6:1999999.355..., L9:1999999999.356..., L12:1999999999999.356..., plus certified off-diagonal anchors f_(10^30,100,10^30)<0 at L=3, f_(1,1.89*10^12,10^50)<0 at L=12, f_(10^3,10^3,10^3)<0 at L=3. THE CLOSURE: k*=(3977/125,3977/125,1)=(31.816,31.816,1), certified-OPEN w.r.t. all on-disk witnesses + mixtures in KB page pursuit-q-qb-classical-critical-surface-r3, is KILLED by the L=2 slab (k2*=3977/125=31.816 < R_2=189.477...; certified f_hi = k2*·y_2 + E_2 < 0) - the previously-open surface point is closed by the family, as is every point with finite k2 by deeper L. TIER-DIGIT (rung 3: KB-recorded coordinates +/-5 last-digit units, inherited certification): incumbent rows at (k1,k2) in {(100,100),(1000,100),(100,1000),(10^6,10^6)}: r9 and r14 witnesses do NOT kill at these off-diagonal points (their thin halfspaces are too narrow there - honest negative rows); mp3.5e9 (x=2.4373764e-35, y=2.4373249e-35, z=9.1790e-38, e=-1.7360207e-25) kills k3 up to certified [1.89076e12, 1.89077e12] at (10^6,10^6) and ~1.8913e12 at (100,100) - the incumbents are themselves slab-shaped, dominated by their epsilon-scale coordinates."
+      }
+    },
+    {
+      "id": "2ac0a2d0dd78",
+      "node": "finding:q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:56:28.880Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Certified c=10 log-ladder: R_(L+1)/R_L >= 10.0000 for L=2..15; diagonal kills to t=10^15; slab kills at k1=k3=10^30..10^100",
+      "source": {
+        "path": "kb/pages/pursuit-q-q36-lw6-unbounded-ladder--finding--certified-c-10-log-ladder-r-l-1-r-l-10-0000-for-l-2-15-diagonal-kills-to-t-10-15.md",
+        "sha256": "2ac0a2d0dd78c9181df813891a3535c9f865aa0fce3e86ae28bc07867f15e51f"
+      },
+      "detail": {
+        "title": "Certified c=10 log-ladder: R_(L+1)/R_L >= 10.0000 for L=2..15; diagonal kills to t=10^15; slab kills at k1=k3=10^30..10^100",
+        "createdAt": "2026-08-16T21:56:28.880Z",
+        "pageKind": "finding",
+        "bodyLine": 20,
+        "contentSha256": "4d8f16523705959dee2c7f273ca591736d2e0f74f15c045610a3c3d954bbfa96",
+        "recordedClaim": "CERTIFIED (parent engine, directed intervals, exact-integer support certificates per row): the per-step ladder ratios of the W_L family satisfy R_(L+1)/R_L >= 10.0000 for EVERY L=2..15 (min certified lower bound 10.0000; the charter's c>1 induction holds with c=10, the asymptotically exact log-ladder slope), and the charter's escalation kills are all certified interval-upper-bounds f < 0: diagonal t=200 and t=1000 at L=3, t=10^4 at L=4, t=10^6 at L=6, t=10^9 at L=9 (also as (10^9,10^9,10^9) diagonal anchor), t=10^12 at L=12, t=10^15 at L=15; off-diagonal slabs f_(10^30,100,10^30)<0 at L=3 and f_(10^100,1.9*10^12,10^100)<0 at L=12 - the latter two with k1,k3 coefficients multiplying CERTIFIED-EXACT zeros (x=I(A;C|B)=0 by the integer product identity w(1101)w(0110)=w(1111)w(0101), z=I(A;B|D)=0 by the support structure), so the kills hold for arbitrarily large k1,k3. With the all-L growth (companion gap-limit record) this is the constructive content of UNBOUNDED_VERDICT=LADDER_CERTIFIED(c=10)."
+      }
+    },
+    {
       "id": "e0839fb145ae",
       "node": "finding:q-q36-lw6-unbounded-ladder",
       "at": "2026-08-16T21:56:56.509Z",
@@ -1364,6 +1540,26 @@
         "recordedClaim": "THE EVERY-K THEOREM, MACHINE-CHECKED (work/THEOREM.md; skeleton here, certificates in the companion ladder/gap/offdiag records): for every (k1,k2,k3) in (0,inf)^3 there is a classical 4-party distribution w with f_k(w) < 0. Hence sup R over classical witnesses is INFINITY, no positive LW6 coefficient triple is valid, and the charter's decision question resolves UNBOUNDED_VERDICT=LADDER_CERTIFIED with sharp boundary B = sup R = infinity (the bounded-world branch is moot). Machine check: for k2 = 10^j, j=0..15, choose L = max(2, j+1); recompute from the integer weights at precision 5L+160 that f = k2*y_L + E_L has certified interval upper bound < 0 (x=z=0 exact by integer support certificates, so the kill holds simultaneously for ALL k1,k3 >= 0, certified up to the 10^100 anchor). Result: THEOREM_CHECK=16/16. Scope honesty: unconditional for k2 <= 10^15 via the explicit certified table; beyond that the claim inherits the certified geometric-tail growth certificate (R_L >= 1.9*10^L for all L >= 3). Corollaries: the KB certified-open surface point k*=(3977/125,3977/125,1) is closed (killed by W_2); the preregistered Kaced-Romashchenko-style plateau threat is REFUTED (slope exactly 10 per layer through L=29).",
         "authorAttribution": "Run-level only; individual native session unresolved",
         "assessment": "The source claims universal divergence from finite certificates and a tail argument. A finite ladder alone does not prove this. The analytic derivation on the result page supplies the universal argument. The failed children did not complete an independent review."
+      }
+    },
+    {
+      "id": "01b3006753f0",
+      "node": "finding:q-q36-lw6-unbounded-ladder",
+      "at": "2026-08-16T21:56:57.363Z",
+      "kind": "finding-record",
+      "category": "verification",
+      "label": "Gap limit certified: G* = 0.6436781609195..96, geometric decrement (factor 10/step) => R_L >= 1.9*10^L for ALL L >= 3",
+      "source": {
+        "path": "kb/pages/pursuit-q-q36-lw6-unbounded-ladder--finding--gap-limit-certified-g-0-6436781609195-96-geometric-decrement-factor-10-step-r-l-.md",
+        "sha256": "01b3006753f06235c7c124afe0a48e4229f8864d7d9f58607d832ce4a368e208"
+      },
+      "detail": {
+        "title": "Gap limit certified: G* = 0.6436781609195..96, geometric decrement (factor 10/step) => R_L >= 1.9*10^L for ALL L >= 3",
+        "createdAt": "2026-08-16T21:56:57.363Z",
+        "pageKind": "finding",
+        "bodyLine": 20,
+        "contentSha256": "870f25652fde246481d1fed804e97df8cf25b9fe73fb4f1e43230cde6cd50577",
+        "recordedClaim": "CERTIFIED (parent engine, directed Decimal intervals, precision 5L+160, exact-integer weights): the gap sequence gap_L = 2*10^L - R_L of the W_L family is positive, strictly decreasing for L=4..29, and its inductive decrement d_L = gap_L - gap_{L+1} decays GEOMETRICALLY with certified ratio d_{L+1}/d_L <= 0.11 for L=11..28 (empirically exactly 0.1: the first-order correction structure). Limit certified by the geometric tail bound: G* = lim gap_L in [0.6436781609195, 0.6436781609196] (width 1.1e-26), i.e. R_L = 2*10^L - 0.6436781609195... + O(10^-L). This refines the prior run's 6-digit display 0.643678 (page pursuit-q-q36-u5-weights-recover) to 13 certified digits and upgrades the all-L growth claim: R_L >= 2*10^L - 0.7438 > 1.9*10^L for ALL L >= 3 by the certified table (L<=29) plus the machine-checked geometric tail inequality. Structure insight (measured, not yet closed-form): the O(1) gap arises from the O(10^-L) first-order corrections of the near-independence MI y_L ~ C_y 10^-5L (detuning 10^-L of the A=0 table [[w0,w1],[w4,w5]] with the exact (2,27)/29 conditional split) and the residual E_L ~ -C_E 10^-4L; G* = 2(y1 - e1) in that expansion. Closed form for G*: attempted, no simple PSLQ identification in {2,27,29,log2 rationals} basis within budget - G* remains certified-numeric only (honest gap)."
       }
     },
     {
@@ -1597,7 +1793,10 @@
           "trace": {
             "status": "unavailable"
           }
-        }
+        },
+        "publicText": "bridgeExecutor: bridge stream error: scoped-host-executor: acquire timeout after 60000ms (lane=bulk, in_flight=10/12, bulk=10/10, queued=0). Reduce parallel callers or raise CLI_BRIDGE_SCOPE_MAX_CONCURRENCY.",
+        "publicationMode": "full",
+        "publicationNote": null
       }
     }
   ],
@@ -1704,15 +1903,15 @@
   },
   "coverage": {
     "completeOriginalCapture": false,
-    "publicContent": "The constructor and off-diagonal assignment prompts are published, and every model request in those two sessions failed. No other conversation was retained.",
+    "publicContent": "All four Pi session files are joined to their children by bridge session directory. The constructor and off-diagonal assignment prompts, their failed model requests, and the director's four instructions to its workers are published. The director's OpenCode transcript and the Claude Code child's session were not retained.",
     "categoryMethod": "Activity types are keyword matches on tool names and commands. They do not measure research value or show independent verification.",
     "cost": "Not recorded",
     "nodes": [
       {
         "nodeId": "q-q36-lw6-unbounded-ladder",
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
+        "channel": "coordination",
+        "status": "lossy",
+        "reason": "instructions-to-workers-only"
       },
       {
         "nodeId": "q-q36-lw6-unbounded-ladder:s0",
@@ -1722,9 +1921,9 @@
       },
       {
         "nodeId": "q-q36-lw6-unbounded-ladder:s1",
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
+        "channel": "pi",
+        "status": "complete",
+        "reason": null
       },
       {
         "nodeId": "q-q36-lw6-unbounded-ladder:s2",
@@ -1740,18 +1939,6 @@
       },
       {
         "nodeId": "q-q36-lw6-unbounded-ladder:s4",
-        "channel": "journal",
-        "status": "absent",
-        "reason": "no-conversation-channel"
-      },
-      {
-        "nodeId": "pi:b7172ce4-7dbc-441f-8dd1-ac46560ebd39",
-        "channel": "pi",
-        "status": "complete",
-        "reason": null
-      },
-      {
-        "nodeId": "pi:f25a42fd-c557-4c35-af16-2044a2538f22",
         "channel": "pi",
         "status": "complete",
         "reason": null
@@ -1767,38 +1954,14 @@
       {
         "runId": "q-q36-lw6-unbounded-ladder",
         "nodeId": "q-q36-lw6-unbounded-ladder",
-        "code": "no-transcript:no-conversation-channel",
-        "detail": "Only lifecycle events are recorded for this agent"
-      },
-      {
-        "runId": "q-q36-lw6-unbounded-ladder",
-        "nodeId": "q-q36-lw6-unbounded-ladder:s1",
-        "code": "no-transcript:no-conversation-channel",
-        "detail": "Only lifecycle events are recorded for this agent"
+        "code": "conversation-not-retained",
+        "detail": "Only the instructions this agent sent to its workers were retained (coordination log)"
       },
       {
         "runId": "q-q36-lw6-unbounded-ladder",
         "nodeId": "q-q36-lw6-unbounded-ladder:s3",
         "code": "no-transcript:no-conversation-channel",
         "detail": "Only lifecycle events are recorded for this agent"
-      },
-      {
-        "runId": "q-q36-lw6-unbounded-ladder",
-        "nodeId": "q-q36-lw6-unbounded-ladder:s4",
-        "code": "no-transcript:no-conversation-channel",
-        "detail": "Only lifecycle events are recorded for this agent"
-      },
-      {
-        "runId": "q-q36-lw6-unbounded-ladder",
-        "nodeId": "pi:b7172ce4-7dbc-441f-8dd1-ac46560ebd39",
-        "code": "pi-session-unjoined",
-        "detail": "No spawned task digest matches this session"
-      },
-      {
-        "runId": "q-q36-lw6-unbounded-ladder",
-        "nodeId": "pi:f25a42fd-c557-4c35-af16-2044a2538f22",
-        "code": "pi-session-unjoined",
-        "detail": "No spawned task digest matches this session"
       }
     ]
   }
