@@ -1,8 +1,8 @@
 ---
 title: 'Exact maximum periods of binary orientable sequences, n = 8 to 17'
-description: 'Exact-arithmetic certificates and explicit sequences settle the longest binary orientable sequence for every order from 8 to 17; the published values stopped at 7.'
+description: 'Exact-arithmetic certificates and explicit sequences settle the longest binary orientable sequence for every order from 8 to 17, where the published values stopped at 7, and an explicit bound for every order improves the 1993 bound of Dai et al.'
 assessed: '2026-10-07'
-claim: 'The maximum period M_n of a binary orientable sequence is 92, 194, 426, 860, 1856, 3728, 7738, 15504, 31776 and 63578 for n = 8, …, 17.'
+claim: 'The longest binary orientable sequence of order n has period 92, 194, 426, 860, 1856, 3728, 7738, 15504, 31776 and 63578 for n = 8, …, 17, and for every n ≥ 13 a closed-form bound improves Dai et al.’s.'
 limitation: 'Every check, including the independent one, was written by language models; no outside expert has reviewed it. The n = 18 and 19 upper bounds are not certified here.'
 area: 'Combinatorics'
 record_ids: ['research-debruijn-frontier-20261004system3']
@@ -86,6 +86,30 @@ The run computed the exact value of this linear program as 862, 3730, 7739, 1550
 The upper bounds rest only on the reduction, the palindromic-node rows and exact arithmetic.
 That every bound is attained by a sequence is a separate fact, not evidence that the linear program is a valid relaxation.
 
+## A bound for every n
+
+The same relaxation gives an explicit bound for all $n$, from a theory worker in the run.
+Split each palindromic node $v$ into two copies, one carrying the arcs $1v\to v0$ and the other $0v\to v1$; the rows $(B)$ and $(C)$ then say exactly that the arcs form a balanced set in this split graph.
+For an $(n-1)$-bit string $v$ let $\delta(v)$ be the least $k\geq0$ such that $v$ with its first $2k+1$ letters removed is a palindrome.
+Deleting one letter from each end of a palindrome leaves a palindrome, so $\delta$ drops by at most 1 along every arc.
+Used as a potential in the dual of the balanced-set problem, it gives
+
+$$
+2M_n\;\leq\;2^n-2^{\lceil n/2\rceil}-\Delta_n,\qquad \Delta_n=\sum_{u,c}\delta(uc),
+$$
+
+with $u$ ranging over palindromes of length $n-2$ and $c\in\{0,1\}$; these strings $uc$ are where the missing palindromic arcs end.
+A string $uc$ with small $\delta$ is forced to have a short even period, and counting such strings bounds $\Delta_n$ from below:
+
+$$
+M_{2k}\leq 2^{2k-1}-(k-2)\,2^{k-1}-k-1,\qquad M_{2k+1}\leq 2^{2k}-(k-2)\,2^{k}-2k-2 \qquad(k\geq2).
+$$
+
+This is below the Dai et al. bound $U_n$ for $n=11$ and every $n\geq13$, and the per-$n$ bound $\lfloor(2^n-2^{\lceil n/2\rceil}-\Delta_n)/2\rfloor$ is below it from $n=11$ on.
+For even $n$ every orientable sequence therefore falls short of $2^{n-1}$ by at least $(n-4)\,2^{n/2-2}$, while $U_n$ only forces a shortfall proportional to $2^{n/2}$.
+As far as the review could find, this is the first improvement of the 1993 binary bound; the comparison uses $U_n$ as quoted in [[1]](#ref-1), since the 1993 paper could not be obtained.
+The run also argues that Dai et al.'s construction makes the deficit $O(n\,2^{n/2})$, so of exact order $n\,2^{n/2}$; that half was not checked here.
+
 ## Verification
 
 The public repository [[3]](#ref-3) holds every certificate, every sequence, and a dependency-free checker.
@@ -97,6 +121,7 @@ The public repository [[3]](#ref-3) holds every certificate, every sequence, and
 | Sequences $n=10,\ldots,19$ | review checker | every window and reversal distinct |
 | Sequences $n=5,\ldots,10$ | 0/1 program without $(C)$ or cuts (SciPy HiGHS), Euler circuit | optima 6, 16, 36, 92, 194, 426, each realized |
 | Tampering | review checker | 8 altered certificates and sequences rejected |
+| Bound for every $n$ | hand audit of the proof; own code for $\delta$, $\Delta_n$ and the closed forms | potential drops by at most 1 on every arc ($n\leq20$, exhaustive); bound $\geq M_n$ for $n=5,\ldots,17$ and below $U_n$ as stated, $n\leq40$ |
 
 The 0/1 program is a floating-point solve, so it corroborates the small values and supplies the sequences for $n\leq9$, but carries none of the upper bounds.
 Within the run, two worker agents and two harness-native referees wrote further checkers, and a second family of certificates based on parity cuts reached the same bounds for $n=11$ and $13,\ldots,16$.

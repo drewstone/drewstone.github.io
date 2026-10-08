@@ -194,6 +194,9 @@
     },
     {
       "node": "research-math-20261003system4:s26"
+    },
+    {
+      "node": "research-math-20261003system4"
     }
   ],
   "redactionClasses": [
@@ -209,7 +212,7 @@
     "at": "2026-10-08T02:00:00.000Z"
   },
   "title": "Research-math follow-up run, October 3",
-  "coverageText": "This record shows the director and the UCS leaf (s3), the only agent that worked on this result. The run’s other 42 agents, on unrelated research lines, are withheld whole. Published in full: the four pages the UCS leaf wrote for this result: its independent recheck of the size-4 table, the refutation of Conjecture 10, its literature check, and its final ledger.",
+  "coverageText": "This record shows only the UCS leaf (s3), the one agent that worked on this result. The director and the run’s other 42 agents, on unrelated research lines, are withheld whole. Published in full: the four pages the UCS leaf wrote for this result: its independent recheck of the size-4 table, the refutation of Conjecture 10, its literature check, and its final ledger.",
   "assignment": {
     "summary": {
       "objective": "Pursue consequential results, constructions, proofs and counterexamples in mathematics and theoretical computer science, continuing the original research lines and their unresolved consequences.",

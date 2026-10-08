@@ -2,8 +2,8 @@
   "schema": "publication.lock.v1",
   "recordId": "research-math-20261003system4",
   "recordDigest": "sha256:259fe03b23e83920f681a4b4a748f1325db3ec09324c8112be2594add19f970e",
-  "overlaySha256": "e70f10d5490162692fc0aa3ae4d56553a6756d0532faeeaff0e7343dd26298c3",
-  "publicSha256": "674e8d83bd511bfc46d8ca1d17c935646ab89d4f7851dd1ff3f834e0504d9cfd",
+  "overlaySha256": "f990822fa375c56e9dbc72e5b412f9edf75371bcbeffc6802ce332de981bc38a",
+  "publicSha256": "ac454ef2661b9922f7a41b7a079a329e2c58a5c6996287bc7c7a6d862a6b14e0",
   "snapshot": "sha256:b83eaae1804edb3c690f190d4db3d09858c19701eefd81c03a599f75b820bace",
   "converter": {
     "package": "@drewstone/agent-record",
@@ -11,10 +11,10 @@
     "adapter": "2.2.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-08T06:49:17.945Z",
+  "builtAt": "2026-10-08T07:58:07.166Z",
   "builtOn": "drew-GTR-Pro",
   "attestation": {
     "keyId": "7566b6e702ec87d4",
-    "signature": "HY+BJd4tzC4KIxxXWcc+SeeYAMB2Y3pW80Gq0RRSUsYcGajespZvWsVlxyKRUXuwgWWB8JMsI/JcdFA7v8EFCg=="
+    "signature": "QacE5nc2lx8H+BHBV8MbV0WIw//EPdS6XNS+exlau0cifYL7DL0/iFDw2/vEWg2Bicfm4zm+x2GXld5DMRZ0Ag=="
   }
 }
