@@ -2,7 +2,7 @@
 title: 'A size-4 compression scheme refuting Pálvölgyi–Tardos Conjecture 10'
 description: 'An explicit unlabeled compression scheme of size 4 for the join of two copies of C5 shows that the compression gap of C5 does not grow when it is joined with itself.'
 assessed: '2026-10-07'
-claim: 'UCS(C5 * C5) = 4 = VC(C5 * C5), so UCS(C5^{*n})/n tends to 2 and Conjecture 10 of Pálvölgyi and Tardos is false.'
+claim: 'UCS(C₅ ∗ C₅) = 4 = VC(C₅ ∗ C₅), so for the n-fold join of C₅ the ratio UCS/n tends to 2 and Conjecture 10 of Pálvölgyi and Tardos is false.'
 limitation: 'The scheme is a machine-found table with no human-readable description. Whether UCS − VC is bounded stays open, and no outside expert has reviewed the result.'
 area: 'Learning theory'
 record_ids: ['research-math-20261003system4']
@@ -49,8 +49,8 @@ $$
 
 The ratio tends to 2, so Conjecture 10 is false.
 
-The table has no description shorter than itself.
-The run that rechecked it also showed why: a size-4 scheme cannot decode one copy from that copy's points alone, so every optimal scheme must use which points of the other copy were kept.
+No description of the table shorter than the table itself is known.
+The run that rechecked it showed part of the reason: a size-4 scheme cannot decode one copy from that copy's points alone, so every optimal scheme must use which points of the other copy were kept.
 
 ## Verification
 
