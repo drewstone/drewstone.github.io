@@ -1,0 +1,231 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "research-math-20261003system4",
+  "defaults": {
+    "metadata": "public",
+    "bodies": "withheld"
+  },
+  "events": {
+    "973ba845a545:/events/447.0": {
+      "sourceSha256": "a869408e80d2134b331d6dde7a18966b8eaef3ac63bdac726d31003905eff6e7",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "toolu_01DGWh9ahoVE5trTmY7Uq7kb",
+          "name": "mcp__agent-runtime-coordination__knowledge_record",
+          "input": "---FILE: pages/continuations/research-math-20261003system4/teach/ucs/claim-recheck-k4-witness.md---\n# Claim R1: independent recheck — the retained size-4 table is an unlabeled compression scheme for C5*C5 (30,976/30,976 samples), checked with a checker written from the P-T text; C5 size 2 is impossible (own CNF + DRAT)\n\nLeaf teach/ucs-next, research-math-20261003system4. Written 2026-10-03T16:45Z. Outside acceptance: UNASSESSED.\n\n## Statement\nLet C5 be the family on Z5 of P-T arXiv:1811.12471v2 §2 (\"takes the values 1-0-0-1 on some four consecutive vertices\", 10 functions). C5*C5 is the join\n(P-T Def. 8) on points 0-4 (copy 1) and 5-9 (copy 2). The table beta in witness_k4.json (inline on page\ncontinuations-research-math-20261002c-teach-ucs-witness-k4; 386 addresses, every Y with |Y|<=4; 8401 bytes, sha256\n5ecdf0e6088575a7492bd09dd32dcbcf06a0286514ae87070ca3663e1639d094, re-typed here from the page and the hash matched) satisfies:\nfor every S subset of [10] and every trace t in (C5*C5)|S, some Y subset S with |Y|<=4 has beta(Y)|S = t.\nWith P-T Def. 5 (alpha(g) := such a Y; beta arbitrary in {0,1}^B, Remark 3) this is an unlabeled compression scheme of size 4.\nWith Kuzmin-Warmuth UCS >= VC (cited by P-T §1) and VC(C5*C5) = VC(C5)+VC(C5) = 4 (P-T §3): **UCS(C5*C5) = 4**.\nOutcome class: **new within this pursuit** (predecessor's claim W1, here independently re-verified). Field novelty: no prior statement found in the dated\nsearch on page claim-lit-field-check (bounded search; outside assessment UNASSESSED).\n\n## Checker (my own; per-domain trace-set method, not the predecessors' per-sample loop)\n`python3 ucs_check.py 2 witness_k4.json 4` -> `ucs_check: n=10 |F|=100 k=4 addresses=386 samples=30976 uncovered=0 PASS` (0.07 s, Python 3.12.8).\nucs_check.py sha256 edda415284bc3fe2f4de13f30d947f3b72c7e3fd2feb6e5fa7ffde6ddc0e2ae1:\n```python\n# ucs_check.py -- leaf teach/ucs-next (research-math-20261003system4), written from Palvolgyi-Tardos arXiv:1811.12471v2\n# Definition 5 (Kuzmin-Warmuth, as stated by P-T): an unlabeled compression scheme (alpha,beta) of size k for a family F on domain B:\n#   alpha maps each partial function g = f|S (f in F, S subset B) to a subset alpha(g) of S with |alpha(g)| <= k;\n#   beta maps alpha(g) to an ARBITRARY function B -> {0,1} (Remark 3: not required to be in F) extending g.\n# A table beta: {Y : |Y|<=k} -> {0,1}^B is part of a scheme iff for every S and every trace t in F|S there is Y subset S,\n# |Y|<=k, with beta(Y)|S = t (then alpha(g) := such a Y).  Missing addresses are simply never used.\n# Method (differs from the predecessors' sample-loop checkers): per domain S, build the SET of traces produced by all\n# addresses inside S, and test F|S subset of that set.\n# C5 per P-T Sec. 2: f on Z5 is in C5 iff f takes values 1-0-0-1 on some four consecutive vertices (i,i+1,i+2,i+3).\n# Join (P-T Def. 8): F*G = {(f,g)}; copies j=0..m-1 on points 5j..5j+4.\nimport json, sys\ndef c5_family():\n    F = []\n    for f in range(32):\n        v = [(f >> i) & 1 for i in range(5)]\n        if any([v[i], v[(i+1) % 5], v[(i+2) % 5], v[(i+3) % 5]] == [1, 0, 0, 1] for i in range(5)):\n            F.append(f)\n    return F\ndef join(Fs, sizes):\n    out = [0]; off = 0\n    for F, n in zip(Fs, sizes):\n        out = [a | (b << off) for a in out for b in F]; off += n\n    return out, off\ndef submasks(S):\n    Y = S\n    while True:\n        yield Y\n        if Y == 0: return\n        Y = (Y - 1) & S\ndef check(F, n, beta, k, verbose=True):\n    \"\"\"beta: dict mask->value mask. Returns (nsamples, nuncovered, first_bad).\"\"\"\n    for Y in beta:\n        if bin(Y).count('1') > k: raise ValueError('address of size > k: %s' % bin(Y))\n        if Y >> n: raise ValueError('address outside domain')\n    nsamp = nbad = 0; first = None\n    for S in range(1 << n):\n        traces = {f & S for f in F}\n        prod = set()\n        for Y in submasks(S):\n            if Y in beta: prod.add(beta[Y] & S)\n        nsamp += len(traces)\n        miss = traces - prod\n        nbad += len(miss)\n        if miss and first is None: first = (S, min(miss))\n    if verbose:\n        print('ucs_check: n=%d |F|=%d k=%d addresses=%d samples=%d uncovered=%d %s' % (n, len(F), k, len(beta), nsamp, nbad, 'PASS' if nbad == 0 else 'FAIL'))\n    return nsamp, nbad, first\ndef load_beta(path, n):\n    W = json.load(open(path))['beta']; beta = {}\n    for key, val in W.items():\n        Y = 0\n        for t in (key.split(',') if key else []): Y |= 1 << int(t)\n        assert len(val) == n and set(val) <= {'0', '1'}\n        assert Y not in beta\n        beta[Y] = sum(1 << i for i, ch in enumerate(val) if ch == '1')\n    return beta\nif __name__ == '__main__':\n    # usage: ucs_check.py <copies m> <witness.json> <k>   (class = C5^{*m})\n    m = int(sys.argv[1]); k = int(sys.argv[3])\n    A = c5_family(); assert len(A) == 10\n    F, n = join([A] * m, [5] * m)\n    beta = load_beta(sys.argv[2], n)\n    s, b, first = check(F, n, beta, k)\n    if first: print('first uncovered (S mask, trace mask):', first)\n    sys.exit(0 if b == 0 else 1)\n```\nClass sanity: c5_family() returns 10 functions = the 5 rotations of 11100 and of 10100 (P-T Figure 1); trace count 176 = the predecessors' count.\n\n## Canaries (canaries.py sha256 eed36ccd1cd1359abb2b3b79181be614d4c402829e7dd7c4cfe8ffd8e88fccde; 61 s) — all verdicts as expected\n| canary | expected | observed (uncovered count) |\n|---|---|---|\n| K1 P-T Thm 6 \"keep the 1's\" scheme (beta(Y)=indicator of Y), C5, k=3 | PASS | 0 |\n| K2 same, k=2 | FAIL | 20 |\n| K3 keep-1's on C5*C5, k=6 (max 3 ones per copy) | PASS | 0 |\n| K4 same, k=5 | FAIL | 400 |\n| W0 witness, k=4 | PASS | 0 |\n| W1 witness truncated to its |Y|<=3 addresses (must fail since UCS>=VC=4) | FAIL | 5681 |\n| W2 witness with declared k=3 | REJECT | rejected (ValueError) |\n| W3 every single-bit flip (386 x 10 = 3860 corrupted tables) | mostly FAIL | 3476 FAIL, 384 PASS (non-load-bearing bits; list in nonlb.json) |\n| W4 every single-address deletion (386 tables) | mostly FAIL | 362 FAIL, 24 PASS (redundant addresses) |\n| W5 witness against the complemented class (pattern 0-1-1-0) | FAIL | 9744 |\n\n## C5 size 2 impossible (P-T Thm 6), recomputed with my own encoding\nmkcnf.py (sha256 f3c2db64e3721aa26395a6b4d4f10bb78710d78951914c8d501d1806c19c0c87; direct encoding: b(Y,x) for |Y|<=k; c(S,t,Y) -> AND_x [b(Y,x)=t_x];\none covering clause per sample with |S|<=smax). Usage `python3 mkcnf.py <m> <k> <smax> out.cnf`. kissat 4.0.4 (built from github HEAD 2026-10-03),\ndrat-trim (github HEAD 2026-10-03).\n| instance | vars/clauses | CNF sha256 | kissat | drat-trim |\n|---|---|---|---|---|\n| C5 k=2 smax=2 | 261/391 | e1fce4a5ea4a95e66ca8487c438f5b2b9f9e6789ebcac9b7f53ea80698e3cc4b | SAT | - |\n| C5 k=2 smax=3 | 751/1931 | 49f2cd1393b90a8debb2c1861da7cd245e22858a8aee5d34e3b5032a1a3c87f4 | UNSAT | s VERIFIED (proof 109,759 B, sha 3c437ab2...) |\n| C5 k=2 smax=5 (full definition) | 1406/4766 | 41a438c37f0b198ae347e8a6f8eaf1067eece89218a799e9535cb7defa9f25db | UNSAT | s VERIFIED (proof 202,223 B, sha 5d56cf56...) |\n| C5 k=3 smax=5 | 1806/6196 | - | SAT | - |\nProof canaries: smax=3 proof truncated to 300 B -> s NOT VERIFIED; smax=3 proof against the SAT smax=2 CNF -> s NOT VERIFIED.\nsmax=3 UNSAT agrees with P-T Remark 7 (v1 wording: impossibility already for samples with at most 3 values). An exact DFS (c5_k2_exhaustive.py,\nsha 1a5f0cd2...) found the smax=2 scheme in 171 nodes but did not finish smax=3 in 5 CPU-min (failed approach, see failed-approaches page).\n\n## Limitations\nThe class is rebuilt from the P-T verbal definition; the witness is the predecessor's (found by kissat on an H-invariant CNF); soundness depends\nonly on the full-sample checks above. Python 3.12.8, single machine.\n---END FILE---",
+          "note": "The page text this call wrote to Knowledge; the call’s other arguments are withheld."
+        }
+      ]
+    },
+    "973ba845a545:/events/456.0": {
+      "sourceSha256": "e035fd9e1064507778c5949ff0159057fe0d6febf64fa2cf4ebc380832284abc",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "toolu_01GN7dwKNU8214WVuRNg7UJs",
+          "name": "mcp__agent-runtime-coordination__knowledge_record",
+          "input": "---FILE: pages/continuations/research-math-20261003system4/teach/ucs/claim-conj10-refuted.md---\n# Claim T1: UCS(C5^{*n}) = 2n for even n and in {2n, 2n+1} for odd n; so lim UCS(C5^{*n})/n = 2 and Pálvölgyi–Tardos Conjecture 10 is false. Also UCS(C5*C5) = 4 < UCS(C5)+UCS(C5)-1 = 5 answers their open question \"Is UCS(F*G) >= UCS(F)+UCS(G)-1?\" in the negative\n\nLeaf teach/ucs-next, research-math-20261003system4. Written 2026-10-03T16:50Z. Outside acceptance: UNASSESSED.\n\n## The published statements (verbatim, arXiv:1811.12471 v1 2018-11-29 and v2 2021-10-14; identical in both; DAM 276 (2020) 102-107)\n- \"Conjecture 10. lim_{n->inf} UCS(C5^{*n})/n exists and is strictly larger than 2.\"\n- \"We can prove that UCS(C5^{*n}) <= 2n + 1 for n <= 5.\" (Prop. 11: UCS(C5^{*5}) <= 11; Prop. 9: UCS(C5*C5) <= 5.)\n- Summary of main open questions: \"Is UCS(F) - VC(F) bounded?\", \"Is UCS(F*G) >= UCS(F) + UCS(G) - 1?\", \"How does UCS(C5^{*n}) behave? Does lim UCS(n*F)/n exist?\",\n  \"Is there a k for every F such that UCS(F*P(k)) = VC(F) + k?\"\n- Abstract: joins \"conjecture[d] that these give a larger gap between the VC-dimension and the size of the smallest unlabeled compression scheme\".\n(PDFs fetched 2026-10-03T16:34Z: v1 sha256 1d1a87711b5a1845e45b5ee7efa6650af58e649d6484f498972d167e8f7786c3, v2 801a43bc2bfe99bc96705ca033333a3537412b2127b805276ea0eedd62f16867.)\n\n## Theorem\nFor every n >= 1: 2n <= UCS(C5^{*n}) <= 2n + (n mod 2). In particular UCS(C5^{*2m}) = 4m, UCS(C5^{*n})/n -> 2, Conjecture 10's \"strictly larger than 2\" fails\n(the limit exists and equals 2), and UCS(C5*C5) = 4 < 5 = UCS(C5)+UCS(C5)-1.\nMoreover, for odd n the gap g(n) = UCS(C5^{*n}) - 2n in {0,1} is non-increasing in n (g(n+2) <= g(n)), so UCS(C5^{*3}) = 6 would give UCS(C5^{*n}) = 2n for all n >= 2.\n\n## Proof\n(L1, subadditivity; P-T state it \"follows from the definition\"; written out.) Let (a1,b1) be a size-k1 scheme for F on B1 and (a2,b2) size-k2 for G on B2,\nB1, B2 disjoint. A partial function g of F*G with domain S has g|(S∩B1) a partial function of F and g|(S∩B2) one of G. Put a(g) = a1(g|S∩B1) ∪ a2(g|S∩B2)\n(subset of S, size <= k1+k2) and b(Y) = b1(Y∩B1) on B1, b2(Y∩B2) on B2 (b is a function of the set Y alone because Y∩Bi recovers each part). Then\nb(a(g)) restricted to S∩Bi equals bi(ai(g|S∩Bi)) restricted to S∩Bi = g|S∩Bi. So UCS(F*G) <= UCS(F)+UCS(G); improper decoders are used as allowed by Def. 5/Remark 3.\n(L2) VC(F*G) = VC(F)+VC(G) (P-T §3) and UCS >= VC (Kuzmin-Warmuth, as cited by P-T §1); VC(C5) = 2, so VC(C5^{*n}) = 2n and UCS(C5^{*n}) >= 2n.\n(L3) UCS(C5*C5) <= 4: the explicit table on page continuations-research-math-20261002c-teach-ucs-witness-k4, verified over all 30,976 samples by\nthree checkers, one written independently this round (page claim-recheck-k4-witness).\nUpper bounds: n = 2m: by L1 applied m-1 times to C5^{*2m} = (C5*C5)^{*m}, UCS <= 4m. n = 2m+1: C5^{*n} = (C5*C5)^{*m} * C5, UCS <= 4m + 3 = 2n + 1\n(UCS(C5) = 3, P-T Thm 6). Monotonicity for odd n: C5^{*(n+2)} = C5^{*n} * (C5*C5), so UCS(C5^{*(n+2)}) <= UCS(C5^{*n}) + 4, i.e. g(n+2) <= g(n).\nLimit: 2 <= UCS(C5^{*n})/n <= 2 + 1/n. QED.\nThe (C5*C5) table has been checked exhaustively; no other computation is used.\n\n## Corollaries (each is immediate from the theorem, stated so a reader can use them)\n- P-T Prop. 11 (UCS(C5^{*n}) <= 2n+1 for n <= 5) holds for all n, with equality excluded for even n.\n- Joins of C5 cannot amplify the gap: UCS(C5^{*n}) - VC(C5^{*n}) <= 1 for all n. Open question \"Is UCS(F)-VC(F) bounded?\" is NOT settled; this removes the\n  C5-join family as a candidate for an unbounded gap.\n- P-T question \"Is there a k with UCS(F*P(k)) = VC(F)+k\" for F = C5^{*n}: k = 0 works for even n; k = 1 works for odd n\n  (UCS(C5^{*n}*P(1)) <= UCS(C5^{*(n-1)}) + UCS(C5*P(1)) = 2(n-1) + 3, using P-T Prop. 13: UCS(C5*P(1)) = 3).\n\n## Outcome class\n- T1 (theorem, conditional only on the verified finite table): **new within this pursuit**. The theorem is a two-line consequence of the k=4 table found\n  by the predecessor round (research-math-20261002c); this page adds the reading of Conjecture 10 / the open-question list and the dated literature check.\n- Field novelty: **no prior refutation or statement of UCS(C5*C5)=4 found** in the dated bounded search (page claim-lit-field-check: arXiv versions,\n  Semantic Scholar 11 citing works, OpenAlex 9, full-text grep of 7 citing arXiv papers, 3 web searches). Field novelty itself: UNASSESSED (not an\n  exhaustive search; authors' later talks/unpublished notes not searched). Outside acceptance: UNASSESSED.\n\n## Check commands\n`python3 ucs_check.py 2 witness_k4.json 4` -> PASS 30976/30976 (sha256s on claim-recheck-k4-witness). Theorem proof: read L1-L3 above.\n\n## Limitations\n- The Kuzmin-Warmuth lower bound UCS >= VC is used as cited by P-T (not re-derived here). For C5*C5 itself the lower bound 4 is also witnessed\n  computationally: the truncated table fails (canary W1), and the predecessor's k=3 UNSAT for C5*C5 (bit encoding) is recorded on the 20261001 pages.\n- Odd n >= 3 is open between 2n and 2n+1; next page / FINAL discuss C5^{*3}.\n---END FILE---",
+          "note": "The page text this call wrote to Knowledge; the call’s other arguments are withheld."
+        }
+      ]
+    },
+    "973ba845a545:/events/465.0": {
+      "sourceSha256": "ca99b18e2d6586f836517f485764f5fedba7a496b055f074a773a6c2963d51c9",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "toolu_01KSUgQpU4tiNkZXwRQ5brAM",
+          "name": "mcp__agent-runtime-coordination__knowledge_record",
+          "input": "---FILE: pages/continuations/research-math-20261003system4/teach/ucs/claim-lit-field-check.md---\n# Literature / field-status check for UCS(C5*C5) = 4 and P-T Conjecture 10 — dated 2026-10-03T16:34-16:42Z\n\nLeaf teach/ucs-next, research-math-20261003system4. Outcome class of this page: known (literature status record). Outside acceptance: UNASSESSED.\n\n## Primary source\n- arXiv:1811.12471 (Pálvölgyi, Tardos), API record fetched 16:34Z: v1 2018-11-29T20:28:36Z, v2 2021-10-14T06:16:36Z; categories math.CO, cs.DM, cs.LG.\n  Journal: Discrete Applied Mathematics 276 (2020) 102-107, doi:10.1016/j.dam.2019.09.022 (as cited by 1812.02099 and 2210.05455).\n- Both PDF versions read in full. Conjecture 10, Props 9, 11-14 and the open-question list are identical in v1 and v2 (v2 adds the remark\n  \"Remark 7 ... a partial function with domain of size 3 that gets compressed to its full domain\"; v1 Remark 7 says the impossibility holds already for\n  samples of at most 3 values). Neither version states UCS(C5*C5) = 4; both give only UCS(C5*C5) <= 5 and conjecture lim UCS(C5^{*n})/n > 2.\n- CORRECTION to predecessor ledger (math-20261001b-teach-final claim 4, \"UCS(C5 * {0,1}) = 3 ... NEW within pursuit\"): this is **KNOWN** — P-T Prop. 13\n  gives UCS(W6*P(1)) = 3 and the text right after it states \"this also implies UCS(C5 * P(1)) = 3\".\n\n## Citing works (searched space)\n- Semantic Scholar API `paper/arXiv:1811.12471/citations` (HTTP 200, 16:36Z): 11 citing works: 2604.02949 (Bourneuf-Hodor-Micek-Rambaud 2026), 2510.17451\n  (Foucaud et al. 2025), Qian-Wu-Xiong 2023, Luo-Li 2023, 2309.02876 (Chalopin-Chepoi-Mc Inerney-Ratel), 2210.05455 (Rubinstein-Rubinstein), Chornomaz 2022,\n  2206.13254 (Chalopin et al.), 2111.00062 (Leboeuf et al.), 2110.15168 (Chepoi-Knauer-Philibert), 1812.02099 (Chalopin-Chepoi-Moran-Warmuth).\n- OpenAlex `filter=cites:W2903057577` (16:38Z): 9 works, same set (subset).\n- Full-text grep (pypdf 6.19.0) of the 7 arXiv citing PDFs for \"Pálvölgyi|Tardos|C5|join\": every hit only cites the existence of a VC-2 class with no\n  size-2 unlabeled scheme; none discusses joins, C5^{*n}, Conjecture 10 or the open-question list.\n- WebSearch (3 queries, 16:37-16:39Z): \"Pálvölgyi Tardos unlabeled compression C5 join conjecture UCS(C5*C5)\"; \"unlabeled sample compression scheme exceeding\n  VC dimension join product subadditive 2024 2025\"; \"\\\"unlabeled compression\\\" \\\"Pálvölgyi\\\" \\\"Tardos\\\" conjecture limit UCS join refuted\": no result states\n  UCS(C5*C5) = 4 or refutes Conjecture 10.\n- Not checked (full text): Qian-Wu-Xiong 2023, Luo-Li 2023, Chornomaz 2022 (not on arXiv; titles unrelated to joins); authors' talks/notes; MathSciNet/zbMATH reviews.\n- Predecessor check (math-20261001-teach-lit-open-status-20261002, 2026-10-02T00:37Z) found nothing on UCS(C5*C5) / Conjecture 10 either.\n\n## Inference\nOn the searched record, UCS(C5*C5) = 4 and the refutation of P-T Conjecture 10 (claim-conj10-refuted) are not in the literature. This is a bounded search;\nfield novelty stays UNASSESSED until an outside reader (ideally the authors) confirms.\n---END FILE---",
+          "note": "The page text this call wrote to Knowledge; the call’s other arguments are withheld."
+        }
+      ]
+    },
+    "973ba845a545:/events/2568.0": {
+      "sourceSha256": "66362f5537aa0152f9c63a3d38573a0fd11d7cc9609ddab0ddfa6ed43ee34d23",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "toolu_01QrURmLM9u1JbTxzMyzDAQ2",
+          "name": "mcp__agent-runtime-coordination__knowledge_record",
+          "input": "---FILE: pages/continuations/research-math-20261003system4/teach/ucs/FINAL.md---\n# teach/ucs-next FINAL (leaf L-ucs, research-math-20261003system4): the k=4 witness re-verified independently; with it, Pálvölgyi–Tardos Conjecture 10 is false (UCS(C5^{*n}) = 2n for even n, in {2n,2n+1} for odd n, so the limit is 2); joins of C5 cannot amplify the gap beyond 1\n\nWritten 2026-10-03T18:55Z. Outside acceptance: UNASSESSED for every claim. Internal checks are development checks only.\n\n## Headline\n1. The retained size-4 table for C5*C5 passes a checker I wrote from the P-T text (30,976/30,976 samples). Every canary fires as expected, and C5 size 2 is\n   impossible (own CNF, drat-trim VERIFIED). So UCS(C5*C5) = 4 = VC.\n2. Reading arXiv:1811.12471 v1+v2 in full shows what this implies. **Conjecture 10, \"lim UCS(C5^{*n})/n exists and is strictly larger than 2\", is false.**\n   By subadditivity UCS(C5^{*2m}) = 4m, UCS(C5^{*n}) ∈ {2n, 2n+1} for odd n, and the limit is 2. The same table answers their open question\n   \"Is UCS(F*G) >= UCS(F)+UCS(G)-1?\" in the negative (4 < 5).\n   - No prior statement was found in a dated, bounded literature search: Semantic Scholar 11 and OpenAlex 9 citing works, 7 full texts grepped.\n   - Field novelty is UNASSESSED.\n3. The decision question (\"can the C5 gap be amplified by joins?\") is answered NO for powers of C5: the gap is at most 1, and it is 0 for even powers.\n   - Whether UCS(C5^{*3}) is 6 or 7 is open. If it is 6, then UCS(C5^{*n}) = 2n for all n >= 2.\n   - \"Is UCS−VC bounded?\" stays open; the C5-join family is no longer a candidate for an unbounded gap.\n4. Next consequential cells: W6*W6 and C5*W6 (UCS ∈ {4,5}). The symmetric-ansatz search found no witness and nothing is proof-checked. C5^{*3} is priced\n   out of direct SAT (4.05e9 sample-address pairs).\n\n## Claim ledger\n| claim | exact statement | outcome class | page | check command | sha256 | verdict | limitations |\n|---|---|---|---|---|---|---|---|\n| R1 | Table witness_k4.json covers every (S, f|S), f ∈ C5*C5, by some Y ⊆ S, |Y| <= 4; so UCS(C5*C5) = 4 | new within this pursuit (predecessor's W1, independently re-verified); field: not found in literature | continuations-research-math-20261003system4-teach-ucs-claim-recheck-k4-witness | `python3 ucs_check.py 2 witness_k4.json 4` -> samples=30976 uncovered=0 PASS | witness 5ecdf0e6088575a7492bd09dd32dcbcf06a0286514ae87070ca3663e1639d094; ucs_check.py edda415284bc3fe2f4de13f30d947f3b72c7e3fd2feb6e5fa7ffde6ddc0e2ae1 | PASS; canaries: 3476/3860 bit flips FAIL, 362/386 deletions FAIL, |Y|<=3 truncation FAIL, keep-1's known answers correct, C5^{*3} keep-1's k=9 PASS / k=6 FAIL | witness found by the predecessor's SAT run; soundness rests only on the exhaustive check |\n| R1b | No size-2 unlabeled scheme for C5 (P-T Thm 6), already for samples with |S| <= 3 | known (P-T Thm 6), reproduced | same page | `python3 mkcnf.py 1 2 5 f.cnf; kissat f.cnf f.drat --no-binary; drat-trim f.cnf f.drat` -> s VERIFIED (also smax=3) | CNF 41a438c3... (smax 5), 49f2cd13... (smax 3); mkcnf.py f3c2db64... | VERIFIED; truncated proof and wrong-CNF proof both NOT VERIFIED | — |\n| T1 | For all n: 2n <= UCS(C5^{*n}) <= 2n + (n mod 2), so lim UCS(C5^{*n})/n = 2 and P-T Conjecture 10 is false; UCS(C5*C5) = 4 < UCS(C5)+UCS(C5)-1; the odd-n gap is non-increasing | new within this pursuit (consequence of R1 plus subadditivity); field novelty UNASSESSED (no prior found) | continuations-research-math-20261003system4-teach-ucs-claim-conj10-refuted | read proof (L1 subadditivity, L2 UCS >= VC, L3 = R1) | P-T PDFs v1 1d1a8771..., v2 801a43bc... | proof written out; Conjecture 10 quoted verbatim from both versions | odd n open; uses KW UCS >= VC (elementary counting, given on claim-fekete-limit) |\n| T2 | For every finite F, lim UCS(F^{*n})/n exists and equals inf_n UCS(F^{*n})/n >= VC(F) (Fekete) | new within this pursuit; plausibly folklore; answers the literal P-T question \"Does lim UCS(n*F)/n exist?\" | continuations-research-math-20261003system4-teach-ucs-claim-fekete-limit | read proof | — | proof | the value of the limit (= VC(F)?) is open in general |\n| N1 | If a size-k scheme for A*B decodes A from Y∩dom(A) alone and A shatters a d-set, then UCS(B) <= k-d. So every size-4 scheme for C5*C5 (and any size-6 scheme for C5^{*3}) uses cross-copy information | new within this pursuit (elementary) | continuations-research-math-20261003system4-teach-ucs-claim-nogo-local-decoding | read proof | — | proof | — |\n| L | Literature record. P-T versions, citing works, no prior C5*C5 = 4. CORRECTION: the predecessor's \"UCS(C5*P(1)) = 3 new\" is KNOWN (P-T, after Prop. 13) | known (status record) | continuations-research-math-20261003system4-teach-ucs-claim-lit-field-check | S2/OpenAlex API queries and arXiv API, dated on page | — | — | bounded search; 3 non-arXiv citing works not read in full |\n| W | UCS(W6*W6) = 4? UCS(C5*W6) = 4? (both in {4,5}) | stopped-unverified (no witness; no proof-checked UNSAT) | continuations-research-math-20261003system4-teach-ucs-w6-joins-search | `python3 hsym.py \"w6*w6\" 4 '<gen>' f.cnf f.map.json; kissat f.cnf` | CNF hashes on page | no answer within 15-85 CPU-min per run; seeded run UNSAT without proof | single runs, high solver variance (see failed-approaches item 2) |\n| P | Profile-local size-4 scheme for C5*C5 exists? | stopped-unverified | continuations-research-math-20261003system4-teach-ucs-failed-approaches (item 7) | `python3 profile_local.py 2 4 f.cnf f.meta; kissat f.cnf` | CNF 398e332d... | no answer at 29 CPU-min | — |\n| C3 | UCS(C5^{*3}) ∈ {6,7} | open; priced (failed-approaches items 3-6) | failed-approaches | — | — | — | 5.45M samples / 4.05e9 pairs at k=6 |\nSupporting pages: STATE (continuations-research-math-20261003system4-teach-ucs-state), scripts (continuations-research-math-20261003system4-teach-ucs-scripts).\nEnvironment: Python 3.12.8; kissat 4.0.4, CaDiCaL 3.0.1, drat-trim, lrat-trim from github HEAD (2026-10-03); pypdf 6.19.0; python-sat 1.9.dev15; 4 CPUs.\nAll proofs and CNFs were in /tmp and are not retained; regenerate them with the commands above.\n\n## Failed approaches (details on failed-approaches page)\n- Exact DFS for C5 k=2 (too slow).\n- Plain kissat on my renumbered o4c (solver variance: >13 min vs the predecessor's 124 s).\n- C5^{*3} direct SAT and capped relaxations (too large).\n- Product decompositions (always 7) and repairs of the product scheme (no free address).\n- A decoupled \"pair table + colour advice\" template (impossible by N1).\n- Profile-local ansatz (no answer).\n- W6 symmetric runs (no answer).\n- pkill -f killing my own shell.\n\n## Strongest next decision\n1. Send T1 to Pálvölgyi and Tardos (and the sample-compression community) for outside assessment, with the 8401-byte table and the 60-line checker.\n   This is the cheapest high-value step: it refutes a published conjecture with a fully checkable finite certificate.\n2. Decide UCS(C5^{*3}) ∈ {6,7}; this settles UCS(C5^{*n}) for every n.\n   - Direct SAT is out of reach (4e9 pairs). The promising routes are a structured ansatz or a human-readable size-4 scheme for C5*C5 that generalizes.\n   - Per lemma N1, any such ansatz must let each copy's decoding depend on the other copies.\n   - First step: decide the profile-local ansatz on C5*C5 with a longer budget or with cube-and-conquer. Then extract and understand the structure of\n     witness_k4 (122 of its need-4 samples have 4-point domains).\n3. In parallel: W6*W6 at k=4. Run the order-4 and order-2 ansätze with several seeds and solvers (variance is large). A SAT result extends T1 to W6, i.e.\n   both P-T candidate families collapse.\n---END FILE---",
+          "note": "The page text this call wrote to Knowledge; the call’s other arguments are withheld."
+        }
+      ]
+    }
+  },
+  "findings": {},
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    },
+    {
+      "class": "unrelated-memory"
+    },
+    {
+      "class": "system-reminder"
+    },
+    {
+      "class": "encrypted-message"
+    },
+    {
+      "node": "research-math-20261003system4:s0"
+    },
+    {
+      "node": "research-math-20261003system4:s1"
+    },
+    {
+      "node": "research-math-20261003system4:s2"
+    },
+    {
+      "node": "research-math-20261003system4:s4"
+    },
+    {
+      "node": "research-math-20261003system4:s5"
+    },
+    {
+      "node": "research-math-20261003system4:s6"
+    },
+    {
+      "node": "research-math-20261003system4:s7"
+    },
+    {
+      "node": "research-math-20261003system4:s8"
+    },
+    {
+      "node": "research-math-20261003system4:s9"
+    },
+    {
+      "node": "research-math-20261003system4:s1:s0"
+    },
+    {
+      "node": "research-math-20261003system4:s1:s1"
+    },
+    {
+      "node": "research-math-20261003system4:s1:s2"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s0"
+    },
+    {
+      "node": "research-math-20261003system4:s1:s3"
+    },
+    {
+      "node": "research-math-20261003system4:s1:s4"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s1"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s2"
+    },
+    {
+      "node": "research-math-20261003system4:s0:s0"
+    },
+    {
+      "node": "research-math-20261003system4:s10"
+    },
+    {
+      "node": "research-math-20261003system4:s11"
+    },
+    {
+      "node": "research-math-20261003system4:s0:s1"
+    },
+    {
+      "node": "research-math-20261003system4:s0:s2"
+    },
+    {
+      "node": "research-math-20261003system4:s12"
+    },
+    {
+      "node": "research-math-20261003system4:s13"
+    },
+    {
+      "node": "research-math-20261003system4:s14"
+    },
+    {
+      "node": "research-math-20261003system4:s15"
+    },
+    {
+      "node": "research-math-20261003system4:s16"
+    },
+    {
+      "node": "research-math-20261003system4:s17"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s3"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s4"
+    },
+    {
+      "node": "research-math-20261003system4:s18"
+    },
+    {
+      "node": "research-math-20261003system4:s19"
+    },
+    {
+      "node": "research-math-20261003system4:s20"
+    },
+    {
+      "node": "research-math-20261003system4:s21"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s5"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s6"
+    },
+    {
+      "node": "research-math-20261003system4:s22"
+    },
+    {
+      "node": "research-math-20261003system4:s23"
+    },
+    {
+      "node": "research-math-20261003system4:s2:s7"
+    },
+    {
+      "node": "research-math-20261003system4:s24"
+    },
+    {
+      "node": "research-math-20261003system4:s25"
+    },
+    {
+      "node": "research-math-20261003system4:s26"
+    }
+  ],
+  "redactionClasses": [
+    "credential",
+    "third-party-email",
+    "private-path",
+    "nonce",
+    "account-name",
+    "ip-address"
+  ],
+  "reviewer": {
+    "by": "drewstone",
+    "at": "2026-10-08T02:00:00.000Z"
+  },
+  "title": "Research-math follow-up run, October 3",
+  "coverageText": "This record shows the director and the UCS leaf (s3), the only agent that worked on this result. The run’s other 42 agents, on unrelated research lines, are withheld whole. Published in full: the four pages the UCS leaf wrote for this result: its independent recheck of the size-4 table, the refutation of Conjecture 10, its literature check, and its final ledger.",
+  "assignment": {
+    "summary": {
+      "objective": "Pursue consequential results, constructions, proofs and counterexamples in mathematics and theoretical computer science, continuing the original research lines and their unresolved consequences.",
+      "suppliedKnowledge": "The predecessor run’s findings, including the size-4 table for C5 * C5 found on October 2.",
+      "deliverables": "Per line: claim pages with outcome classes, checks, failed approaches and a final ledger.",
+      "constraints": "Field novelty requires current primary literature; outside acceptance left unassessed."
+    },
+    "source": {
+      "path": "run-input.json",
+      "sha256": "d8de8c1aa8d7b1ef395ccc22a0acd9cad6289d67c3b7bd61952fff17ff43b0af"
+    }
+  },
+  "nodes": {
+    "research-math-20261003system4:s3": {
+      "label": "UCS leaf",
+      "role": "Leaf: recheck the C5 * C5 table, read the Pálvölgyi–Tardos paper, decide what it implies"
+    }
+  }
+}

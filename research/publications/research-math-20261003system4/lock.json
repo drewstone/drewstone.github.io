@@ -1,0 +1,20 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "research-math-20261003system4",
+  "recordDigest": "sha256:259fe03b23e83920f681a4b4a748f1325db3ec09324c8112be2594add19f970e",
+  "overlaySha256": "e70f10d5490162692fc0aa3ae4d56553a6756d0532faeeaff0e7343dd26298c3",
+  "publicSha256": "674e8d83bd511bfc46d8ca1d17c935646ab89d4f7851dd1ff3f834e0504d9cfd",
+  "snapshot": "sha256:b83eaae1804edb3c690f190d4db3d09858c19701eefd81c03a599f75b820bace",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-08T06:49:17.945Z",
+  "builtOn": "drew-GTR-Pro",
+  "attestation": {
+    "keyId": "7566b6e702ec87d4",
+    "signature": "HY+BJd4tzC4KIxxXWcc+SeeYAMB2Y3pW80Gq0RRSUsYcGajespZvWsVlxyKRUXuwgWWB8JMsI/JcdFA7v8EFCg=="
+  }
+}

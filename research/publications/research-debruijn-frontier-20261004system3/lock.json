@@ -1,0 +1,20 @@
+{
+  "schema": "publication.lock.v1",
+  "recordId": "research-debruijn-frontier-20261004system3",
+  "recordDigest": "sha256:893be56ce1ac6be6815822a8a72e2042e6b01e4b6a1a5ed7e71f87e1e6da66a6",
+  "overlaySha256": "a03b310b36e9247ace4d67f7c499903387626b4ba82a07a79bdb83ec7909eef6",
+  "publicSha256": "9ffec923c5be7e2c1ea5ba1e5fa679e3e68a8204a23521a941393c99012577ee",
+  "snapshot": "sha256:9a0bffa4cb74c03f34b5e9fbfaeb97c05a8afc8720d071a502d669ffafc53dc1",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
+    "idScheme": "anchor.v1"
+  },
+  "builtAt": "2026-10-08T06:47:18.025Z",
+  "builtOn": "drew-GTR-Pro",
+  "attestation": {
+    "keyId": "7566b6e702ec87d4",
+    "signature": "RxUfH64ViwM850ytW3NShe3WdbciL5hiozOWKBY8s4TJXD0DtPK0Dc/iOnXFT3mZ4g9AiFsOjlM5Ho9pXKwgDw=="
+  }
+}

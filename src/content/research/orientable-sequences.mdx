@@ -1,0 +1,129 @@
+---
+title: 'Exact maximum periods of binary orientable sequences, n = 8 to 17'
+description: 'Exact-arithmetic certificates and explicit sequences settle the longest binary orientable sequence for every order from 8 to 17; the published values stopped at 7.'
+assessed: '2026-10-07'
+claim: 'The maximum period M_n of a binary orientable sequence is 92, 194, 426, 860, 1856, 3728, 7738, 15504, 31776 and 63578 for n = 8, …, 17.'
+limitation: 'Every check, including the independent one, was written by language models; no outside expert has reviewed it. The n = 18 and 19 upper bounds are not certified here.'
+area: 'Combinatorics'
+record_ids: ['research-debruijn-frontier-20261004system3']
+order: 5
+---
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+The longest binary orientable sequence of order $n$ was known only for $n\leq7$ [[1]](#ref-1).
+For each $n$ from 8 to 17, a sequence and a certificate now meet at the same length.
+Every certificate checks in exact arithmetic in a few seconds.
+
+## Problem
+
+A binary orientable sequence of order $n$, an $\mathrm{OS}(n)$, is a cyclic binary sequence in which each length-$n$ window occurs at most once, read in either direction.
+Equivalently, its $L$ windows and their $L$ reversals are $2L$ distinct strings, so no window is a palindrome.
+They were introduced for position location: a reader that sees $n$ consecutive symbols recovers both where it is and which way it is moving.
+Write $M_n$ for the largest period of an $\mathrm{OS}(n)$.
+
+Removing palindromes gives $M_n\leq 2^{n-1}-2^{\lfloor (n-1)/2\rfloor}$.
+Dai et al. proved a sharper bound $U_n$, and later work built long sequences, most recently the cycle-joining constructions and searches of Gabrić and Sawada [[1]](#ref-1) and of Mitchell and Wild [[2]](#ref-2).
+The gap between the two sides stayed open beyond $n=7$.
+
+## Values
+
+| $n$ | $M_n$ | Longest known before, $L^*_n$ | Dai et al. bound, $U_n$ |
+| --- | --- | --- | --- |
+| 8 | **92** | 92 | 96 |
+| 9 | **194** | 174 | 206 |
+| 10 | **426** | 416 | 443 |
+| 11 | **860** | 844 | 918 |
+| 12 | **1856** | 1844 | 1908 |
+| 13 | **3728** | 3700 | 3882 |
+| 14 | **7738** | 7694 | 7905 |
+| 15 | **15504** | 15394 | 15948 |
+| 16 | **31776** | 31483 | 32192 |
+| 17 | **63578** | 63135 | 64662 |
+
+$L^*_n$ and $U_n$ are Table 2 of [[1]](#ref-1).
+At $n=8$ the sequence was already known and only the upper bound is new; for $n=9,\ldots,17$ both sides are new.
+The same run also found an $\mathrm{OS}(18)$ of period 128794 and an $\mathrm{OS}(19)$ of period 257650, beyond the published 128639 and 257272.
+
+## Upper bounds
+
+**Reduction.** Treat an $n$-bit word $w$ as an arc of the de Bruijn graph, from its first $n-1$ bits to its last $n-1$ bits.
+The windows of an $\mathrm{OS}(n)$ form a closed walk, so they are a set $A$ of arcs with as many leaving as entering each node.
+$A$ has no palindrome and never contains both $w$ and its reversal $w^R$.
+With $x$ the indicator of $A$ on non-palindromic words, $|A|=L$ and
+
+$$
+\begin{aligned}
+&(P)\quad x_w+x_{w^R}\leq1 &&\text{for every reverse pair},\\
+&(B)\quad x_{v0}+x_{v1}=x_{0v}+x_{1v} &&\text{for every }(n-1)\text{-bit node }v.
+\end{aligned}
+$$
+
+**Palindromic nodes.** When $v$ is a palindrome, $\{v0,0v\}$ and $\{v1,1v\}$ are reverse pairs.
+If two arcs leave $v$, $(P)$ forbids both entering arcs, contradicting $(B)$.
+If exactly $v0$ leaves, $(P)$ excludes $0v$, so $1v$ must enter.
+Hence every such $x$ also satisfies
+
+$$
+(C)\quad x_{v0}=x_{1v},\qquad x_{v1}=x_{0v}.
+$$
+
+The integer statement is Lemma 2.14 of Mitchell and Wild [[2]](#ref-2).
+As linear constraints the rows remove fractional points such as $x_{v0}=x_{0v}=\tfrac12$.
+
+So $M_n$ is at most the largest $\sum_w x_w$ over $0/1$ vectors satisfying $(P)$, $(B)$ and $(C)$.
+A certificate with target $T$ shows that no such vector reaches $T$, giving $M_n\leq T-1$.
+It may first derive Chvátal–Gomory cuts: a combination of rows with nonnegative weights on the inequalities, rounded down, which is valid for integer $x\geq0$.
+It then gives multipliers $y\geq0$ on inequalities and $u$ on equalities, and weak duality bounds
+
+$$
+\sum_w x_w\;\leq\;\sum_r y_r b_r+\sum_w \max(0,r_w),\qquad r_w=1-\Big(\sum_r y_r a_r+\sum_s u_s e_s\Big)_w,
+$$
+
+where $a_r\cdot x\leq b_r$ are the inequalities and $e_s\cdot x=0$ the equalities.
+For $n=8,9,10,12$ and $17$ the linear program with rows $(P)$, $(B)$, $(C)$ alone is tight: its dual already proves $M_n\leq T-1$.
+For $n=11,13,14,15,16$ the bound comes after 2, 2, 2, 6 and 4 cuts.
+The run computed the exact value of this linear program as 862, 3730, 7739, 15508 and 31777 at those orders, one to four above $M_n$, and equal to $M_n$ at the other five.
+The upper bounds rest only on the reduction, the palindromic-node rows and exact arithmetic.
+That every bound is attained by a sequence is a separate fact, not evidence that the linear program is a valid relaxation.
+
+## Verification
+
+The public repository [[3]](#ref-3) holds every certificate, every sequence, and a dependency-free checker.
+
+| Check | Code | Result |
+| --- | --- | --- |
+| Certificates $n=5,\ldots,17$ | review checker, written October 7 with no code from the run | all valid; bounds match the table |
+| Same certificates | the run's own checker, replayed with assertions disabled | all valid |
+| Sequences $n=10,\ldots,19$ | review checker | every window and reversal distinct |
+| Sequences $n=5,\ldots,10$ | 0/1 program without $(C)$ or cuts (SciPy HiGHS), Euler circuit | optima 6, 16, 36, 92, 194, 426, each realized |
+| Tampering | review checker | 8 altered certificates and sequences rejected |
+
+The 0/1 program is a floating-point solve, so it corroborates the small values and supplies the sequences for $n\leq9$, but carries none of the upper bounds.
+Within the run, two worker agents and two harness-native referees wrote further checkers, and a second family of certificates based on parity cuts reached the same bounds for $n=11$ and $13,\ldots,16$.
+
+## Scope
+
+The values hold for binary sequences only.
+The run also certified $128794\leq M_{18}\leq128796$ and $257650\leq M_{19}\leq257652$ with its parity-cut checker; those upper bounds were not checked independently, and the exact values are open.
+A search of arXiv, the OEIS and the web on October 7, 2026 found no exact value beyond $n=7$ and no integer-programming bound for this problem; the OEIS has no entry beginning 6, 16, 36, 92 for orientable sequences.
+The 1993 paper of Dai et al. could not be obtained, so $U_n$ is quoted from [[1]](#ref-1); recent or unindexed work cannot be excluded.
+Every check here, the run's and the review's, was written by Claude models.
+No outside expert has reviewed the result, and no peer review is asserted.
+
+## Attribution and retained attempt
+
+The run `research-debruijn-frontier-20261004system3` ran on October 4, 2026, from 03:50 to 06:25 UTC, in Claude Code with claude-opus-5-5.
+It continued an earlier run that had reported several of these values without retaining certificates.
+The director added the palindromic-node rows, generated the single-LP and cut certificates, and found the sequences for $n\geq15$.
+A referee worker tried to falsify the row lemma, wrote its own checker, and found a real defect: the first checker used Python assertions, which `python3 -O` strips, so it accepted a false certificate.
+No published bound depended on that defect, and the hardened checker is the one replayed above.
+A theory worker derived the parity cuts and the $n=16$ to $19$ upper bounds.
+The run ended in a driver failure: the sandbox host restarted its agent, and a later request was refused.
+Its findings were already written, but no judge ran, so nothing promoted the result until the October 7 review.
+
+<ResearchBibliography entries={[
+  { authors: 'D. Gabrić and J. Sawada', title: 'Construction of orientable sequences in O(1)-amortized time per bit', url: 'https://arxiv.org/abs/2401.14341v4', publication: 'arXiv:2401.14341v4, July 10, 2026. Abstract and Section 1: maximal lengths known only for n ≤ 7; Table 2: L*_n and U_n.' },
+  { authors: 'C. J. Mitchell and P. R. Wild', title: 'New orientable sequences', url: 'https://arxiv.org/abs/2507.02526', publication: 'Acta Informatica 63 (2026) 14. Lemma 2.14 is the integer form of the palindromic-node rows.' },
+  { title: 'Orientable sequences: certificates, sequences and checker', url: 'https://github.com/drewstone/orientable-sequences', publication: 'Certificates for n = 5..17, sequences for n = 5..19, and a standard-library verifier with tampering canaries.' },
+  { title: 'Orientable-sequence frontier run', url: '/research/records/research-debruijn-frontier-20261004system3.json', publication: 'Retained run of October 4, 2026: director, referee and theory workers, and their findings.' },
+]} />

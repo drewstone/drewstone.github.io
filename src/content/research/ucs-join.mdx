@@ -1,0 +1,90 @@
+---
+title: 'A size-4 compression scheme refuting Pálvölgyi–Tardos Conjecture 10'
+description: 'An explicit unlabeled compression scheme of size 4 for the join of two copies of C5 shows that the compression gap of C5 does not grow when it is joined with itself.'
+assessed: '2026-10-07'
+claim: 'UCS(C5 * C5) = 4 = VC(C5 * C5), so UCS(C5^{*n})/n tends to 2 and Conjecture 10 of Pálvölgyi and Tardos is false.'
+limitation: 'The scheme is a machine-found table with no human-readable description. Whether UCS − VC is bounded stays open, and no outside expert has reviewed the result.'
+area: 'Learning theory'
+record_ids: ['research-math-20261003system4']
+order: 6
+---
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+Pálvölgyi and Tardos found a concept class whose smallest unlabeled compression scheme is larger than its VC-dimension [[1]](#ref-1).
+They conjectured that joining copies of that class makes the gap grow linearly.
+A 386-entry table shows that two copies already close it.
+
+## Conjecture
+
+A concept class $F$ is a set of functions from a domain $B$ to $\{0,1\}$.
+An unlabeled compression scheme of size $k$ (Definition 5 of [[1]](#ref-1)) is a map $\beta$ from subsets $Y\subseteq B$ with $|Y|\leq k$ to arbitrary functions $B\to\{0,1\}$, such that for every $f\in F$ and every sample $S\subseteq B$ some $Y\subseteq S$ has $\beta(Y)$ equal to $f$ on $S$.
+The sample is compressed to the unlabeled set $Y$, and $\beta$ alone recovers every label in $S$.
+$\mathrm{UCS}(F)$ is the smallest such $k$, and $\mathrm{UCS}(F)\geq\mathrm{VC}(F)$.
+
+The class $C_5$ consists of the functions on $\mathbb{Z}_5$ that take the values $1,0,0,1$ on some four consecutive vertices: the ten rotations of $11100$ and $10100$.
+It has $\mathrm{VC}(C_5)=2$ and $\mathrm{UCS}(C_5)=3$.
+The join $F*G$ is the class of pairs $(f,g)$ on the disjoint union of the two domains; VC-dimension adds under joins, and $\mathrm{UCS}(F*G)\leq\mathrm{UCS}(F)+\mathrm{UCS}(G)$.
+Pálvölgyi and Tardos proved $\mathrm{UCS}(C_5*C_5)\leq5$ and stated
+
+> **Conjecture 10.** $\lim_{n\to\infty}\mathrm{UCS}(C_5^{*n})/n$ exists and is strictly larger than 2.
+
+They also asked whether $\mathrm{UCS}(F*G)\geq\mathrm{UCS}(F)+\mathrm{UCS}(G)-1$ always holds.
+
+## Counterexample
+
+The public repository [[3]](#ref-3) gives $\beta$ on all 386 subsets of the ten points of $C_5*C_5$ with at most four elements.
+Each of the 30,976 pairs $(S,f|_S)$ with $f\in C_5*C_5$ has a covering $Y\subseteq S$ with $|Y|\leq4$.
+Here $S$ ranges over all $2^{10}$ subsets of the domain, of every size up to 10; the count is $176^2$ because the samples of a join are pairs of samples of the two copies, and $C_5$ has 176 distinct pairs $(S,f|_S)$ over the 32 subsets of $\mathbb{Z}_5$.
+Definition 5 asks nothing more: $\alpha(g)$ may be any covering $Y$, and $\beta$ need not be injective or return a function of the class.
+So $\mathrm{UCS}(C_5*C_5)\leq4$, and the bound $\mathrm{UCS}\geq\mathrm{VC}=4$ makes it equal.
+Since $4<3+3-1$, the answer to the question above is no.
+
+For the limit, both bounds are short.
+A shattered set of size $d$ has $2^d$ traces, and two traces cannot share an address, so a scheme needs $k\geq d$; hence $\mathrm{UCS}(C_5^{*n})\geq2n$.
+Decoding the halves of a join separately gives subadditivity, so $C_5^{*2m}=(C_5*C_5)^{*m}$ has a scheme of size $4m$, and one more copy of $C_5$ adds 3:
+
+$$
+2n\;\leq\;\mathrm{UCS}(C_5^{*n})\;\leq\;2n+(n\bmod 2).
+$$
+
+The ratio tends to 2, so Conjecture 10 is false.
+
+The table has no description shorter than itself.
+The run that rechecked it also showed why: a size-4 scheme cannot decode one copy from that copy's points alone, so every optimal scheme must use which points of the other copy were kept.
+
+## Verification
+
+| Check | Code | Result |
+| --- | --- | --- |
+| Coverage, 30,976 samples | review checker, written October 7 with no code from the runs; two coverage loops that must agree | no uncovered sample |
+| Class and dimensions | same; $C_5$ built from Figure 1 and from the verbal definition | classes equal; $\mathrm{VC}(C_5)=2$, $\mathrm{VC}(C_5*C_5)=4$ |
+| Coverage | the run's own checker, replayed | no uncovered sample |
+| Mutations | review checker, exact | 3,476 of 3,860 bit flips and 362 of 386 deletions break the table; the rest touch redundant covers |
+| Canaries | review checker | the table cut to size 3 fails, the complemented class fails, the paper's size-3 scheme for $C_5$ passes at 3 and fails at 2 |
+
+The mutation and canary counts match the run's own figures exactly, from separately written code.
+
+## Scope
+
+The result refutes Conjecture 10 as stated and removes joins of $C_5$ as a route to an unbounded gap.
+It does not decide whether $\mathrm{UCS}-\mathrm{VC}$ is bounded, the central question of [[1]](#ref-1), and it does not bear on the sample compression conjecture [[2]](#ref-2).
+Whether $\mathrm{UCS}(C_5^{*3})$ is 6 or 7 is open.
+A search on October 7, 2026 of the citing works indexed by Semantic Scholar and OpenAlex, with full texts read where available, and of the web found no earlier statement of this result; two paywalled citing papers were not read, and MathSciNet and zbMATH were not searched.
+Every check here was written by Claude models.
+No outside expert has reviewed the result, and no peer review is asserted.
+
+## Attribution and retained attempt
+
+The table was found on October 2, 2026 at 08:02 UTC by a leaf agent of the run `research-math-20261002c`, using the SAT solver kissat on an encoding made invariant under a four-fold symmetry of the problem.
+That run recorded it as a new value within the pursuit and did not check the literature.
+On October 3, a leaf agent of `research-math-20261003system4` was assigned the follow-up.
+It wrote its own checker from the paper's text, read both arXiv versions in full, recognized that the value refutes Conjecture 10, and recorded a bounded literature search.
+It also reproduced Theorem 6 of [[1]](#ref-1), that $C_5$ has no scheme of size 2, with a solver proof checked by drat-trim.
+The October 3 leaf ran in Claude Code with claude-opus-5-5. The record below is that run; its four pages for this result are published in full, and its snapshot also holds the predecessor's witness page.
+
+<ResearchBibliography entries={[
+  { authors: 'D. Pálvölgyi and G. Tardos', title: 'Unlabeled compression schemes exceeding the VC-dimension', url: 'https://arxiv.org/abs/1811.12471', publication: 'Discrete Applied Mathematics 276 (2020) 102–107. arXiv:1811.12471v2: Definitions 5 and 8, Theorem 6, Proposition 9, Conjecture 10.', doi: '10.1016/j.dam.2019.09.022' },
+  { authors: 'S. Moran and A. Yehudayoff', title: 'Sample compression schemes for VC classes', url: 'https://arxiv.org/abs/1503.06960', publication: 'J. ACM 63(3) (2016). Compression schemes of size exponential in the VC-dimension; the linear-size conjecture remains open.', doi: '10.1145/2890490' },
+  { title: 'UCS(C5 * C5) = 4: scheme and checker', url: 'https://github.com/drewstone/ucs-join-counterexample', publication: 'The 386-entry table and a standard-library verifier with exact mutation analysis and canaries.' },
+  { title: 'Research-math follow-up run', url: '/research/records/research-math-20261003system4.json', publication: 'Retained run of October 3, 2026, including the leaf that rechecked the table and the predecessor’s witness page.' },
+]} />
