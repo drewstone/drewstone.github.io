@@ -4,7 +4,7 @@
   "title": "APN critical-point counterexample, September 27",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "bundle",
   "idScheme": "anchor.v1",

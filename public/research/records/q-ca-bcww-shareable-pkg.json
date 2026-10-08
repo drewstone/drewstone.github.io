@@ -4,7 +4,7 @@
   "title": "Corrected witness finding, September 3",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "finding-only",
   "idScheme": "anchor.v1",

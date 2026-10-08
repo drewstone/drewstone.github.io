@@ -1,20 +1,20 @@
 {
   "schema": "publication.lock.v1",
   "recordId": "fc-audit-smoke-a",
-  "recordDigest": "sha256:a57d80f025a61be5edf58109092b7556a98868c096948ab783e35269dd0ca692",
+  "recordDigest": "sha256:04a130cca02422c137de919fca1e1089156dbc57dd5ee16c865f92f37df93cad",
   "overlaySha256": "720c8ceea4c4a0103226f883658d9c29e18f1f65d606a72da4b09a03edd5c112",
-  "publicSha256": "7f31d4e4b54fd3b27a589e1007ad2f8490c58d50b78b90f438a8e55b9d29801a",
+  "publicSha256": "99efdda23c7665740ce790b3263ffbdae2560aa53f59c1c4a55fe58845150fa9",
   "snapshot": "sha256:209fce62ae43b2e13bc8d9ad87abef8dd1b9036f2fc385a702ef9648cb699e5e",
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.9.0",
-    "adapter": "2.2.0",
+    "version": "0.33.1",
+    "adapter": "2.4.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-05T04:29:01.233Z",
+  "builtAt": "2026-10-08T03:06:37.945Z",
   "builtOn": "drew-GTR-Pro",
   "attestation": {
     "keyId": "7566b6e702ec87d4",
-    "signature": "dLJJ7h7XFXU07QlSN6czQADT3ubbOfh+1I6iHfgqfSqefqVIaHrc5Hg0n7suZdmwptfsx+gK0qDEQhFsaHtbBQ=="
+    "signature": "4+CJwNdB3YW8fwZJjqvNlmkXVB13QNb4t3RWA9tul0wF0YnpZBzRIAmVlTPYT+RM1xx2Xb4WoGltKdMHb0ZTCg=="
   }
 }

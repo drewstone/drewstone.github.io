@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AgentRecord, type RecordSelection, type RunRecord } from '@drewstone/agent-record'
+import { AgentRecord, RecordWorkGraph, type RecordSelection, type RunRecord } from '@drewstone/agent-record'
 
 /** Old event ids per record, each mapped to its current id (research/publications/idmap.json). */
 export type EventIdMap = Record<string, Record<string, string>>
@@ -67,5 +67,37 @@ export default function AgentRecordView({ records, idmap = {} }: { records: RunR
     }
     history.replaceState(null, '', url)
   }
-  return <AgentRecord records={records} selection={selection} onSelectionChange={select} className="research-agent-record" />
+  // A record that carries claims, outside verdicts or publications also opens as one provenance graph: its agents and
+  // review sessions, the claims they made or judged, and what cites them, joined only by recorded ids (agent-record
+  // RecordWorkGraph). `?graph=provenance` keeps the choice in the URL.
+  const record = records.find((item) => item.runId === selection.runId) ?? records[0]
+  const traced = !!record && ((record.claims?.length ?? 0) > 0 || (record.verdicts?.length ?? 0) > 0 || (record.publications?.length ?? 0) > 0)
+  const [graph, setGraph] = useState(false)
+  useEffect(() => {
+    const read = () => setGraph(new URL(location.href).searchParams.get('graph') === 'provenance')
+    read()
+    window.addEventListener('popstate', read)
+    return () => window.removeEventListener('popstate', read)
+  }, [])
+  const showGraph = (next: boolean) => {
+    setGraph(next)
+    const url = new URL(location.href)
+    if (next) url.searchParams.set('graph', 'provenance')
+    else url.searchParams.delete('graph')
+    history.replaceState(null, '', url)
+  }
+  if (!traced) return <AgentRecord records={records} selection={selection} onSelectionChange={select} className="research-agent-record" />
+  return (
+    <div className="research-agent-record research-record-views">
+      <div className="record-view-switch" role="group" aria-label="Record view">
+        <button type="button" aria-pressed={!graph} onClick={() => showGraph(false)}>Trace</button>
+        <button type="button" aria-pressed={graph} onClick={() => showGraph(true)}>Provenance</button>
+      </div>
+      {graph && record ? (
+        <RecordWorkGraph record={record} />
+      ) : (
+        <AgentRecord records={records} selection={selection} onSelectionChange={select} className="research-agent-record" />
+      )}
+    </div>
+  )
 }
