@@ -7,7 +7,7 @@ const { records, idmap } = Astro.props
 ---
 <style is:global>
   .record-view-switch { display: flex; gap: .4rem; margin: 0 0 .75rem; }
-  .record-view-switch button { font: inherit; padding: .3rem .8rem; border: 1px solid var(--line, currentColor); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+  .record-view-switch button { font: inherit; padding: .3rem .8rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
   /* The viewer reads every surface from these host tokens (agent-record styles.css), so both site themes carry through,
      the provenance graph's cards and panels included. */
