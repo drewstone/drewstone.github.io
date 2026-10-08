@@ -12,11 +12,11 @@
   "bytes": 29272,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.9.0",
-    "adapter": "2.2.0",
+    "version": "0.33.1",
+    "adapter": "2.4.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:eee28796c7c3ab5cd198a31055ed89478b9860bed514fc33e0a751a4a833d72a",
+  "recordDigest": "sha256:1c77f05e204e592b0d09906d4d4d1922025f670b0a2b6b8bc960064a3e9f0736",
   "overlay": "overlay.json",
   "public": "public/research/records/q-ca-bcww-shareable-pkg.json"
 }

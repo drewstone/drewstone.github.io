@@ -12,11 +12,11 @@
   "bytes": 178870,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.9.0",
-    "adapter": "2.2.0",
+    "version": "0.33.1",
+    "adapter": "2.4.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:a57d80f025a61be5edf58109092b7556a98868c096948ab783e35269dd0ca692",
+  "recordDigest": "sha256:04a130cca02422c137de919fca1e1089156dbc57dd5ee16c865f92f37df93cad",
   "overlay": "overlay.json",
   "public": "public/research/records/fc-audit-smoke-a.json"
 }

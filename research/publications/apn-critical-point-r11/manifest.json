@@ -12,11 +12,11 @@
   "bytes": 894847513,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.9.0",
-    "adapter": "2.2.0",
+    "version": "0.33.1",
+    "adapter": "2.4.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:7ac21683b48a14f738414926a83f1bc382ecca16746e8f826066249f613d66c6",
+  "recordDigest": "sha256:df8726e032aebfdbd33584724439851ed01cfb54645453f3688399fc5be09897",
   "overlay": "overlay.json",
   "public": "public/research/records/apn-critical-point-r11.json"
 }
