@@ -206,7 +206,11 @@ import Base from '../layouts/Base.astro'
           return `<div class="op-edge"><span class="rel">${esc(e.type)}</span><a href="#/p/${o}">${esc(or ? or.title : o)}</a></div>` }).join('')
       const pm = (r.parent || '').match(/[A-Z]+-\d+/)
       const parent = pm ? `<div class="op-edge"><span class="rel">part of</span><a href="#/p/${pm[0]}">${pm[0]}</a></div>` : ''
-      const s2 = r.s2 ? `https://www.semanticscholar.org/paper/${r.s2.s2_id}` : null
+      const s2 = r.bib?.oa?.doi || r.bib?.oa?.id ? (r.bib.oa.doi || `https://openalex.org/${r.bib.oa.id}`) : null
+      const bMile = (r.bib?.milestones || []).map((m: any) =>
+        `<div class="op-cite"><span class="num">★</span><a href="${m.doi || 'https://openalex.org/' + m.id}" target="_blank" rel="noopener">${esc(m.a)} (${m.y}) ${esc((m.t || '').slice(0, 110))}</a><span class="src">${m.c || 0} cites</span></div>`).join('')
+      const bRec = (r.bib?.recent || []).map((m: any) =>
+        `<div class="op-cite"><span class="num">·</span><a href="${m.doi || 'https://openalex.org/' + m.id}" target="_blank" rel="noopener">${esc(m.a)} (${m.y}) ${esc((m.t || '').slice(0, 110))}</a><span class="src">${m.c || 0}</span></div>`).join('')
       const field = (k: string, v: string, cls = '') =>
         v ? `<div class="op-field"><div class="k">${k}</div><div class="v ${cls}">${esc(v)}</div></div>` : ''
       const cites = citesHTML(r.key_works)
@@ -223,9 +227,11 @@ import Base from '../layouts/Base.astro'
         ${cites ? `<div class="op-field"><div class="k">prior work</div>${cites}
           <div class="op-tools">
             <a href="${scholar(r.title)}" target="_blank" rel="noopener">scholar</a>
-            ${s2 ? `<a href="${s2}" target="_blank" rel="noopener">semantic scholar</a>` : ''}
+            ${s2 ? `<a href="${s2}" target="_blank" rel="noopener">source paper</a>` : ''}
             <a href="https://openalex.org/works?filter=default.search%3A${encodeURIComponent(r.title)}" target="_blank" rel="noopener">openalex</a>
           </div></div>` : ''}
+        ${bMile ? `<div class="op-field"><div class="k">milestone results — most-cited attacks</div>${bMile}</div>` : ''}
+        ${bRec ? `<div class="op-field"><div class="k">recent attacks — 2023→</div>${bRec}</div>` : ''}
         ${rel || parent ? `<div class="op-field"><div class="k">related</div>${parent}${rel}</div>` : ''}
         </div>
         <div class="op-colophon">${esc(r.id)} · ${esc(r.source || '')}</div>
