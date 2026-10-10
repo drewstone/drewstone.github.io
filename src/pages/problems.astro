@@ -75,6 +75,9 @@ import Base from '../layouts/Base.astro'
     .op-rows .prize { color: var(--c-run); }
     .op-rows .solved { color: var(--c-fail); }
     .op-subfield h3 { margin-top: 1.8rem; }
+    .op-famous { margin-top: 2.4rem; }
+    .op-famous summary { font: 0.78rem var(--font-mono); color: var(--fg-faint); cursor: pointer; padding: 0.5rem 0; }
+    .op-famous summary:hover { color: var(--fg-muted); }
 
     /* problem page — a set theorem; the statement is the page's center */
     .op-problem h1 { max-width: 44rem; }
@@ -181,17 +184,34 @@ import Base from '../layouts/Base.astro'
         <div class="op-census-line"><b>${total.toLocaleString()}</b> problems · <b>${Object.keys(manifest).length}</b> domains · citations linked · status checked against the literature</div>
         <input id="op-search" class="op-search" type="search" placeholder="search the census — press /" aria-label="Search problems">
         <div id="op-search-out"></div>
-        <div class="op-toc">${toc}</div></div>`
+        <div class="op-toc">${toc}</div>
+        <p style="margin-top:2.4rem"><a href="#/famous" style="font:0.78rem var(--font-mono);color:var(--fg-faint)">the famous ones — millennium prizes and named conjectures, collected for completeness</a></p></div>`
     }
 
     async function domainHTML(slug: string) {
       const rows = await domain(slug); rows.forEach((r: any) => (byId[r.id] = r))
+      const tail = rows.filter((r: any) => (r.sig || 0) < 5)
+      const famous = rows.filter((r: any) => (r.sig || 0) >= 5)
       const groups = new Map<string, any[]>()
-      for (const r of rows) { const k = r.subfield || 'general'; (groups.get(k) || groups.set(k, []).get(k)!).push(r) }
-      let h = `<div class="op-domain-head"><h1>${esc(slug)}</h1><div class="n">${rows.length.toLocaleString()} problems</div></div>`
+      for (const r of tail) { const k = r.subfield || 'general'; (groups.get(k) || groups.set(k, []).get(k)!).push(r) }
+      let h = `<div class="op-domain-head"><h1>${esc(slug)}</h1><div class="n">${rows.length.toLocaleString()} problems · ${famous.length.toLocaleString()} well-known sectioned</div></div>`
       for (const [sub, rs] of groups)
         h += `<div class="op-subfield"><h3>${esc(sub)} · ${rs.length}</h3><ol class="op-rows">${rs.map(rowHTML).join('')}</ol></div>`
+      if (famous.length)
+        h += `<details class="op-famous"><summary>the well-known ones · ${famous.length} — collected for completeness</summary><ol class="op-rows">${famous.map(rowHTML).join('')}</ol></details>`
       return h
+    }
+
+    async function famousHTML() {
+      const all: any[] = []
+      for (const slug of Object.keys(manifest)) {
+        const rows = await domain(slug)
+        rows.forEach((r: any) => (byId[r.id] = r))
+        for (const r of rows) if ((r.sig || 0) >= 5) all.push(r)
+      }
+      all.sort((a: any, b: any) => (b.sig || 0) - (a.sig || 0))
+      return `<div class="op-domain-head"><h1>The famous ones</h1><div class="n">the problems everyone already knows — millennium prizes, named conjectures, the canon. collected here for completeness so the census is complete, but the interesting work is in the tail.</div></div>
+        <ol class="op-rows">${all.map(rowHTML).join('')}</ol>`
     }
 
     async function problemHTML(id: string) {
@@ -266,6 +286,9 @@ import Base from '../layouts/Base.astro'
         const id = decodeURIComponent(h.slice(4))
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span><a href="#/d/${idsToDom[id] || ''}">${esc(idsToDom[id] || '—')}</a>`
         view.innerHTML = await problemHTML(id)
+      } else if (h === '#/famous') {
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>the famous ones`
+        view.innerHTML = await famousHTML()
       } else if (h.startsWith('#/d/')) {
         const slug = decodeURIComponent(h.slice(4))
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>${esc(slug)}`
