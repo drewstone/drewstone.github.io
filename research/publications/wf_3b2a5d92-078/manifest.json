@@ -12,11 +12,11 @@
   "bytes": 762359,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.9.0",
-    "adapter": "2.2.0",
+    "version": "0.33.1",
+    "adapter": "2.4.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:beccd7cb148361ab24e738e29100ed1b67bf1476dc62b7f00f380645b0569007",
+  "recordDigest": "sha256:662881539c852f2983ef5554ff9d9357b2e8bb1f1c51ab20803028a001b37727",
   "overlay": "overlay.json",
   "public": "public/research/records/wf_3b2a5d92-078.json"
 }

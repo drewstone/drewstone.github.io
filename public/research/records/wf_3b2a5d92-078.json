@@ -4,7 +4,7 @@
   "title": "Five-arm verification workflow, August 10",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "bundle",
   "idScheme": "anchor.v1",

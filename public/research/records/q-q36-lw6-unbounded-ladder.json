@@ -4,7 +4,7 @@
   "title": "Linden–Winter ladder certification, August 16",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
@@ -1027,6 +1027,24 @@
       }
     },
     {
+      "id": "c677d8f21c5c:1.1",
+      "node": "q-q36-lw6-unbounded-ladder:s0",
+      "at": "2026-08-16T21:49:13.018Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 1,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
       "id": "c677d8f21c5c:4",
       "node": "q-q36-lw6-unbounded-ladder",
       "at": "2026-08-16T21:49:13.133Z",
@@ -1043,6 +1061,24 @@
         "publicText": "PARENT BULLETIN (read before continuing). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every op OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` between with-blocks rounds to prec 28 and silently corrupts deep-cancellation values (this bug gave the parent deterministic wrong E at L=7..10, stable across precisions - a convincing wrong number). Fix: every Decimal op inside a directed context, or pin the global context; keep >=20 guard digits. (2) DATA FOR YOUR ASYMPTOTICS: parent's independent certified rows L=2..16 at work/results/parent_reference.json (exact Decimal strings). Established: R_L = 2*10^L - gap_L with gap_L strictly decreasing from gap_2=10.522604216, gap_4=0.743775672, gap_6=0.644679264, gap_8=0.643688172, gap_10=0.643676758, gap_12=0.6436781619..., gap_16=0.6436781609... - the float-level reversal around L=10..12 (0.643676758 vs 0.64367816) is exactly the regime where you need full Decimal precision, so derive the gap limit G* with certified intervals (my L=12/16 full-precision values suggest G* ~ 0.64367816..; the KB page said 0.643678). Your Tasks 1-4 stand. Note E_L = -9.254186028954...*10^(-4L-2)*(1+o(1)) and y_L ~ 4.62709...*10^(-5L-1.33) are the two scales; the R_L -> 2*10^L mechanism is E/y ~ 2*10^L*(1+O(10^-L)). Recheck my claim, do not trust it.",
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "c677d8f21c5c:4.1",
+      "node": "q-q36-lw6-unbounded-ladder:s3",
+      "at": "2026-08-16T21:49:13.133Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 4,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
       }
     },
     {
@@ -1065,6 +1101,24 @@
       }
     },
     {
+      "id": "c677d8f21c5c:7.1",
+      "node": "q-q36-lw6-unbounded-ladder:s1",
+      "at": "2026-08-16T21:49:13.324Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 7,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
       "id": "c677d8f21c5c:10",
       "node": "q-q36-lw6-unbounded-ladder",
       "at": "2026-08-16T21:49:13.646Z",
@@ -1081,6 +1135,24 @@
         "publicText": "PARENT BULLETIN (read before continuing; affects your engine). (1) ENGINE BUG WARNING: Python Decimal applies the AMBIENT context to every operation OUTSIDE an explicit context - including UNARY MINUS. A bare `-x` or `a*b` between with-blocks rounds to default prec 28 and silently corrupts deep-cancellation quantities (this exact bug gave the parent's first engine deterministic WRONG E values at family rows L=7..10 while other rows looked fine). Fix: EVERY Decimal op (negations included) inside a directed context at working precision, or pin the global context for the whole run. Decimal.ln() is correctly rounded (verified vs atanh series) but seems to ignore context rounding direction - keep >=20 guard digits. (2) CROSS-CHECK DATA: parent's independent certified rows L=2..16 at work/results/parent_reference.json: R_2=189.4773957843194031476..., R_3=1998.3565066..., R_8=199999999.35631..., R_12=1999999999999.356321838... For your TIER-EXACT slab rows: the family has x=z=0 exactly (integer det certificate), so kills are slabs {k2 < R_L}; k*=(3977/125,3977/125,1) is closed by L=2 (R_2 ~ 189.5 > 31.816). Continue your unit; compare your certified anchors against the parent file (independent implementations agreeing is the deliverable).",
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "c677d8f21c5c:10.1",
+      "node": "q-q36-lw6-unbounded-ladder:s2",
+      "at": "2026-08-16T21:49:13.646Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "c677d8f21c5c4926705586808c8112797bf8bda85c18162519a72c4dda210427",
+        "line": 10,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
       }
     },
     {

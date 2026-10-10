@@ -4,7 +4,7 @@
   "title": "Corpus verification, August 5",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "pi-local",
   "idScheme": "anchor.v1",
@@ -19906,6 +19906,24 @@
       }
     },
     {
+      "id": "e3fac3596fe7:1.1",
+      "node": "ftqc-zips-2026-08-05-r1:s2",
+      "at": "2026-08-05T17:30:21.689Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 1,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
       "id": "ad028bac4eab",
       "node": "finding:ftqc-zips-2026-08-05-r1",
       "at": "2026-08-05T17:30:22.123Z",
@@ -20719,6 +20737,24 @@
         "publicText": "STOP EDITING THE ARCHIVE SOURCE. Your job is to VERIFY and REPORT, not to fix the pcftc code so tests pass — modifying the artifact invalidates the verification. You are near your token budget. Immediately write results/results_pcftc.md with everything you have found so far: (1) did `make test` / `make verify` / `make coverage` / `make manifest` pass or fail, with exact exit codes and pass counts, (2) which of the 5 headline numbers (a)-(e) you confirmed, (3) CRITICALLY: did `make verify` exit 0 or not, and if you had to modify source files to get there, say so explicitly and revert your changes. Write the file NOW even if incomplete — a partial result on disk beats a complete result lost.",
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "e3fac3596fe7:4.1",
+      "node": "ftqc-zips-2026-08-05-r1:s0",
+      "at": "2026-08-05T17:31:16.109Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 4,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
       }
     },
     {
@@ -23994,6 +24030,24 @@
         "publicText": "You are near your token ceiling. The 8/6/2 headline is already saved — good. Now APPEND to results/results_qldpc.md whatever else you have: the v5 pytest exit code/pass count, the latest_integrated_overlay test result, and the S06/S09 minimax certificate finding. If you ran the Stim falsification check, add one sentence. Then STOP — do not start new long computations. Persist what you have and settle.",
         "publicationMode": "full",
         "publicationNote": null
+      }
+    },
+    {
+      "id": "e3fac3596fe7:7.1",
+      "node": "ftqc-zips-2026-08-05-r1:s1",
+      "at": "2026-08-05T17:37:05.121Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "e3fac3596fe7ab0a48003d706db39e1d6926d2d7acc5558adcfe811c8dff156b",
+        "line": 7,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
+        "contentOmitted": "Body not published."
       }
     },
     {

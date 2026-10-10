@@ -6,8 +6,23 @@ interface Props { records: RunRecord[]; idmap: EventIdMap }
 const { records, idmap } = Astro.props
 ---
 <style is:global>
+  .record-view-switch { display: flex; gap: .4rem; margin: 0 0 .75rem; }
+  .record-view-switch button { font: inherit; padding: .3rem .8rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
+  .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
+  /* The viewer reads every surface from these host tokens (agent-record styles.css), so both site themes carry through,
+     the provenance graph's cards and panels included. */
   .research-agent-record {
     --ar-background: var(--bg);
+    --ar-surface: var(--bg);
+    --ar-panel: var(--bg);
+    --ar-raised: var(--bg-alt);
+    --ar-surface-alt: var(--bg-alt);
+    --ar-code-background: var(--bg-sink);
+    --ar-line: var(--border);
+    --ar-line-strong: var(--border-strong);
+    --ar-muted: var(--fg-muted);
+    --ar-faint: var(--fg-faint);
+    --ar-title: var(--fg);
     --ar-foreground: var(--fg);
     --ar-font: var(--font-body);
     --ar-mono: var(--font-mono);
