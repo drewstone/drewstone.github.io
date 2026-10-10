@@ -1,8 +1,8 @@
 {
 "papers": 5925,
 "math-erdos": 1221,
+"papers-csCRcsCC": 1014,
 "energy": 648,
-"papers-csCRcsCC": 536,
 "chemistry": 494,
 "combinatorics": 460,
 "materials-science": 450,
@@ -30,7 +30,7 @@
 "statistics": 210,
 "machine-learning": 208,
 "transportation": 204,
+"papers-mathCOmathNT": 150,
 "hunt-zkml-ai-verifiability": 106,
-"papers-csLG": 82,
-"papers-mathCOmathNT": 14
+"papers-csLG": 82
 }
