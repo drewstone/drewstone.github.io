@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "research-math-20261003system4",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "research-math-20261003system4",
+    "label": "publication-20261007"
+  },
+  "snapshot": "sha256:b83eaae1804edb3c690f190d4db3d09858c19701eefd81c03a599f75b820bace",
+  "objects": 9482,
+  "bytes": 1142862882,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:259fe03b23e83920f681a4b4a748f1325db3ec09324c8112be2594add19f970e",
+  "overlay": "overlay.json",
+  "public": "public/research/records/research-math-20261003system4.json"
+}

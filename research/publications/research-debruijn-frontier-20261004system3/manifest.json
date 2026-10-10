@@ -1,0 +1,22 @@
+{
+  "schema": "publication.manifest.v1",
+  "recordId": "research-debruijn-frontier-20261004system3",
+  "store": {
+    "bucket": "discovery-evidence",
+    "prefix": "runs/",
+    "namespace": "research-debruijn-frontier-20261004system3",
+    "label": "publication-20261007"
+  },
+  "snapshot": "sha256:9a0bffa4cb74c03f34b5e9fbfaeb97c05a8afc8720d071a502d669ffafc53dc1",
+  "objects": 7290,
+  "bytes": 351486944,
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "0.9.0",
+    "adapter": "2.2.0",
+    "idScheme": "anchor.v1"
+  },
+  "recordDigest": "sha256:893be56ce1ac6be6815822a8a72e2042e6b01e4b6a1a5ed7e71f87e1e6da66a6",
+  "overlay": "overlay.json",
+  "public": "public/research/records/research-debruijn-frontier-20261004system3.json"
+}
