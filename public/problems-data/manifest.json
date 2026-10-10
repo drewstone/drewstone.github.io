@@ -2,7 +2,9 @@
 "papers": 5925,
 "math-erdos": 1221,
 "papers-csCRcsCC": 1014,
+"papers-csLG": 708,
 "energy": 648,
+"mathoverflow": 634,
 "papers-mathCOmathNT": 582,
 "chemistry": 494,
 "combinatorics": 460,
@@ -32,5 +34,5 @@
 "machine-learning": 208,
 "transportation": 204,
 "hunt-zkml-ai-verifiability": 106,
-"papers-csLG": 82
+"distributed-systems": 16
 }
