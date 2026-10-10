@@ -4,222 +4,534 @@ import Base from '../layouts/Base.astro'
 
 <Base
   title="Open problems"
-  description="A living census of unsolved problems across mathematics, computer science, cryptography, the sciences, and engineering — with linked citations, status, and significance."
+  description="A living atlas of unsolved problems across mathematics, computer science, cryptography, the sciences, and engineering."
   wide={true}
 >
-  <h1>Open problems</h1>
-  <p class="problems-meta">
-    A living census of unsolved problems — mathematics, computer science,
-    cryptography, the sciences, engineering. Every record carries linked
-    citations, provenance, and status checked against citing literature. Built
-    with agent pipelines over curated lists, peer-reviewed problem papers,
-    maintained databases, and census sessions. Source:
-    <a href="https://github.com/drewstone/openprobs">openprobs</a>.
-  </p>
+  <div id="op-root">
+    <nav id="op-breadcrumb" class="op-breadcrumb"></nav>
+    <div id="op-view"></div>
+  </div>
 
-  <input
-    id="problems-search"
-    type="search"
-    placeholder='search the census — "conjecture", "obfuscation", "turbulence", "Riemann"…'
-    aria-label="Search problems"
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/katex.min.css"
+    crossorigin="anonymous"
   />
-  <div id="problems-count" class="problems-meta"></div>
-  <div id="view"></div>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script
+    is:inline
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.38/dist/contrib/auto-render.min.js"
+    crossorigin="anonymous"
+  ></script>
 
   <style is:global>
-    .problems-meta { color: var(--fg-muted); font-size: 0.9rem; }
-    #problems-search {
-      font-family: var(--font-mono); font-size: 0.85rem;
-      padding: 0.35rem 0.6rem; border: 1px solid var(--border-strong);
-      border-radius: var(--control-radius); width: 100%; margin: 0.6rem 0;
-      background: var(--bg); color: var(--fg);
+    /* ── open problems atlas · typographic system ─────────────────── */
+    #op-root {
+      --op-measure: 46rem;
+      font-variant-numeric: oldstyle-nums;
     }
-    .ptable { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
-    .ptable th { border-bottom: 1px solid var(--rule); font-weight: 600; text-align: left; padding: 0.35rem 0.5rem; }
-    .ptable td { border-bottom: 1px solid var(--border); padding: 0.35rem 0.5rem; vertical-align: top; }
-    .mono { font-family: var(--font-mono); font-size: 0.78rem; color: var(--fg-muted); }
-    .tag { display: inline-block; border: 1px solid; border-radius: 3px; padding: 0 0.4rem; font-size: 0.72rem; font-family: var(--font-mono); white-space: nowrap; }
-    .tag-sig { color: var(--c-run); border-color: #f59e0b; background: var(--c-run-bg); }
-    .tag-solved { color: var(--c-fail); border-color: #f87171; background: var(--c-fail-bg); }
-    .tag-domain { color: var(--c-info); border-color: #93c5fd; background: var(--c-info-bg); }
-    .tag-type { color: var(--fg-muted); border-color: var(--border-strong); background: var(--bg-alt); }
-    .dom-card { display: block; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); cursor: pointer; }
-    .dom-card:hover { background: var(--bg-alt); }
-    .dom-card .n { font-family: var(--font-mono); font-size: 0.8rem; color: var(--fg-muted); float: right; }
-    .subhead { font-weight: 600; margin: 1.2rem 0 0.3rem; font-size: 1rem; }
-    .prob-row { cursor: pointer; }
-    .prob-row:hover { background: var(--bg-alt); }
-    .detail h2 { margin: 0.2rem 0 0.6rem; }
-    .detail .field { margin: 0.7rem 0; }
-    .detail .field b { display: block; font-size: 0.78rem; font-family: var(--font-mono); color: var(--fg-faint); text-transform: lowercase; letter-spacing: 0.03em; }
-    .cite { display: block; margin: 0.15rem 0; font-size: 0.85rem; }
-    .backlink { font-family: var(--font-mono); font-size: 0.8rem; color: var(--fg-muted); display: inline-block; margin-bottom: 1rem; }
-    .backlink:hover { color: var(--fg); }
-    .btnrow { margin: 0.5rem 0; }
-    .btnrow a { font-family: var(--font-mono); font-size: 0.75rem; border: 1px solid var(--border-strong); border-radius: 3px; padding: 0.1rem 0.5rem; margin-right: 0.4rem; text-decoration: none; }
-    .btnrow a:hover { background: var(--bg-alt); }
-    .edge { display: inline-block; margin: 0.15rem 0.3rem 0.15rem 0; }
+    #op-root p { margin: 0.9rem 0; }
+
+    /* breadcrumb: quiet, mono, always knows where you are */
+    .op-breadcrumb {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+      color: var(--fg-faint);
+      margin: 0 0 2.5rem;
+      min-height: 1rem;
+    }
+    .op-breadcrumb a { color: var(--fg-muted); text-decoration: none; }
+    .op-breadcrumb a:hover { color: var(--fg); text-decoration: underline; }
+    .op-breadcrumb .sep { margin: 0 0.45rem; color: var(--border-strong); }
+
+    /* ── frontispiece (home) ──────────────────────────────────────── */
+    .op-front { max-width: var(--op-measure); }
+    .op-front .epigraph {
+      font-size: 1.05rem;
+      color: var(--fg-muted);
+      font-style: italic;
+      margin: 0 0 0.4rem;
+    }
+    .op-front .epigraph-src {
+      font-size: 0.8rem;
+      color: var(--fg-faint);
+      margin-bottom: 3rem;
+    }
+    .op-front h1 {
+      font-size: 2.1rem;
+      font-weight: 400;
+      margin: 0 0 1.2rem;
+      letter-spacing: -0.01em;
+    }
+    .op-census-line {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--fg-faint);
+      margin: 0 0 3.5rem;
+    }
+    .op-census-line b { color: var(--fg-muted); font-weight: 500; }
+
+    /* table of contents: book-style, dot leaders, two columns */
+    .op-toc {
+      column-count: 2;
+      column-gap: 3rem;
+      max-width: 60rem;
+    }
+    @media (max-width: 720px) { .op-toc { column-count: 1; } }
+    .op-toc a {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--fg);
+      padding: 0.18rem 0;
+      break-inside: avoid;
+      font-size: 0.95rem;
+    }
+    .op-toc a:hover .op-toc-name { text-decoration: underline; }
+    .op-toc .leader {
+      flex: 1;
+      border-bottom: 1px dotted var(--border-strong);
+      transform: translateY(-0.22em);
+      min-width: 1.5rem;
+    }
+    .op-toc .count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--fg-faint);
+    }
+
+    /* search: one quiet instrument, home only, / to focus */
+    .op-search-wrap { position: relative; margin: 0 0 2.5rem; max-width: var(--op-measure); }
+    #op-search {
+      width: 100%;
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      padding: 0.5rem 0.1rem;
+      border: 0;
+      border-bottom: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--fg);
+      outline: none;
+    }
+    #op-search:focus { border-bottom-color: var(--fg); }
+    #op-search::placeholder { color: var(--fg-faint); font-style: italic; }
+    .op-search-hint {
+      position: absolute;
+      right: 0.1rem;
+      top: 0.62rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--fg-faint);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0 0.35rem;
+      pointer-events: none;
+    }
+    .op-search-wrap.filled .op-search-hint { display: none; }
+
+    /* ── domain page: a reading list ──────────────────────────────── */
+    .op-domain-head { max-width: var(--op-measure); margin-bottom: 2rem; }
+    .op-domain-head h2 {
+      font-size: 1.55rem;
+      font-weight: 400;
+      margin: 0;
+    }
+    .op-domain-head .n {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--fg-faint);
+      margin-top: 0.2rem;
+    }
+    .op-subfield { max-width: var(--op-measure); margin-bottom: 2.2rem; }
+    .op-subfield > h3 {
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      color: var(--fg-muted);
+      text-transform: lowercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 0.4rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3rem;
+    }
+    .op-subfield h3 .n { color: var(--fg-faint); font-weight: 400; }
+    .op-problem-link {
+      display: block;
+      text-decoration: none;
+      color: var(--fg);
+      padding: 0.34rem 0.6rem;
+      margin: 0 -0.6rem;
+      border-radius: 2px;
+    }
+    .op-problem-link:hover { background: var(--bg-alt); }
+    .op-problem-link .pid {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--fg-faint);
+      margin-right: 0.6rem;
+    }
+    .op-problem-link:hover .pid { color: var(--fg-muted); }
+    .op-problem-link .prize-mark { color: var(--c-run); font-size: 0.85rem; }
+    .op-problem-link .solved-mark {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--c-fail);
+    }
+
+    /* ── problem page: a well-set theorem ─────────────────────────── */
+    .op-problem { max-width: var(--op-measure); }
+    .op-problem .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--fg-faint);
+      margin-bottom: 0.8rem;
+    }
+    .op-problem .eyebrow a { color: var(--fg-muted); text-decoration: none; }
+    .op-problem .eyebrow a:hover { text-decoration: underline; }
+    .op-problem h2 {
+      font-size: 1.5rem;
+      font-weight: 400;
+      line-height: 1.3;
+      margin: 0 0 1.4rem;
+      text-wrap: balance;
+    }
+    .op-problem .statement {
+      font-size: 1.08rem;
+      line-height: 1.65;
+      margin: 0 0 2rem;
+    }
+    .op-problem .statement .lead-in {
+      font-variant: small-caps;
+      letter-spacing: 0.06em;
+      color: var(--fg-muted);
+    }
+    .op-field { margin: 1.6rem 0; }
+    .op-field > .k {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+      color: var(--fg-faint);
+      margin-bottom: 0.35rem;
+    }
+    .op-field > .v { font-size: 0.98rem; line-height: 1.6; color: var(--fg); }
+    .op-field > .v.muted { color: var(--fg-muted); font-size: 0.9rem; }
+    .op-hairline { border: 0; border-top: 1px solid var(--border); margin: 2.2rem 0; }
+    .op-hairline.strong { border-top: 1px solid var(--rule); }
+
+    /* citations: scholarly apparatus, numbered, set like references */
+    .op-cite { margin: 0.42rem 0; font-size: 0.92rem; line-height: 1.5; }
+    .op-cite .num {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--fg-faint);
+      margin-right: 0.55rem;
+    }
+    .op-cite a { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--border-strong); }
+    .op-cite a:hover { border-bottom-color: var(--fg); }
+    .op-cite .src {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--c-info);
+      margin-left: 0.3rem;
+      border: 0;
+    }
+    .op-tools { margin-top: 1rem; }
+    .op-tools a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--fg-muted);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.12rem 0.5rem;
+      margin: 0 0.35rem 0.35rem 0;
+      display: inline-block;
+    }
+    .op-tools a:hover { color: var(--fg); border-color: var(--border-strong); background: var(--bg-alt); }
+
+    /* related: quiet inline links with relationship in small-caps */
+    .op-edge { margin: 0.3rem 0; font-size: 0.95rem; }
+    .op-edge .rel {
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+      color: var(--fg-faint);
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+    }
+    .op-edge a { color: var(--fg); }
+
+    .op-colophon {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--fg-faint);
+      margin-top: 2.5rem;
+    }
+
+    /* graze: prev/next footer */
+    .op-graze {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .op-graze a { color: var(--fg-muted); text-decoration: none; max-width: 45%; }
+    .op-graze a:hover { color: var(--fg); }
+    .op-graze .dir {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--fg-faint);
+      display: block;
+    }
+
+    .op-empty { color: var(--fg-muted); font-style: italic; }
+    .op-loading { color: var(--fg-faint); font-style: italic; }
+
+    @media print {
+      .op-breadcrumb, .op-tools, .op-graze, #op-search { display: none; }
+    }
   </style>
 
   <script>
-    // ---------- data loading ----------
-    const manifest = await fetch('/problems-data/manifest.json').then(r => r.json())
-    const edges = await fetch('/problems-data/edges.json').then(r => r.json())
-    const idsToDom = await fetch('/problems-data/ids.json').then(r => r.json())
+    // ── atlas ─────────────────────────────────────────────────────────
+    const manifest = await fetch('/problems-data/manifest.json').then((r) => r.json())
+    const edges = await fetch('/problems-data/edges.json').then((r) => r.json())
+    const idsToDom = await fetch('/problems-data/ids.json').then((r) => r.json())
+    const total = Object.values(manifest).reduce((a, b) => a + b, 0)
 
-    let cache = {}
-    async function domain(slug) {
-      if (!cache[slug]) cache[slug] = await fetch(`/problems-data/${slug}.json`).then(r => r.json())
+    const cache: Record<string, any[]> = {}
+    async function domain(slug: string) {
+      if (!cache[slug]) cache[slug] = await fetch(`/problems-data/${slug}.json`).then((r) => r.json())
       return cache[slug]
     }
+    const byId: Record<string, any> = {}
 
-    // ---------- helpers ----------
-    const esc = (s) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML }
-    const scholar = (q) => 'https://scholar.google.com/scholar?q=' + encodeURIComponent(q)
+    const esc = (s: any) => {
+      const d = document.createElement('div')
+      d.textContent = s == null ? '' : String(s)
+      return d.innerHTML
+    }
+    const scholar = (q: string) => 'https://scholar.google.com/scholar?q=' + encodeURIComponent(q)
 
-    // link-ify a citation string: arXiv / ePrint / DOI / URLs, else Scholar search
-    function citeHTML(c) {
-      c = c.trim(); if (!c) return ''
+    function typeset(el: HTMLElement) {
+      const w = (window as any)
+      if (w.renderMathInElement)
+        w.renderMathInElement(el, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true },
+          ],
+          throwOnError: false,
+        })
+    }
+
+    // one H1, ever — inner views carry only breadcrumbs
+    const crumb = document.getElementById('op-breadcrumb')!
+    const view = document.getElementById('op-view')!
+
+    // ── citations ────────────────────────────────────────────────────
+    function parseCite(c: string) {
+      c = c.trim()
+      if (!c) return null
       let m
-      if ((m = c.match(/arxiv\.org\/abs\/([0-9.]+v?\d*)/i)) || (m = c.match(/arXiv:([0-9]{4}\.[0-9]{4,5})/i)))
-        return `<a class="cite" href="https://arxiv.org/abs/${m[1]}" target="_blank" rel="noopener">${esc(c)} ↗</a>`
-      if ((m = c.match(/eprint\.iacr\.org\/(\d{4}\/\d+)/i)) || (m = c.match(/eprint\s*(?:\/|\s)?\s*(\d{4}\/\d+)/i)))
-        return `<a class="cite" href="https://eprint.iacr.org/${m[1]}" target="_blank" rel="noopener">${esc(c)} ↗</a>`
+      if ((m = c.match(/arxiv\.org\/abs\/([0-9a-z.]+v?\d*)/i)) || (m = c.match(/arXiv:([0-9]{4}\.[0-9]{4,5})/i)))
+        return { label: c, url: `https://arxiv.org/abs/${m[1]}`, src: 'arxiv' }
+      if ((m = c.match(/eprint\.iacr\.org\/(\d{4}\/\d+)/i)) || (m = c.match(/(?:eprint|ePrint)\s*(?:\/|\s:)?\s*(\d{4}\/\d+)/)))
+        return { label: c, url: `https://eprint.iacr.org/${m[1]}`, src: 'iacr' }
       if ((m = c.match(/(10\.\d{4,9}\/[^\s;,)]+)/)))
-        return `<a class="cite" href="https://doi.org/${m[1]}" target="_blank" rel="noopener">${esc(c)} ↗</a>`
+        return { label: c, url: `https://doi.org/${m[1]}`, src: 'doi' }
       if ((m = c.match(/(https?:\/\/[^\s;,)]+)/)))
-        return `<a class="cite" href="${m[1]}" target="_blank" rel="noopener">${esc(c)} ↗</a>`
-      return `<a class="cite" href="${scholar(c)}" target="_blank" rel="noopener">${esc(c)} · scholar ↗</a>`
+        return { label: c, url: m[1], src: 'link' }
+      return { label: c, url: scholar(c), src: 'scholar' }
     }
-    function citesHTML(kw) {
-      if (!kw) return '<span class="mono">no recorded citations</span>'
-      return kw.split(/;(?![^(]*\))/).flatMap(x => x.split(/ (?=[A-Z][a-z]+ )/)).slice(0, 12).map(citeHTML).join('')
-    }
-
-    const sigTitle = (s) =>
-      s >= 5 ? 'significance: appears in prize lists and community-curated problem lists'
-        : s >= 3 ? 'significance: prize-bearing or community-curated'
-        : s >= 2 ? 'significance: appears in a curated list' : ''
-
-    function problemRow(r) {
-      return `<tr class="prob-row" data-id="${r.id}">
-        <td class="mono">${r.id}</td>
-        <td>${esc(r.title)}${r.solved ? ' <span class="tag tag-solved">solved?</span>' : ''}</td>
-        <td>${r.sig >= 5 ? `<span class="tag tag-sig" title="${sigTitle(r.sig)}">★ ${r.sig}</span>` : ''}</td>
-      </tr>`
+    function citesHTML(kw: string) {
+      if (!kw) return '<div class="op-empty">no recorded prior work yet</div>'
+      const parts = kw.split(/;/).map((x: string) => x.trim()).filter(Boolean)
+      return parts
+        .slice(0, 14)
+        .map((c: string, i: number) => {
+          const p: any = parseCite(c)
+          return `<div class="op-cite"><span class="num">[${i + 1}]</span><a href="${p.url}" target="_blank" rel="noopener">${esc(p.label)}</a><span class="src">${p.src}</span></div>`
+        })
+        .join('')
     }
 
-    async function renderDomain(slug) {
+    // ── views ────────────────────────────────────────────────────────
+    function homeHTML() {
+      const toc = Object.entries(manifest)
+        .map(
+          ([slug, n]: any) =>
+            `<a href="#/d/${slug}"><span class="op-toc-name">${esc(slug)}</span><span class="leader"></span><span class="count">${n.toLocaleString()}</span></a>`,
+        )
+        .join('')
+      return `
+      <div class="op-front">
+        <h1>Open problems</h1>
+        <p class="epigraph">Wir müssen wissen — wir werden wissen.</p>
+        <div class="epigraph-src">David Hilbert, 1930 — engraved on his tombstone. This is the map of everything the sentence still promises.</div>
+        <div class="op-census-line"><b>${total.toLocaleString()}</b> problems · <b>${Object.keys(manifest).length}</b> domains · citations linked · status checked against the literature</div>
+        <div class="op-search-wrap">
+          <input id="op-search" type="search" placeholder="search the census…" aria-label="Search problems">
+          <span class="op-search-hint">/</span>
+        </div>
+        <div id="op-search-out"></div>
+        <div class="op-toc">${toc}</div>
+      </div>`
+    }
+
+    function rowHTML(r: any) {
+      const marks =
+        (r.prize ? ' <span class="prize-mark">✦</span>' : '') +
+        (r.solved ? ' <span class="solved-mark">solved?</span>' : '')
+      return `<a class="op-problem-link" href="#/p/${r.id}"><span class="pid">${r.id}</span>${esc(r.title)}${marks}</a>`
+    }
+
+    async function domainHTML(slug: string) {
       const rows = await domain(slug)
-      const bySub = new Map()
+      rows.forEach((r: any) => (byId[r.id] = r))
+      const groups = new Map<string, any[]>()
       for (const r of rows) {
         const k = r.subfield || 'general'
-        if (!bySub.has(k)) bySub.set(k, [])
-        bySub.get(k).push(r)
+        if (!groups.has(k)) groups.set(k, [])
+        groups.get(k)!.push(r)
       }
-      let h = `<a class="backlink" href="#/">← all domains</a>
-        <h2>${esc(slug)} <span class="mono">${rows.length.toLocaleString()} problems</span></h2>`
-      for (const [sub, rs] of bySub) {
-        h += `<div class="subhead">${esc(sub)} <span class="mono">${rs.length}</span></div>
-          <table class="ptable"><tbody>${rs.map(problemRow).join('')}</tbody></table>`
-      }
+      let h = `<div class="op-domain-head"><h2>${esc(slug)}</h2><div class="n">${rows.length.toLocaleString()} problems</div></div>`
+      for (const [sub, rs] of groups)
+        h += `<div class="op-subfield"><h3>${esc(sub)} <span class="n">${rs.length}</span></h3>${rs.map(rowHTML).join('')}</div>`
       return h
     }
 
-    async function renderProblem(id) {
+    async function problemHTML(id: string) {
       const slug = idsToDom[id]
-      if (!slug) return `<a class="backlink" href="#/">← all domains</a><p class="mono">unknown id ${esc(id)}</p>`
+      if (!slug) return `<div class="op-empty">no such problem: ${esc(id)}</div>`
       const rows = await domain(slug)
-      const r = rows.find(x => x.id === id)
-      if (!r) return `<p class="mono">not found</p>`
-      const rel = edges.filter(e => e.a === id || e.b === id)
-      const relLinks = rel.map(e => {
-        const other = e.a === id ? e.b : e.a
-        return `<a class="edge" href="#/p/${other}"><span class="tag tag-type">${e.type}</span> <span class="mono">${other}</span></a>`
-      }).join('')
-      const parent = r.parent ? `<a href="#/p/${r.parent.match(/[A-Z]+-\d+/)?.[0]}" class="mono">↑ parent ${esc(r.parent)}</a>` : ''
+      rows.forEach((r: any) => (byId[r.id] = r))
+      const r = byId[id]
+      if (!r) return `<div class="op-empty">not found</div>`
+      const idx = rows.findIndex((x: any) => x.id === id)
+      const prev = rows[idx - 1]
+      const next = rows[idx + 1]
+      const rel = edges.filter((e: any) => e.a === id || e.b === id)
+      const relHTML = rel
+        .map((e: any) => {
+          const other = e.a === id ? e.b : e.a
+          const otherR = byId[other]
+          return `<div class="op-edge"><span class="rel">${esc(e.type)}</span><a href="#/p/${other}">${esc(otherR ? otherR.title : other)}</a></div>`
+        })
+        .join('')
       const s2 = r.s2 ? `https://www.semanticscholar.org/paper/${r.s2.s2_id}` : null
-      return `<a class="backlink" href="#/d/${slug}">← ${esc(slug)}</a>
-        <div class="detail">
-        <h2>${esc(r.title)} <span class="mono">${r.id}</span></h2>
-        <p>${r.sig >= 3 ? `<span class="tag tag-sig" title="${sigTitle(r.sig)}">significance ${r.sig}</span>` : ''}
-           ${r.type ? `<span class="tag tag-type">${esc(r.type)}</span>` : ''}
-           ${r.prize ? `<span class="tag tag-sig">prize: ${esc(r.prize)}</span>` : ''}
-           ${r.solved ? `<span class="tag tag-solved">solved-candidate: ${esc(r.solved.paper || '')} (${r.solved.year || ''})</span>` : ''}</p>
-        <div class="field"><b>open</b>${esc(r.open)}</div>
-        <div class="field"><b>status</b>${esc(r.status)}</div>
-        ${r.why ? `<div class="field"><b>why it matters</b>${esc(r.why)}</div>` : ''}
-        ${r.aliases ? `<div class="field"><b>aliases</b><span class="mono">${esc(r.aliases)}</span></div>` : ''}
-        <div class="field"><b>citations &amp; prior work</b>${citesHTML(r.key_works)}
-          <div class="btnrow">
-            <a href="${scholar(r.title)}" target="_blank" rel="noopener">google scholar ↗</a>
+      const statement = r.open ? `<p class="statement"><span class="lead-in">open —</span> ${esc(r.open)}</p>` : ''
+      const prize = r.prize ? `<div class="op-field"><div class="k">prize</div><div class="v">✦ ${esc(r.prize)}</div></div>` : ''
+      const solved = r.solved
+        ? `<div class="op-field"><div class="k">solved-candidate — under review</div><div class="v muted">${esc(r.solved.paper || '')}${r.solved.year ? ` (${r.solved.year})` : ''}</div></div>`
+        : ''
+      const aliases = r.aliases ? `<div class="op-field"><div class="k">also known as</div><div class="v muted">${esc(r.aliases)}</div></div>` : ''
+      const parent = (r.parent && r.parent.match(/[A-Z]+-\d+/)) ? `<div class="op-edge"><span class="rel">part of</span><a href="#/p/${r.parent.match(/[A-Z]+-\d+/)[0]}">${esc(r.parent)}</a></div>` : ''
+      return `
+      <article class="op-problem">
+        <h2>${esc(r.title)}</h2>
+        ${statement}
+        <hr class="op-hairline strong">
+        <div class="op-field"><div class="k">status</div><div class="v">${esc(r.status)}</div></div>
+        ${r.why ? `<div class="op-field"><div class="k">why it matters</div><div class="v">${esc(r.why)}</div></div>` : ''}
+        ${prize}${solved}${aliases}
+        <hr class="op-hairline">
+        <div class="op-field"><div class="k">prior work</div>${citesHTML(r.key_works)}
+          <div class="op-tools">
+            <a href="${scholar(r.title)}" target="_blank" rel="noopener">scholar ↗</a>
             ${s2 ? `<a href="${s2}" target="_blank" rel="noopener">semantic scholar ↗</a>` : ''}
             <a href="https://openalex.org/works?filter=default.search%3A${encodeURIComponent(r.title)}" target="_blank" rel="noopener">openalex ↗</a>
+            <a href="https://arxiv.org/search/?query=${encodeURIComponent(r.title)}&searchtype=all" target="_blank" rel="noopener">arxiv ↗</a>
           </div>
         </div>
-        ${rel.length ? `<div class="field"><b>related problems</b>${relLinks}</div>` : ''}
-        ${parent ? `<div class="field"><b>decomposition</b>${parent}</div>` : ''}
-        <div class="field"><b>provenance</b><span class="mono">${esc(r.source)}</span></div>
-        </div>`
+        ${rel.length || parent ? `<div class="op-field"><div class="k">related</div>${parent}${relHTML}</div>` : ''}
+        <div class="op-colophon">${esc(r.id)} · ${esc(r.source || '')}</div>
+        <div class="op-graze">
+          ${prev ? `<a href="#/p/${prev.id}"><span class="dir">← previous</span>${esc(prev.title)}</a>` : '<span></span>'}
+          ${next ? `<a href="#/p/${next.id}"><span class="dir" style="text-align:right;display:block">next →</span>${esc(next.title)}</a>` : '<span></span>'}
+        </div>
+      </article>`
     }
 
-    function renderHome(query) {
-      const q = (query || '').trim().toLowerCase()
-      let h = ''
-      if (q) {
-        // search across all loaded domains lazily: search manifest domains in order
-        h = `<div class="subhead">search results</div><table class="ptable"><tbody id="search-rows"><tr><td class="mono">searching…</td></tr></tbody></table>`
-        ;(async () => {
-          let hits = []
-          for (const slug of Object.keys(manifest)) {
-            const rows = await domain(slug)
-            for (const r of rows)
-              if ((r.title + ' ' + r.aliases + ' ' + r.subfield + ' ' + r.open.slice(0, 300)).toLowerCase().includes(q))
-                hits.push(r)
-            if (hits.length > 400) break
-          }
-          hits.sort((a, b) => b.sig - a.sig)
-          document.getElementById('search-rows').innerHTML =
-            hits.slice(0, 400).map(problemRow).join('') ||
-            '<tr><td class="mono">no matches</td></tr>'
-          document.getElementById('problems-count').textContent =
-            `${hits.length.toLocaleString()} matches`
-        })()
-        return h
+    // ── search (home) ────────────────────────────────────────────────
+    let searchTimer: any = null
+    function runSearch(q: string) {
+      clearTimeout(searchTimer)
+      const out = document.getElementById('op-search-out')!
+      if (!q.trim()) {
+        out.innerHTML = ''
+        return
       }
-      h += `<div class="subhead">domains</div>`
-      for (const [slug, n] of Object.entries(manifest)) {
-        h += `<a class="dom-card" href="#/d/${slug}">${esc(slug)}<span class="n">${n.toLocaleString()}</span></a>`
-      }
-      return h
+      searchTimer = setTimeout(async () => {
+        const t = q.trim().toLowerCase()
+        const hits: any[] = []
+        for (const slug of Object.keys(manifest)) {
+          const rows = await domain(slug)
+          for (const r of rows)
+            if ((r.title + ' ' + (r.aliases || '') + ' ' + r.subfield + ' ' + (r.open || '').slice(0, 300)).toLowerCase().includes(t))
+              hits.push(r)
+          if (hits.length >= 300) break
+        }
+        hits.sort((a, b) => (b.sig || 0) - (a.sig || 0))
+        out.innerHTML = `<div class="op-subfield"><h3>search — ${hits.length.toLocaleString()} matches</h3>${
+          hits.slice(0, 300).map(rowHTML).join('') || '<div class="op-empty">no matches</div>'
+        }</div>`
+        typeset(out)
+      }, 160)
     }
 
-    // ---------- router ----------
-    const view = document.getElementById('view')
+    // ── router ───────────────────────────────────────────────────────
     async function route() {
       const h = location.hash || '#/'
-      view.querySelectorAll('.prob-row').forEach = null
+      window.scrollTo({ top: 0 })
       if (h.startsWith('#/p/')) {
-        view.innerHTML = await renderProblem(decodeURIComponent(h.slice(4)))
+        const id = decodeURIComponent(h.slice(4))
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span><a href="#/d/${idsToDom[id] || ''}">${esc(idsToDom[id] || '—')}</a>`
+        view.innerHTML = await problemHTML(id)
       } else if (h.startsWith('#/d/')) {
-        view.innerHTML = await renderDomain(decodeURIComponent(h.slice(4)))
+        const slug = decodeURIComponent(h.slice(4))
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>${esc(slug)}`
+        view.innerHTML = await domainHTML(slug)
       } else {
-        view.innerHTML = renderHome(document.getElementById('problems-search').value)
+        crumb.innerHTML = ''
+        view.innerHTML = homeHTML()
+        const inp = document.getElementById('op-search') as HTMLInputElement
+        const wrap = document.querySelector('.op-search-wrap')!
+        inp.addEventListener('input', () => {
+          wrap.classList.toggle('filled', !!inp.value)
+          runSearch(inp.value)
+        })
       }
-      document.getElementById('problems-count').textContent =
-        h === '#/' && !document.getElementById('problems-search').value
-          ? `${Object.values(manifest).reduce((a, b) => a + b, 0).toLocaleString()} problems · ${Object.keys(manifest).length} domains`
-          : document.getElementById('problems-count').textContent
+      typeset(view)
     }
     window.addEventListener('hashchange', route)
-    document.getElementById('problems-search').addEventListener('input', (e) => {
-      if ((location.hash || '#/') !== '#/') location.hash = '#/'
-      else route()
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !/input|textarea/i.test((e.target as HTMLElement).tagName || '')) {
+        const inp = document.getElementById('op-search') as HTMLInputElement
+        if (inp) {
+          e.preventDefault()
+          inp.focus()
+        }
+      }
+      if (e.key === 'Escape') {
+        const inp = document.getElementById('op-search') as HTMLInputElement
+        if (inp && document.activeElement === inp) {
+          inp.value = ''
+          runSearch('')
+          document.querySelector('.op-search-wrap')!.classList.remove('filled')
+        }
+      }
     })
-    view.addEventListener('click', (e) => {
-      const tr = e.target.closest('.prob-row')
-      if (tr) location.hash = '#/p/' + tr.dataset.id
-    })
+
     route()
   </script>
 </Base>
