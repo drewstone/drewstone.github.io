@@ -22,6 +22,16 @@ import Base from '../layouts/Base.astro'
   ></script>
 
   <style is:global>
+    /* atlas */
+    .op-atlas-wrap { position: relative; }
+    #op-atlas { width: 100%; height: 72vh; display: block; cursor: crosshair; background: var(--bg); }
+    .op-atlas-tip { position: absolute; pointer-events: none; background: var(--bg); border: 1px solid var(--border-strong);
+      padding: 0.25rem 0.5rem; font: 0.72rem var(--font-mono); color: var(--fg-muted); max-width: 260px; display: none; }
+    .op-atlas-legend { font: 0.7rem var(--font-mono); color: var(--fg-faint); margin-top: 0.5rem; }
+    .op-atlas-legend .sw { display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; margin: 0 0.25rem 0 0.8rem; }
+    /* sparkline */
+    .op-spark { display: block; margin-top: 0.4rem; }
+    /* facet rows reuse op-rows */
     /* open problems — set in the house style. headings, rows, hairlines reuse the
        blog's own scale (h1 1.8/700, rows like the research index). */
     .op-breadcrumb {
@@ -126,6 +136,10 @@ import Base from '../layouts/Base.astro'
     const manifest = await fetch('/problems-data/manifest.json').then((r) => r.json())
     const edges = await fetch('/problems-data/edges.json').then((r) => r.json())
     const idsToDom = await fetch('/problems-data/ids.json').then((r) => r.json())
+    const facets = await fetch('/problems-data/facets.json').then((r) => r.json()).catch(() => ({}))
+    const frontier = await fetch('/problems-data/frontier.json').then((r) => r.json()).catch(() => [])
+    let atlasPts: any[] | null = null
+    const atlas = async () => { if (!atlasPts) atlasPts = await fetch('/problems-data/atlas.json').then((r) => r.json()); return atlasPts }
     const total = Object.values(manifest).reduce((a: any, b: any) => a + b, 0)
 
     const cache: Record<string, any[]> = {}
@@ -182,6 +196,7 @@ import Base from '../layouts/Base.astro'
         <p class="epigraph">Wir müssen wissen — wir werden wissen.</p>
         <div class="epigraph-src">Hilbert, 1930 — engraved on his tombstone. This is what the sentence still owes.</div>
         <div class="op-census-line"><b>${total.toLocaleString()}</b> problems · <b>${Object.keys(manifest).length}</b> domains · citations linked · status checked against the literature</div>
+        <p style="font:0.8rem var(--font-mono);margin-bottom:2rem"><a href="#/atlas" style="color:var(--fg-muted)">→ the atlas — every problem, one sky</a> &nbsp;·&nbsp; <a href="#/frontier" style="color:var(--fg-muted)">→ the frontier — the newest unknowns</a></p>
         <input id="op-search" class="op-search" type="search" placeholder="search the census — press /" aria-label="Search problems">
         <div id="op-search-out"></div>
         <div class="op-toc">${toc}</div>
@@ -199,6 +214,15 @@ import Base from '../layouts/Base.astro'
         h += `<div class="op-subfield"><h3>${esc(sub)} · ${rs.length}</h3><ol class="op-rows">${rs.map(rowHTML).join('')}</ol></div>`
       if (famous.length)
         h += `<details class="op-famous"><summary>the well-known ones · ${famous.length} — collected for completeness</summary><ol class="op-rows">${famous.map(rowHTML).join('')}</ol></details>`
+      const facetIds: string[] = (facets as any)[slug] || []
+      if (facetIds.length) {
+        const fr = facetIds.slice(0, 120).map((fid: string) => {
+          const rr = byId[fid]
+          if (!rr) return ''
+          return `<li><span class="pid">${rr.id}</span><div><a class="prob" href="#/p/${rr.id}"><h2>${esc(rr.title)}</h2></a><p class="stat">${esc(rr.domain)}</p></div></li>`
+        }).join('')
+        h += `<div class="op-subfield"><h3>from neighboring domains · ${facetIds.length}</h3><ol class="op-rows">${fr}</ol></div>`
+      }
       return h
     }
 
@@ -234,6 +258,8 @@ import Base from '../layouts/Base.astro'
       const field = (k: string, v: string, cls = '') =>
         v ? `<div class="op-field"><div class="k">${k}</div><div class="v ${cls}">${esc(v)}</div></div>` : ''
       const cites = citesHTML(r.key_works)
+      const years: number[] = [...(r.bib?.milestones || []), ...(r.bib?.recent || [])].map((m: any) => m.y).filter(Boolean)
+      const spark = years.length ? sparkline(years) : ''
       return `<article class="op-problem">
         <h1>${esc(r.title)}</h1>
         ${r.open ? `<p class="op-statement"><span class="lead">open —</span> ${esc(r.open)}</p>` : ''}
@@ -252,6 +278,7 @@ import Base from '../layouts/Base.astro'
           </div></div>` : ''}
         ${bMile ? `<div class="op-field"><div class="k">milestone results — most-cited attacks</div>${bMile}</div>` : ''}
         ${bRec ? `<div class="op-field"><div class="k">recent attacks — 2023→</div>${bRec}</div>` : ''}
+        ${spark ? `<div class="op-field"><div class="k">attack timeline</div>${spark}</div>` : ''}
         ${rel || parent ? `<div class="op-field"><div class="k">related</div>${parent}${rel}</div>` : ''}
         </div>
         <div class="op-colophon">${esc(r.id)} · ${esc(r.source || '')}</div>
@@ -279,6 +306,93 @@ import Base from '../layouts/Base.astro'
       }, 160)
     }
 
+    function sparkline(years: number[]) {
+      const min = Math.min(...years), max = Math.max(...years)
+      const W = 320, H = 34
+      const counts = new Map<number, number>()
+      for (const y of years) counts.set(y, (counts.get(y) || 0) + 1)
+      const top = Math.max(...counts.values())
+      let bars = ''
+      for (let y = min; y <= max; y++) {
+        const c = counts.get(y) || 0
+        const bh = Math.max(1, Math.round((c / top) * (H - 12)))
+        const x = ((y - min) / Math.max(1, max - min)) * (W - 6) + 3
+        bars += `<rect x="${x.toFixed(1)}" y="${H - bh - 8}" width="3" height="${bh}" fill="var(--fg-muted)"/>`
+      }
+      return `<svg class="op-spark" width="${W}" height="${H}">${bars}<text x="3" y="${H - 1}" font-size="8" fill="var(--fg-faint)" font-family="var(--font-mono)">${min}</text><text x="${W - 20}" y="${H - 1}" font-size="8" fill="var(--fg-faint)" font-family="var(--font-mono)">${max}</text></svg>`
+    }
+
+    async function atlasHTML() {
+      return `<div class="op-domain-head"><h1>The atlas</h1><div class="n">every problem, one sky — the bright stars are the unknown ones; the famous dim toward the center of their fields. drag to pan, scroll to zoom, click a star.</div></div>
+      <div class="op-atlas-wrap"><canvas id="op-atlas"></canvas><div class="op-atlas-tip" id="op-atlas-tip"></div></div>
+      <div class="op-atlas-legend">brightness = obscurity × attack-literature<span class="sw" style="background:var(--fg)"></span>problem<span class="sw" style="background:var(--fg-faint)"></span>famous</div>`
+    }
+
+    function frontierHTML() {
+      const rows = frontier.slice(0, 150).map((f: any) =>
+        `<li><span class="pid">${f.d}</span><div><a class="prob" href="#/p/${f.i}"><h2>${esc(f.t)}</h2></a></div></li>`).join('')
+      return `<div class="op-domain-head"><h1>The frontier</h1><div class="n">the most recently stated open problems — what humanity just realized it doesn't know.</div></div>
+      <ol class="op-rows">${rows}</ol>`
+    }
+
+    async function initAtlas() {
+      const pts = await atlas()
+      const cv = document.getElementById('op-atlas') as HTMLCanvasElement
+      if (!cv) return
+      const tip = document.getElementById('op-atlas-tip')!
+      const dpr = window.devicePixelRatio || 1
+      let scale = Math.min(cv.clientWidth, cv.clientHeight) * 0.46, ox = 0.5, oy = 0.5, tx = 0, ty = 0
+      const resize = () => {
+        cv.width = cv.clientWidth * dpr; cv.height = cv.clientHeight * dpr
+      }
+      resize(); window.addEventListener('resize', resize)
+      let hover: any = null
+      function draw() {
+        const ctx = cv.getContext('2d')!
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg') || '#fff'
+        ctx.fillRect(0, 0, cv.clientWidth, cv.clientHeight)
+        const cx = cv.clientWidth * ox + tx, cy = cv.clientHeight * oy + ty
+        for (const p of pts) {
+          const x = cx + p.x * scale, y = cy + p.y * scale
+          if (x < -8 || y < -8 || x > cv.clientWidth + 8 || y > cv.clientHeight + 8) continue
+          const bright = (1 - p.f / 9) * (0.4 + 0.6 * Math.min(1, p.b / 6))
+          ctx.fillStyle = `rgba(17,17,17,${(0.18 + 0.72 * bright).toFixed(2)})`
+          const r = p === hover ? 3 : 1.15 + (p.b > 3 ? 0.5 : 0)
+          ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill()
+        }
+      }
+      draw()
+      let dragging = false, lx = 0, ly = 0
+      cv.addEventListener('mousedown', (e) => { dragging = true; lx = e.clientX; ly = e.clientY })
+      window.addEventListener('mouseup', () => (dragging = false))
+      cv.addEventListener('mousemove', (e) => {
+        if (dragging) { tx += e.clientX - lx; ty += e.clientY - ly; lx = e.clientX; ly = e.clientY; draw(); return }
+        const rect = cv.getBoundingClientRect()
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top
+        const cx = cv.clientWidth * ox + tx, cy = cv.clientHeight * oy + ty
+        hover = null
+        for (const p of pts) {
+          const x = cx + p.x * scale, y = cy + p.y * scale
+          if ((x - mx) ** 2 + (y - my) ** 2 < 25) { hover = p; break }
+        }
+        if (hover) {
+          tip.style.display = 'block'
+          tip.style.left = (mx + 12) + 'px'; tip.style.top = (my - 8) + 'px'
+          tip.textContent = `${hover.t} · ${hover.d}`
+          cv.style.cursor = 'pointer'
+        } else { tip.style.display = 'none'; cv.style.cursor = 'crosshair' }
+        draw()
+      })
+      cv.addEventListener('click', () => { if (hover) location.hash = '#/p/' + hover.i })
+      cv.addEventListener('wheel', (e) => {
+        e.preventDefault()
+        scale *= e.deltaY < 0 ? 1.12 : 0.89
+        scale = Math.max(40, Math.min(40000, scale))
+        draw()
+      }, { passive: false })
+    }
+
     async function route() {
       const h = location.hash || '#/'
       window.scrollTo({ top: 0 })
@@ -286,6 +400,13 @@ import Base from '../layouts/Base.astro'
         const id = decodeURIComponent(h.slice(4))
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span><a href="#/d/${idsToDom[id] || ''}">${esc(idsToDom[id] || '—')}</a>`
         view.innerHTML = await problemHTML(id)
+      } else if (h === '#/atlas') {
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>atlas`
+        view.innerHTML = await atlasHTML()
+        initAtlas()
+      } else if (h === '#/frontier') {
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>frontier`
+        view.innerHTML = frontierHTML()
       } else if (h === '#/famous') {
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>the famous ones`
         view.innerHTML = await famousHTML()
