@@ -1,16 +1,14 @@
 {
-"papers": 3443,
 "math-erdos": 1158,
 "energy": 546,
+"papers": 526,
 "mathoverflow": 498,
 "chemistry": 479,
 "combinatorics": 450,
 "materials-science": 432,
 "fusion": 384,
 "math": 319,
-"papers-csCRcsCC": 313,
 "math-openai": 290,
-"papers-mathCOmathNT": 273,
 "physics": 270,
 "neuroscience": 265,
 "semiconductors": 244,
@@ -26,7 +24,6 @@
 "climate": 208,
 "blockchain-game-theory": 203,
 "machine-learning": 202,
-"papers-csLG": 200,
 "statistics": 200,
 "formal-verification": 199,
 "hunt-mpc-zk-fhe-combos": 196,
@@ -34,5 +31,7 @@
 "robotics": 183,
 "transportation": 133,
 "hunt-zkml-ai-verifiability": 90,
-"distributed-systems": 15
+"distributed-systems": 15,
+"papers-csLG": 2,
+"papers-mathCOmathNT": 2
 }
