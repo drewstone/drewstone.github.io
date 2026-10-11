@@ -4,7 +4,7 @@
   "title": "Orientable-sequence frontier run, October 4",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.2.0"
+    "version": "2.4.0"
   },
   "format": "cloud",
   "idScheme": "anchor.v1",
@@ -34868,6 +34868,24 @@
       },
       "detail": {
         "role": "assistant",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "740c0bbabc7d:1.1",
+      "node": "research-debruijn-frontier-20261004system3:s1",
+      "at": "2026-10-04T05:15:37.382Z",
+      "kind": "message",
+      "category": "other",
+      "label": "Steering",
+      "source": {
+        "path": "coordination-log.jsonl",
+        "sha256": "740c0bbabc7d5e043f8466e96523e3b81b64926e001d8c914cb5271f34478fdd",
+        "line": 1,
+        "item": 1
+      },
+      "detail": {
+        "role": "user",
         "contentOmitted": "Body not published."
       }
     },

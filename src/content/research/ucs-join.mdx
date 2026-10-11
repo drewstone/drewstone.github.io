@@ -1,7 +1,7 @@
 ---
 title: 'A size-4 compression scheme refuting Pálvölgyi–Tardos Conjecture 10'
-description: 'An explicit unlabeled compression scheme of size 4 for the join of two copies of C5 shows that the compression gap of C5 does not grow when it is joined with itself.'
-assessed: '2026-10-07'
+description: 'An explicit unlabeled compression scheme of size 4 for the join of two copies of C5, with a kernel-checked Lean proof, shows that the compression gap of C5 does not grow when it is joined with itself.'
+assessed: '2026-10-10'
 claim: 'UCS(C₅ ∗ C₅) = 4 = VC(C₅ ∗ C₅), so for the n-fold join of C₅ the ratio UCS/n tends to 2 and Conjecture 10 of Pálvölgyi and Tardos is false.'
 limitation: 'The scheme is a machine-found table with no human-readable description. Whether UCS − VC is bounded stays open, and no outside expert has reviewed the result.'
 area: 'Learning theory'
@@ -64,13 +64,26 @@ The run that rechecked it showed part of the reason: a size-4 scheme cannot deco
 
 The mutation and canary counts match the run's own figures exactly, from separately written code.
 
+The whole result also has a Lean 4 proof [[3]](#ref-3).
+It defines unlabeled compression schemes, joins and $C_5$ as in [[1]](#ref-1), and proves in the kernel that the table covers every sample, that $\mathrm{UCS}(C_5*C_5)=4$, that $2n\leq\mathrm{UCS}(C_5^{*n})\leq2n+(n\bmod2)$ for every $n$, and that Conjecture 10 fails.
+It uses Lean v4.34.0 and Mathlib `5ed29652`, with no `sorry` and no `native_decide`, and every theorem depends only on the standard axioms `propext`, `Classical.choice` and `Quot.sound`.
+
+| Lean build | Result |
+| --- | --- |
+| Formalization run, October 9: the root agent and a separate child agent | passed, 141 s and 127 s |
+| Outside rebuild, October 10, on a machine outside the run, files unmodified | passed in 384 s; the generated file's hash matches the run's |
+| Same rebuild with one bit of the table flipped | failed: 4 errors, and 7 theorems then depend on `sorryAx` |
+
+The kernel check does not depend on the model that wrote the proof.
+What it cannot check is whether the Lean definitions say what the paper says; an outside audit read them against Definitions 5 and 8 and the description of $C_5$ and found no difference.
+
 ## Scope
 
 The result refutes Conjecture 10 as stated and removes joins of $C_5$ as a route to an unbounded gap.
 It does not decide whether $\mathrm{UCS}-\mathrm{VC}$ is bounded, the central question of [[1]](#ref-1), and it does not bear on the sample compression conjecture [[2]](#ref-2).
 Whether $\mathrm{UCS}(C_5^{*3})$ is 6 or 7 is open.
 A search on October 7, 2026 of the citing works indexed by Semantic Scholar and OpenAlex, with full texts read where available, and of the web found no earlier statement of this result; two paywalled citing papers were not read, and MathSciNet and zbMATH were not searched.
-Every check here was written by Claude models.
+Every check here, including the Lean proof, was written by Claude models; the Lean kernel checks the proof itself, and an outside audit compared its definitions with the paper.
 No outside expert has reviewed the result, and no peer review is asserted.
 
 ## Attribution and retained attempt
@@ -83,10 +96,11 @@ It also reproduced Theorem 6 of [[1]](#ref-1), that $C_5$ has no scheme of size 
 The October 3 leaf ran in Claude Code with claude-opus-5-5.
 The record below shows only that leaf, with its four pages for this result in full; the director and the run's 42 agents on other research lines are withheld.
 The record's snapshot also holds the predecessor's witness page.
+The Lean proof came from a separate formalization run, `research-ucs-formalization-20261009contractv2g`, on October 9 in Claude Code; its record is not published here.
 
 <ResearchBibliography entries={[
   { authors: 'D. Pálvölgyi and G. Tardos', title: 'Unlabeled compression schemes exceeding the VC-dimension', url: 'https://arxiv.org/abs/1811.12471', publication: 'Discrete Applied Mathematics 276 (2020) 102–107. arXiv:1811.12471v2: Definitions 5 and 8, Theorem 6, Proposition 9, Conjecture 10.', doi: '10.1016/j.dam.2019.09.022' },
   { authors: 'S. Moran and A. Yehudayoff', title: 'Sample compression schemes for VC classes', url: 'https://arxiv.org/abs/1503.06960', publication: 'J. ACM 63(3) (2016). Compression schemes of size exponential in the VC-dimension; the linear-size conjecture remains open.', doi: '10.1145/2890490' },
-  { title: 'UCS(C5 * C5) = 4: scheme and checker', url: 'https://github.com/drewstone/ucs-join-counterexample', publication: 'The 386-entry table and a standard-library verifier with exact mutation analysis and canaries.' },
+  { title: 'UCS(C5 * C5) = 4: scheme and checker', url: 'https://github.com/drewstone/ucs-join-counterexample', publication: 'The 386-entry table, a standard-library verifier with exact mutation analysis and canaries, and the kernel-checked Lean 4 proof with its build script.' },
   { title: 'Research-math follow-up run', url: '/research/records/research-math-20261003system4.json', publication: 'Retained run of October 3, 2026, including the leaf that rechecked the table and the predecessor’s witness page.' },
 ]} />
