@@ -268,7 +268,7 @@ import Base from '../layouts/Base.astro'
         ${field('status', r.status)}
         ${field('why it matters', r.why, 'muted')}
         ${field('prize', r.prize ? '✦ ' + r.prize : '')}
-        ${r.solved ? `<div class="op-field"><div class="k">solved-candidate · under review</div><div class="v muted">${esc(r.solved.paper || '')}${r.solved.year ? ' (' + r.solved.year + ')' : ''}</div></div>` : ''}
+        ${r.citeflag ? `<div class="op-field"><div class="k">citation under review</div><div class="v muted">reference ${esc(r.citeflag)} failed verification — correction pending</div></div>` : ''}${r.solved ? `<div class="op-field"><div class="k">solved-candidate · under review</div><div class="v muted">${esc(r.solved.paper || '')}${r.solved.year ? ' (' + r.solved.year + ')' : ''}</div></div>` : ''}
         ${field('also known as', r.aliases, 'muted')}
         ${cites ? `<div class="op-field"><div class="k">prior work</div>${cites}
           <div class="op-tools">
