@@ -29,6 +29,7 @@
  */
 
 import { execSync } from 'node:child_process'
+import type { Dirent } from 'node:fs'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import ClaudeCodeHarness from './harness/claude-code.js'
@@ -439,7 +440,7 @@ async function capture(flags: Args): Promise<void> {
 }
 
 async function list(): Promise<void> {
-  let entries
+  let entries: Dirent[]
   try { entries = await readdir(TRACES_DIR, { withFileTypes: true }) } catch { entries = [] }
   const posts = entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()
   if (!posts.length) {
@@ -462,7 +463,7 @@ async function list(): Promise<void> {
 }
 
 async function show(id: string): Promise<void> {
-  let entries
+  let entries: Dirent[]
   try { entries = await readdir(TRACES_DIR, { withFileTypes: true }) } catch { entries = [] }
   for (const d of entries.filter((e) => e.isDirectory()).map((e) => e.name)) {
     const files = await readdir(join(TRACES_DIR, d))

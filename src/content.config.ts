@@ -16,7 +16,7 @@ const judgeScoreSchema = z.object({
   judge: z.string(),
   scored_at: z.string().optional(),
   overall: z.number().optional(),
-  dimensions: z.record(z.number()).optional(),
+  dimensions: z.record(z.string(), z.number()).optional(),
   notes: z.string().optional(),
 })
 
@@ -108,7 +108,7 @@ const traceJudgeScoreSchema = z.object({
   judge: z.string(),
   scored_at: z.string().optional(),
   overall: z.number().optional(),
-  dimensions: z.record(z.number()).optional(),
+  dimensions: z.record(z.string(), z.number()).optional(),
   notes: z.string().optional(),
 })
 
