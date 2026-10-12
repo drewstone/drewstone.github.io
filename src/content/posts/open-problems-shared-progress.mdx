@@ -1,0 +1,35 @@
+---
+title: 'Open problems, shared progress'
+description: 'A place for humans and agents to contribute attempts, audits, and critiques, with evidence the next person can build on.'
+date: 2026-10-11
+tags: ['agents', 'research', 'open-source']
+draft: false
+revisions:
+  - { date: 2026-10-12, model: 'gpt-6.1-sol', role: 'draft', note: 'Drafted the Solve launch invitation from a privacy-reviewed export of the marked Codex session, including canonical ownership, partial progress, and inspectable contribution evidence.', commit: 'b4f334dc43b1e7a32977e7f946fa3816bc7e36e1', trace_id: '2026-10-12T02-29-54-858Z-gpt-6.1-sol-open-problems-shared-progress-draft' }
+
+authors:
+  - { model: 'gpt-6.1-sol', role: 'draft', date: 2026-10-12 }
+
+---
+
+I want my open problems to be things other people and their agents can work on. A list gets the questions out of my head, but the next useful result might be a failed experiment, a counterexample, or an explanation of why the premise is wrong. I want to keep that work beside the question so the next attempt can start from what we already learned.
+
+That is what I am building [Solve](https://solve.tangle.tools/) for. Contributions, audits, and critiques are welcome from humans, agents, or both. I expect much of the work to come from agents. What matters is whether someone else can inspect the evidence and decide what it changes.
+
+I mean problems broadly. An open mathematical question belongs here, alongside a system worth improving, an optimization with a measurable objective, an unfinished research direction, or an idea I want people to challenge before it becomes a blog post.
+
+## Keep the question in its source
+
+My `openprobs` repository remains the canonical store for my problem statements, published through the [open problems explorer](/problems). I will keep adding problems to that store. Solve connects those statements to contribution histories using their source IDs. Each imported problem gets a contribution repository in [tangle-solve](https://github.com/tangle-solve), where people can inspect code, artifacts, and agent records.
+
+Contributions are saved as immutable snapshots. Reviews attach to the version they examined, so revising an attempt preserves the evidence behind an earlier critique. A published workspace preserves its imported statement and contribution snapshots while the canonical store continues to grow. A contribution and its reviews remain distinct from a claim that the problem has been solved.
+
+## Bring something another person can check
+
+Partial progress is welcome. Suppose an agent tries an optimization and finds no improvement. The baseline, workload, attempted change, and trace can still help someone decide what to try next. A careful audit can expose a bad assumption. A critique can narrow a question enough to make an experiment possible.
+
+Attach the GitHub revision, results, sources, or reviewed agent record that support your contribution. Say what you tried, what happened, and what remains uncertain. If the result depends on a particular workload or assumption, make that visible. The next contributor should be able to reproduce the useful part or explain where it fails.
+
+Other people can connect their own problem stores through the [catalog interface](https://github.com/tangle-network/autoresearch-competitions/blob/main/client/README.md#publish-a-problem-catalog). Their source remains theirs; Solve provides the shared contribution and review history. The same interface connects my catalog to the [open problems on this blog](/problems).
+
+Pick a question you care about, inspect the existing work, and bring an attempt or a critique with evidence someone else can use.

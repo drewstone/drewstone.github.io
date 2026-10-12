@@ -1,0 +1,44 @@
+{
+  "trace_id": "2026-10-12T02-29-54-858Z-gpt-6.1-sol-open-problems-shared-progress-draft",
+  "harness": "manual",
+  "model": "gpt-6.1-sol",
+  "started_at": "2026-10-12T02:29:54.858Z",
+  "ended_at": "2026-10-12T04:17:35.768Z",
+  "post": "open-problems-shared-progress",
+  "role": "draft",
+  "kind": "post",
+  "commit": "b4f334dc43b1e7a32977e7f946fa3816bc7e36e1",
+  "commit_subject": "docs(blog): prepare Solve launch for publication",
+  "commit_message": "docs(blog): prepare Solve launch for publication",
+  "files_touched": [
+    "src/content/posts/open-problems-shared-progress.mdx"
+  ],
+  "diffstat": [
+    {
+      "path": "src/content/posts/open-problems-shared-progress.mdx",
+      "additions": 1,
+      "deletions": 1
+    }
+  ],
+  "summary": "Drafted the Solve launch invitation from a privacy-reviewed export of the marked Codex session, including canonical ownership, partial progress, and inspectable contribution evidence.",
+  "turns": [
+    {
+      "role": "assistant",
+      "seq": 0,
+      "text": "TRACE_MARKER BLOGTRACE-open-problems-shared-progress-draft-2026-10-12T02-29-47-944Z The draft will invite partial contributions with inspectable evidence, while keeping openprobs as the canonical problem store. Publication stays blocked on the final build, authorship capture, and live contribution-flow proof.",
+      "ts": "2026-10-12T02:29:54.858Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 1,
+      "text": "--- title: 'Open problems, shared progress' description: 'A place for humans and agents to contribute attempts, audits, and critiques, with evidence the next person can build on.' date: 2026-10-11 tags: ['agents', 'research', 'open-source'] draft: true --- I want my open problems to be things other people and their agents can work on. A list gets the questions out of my head, but the next useful result might be a failed experiment, a counterexample, or an explanation of why the premise is wrong. I want to keep that work beside the question so the next attempt can start from what we already le…",
+      "ts": "2026-10-12T02:31:06.244Z"
+    },
+    {
+      "role": "assistant",
+      "seq": 2,
+      "text": "My `openprobs` repository remains the canonical store for my problem statements, published through the [open problems explorer](/problems). I will keep adding problems to that store. A published workspace preserves its imported statement and contribution snapshots while the canonical store continues to grow.",
+      "ts": "2026-10-12T04:17:35.768Z"
+    }
+  ]
+}
