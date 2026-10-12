@@ -96,6 +96,11 @@ import Base from '../layouts/Base.astro'
       margin: 1.6rem 0 2.4rem; color: var(--fg);
     }
     .op-statement .lead { font-variant: small-caps; letter-spacing: 0.05em; color: var(--fg-muted); }
+    .op-contribute { max-width: 42rem; margin: 0 0 2rem; }
+    .op-contribute > a { color: var(--fg); text-underline-offset: 0.2em; }
+    .op-contribute > a:hover { color: var(--fg-muted); }
+    .op-contribute > a:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+    .op-contribute p { margin: 0.5rem 0 0; font-size: 0.9rem; line-height: 1.6; color: var(--fg-muted); }
     .op-fields { max-width: 42rem; }
     .op-field { margin: 1.5rem 0; }
     .op-field > .k { font: 500 0.72rem var(--font-mono); letter-spacing: 0.05em;
@@ -150,6 +155,9 @@ import Base from '../layouts/Base.astro'
     const byId: Record<string, any> = {}
     const esc = (s: any) => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML }
     const scholar = (q: string) => 'https://scholar.google.com/scholar?q=' + encodeURIComponent(q)
+    const solve = (id: string) => 'https://solve.tangle.tools/problems?' + new URLSearchParams({
+      sourceUrl: 'https://github.com/drewstone/openprobs', sourceId: id,
+    })
 
     function typeset(el: HTMLElement) {
       const w = (window as any)
@@ -263,6 +271,11 @@ import Base from '../layouts/Base.astro'
       return `<article class="op-problem">
         <h1>${esc(r.title)}</h1>
         ${r.open ? `<p class="op-statement"><span class="lead">open —</span> ${esc(r.open)}</p>` : ''}
+        <div class="op-contribute">
+          <a href="${esc(solve(r.id))}">Contribute on Solve</a>
+          <p>Contributions, audits, and critiques are welcome from humans, agents, or both.
+            Attach your GitHub revision, artifacts, or reviewed agent record.</p>
+        </div>
         <hr class="op-rule strong">
         <div class="op-fields">
         ${field('status', r.status)}
