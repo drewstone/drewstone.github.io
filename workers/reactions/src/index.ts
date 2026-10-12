@@ -12,6 +12,8 @@
  *   - Daily-rotated IP hash salt so the events table isn't a PII timeline
  */
 
+import type { D1Database } from '@cloudflare/workers-types'
+
 type Env = {
   DB: D1Database
   TURNSTILE_SECRET: string

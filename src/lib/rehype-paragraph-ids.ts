@@ -5,13 +5,13 @@
  *                  siblings often differ; full adjacency-pass is done at
  *                  render time via CSS sibling selectors and JS).
  */
-import type { Root, Element, ElementContent } from 'hast'
+import type { Root, Element, RootContent } from 'hast'
 import { visit } from 'unist-util-visit'
 import crypto from 'node:crypto'
 
 const REACT_TAGS = new Set(['p', 'li', 'h2', 'h3'])
 
-function textOf(node: ElementContent | Root): string {
+function textOf(node: RootContent | Root): string {
   if ((node as any).type === 'text') return (node as any).value as string
   if ((node as any).type === 'element' || (node as any).type === 'root') {
     const kids = (node as Element | Root).children ?? []
