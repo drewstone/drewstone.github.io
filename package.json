@@ -27,7 +27,7 @@
     "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.33.1/drewstone-agent-record-0.33.1.tgz",
     "@tangle-network/harness-sessions": "0.1.0",
     "astro": "^7.3.5",
-    "katex": "^0.16.38",
+    "katex": "^0.18.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "rehype-katex": "^7.0.1",
