@@ -143,6 +143,7 @@ import Base from '../layouts/Base.astro'
     const idsToDom = await fetch('/problems-data/ids.json').then((r) => r.json())
     const facets = await fetch('/problems-data/facets.json').then((r) => r.json()).catch(() => ({}))
     const frontier = await fetch('/problems-data/frontier.json').then((r) => r.json()).catch(() => [])
+    const activity = await fetch('/problems-data/activity.json').then((r) => r.json()).catch(() => [])
     let atlasPts: any[] | null = null
     const atlas = async () => { if (!atlasPts) atlasPts = await fetch('/problems-data/atlas.json').then((r) => r.json()); return atlasPts }
     const total = Object.values(manifest).reduce((a: any, b: any) => a + b, 0)
@@ -157,6 +158,7 @@ import Base from '../layouts/Base.astro'
     const scholar = (q: string) => 'https://scholar.google.com/scholar?q=' + encodeURIComponent(q)
     const solve = (id: string) => 'https://solve.tangle.tools/problems?' + new URLSearchParams({
       sourceUrl: 'https://github.com/drewstone/openprobs', sourceId: id,
+      authorId: 'cAeRI943rL1GBuShUCJGBX59Ld0NxnBq',
     })
 
     function typeset(el: HTMLElement) {
@@ -204,7 +206,7 @@ import Base from '../layouts/Base.astro'
         <p class="epigraph">Wir müssen wissen — wir werden wissen.</p>
         <div class="epigraph-src">Hilbert, 1930 — engraved on his tombstone. This is what the sentence still owes.</div>
         <div class="op-census-line"><b>${total.toLocaleString()}</b> problems · <b>${Object.keys(manifest).length}</b> domains · citations linked · status checked against the literature</div>
-        <p style="font:0.8rem var(--font-mono);margin-bottom:2rem"><a href="#/atlas" style="color:var(--fg-muted)">→ the atlas — every problem, one sky</a> &nbsp;·&nbsp; <a href="#/frontier" style="color:var(--fg-muted)">→ the frontier — the newest unknowns</a></p>
+        <p style="font:0.8rem var(--font-mono);margin-bottom:2rem"><a href="#/atlas" style="color:var(--fg-muted)">→ the atlas — every problem, one sky</a> &nbsp;·&nbsp; <a href="#/active" style="color:var(--fg-muted)">→ active now — under attack on Solve</a> &nbsp;·&nbsp; <a href="#/frontier" style="color:var(--fg-muted)">→ the frontier — the newest unknowns</a></p>
         <input id="op-search" class="op-search" type="search" placeholder="search the census — press /" aria-label="Search problems">
         <div id="op-search-out"></div>
         <div class="op-toc">${toc}</div>
@@ -335,6 +337,14 @@ import Base from '../layouts/Base.astro'
       return `<svg class="op-spark" width="${W}" height="${H}">${bars}<text x="3" y="${H - 1}" font-size="8" fill="var(--fg-faint)" font-family="var(--font-mono)">${min}</text><text x="${W - 20}" y="${H - 1}" font-size="8" fill="var(--fg-faint)" font-family="var(--font-mono)">${max}</text></svg>`
     }
 
+    function activityHTML() {
+      const rows = activity.slice(0, 60).map((a: any) =>
+        `<li><span class="pid">${esc(a.n)}</span><div><a class="prob" href="#/p/${a.i}"><h2>${esc(a.t)}</h2></a>
+         <p class="stat">${esc(a.sum || '')}${a.q ? ' · <span style="color:var(--fg-faint)">quarantined</span>' : ''}</p></div></li>`).join('')
+      return `<div class="op-domain-head"><h1>Active now</h1><div class="n">problems under attack right now — traces from the Solve system, dispatches, and the literature. live feed.</div></div>
+        <ol class="op-rows">${rows}</ol>`
+    }
+
     async function atlasHTML() {
       return `<div class="op-domain-head"><h1>The atlas</h1><div class="n">every problem, one sky — the bright stars are the unknown ones; the famous dim toward the center of their fields. drag to pan, scroll to zoom, click a star.</div></div>
       <div class="op-atlas-wrap"><canvas id="op-atlas"></canvas><div class="op-atlas-tip" id="op-atlas-tip"></div></div>
@@ -417,6 +427,9 @@ import Base from '../layouts/Base.astro'
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>atlas`
         view.innerHTML = await atlasHTML()
         initAtlas()
+      } else if (h === '#/active') {
+        crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>active now`
+        view.innerHTML = activityHTML()
       } else if (h === '#/frontier') {
         crumb.innerHTML = `<a href="#/">problems</a><span class="sep">/</span>frontier`
         view.innerHTML = frontierHTML()
