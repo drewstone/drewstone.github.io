@@ -4,7 +4,7 @@ name: "Drew Stone"
 source: "published human originals, older AI-assisted posts, current self-improving stack audit"
 samples_analyzed: 6
 created: 2026-06-08
-updated: 2026-06-08
+updated: 2026-10-13
 status: active
 default_blend: "60/40 for the self-improving stack rewrite; recalibrate per post"
 ---
@@ -31,7 +31,7 @@ Secondary comparison sources:
 - `src/content/posts/convergence-as-eval-primitive.mdx`
 - the published self-improving stack series
 
-Current confidence: medium. The repo has only two published `original: true` posts, so this guide should evolve as Drew answers questions and writes more.
+Current confidence: medium. The repo has only two published `original: true` posts, so recalibrate as Drew writes more.
 
 ## Core Diagnosis
 
@@ -66,6 +66,7 @@ The language also needs more intellectual voltage. A post should not merely be a
 - "The serious version of the question is..." as a recurring transition.
 - "The point is not..." as a recurring transition.
 - "That is why..." as the default causal bridge.
+- AI filler phrases: "delve", "in today's landscape", "let's dive in", "it's worth noting", "tapestry", "a testament to". Machine-checked by `pnpm blog scan`; if the sentence survives deleting the phrase, delete the phrase.
 - Overconfident sentence pairs that sound like a LinkedIn thread.
 - Balanced survey voice that sounds detached from the author's own work.
 - Pundit framing about "the industry" unless tied to a system Drew has built, used, or evaluated.
@@ -119,6 +120,7 @@ In practice:
 
 - Open from a concrete problem, session, product decision, or confusion.
 - Establish why Drew cares before defining the full taxonomy.
+- Write as "I" when the motive or the mistake is yours; never hide behind "we" or the passive voice.
 - Use math after the reader understands the pressure that requires it.
 - Keep some longer paragraphs where the argument needs momentum.
 - Use headings as landmarks, not as a mandatory outline grid.
@@ -135,14 +137,7 @@ Use two registers:
 
 The blend should feel like Drew thinking in public with better instruments, not like a neutral survey writer.
 
-For the self-improving stack rewrite, use a 60/40 blend:
-
-```text
-60 = Drew's concrete motive, agent-work pressure, and speculative reach
-40 = higher-rigor essay method, falsification pressure, and load-bearing source detail
-```
-
-Why not 80/20: the current series is already technically grounded, but it is too orderly and too neutral. An 80/20 pass would make it warmer without fixing the main defect. A 60/40 pass changes the entry vector and forces each post to argue against a live misconception.
+For the self-improving stack rewrite, the target is 60/40: 60 Drew's concrete motive, agent-work pressure, and speculative reach; 40 higher-rigor method, falsification pressure, and load-bearing source detail. That ratio is high enough to change the entry vector of each post; a warmer 80/20 would not fix the series' main defect, which is order without an author.
 
 Guardrail: the ratio is not a style costume. If the secondary register makes a sentence feel less like Drew, cut it back.
 
@@ -158,7 +153,7 @@ Before publishing or polishing a non-original post, ask:
 6. Does at least one section feel like Drew thinking through a system he is building, not a paper survey?
 7. If all tool names were removed, would the core idea still be interesting?
 
-## Current Rewrite Rule For The Self-Improving Stack Series
+## Rewrite Rule For The Self-Improving Stack Series
 
 Do not rewrite the series by making it shorter first.
 
@@ -171,20 +166,3 @@ Rewrite by changing the entry vector:
 5. Remove repeated scaffold rhythm.
 6. Add one falsification or promotion test.
 7. End with what this lets a builder decide or build next.
-
-## Open Questions For Drew
-
-These answers should be folded back into this file.
-
-1. Should AI-assisted posts preserve some raw run-on momentum, or should they be clean but clearly grounded in your point of view?
-2. How explicit should first person be in technical posts: frequent "I think / I want / I mean", or mostly implied through examples from your work?
-3. How much Tangle-specific and personal workflow context should appear in public posts before it feels too inside-baseball?
-4. Which older AI-assisted post feels closest to the target voice: `the-ensemble-and-the-edit`, `lifting-auto-research`, `convergence-as-eval-primitive`, or something else?
-5. Are aphoristic openers acceptable when they are sharp, or should we generally prefer concrete work-context openers?
-6. What ratio should future posts use between primary Drew voice and the secondary high-rigor register: 80/20, 70/30, or more aggressive?
-
-## Changelog
-
-- 2026-06-08: Set the self-improving stack rewrite target to 60/40 after comparing 80/20 versus 60/40 openings in `research/self-improving-agent-systems/voice-blend-eval.md`.
-- 2026-06-08: Added `SECONDARY_VOICE.md` as a companion high-rigor essay register and updated the target voice to include stronger stakes, load-bearing detail, and falsification pressure.
-- 2026-06-08: Initial guide from repo audit. Identified the main mismatch as research-wiki structure versus Drew's motive-driven, long-form conceptual cadence.
