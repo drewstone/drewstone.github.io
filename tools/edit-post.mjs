@@ -54,7 +54,7 @@ function parseFrontmatter(raw) {
 function field(fm, name) {
   const m = fm.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))
   if (!m) return null
-  return m[1].trim().replace(/^['"]|['"]$/g, '')
+  return m[1].trim().replace(/^['"]|['"]$/g, '').replace(/''/g, "'")
 }
 
 function setField(fm, name, value) {
