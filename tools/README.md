@@ -42,6 +42,11 @@ pnpm blog write long-running-task-systems --harness=codex --role=draft
 # In that thread, the agent may edit the post and then records an authorship trace:
 pnpm blog finish long-running-task-systems --write --harness=codex --role=draft --marker="BLOGTRACE-..." --note="drafted benchmark section"
 
+# Enforce the AGENTS.md prose anti-patterns (em dashes, AI filler, process labels,
+# placeholders) on your uncommitted changes. --all audits the whole body.
+pnpm blog scan long-running-task-systems
+node tools/scan-post.mjs long-running-task-systems --all
+
 # For a final publish phase in the same session:
 pnpm blog finish long-running-task-systems --write --harness=codex --role=publish --marker="[BLOG_TRACE_MARKER:publish]" --note="published by toggling draft=false"
 ```
