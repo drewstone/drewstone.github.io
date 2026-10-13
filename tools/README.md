@@ -94,14 +94,13 @@ pnpm tsx tools/trace-capture.ts show 2026-04-24T18-01-15Z-claude-opus-4-7
 
 Adding a new harness is one file implementing the `TraceHarness` interface in `harness/types.ts`.
 
-### Opt-in post-commit hook
+### Post-commit hook
 
 ```bash
-git config core.hooksPath .githooks
-chmod +x .githooks/post-commit
+pnpm install:hooks   # runs: git config core.hooksPath .githooks
 ```
 
-After that, every commit that touches a post under `src/content/posts/` triggers `trace-capture.ts capture --auto`, appends the revision entry, adds the new trace file, and amends the commit. Failures are non-blocking and logged to stderr.
+`.githooks/post-commit` is the only copy of the hook. After enabling it, every commit that touches a post under `src/content/posts/` either captures a session trace (agent commits) or logs a human revision, then amends the commit with the trace files and the frontmatter update. Failures are non-blocking and logged to stderr.
 
 ### Session directive path for AI phase marking
 
