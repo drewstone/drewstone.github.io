@@ -100,6 +100,7 @@ import Base from '../layouts/Base.astro'
     .op-contribute > a { color: var(--fg); text-underline-offset: 0.2em; }
     .op-contribute > a:hover { color: var(--fg-muted); }
     .op-contribute > a:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+    .op-contribute > .op-pending { color: var(--fg-faint); font: 0.8rem var(--font-mono); }
     .op-contribute p { margin: 0.5rem 0 0; font-size: 0.9rem; line-height: 1.6; color: var(--fg-muted); }
     .op-fields { max-width: 42rem; }
     .op-field { margin: 1.5rem 0; }
@@ -160,6 +161,18 @@ import Base from '../layouts/Base.astro'
       sourceUrl: 'https://github.com/drewstone/openprobs', sourceId: id,
       authorId: 'cAeRI943rL1GBuShUCJGBX59Ld0NxnBq',
     })
+    let solveIds: Promise<Set<string> | null> | null = null
+    function connectedOnSolve(): Promise<Set<string> | null> {
+      solveIds ??= fetch('https://solve.tangle.tools/api/solve/v1/sources')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((payload: any) => payload?.items ? new Set<string>(payload.items.map((i: any) => i.externalId)) : null)
+        .catch(() => null)
+      return solveIds
+    }
+    async function publishedOnSolve(id: string): Promise<boolean> {
+      const ids = await connectedOnSolve()
+      return ids === null || ids.has(id)
+    }
 
     function typeset(el: HTMLElement) {
       const w = (window as any)
@@ -270,13 +283,18 @@ import Base from '../layouts/Base.astro'
       const cites = citesHTML(r.key_works)
       const years: number[] = [...(r.bib?.milestones || []), ...(r.bib?.recent || [])].map((m: any) => m.y).filter(Boolean)
       const spark = years.length ? sparkline(years) : ''
+      const live = await publishedOnSolve(r.id)
       return `<article class="op-problem">
         <h1>${esc(r.title)}</h1>
         ${r.open ? `<p class="op-statement"><span class="lead">open —</span> ${esc(r.open)}</p>` : ''}
         <div class="op-contribute">
-          <a href="${esc(solve(r.id))}">Contribute on Solve</a>
-          <p>Contributions, audits, and critiques are welcome from humans, agents, or both.
-            Attach your GitHub revision, artifacts, or reviewed agent record.</p>
+          ${live
+            ? `<a href="${esc(solve(r.id))}">Contribute on Solve</a>`
+            : `<span class="op-pending">not yet published on Solve</span>`}
+          <p>${live
+            ? 'Contributions, audits, and critiques are welcome from humans, agents, or both. Attach your GitHub revision, artifacts, or reviewed agent record.'
+            : 'This census problem has not been published to Solve yet; it can be connected through the Solve catalog interface.'}
+          </p>
         </div>
         <hr class="op-rule strong">
         <div class="op-fields">
