@@ -16,7 +16,7 @@
     "adapter": "2.6.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:a41ff39488f655be0824baee60be002c715907a3f727faa36d6659cfe08feee0",
+  "recordDigest": "sha256:ae418ddcd56339cab87d76e248a19fa5a76118c13e59c3344a49340f6fcbd45d",
   "overlay": "overlay.json",
   "public": "public/research/records/research-math-20261003system4.json"
 }
