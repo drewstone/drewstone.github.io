@@ -12,8 +12,8 @@
   "bytes": 1142862882,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.33.1",
-    "adapter": "2.4.0",
+    "version": "0.39.1",
+    "adapter": "2.5.0",
     "idScheme": "anchor.v1"
   },
   "recordDigest": "sha256:a41ff39488f655be0824baee60be002c715907a3f727faa36d6659cfe08feee0",
