@@ -4,7 +4,7 @@
   "title": "Research-math follow-up run, October 3",
   "producer": {
     "name": "@drewstone/agent-record/adapters/agent-runtime",
-    "version": "2.4.0"
+    "version": "2.6.0"
   },
   "format": "cloud",
   "idScheme": "anchor.v1",
@@ -9141,6 +9141,11 @@
       },
       "detail": {
         "lifecycle": "metered",
+        "usage": {
+          "input": 248,
+          "output": 134562
+        },
+        "usageScope": "metered",
         "spent": {
           "iterations": 0,
           "tokens": {
@@ -9323,6 +9328,11 @@
       },
       "detail": {
         "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
         "spent": {
           "iterations": 0,
           "tokens": {
@@ -9726,6 +9736,11 @@
       },
       "detail": {
         "lifecycle": "metered",
+        "usage": {
+          "input": 34,
+          "output": 16845
+        },
+        "usageScope": "metered",
         "spent": {
           "iterations": 0,
           "tokens": {
@@ -9836,6 +9851,11 @@
       },
       "detail": {
         "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
         "spent": {
           "iterations": 0,
           "tokens": {
@@ -9911,6 +9931,11 @@
       },
       "detail": {
         "lifecycle": "metered",
+        "usage": {
+          "input": 282,
+          "output": 151407
+        },
+        "usageScope": "metered",
         "spent": {
           "iterations": 0,
           "tokens": {
