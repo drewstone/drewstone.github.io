@@ -92,7 +92,7 @@ import Base from '../layouts/Base.astro'
     /* problem page — a set theorem; the statement is the page's center */
     .op-problem h1 { max-width: 44rem; }
     .op-statement {
-      font-size: 1.12rem; line-height: 1.65; max-width: 42rem;
+      font-size: 1.3rem; line-height: 1.6; max-width: 42rem;
       margin: 1.6rem 0 2.4rem; color: var(--fg);
     }
     .op-statement .lead { font-variant: small-caps; letter-spacing: 0.05em; color: var(--fg-muted); }
@@ -304,6 +304,7 @@ import Base from '../layouts/Base.astro'
         <hr class="op-rule strong">
         <div class="op-fields">
         ${field('status', r.status)}
+        ${field('solved when', r.solved_when)}
         ${field('why it matters', r.why, 'muted')}
         ${field('prize', r.prize ? '✦ ' + r.prize : '')}
         ${r.tri === 'suspect' ? `<div class="op-field"><div class="k">flagged for review</div><div class="v muted">automated verification could not fully confirm this record: ${esc((r as any).triwhy || "")}</div></div>` : ''}${r.citeflag ? `<div class="op-field"><div class="k">citation under review</div><div class="v muted">reference ${esc(r.citeflag)} failed verification — correction pending</div></div>` : ''}${r.solved ? `<div class="op-field"><div class="k">solved-candidate · under review</div><div class="v muted">${esc(r.solved.paper || '')}${r.solved.year ? ' (' + r.solved.year + ')' : ''}</div></div>` : ''}
