@@ -109,7 +109,7 @@ function parseArgs(argv) {
 async function loadAuth(via) {
   if (via === 'openai') {
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error('--via=openai requires OPENAI_API_KEY in env. Decrypt with:\n  export OPENAI_API_KEY=$(cd ~/company/devops/secrets && dotenvx get OPENAI_API_KEY -f agent-state.env)')
+      throw new Error('--via=openai requires OPENAI_API_KEY in env')
     }
     return { apiKey: process.env.OPENAI_API_KEY, baseURL: 'https://api.openai.com' }
   }

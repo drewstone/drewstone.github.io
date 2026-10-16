@@ -3,8 +3,10 @@
  * blog-loop — lowest-friction lifecycle commands for traced blog work.
  *
  * Usage:
+ *   pnpm blog list
  *   pnpm blog research <post> [--harness=codex|claude-code]
- *   pnpm blog write <post> [--harness=codex|claude-code] [--role=draft|rewrite|polish|outline|review|publish] [--marker=<token>]
+ *   pnpm blog write <post> [--harness=codex|claude-code] [--role=draft|rewrite|polish|outline|review|publish]
+ *   pnpm blog scan <post>          # enforce AGENTS.md anti-patterns on your changes
  *   pnpm blog finish <post> --research --harness=codex --note="source scan"
  *   pnpm blog finish <post> --write --harness=codex --marker=<token> --note="drafted section"
  */
@@ -84,22 +86,20 @@ function printPrompt(mode, post, harness, role, marker) {
 
   const prompt = mode === 'research'
     ? [
-        `This is supporting research for the blog post "${post.title}" (${post.slug}).`,
-        'Do not edit the post. Do not write prose for publication. Do not append to revisions[].',
-        'Mine dated sources, claims, open questions, counterarguments, and useful Q/A. Prefer primary sources for technical claims and record source dates when claims are temporal.',
+        `Supporting research for the blog post "${post.title}" (${post.slug}). Do not edit the post and do not write publishable prose.`,
+        `Mine dated sources, claims, counterarguments, and useful Q/A. Prefer primary sources; record dates for temporal claims.`,
         `At the end, run: ${finish}`,
       ].join('\n\n')
     : [
-        `This is authorship work for the blog post "${post.title}" (${post.slug}).`,
+        `Authorship work on the blog post "${post.title}" (${post.slug}).`,
         `Trace marker: ${marker}`,
         `Start your first visible assistant update with exactly: TRACE_MARKER ${marker}`,
         `Include exactly this marker in the final response before finishing: TRACE_MARKER ${marker}`,
-        `Before editing, read AGENTS.md, VOICE.md, and SECONDARY_VOICE.md. Treat VOICE.md as the primary author voice and SECONDARY_VOICE.md as a rigor layer, not an imitation target.`,
-        `You may edit src/content/posts/${post.slug}.mdx unless it has original: true. If original: true, stop. Preserve frontmatter provenance fields except for the revision entry created by the finish command.`,
-        'Voice target: start from Drew\'s concrete agent-work pressure, then climb into the formal object. Keep the math, source trail, and technical vocabulary. Remove research-wiki cadence, repeated scaffold headings, note-to-self prose, generic writing advice, ornamental math, and process labels.',
-        'Hard prose rules: no em dashes in new prose, no placeholders, no "first post", no "reader hook", no "target audience", no repeated "not X, it is Y" cadence unless the contrast is doing real work.',
-        'For rewrite or polish roles, do not only synonym-swap. Change the entry vector, add falsification pressure, preserve dated claims, and make the post answer what a builder can decide next.',
-        'Before finishing, run an anti-pattern scan and `pnpm build`. If either fails, fix the issue before trace capture.',
+        `Read AGENTS.md, VOICE.md, and SECONDARY_VOICE.md before editing. VOICE.md owns the author voice; SECONDARY_VOICE.md is a rigor layer, not an imitation target. Write as Drew, not as a survey author.`,
+        `You may edit src/content/posts/${post.slug}.mdx unless it has original: true. If original: true, stop. Preserve frontmatter provenance fields; the finish command adds the revision entry.`,
+        `Prose gates (pnpm blog scan ${post.slug} enforces these on your diff): no em dashes; no AI filler ("delve", "it's worth noting", "in today's landscape", "let's dive in"); no process labels, note-to-self headings, or placeholders.`,
+        `Keep the math, dated source trail, and technical vocabulary. Explain symbols instead of removing them. Rewrites change the entry vector and add falsification pressure, not synonyms.`,
+        `Before finishing, run pnpm blog scan ${post.slug} and pnpm build. Fix failures first.`,
         `At the end, run: ${finish}`,
       ].join('\n\n')
 
@@ -140,9 +140,15 @@ async function main() {
     return
   }
 
+  if (cmd === 'scan') {
+    const args = process.argv.slice(3).filter((a) => !a.startsWith('--harness='))
+    run(['node', 'tools/scan-post.mjs', ...args])
+    return
+  }
+
   const post = resolvePost(all, query)
   if (!post) {
-    console.error('usage: pnpm blog research|write|finish <post> [--harness=codex|claude-code] [--note="..."]')
+    console.error('usage: pnpm blog list|scan|research|write|finish <post> [--harness=codex|claude-code] [--note="..."]')
     process.exit(2)
   }
   if (post.ambiguous) {
