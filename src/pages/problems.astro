@@ -174,10 +174,6 @@ import Base from '../layouts/Base.astro'
         .catch(() => null)
       return solveIndex
     }
-    async function solveProblemId(id: string): Promise<string | null> {
-      const index = await connectedOnSolve()
-      return index?.get(id) ?? null
-    }
 
     function typeset(el: HTMLElement) {
       const w = (window as any)
@@ -288,8 +284,10 @@ import Base from '../layouts/Base.astro'
       const cites = citesHTML(r.key_works)
       const years: number[] = [...(r.bib?.milestones || []), ...(r.bib?.recent || [])].map((m: any) => m.y).filter(Boolean)
       const spark = years.length ? sparkline(years) : ''
-      const solveId = await solveProblemId(r.id)
-      const live = solveId !== null
+      const solveIndex = await connectedOnSolve()
+      const solveId = solveIndex?.get(r.id) ?? null
+      // Unavailable index fails open with the legacy lookup link; an absent id is the only 'not yet published'.
+      const live = solveIndex === null || solveId !== null
       const solveHref = solveId ? `https://solve.tangle.tools/problems/${solveId}` : solve(r.id)
       return `<article class="op-problem">
         <h1>${esc(r.title)}</h1>
