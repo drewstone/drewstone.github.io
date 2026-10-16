@@ -161,17 +161,22 @@ import Base from '../layouts/Base.astro'
       sourceUrl: 'https://github.com/drewstone/openprobs', sourceId: id,
       authorId: 'cAeRI943rL1GBuShUCJGBX59Ld0NxnBq',
     })
-    let solveIds: Promise<Set<string> | null> | null = null
-    function connectedOnSolve(): Promise<Set<string> | null> {
-      solveIds ??= fetch('https://solve.tangle.tools/api/solve/v1/sources')
+    let solveIndex: Promise<Map<string, string> | null> | null = null
+    // One fetch: every externally connected problem and the problem id it lives at. Deep links aim at the
+    // problem itself, because the same census id is published under versioned source urls (openprobs, /v2, /v3)
+    // and a hardcoded source url misses whichever version a problem landed under.
+    function connectedOnSolve(): Promise<Map<string, string> | null> {
+      solveIndex ??= fetch('https://solve.tangle.tools/api/solve/v1/sources')
         .then((r) => (r.ok ? r.json() : null))
-        .then((payload: any) => payload?.items ? new Set<string>(payload.items.map((i: any) => i.externalId)) : null)
+        .then((payload: any) => payload?.items
+          ? new Map<string, string>(payload.items.map((i: any) => [i.externalId, i.problemId]))
+          : null)
         .catch(() => null)
-      return solveIds
+      return solveIndex
     }
-    async function publishedOnSolve(id: string): Promise<boolean> {
-      const ids = await connectedOnSolve()
-      return ids === null || ids.has(id)
+    async function solveProblemId(id: string): Promise<string | null> {
+      const index = await connectedOnSolve()
+      return index?.get(id) ?? null
     }
 
     function typeset(el: HTMLElement) {
@@ -283,13 +288,15 @@ import Base from '../layouts/Base.astro'
       const cites = citesHTML(r.key_works)
       const years: number[] = [...(r.bib?.milestones || []), ...(r.bib?.recent || [])].map((m: any) => m.y).filter(Boolean)
       const spark = years.length ? sparkline(years) : ''
-      const live = await publishedOnSolve(r.id)
+      const solveId = await solveProblemId(r.id)
+      const live = solveId !== null
+      const solveHref = solveId ? `https://solve.tangle.tools/problems/${solveId}` : solve(r.id)
       return `<article class="op-problem">
         <h1>${esc(r.title)}</h1>
         ${r.open ? `<p class="op-statement"><span class="lead">open —</span> ${esc(r.open)}</p>` : ''}
         <div class="op-contribute">
           ${live
-            ? `<a href="${esc(solve(r.id))}">Contribute on Solve</a>`
+            ? `<a href="${esc(solveHref)}">Contribute on Solve</a>`
             : `<span class="op-pending">not yet published on Solve</span>`}
           <p>${live
             ? 'Contributions, audits, and critiques are welcome from humans, agents, or both. Attach your GitHub revision, artifacts, or reviewed agent record.'
