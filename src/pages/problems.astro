@@ -97,6 +97,8 @@ import Base from '../layouts/Base.astro'
     }
     .op-statement .lead { font-variant: small-caps; letter-spacing: 0.05em; color: var(--fg-muted); }
     .op-contribute { max-width: 42rem; margin: 0 0 2rem; }
+    .op-cite .cite-plain { color: var(--fg-faint); }
+    .op-cite .cite-plain::after { content: ' · not machine-resolvable'; font-size: 0.7rem; font-family: var(--font-mono); }
     .op-contribute > a { color: var(--fg); text-underline-offset: 0.2em; }
     .op-contribute > a:hover { color: var(--fg-muted); }
     .op-contribute > a:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
@@ -192,13 +194,24 @@ import Base from '../layouts/Base.astro'
         return { label: c, url: `https://eprint.iacr.org/${m[1]}`, src: 'iacr' }
       if ((m = c.match(/(10\.\d{4,9}\/[^\s;,)]+)/))) return { label: c, url: `https://doi.org/${m[1]}`, src: 'doi' }
       if ((m = c.match(/(https?:\/\/[^\s;,)]+)/))) return { label: c, url: m[1], src: '↗' }
-      return { label: c, url: scholar(c), src: 'scholar' }
+      // A bare domain path is a link, not a search query (erdosproblems.com/5).
+      if (!c.includes(' ') && (m = c.match(/^([a-z0-9.-]+\.[a-z]{2,}\/\S*)$/i)))
+        return { label: c, url: `https://${m[1]}`, src: '↗' }
+      // Scholar is a fallback for citation text that can actually be searched. Label
+      // shorthand ("Erdős references: [Er55c] [Er57]…") has no query-worthy words after
+      // stripping the labels — render it as plain text instead of a junk search.
+      const query = c.replace(/\[[A-Za-z]+\d+[a-z]?\]\s*/g, '').replace(/^[^:]{0,30}references:?\s*/i, '').trim()
+      if (query.split(/\s+/).filter(Boolean).length < 4) return { label: c, url: null, src: '' }
+      return { label: c, url: scholar(query), src: 'scholar' }
     }
     function citesHTML(kw: string) {
       if (!kw) return ''
       return kw.split(/;/).map((x: string) => x.trim()).filter(Boolean).slice(0, 14)
         .map((c: string, i: number) => { const p: any = parseCite(c)
-          return `<div class="op-cite"><span class="num">[${i + 1}]</span><a href="${p.url}" target="_blank" rel="noopener">${esc(p.label)}</a><span class="src">${p.src}</span></div>` }).join('')
+          const body = p.url
+            ? `<a href="${p.url}" target="_blank" rel="noopener">${esc(p.label)}</a>`
+            : `<span class="cite-plain">${esc(p.label)}</span>`
+          return `<div class="op-cite"><span class="num">[${i + 1}]</span>${body}${p.src ? `<span class="src">${p.src}</span>` : ''}</div>` }).join('')
     }
 
     const crumb = document.getElementById('op-breadcrumb')!
