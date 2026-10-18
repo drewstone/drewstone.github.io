@@ -3,7 +3,8 @@
  * scan-post — enforce the prose anti-patterns from AGENTS.md on a post.
  *
  * Default mode checks only lines you changed (working tree vs HEAD), which is
- * exactly the rule "no em dashes in NEW prose". --all checks the whole body.
+ * exactly the rule "no em dashes in NEW prose"; a post Git does not track yet is
+ * all new prose and is checked in full. --all checks the whole body.
  * Original (human-authored) posts are never scanned: the rules govern AI prose.
  *
  * Usage:
@@ -30,6 +31,7 @@ const RULES = [
   ['ai-tell', /\b(delve|tapestry|testament to|game-changer|ever-evolving|in today'?s landscape|let'?s dive in|it'?s worth noting|in the realm of|navigate the landscape)\b/i, 'cut the filler phrase; say the thing directly'],
   ['process-label', /\b(outline notes|reader hook|hook the reader|target audience|the article should|keep this compact|note to self|drew angle|to rewrite around|this post will cover)\b/i, 'delete the note-to-self phrasing; headings describe reader-facing content'],
   ['placeholder', /\b(TODO|FIXME|XXX|TBD|lorem ipsum|\[placeholder\]|<placeholder>)\b/, 'fill it in or cut the section'],
+  ['scaffold', /\b(will be (expanded|added|filled in|covered|written|updated) (later|soon|in a (later|future) (post|section|update))|to be (expanded|added|written|filled in) later|coming soon|more on this later)\b/i, 'finish the thought or cut the section'],
 ]
 
 function git(cmd) {
@@ -38,15 +40,17 @@ function git(cmd) {
 
 function splitPost(raw) {
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
-  if (!m) return { fm: '', description: '', body: raw, bodyStart: 1 }
+  if (!m) return { fm: '', description: '', descriptionLine: 0, body: raw, bodyStart: 1 }
   const desc = m[1].match(/^description:\s*['"]?(.+?)['"]?\s*$/m)?.[1] ?? ''
-  return { fm: m[1], description: desc, body: raw.slice(m[0].length), bodyStart: m[0].split('\n').length }
+  // Frontmatter starts on file line 2, after the opening ---.
+  const descriptionLine = 2 + m[1].split('\n').findIndex((l) => l.startsWith('description:'))
+  return { fm: m[1], description: desc, descriptionLine, body: raw.slice(m[0].length), bodyStart: m[0].split('\n').length }
 }
 
-/** Line numbers (1-based, whole-file) of lines added vs HEAD. Empty = check nothing changed; null = untracked/failed, check all. */
+/** Line numbers (1-based, whole-file) of lines added vs HEAD, or 'all' for a post Git does not track yet (a new draft is all new prose). */
 function addedLines(relPath) {
+  if (!git(`ls-files -- ${relPath}`).trim()) return 'all'
   const out = git(`diff HEAD --unified=0 -- ${relPath}`)
-  if (!out.trim()) return null
   const lines = new Set()
   for (const m of out.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)) {
     const start = Number(m[1])
@@ -71,16 +75,16 @@ async function scanFile(file, allMode) {
   const rel = `src/content/posts/${file}`
   const raw = await readFile(path, 'utf8')
   if (/^original:\s*true\s*$/m.test(raw.split('---')[1] ?? '')) return 0
-  const { description, body, bodyStart } = splitPost(raw)
+  const { description, descriptionLine, body, bodyStart } = splitPost(raw)
 
   const hits = []
-  scanText(description, 1, `${rel} (description)`, hits)
+  const changed = allMode ? 'all' : addedLines(rel)
+  // The description is new prose only when its frontmatter line changed; legacy descriptions do not block body edits.
+  if (changed === 'all' || changed.has(descriptionLine)) scanText(description, 1, `${rel} (description)`, hits)
 
-  if (allMode) {
+  if (changed === 'all') {
     scanText(body, bodyStart, rel, hits)
-  } else {
-    const changed = addedLines(rel)
-    if (!changed || changed.size === 0) return 0 // nothing changed → nothing new to scan
+  } else if (changed.size > 0) {
     const lines = body.split('\n')
     lines.forEach((line, i) => {
       const fileLine = bodyStart + i
