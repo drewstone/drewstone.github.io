@@ -18,10 +18,10 @@
  *   pnpm log-edit --auto --note="<one-line>" # all changed posts share the note
  *
  * Notes:
- *   - Refuses to log against `original: true` posts ONLY when invoked from an
- *     AI session. Drew (the human) editing his own posts is the entire point.
- *     We just use a marker file to know if it's the agent calling: any process
- *     descended from `claude`/`codex` is treated as an agent and rejected.
+ *   - This is the human path. AI agents must not use it; AGENTS.md routes
+ *     agent work through `pnpm blog write` / trace-capture instead.
+ *   - Original (`original: true`) posts may carry human revisions (they render
+ *     green like any human edit); the existing entries were added this way.
  */
 import { readFile, writeFile } from 'node:fs/promises'
 import { execSync } from 'node:child_process'
@@ -97,7 +97,7 @@ function inferNote(commit) {
 
 /**
  * Append a revision to a post's frontmatter.
- * Returns 'added' | 'duplicate' | 'refused-original-by-agent'.
+ * Returns 'added' | 'duplicate'.
  */
 async function appendRevision(slug, entry) {
   const path = join(POSTS_DIR, `${slug}.mdx`)
