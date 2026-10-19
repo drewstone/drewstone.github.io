@@ -18,7 +18,7 @@ function resolveEvent(record: RunRecord | undefined, idmap: EventIdMap, id: stri
 }
 
 /** URL ownership stays with the site; the shared viewer has no routing side effects. */
-export default function AgentRecordView({ records, idmap = {} }: { records: RunRecord[]; idmap?: EventIdMap }) {
+export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: Array<{ runId: string; verdicts: Array<{ behavior: string; verdict: string; confidence: number; evidence?: Array<{ eventId: string; quote?: string }> }> }> }) {
   const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '' })
   useEffect(() => {
     const read = () => {
@@ -86,7 +86,7 @@ export default function AgentRecordView({ records, idmap = {} }: { records: RunR
     else url.searchParams.delete('graph')
     history.replaceState(null, '', url)
   }
-  if (!traced) return <AgentRecord records={records} selection={selection} onSelectionChange={select} className="research-agent-record" />
+  if (!traced) return <AgentRecord records={records} selection={selection} onSelectionChange={select} behaviors={behaviors} className="research-agent-record" />
   return (
     <div className="research-agent-record research-record-views">
       <div className="record-view-switch" role="group" aria-label="Record view">
@@ -96,7 +96,7 @@ export default function AgentRecordView({ records, idmap = {} }: { records: RunR
       {graph && record ? (
         <RecordWorkGraph record={record} />
       ) : (
-        <AgentRecord records={records} selection={selection} onSelectionChange={select} className="research-agent-record" />
+        <AgentRecord records={records} selection={selection} onSelectionChange={select} behaviors={behaviors} className="research-agent-record" />
       )}
     </div>
   )
