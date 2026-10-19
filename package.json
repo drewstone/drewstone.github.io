@@ -37,7 +37,7 @@
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "zod": "^4.6.5",
-    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.51.2/drewstone-agent-record-0.51.1.tgz"
+    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.51.2/drewstone-agent-record-0.51.2.tgz"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261011.1",
