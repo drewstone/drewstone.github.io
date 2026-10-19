@@ -88,3 +88,38 @@ const { records, idmap, behaviors = [] } = Astro.props
 </style>
 <AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:load />
 <noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>
+
+<script>
+  // Audit fixes for the record viewer — applied after React renders.
+  // These are label and readability corrections the package should carry
+  // natively; until the dependency chain allows it, patch here.
+  {
+    const fix = () => {
+      // 1) "Assignment" → "What this agent did" (these are role summaries, not assignments)
+      document.querySelectorAll('.research-agent-record details summary').forEach((s) => {
+        if (s.textContent.trim() === 'Assignment') s.textContent = 'What this agent did';
+      });
+      // 2) Hide raw source JSON behind a "Provenance" label
+      document.querySelectorAll('.research-agent-record details.assignment pre').forEach((pre) => {
+        if (!pre.previousElementSibling || pre.previousElementSibling.tagName !== 'SUMMARY') {
+          const wrap = document.createElement('details');
+          wrap.className = 'assignment-source';
+          const label = document.createElement('summary');
+          label.textContent = 'Provenance';
+          wrap.appendChild(label);
+          pre.parentNode.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+        }
+      });
+      // 3) Omit "Cost: Not recorded"
+      document.querySelectorAll('.research-agent-record [data-coverage] p').forEach((p) => {
+        if (p.textContent.trim() === 'Cost: Not recorded') p.remove();
+      });
+    };
+    // Run after initial render and after any React re-render
+    const observer = new MutationObserver(() => requestAnimationFrame(fix));
+    const mount = document.getElementById('agent-record');
+    if (mount) observer.observe(mount, { childList: true, subtree: true });
+    fix();
+  }
+</script>
