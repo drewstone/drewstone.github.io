@@ -25,7 +25,6 @@
     "@astrojs/react": "7.0.0",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.0",
-    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz",
     "@tangle-network/harness-sessions": "0.1.0",
     "astro": "^7.3.5",
     "katex": "^0.18.2",
@@ -33,7 +32,12 @@
     "react-dom": "19.3.0",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "shiki": "^4.0.2"
+    "shiki": "^4.0.2",
+    "@tangle-network/charts": "0.12.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "zod": "^4.6.5",
+    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.51.2/drewstone-agent-record-0.51.1.tgz"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261011.1",

@@ -23,9 +23,9 @@ importers:
       '@astrojs/sitemap':
         specifier: ^3.7.0
         version: 3.7.0
-      '@drewstone/agent-record':
-        specifier: https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz
-        version: https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@tangle-network/charts':
+        specifier: 0.12.0
+        version: 0.12.0(react@19.3.0)
       '@tangle-network/harness-sessions':
         specifier: 0.1.0
         version: 0.1.0
@@ -41,15 +41,24 @@ importers:
       react-dom:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@19.3.0)(react@19.3.0)
       rehype-katex:
         specifier: ^7.0.1
         version: 7.0.1
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
       remark-math:
         specifier: ^6.0.0
         version: 6.0.0
       shiki:
         specifier: ^4.0.2
         version: 4.0.2
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       '@cloudflare/workers-types':
         specifier: 5.20261011.1
@@ -274,14 +283,6 @@ packages:
 
   '@cloudflare/workers-types@5.20261011.1':
     resolution: {integrity: sha512-6dgFMnwq6Wn238QWGHHb93gqIXjbSQMALcurXmI+9SHkM0QeEdHDhbyxwnE8v1m41MUzCtNO/gnTRwI4FsS9fQ==}
-
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz':
-    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz}
-    version: 0.43.0
-    hasBin: true
-    peerDependencies:
-      react: '>=18.3.0 <20'
-      react-dom: '>=18.3.0 <20'
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -989,8 +990,8 @@ packages:
   '@tangle-network/agent-trace-contract@2.0.0':
     resolution: {integrity: sha512-lq2hp3gg8FsNVA3yZAyuj3NvL57pJTsI6sUF8cYwVsUXA8QZlrO78SqRPRslWxf/sMFHxXhusOuDQ3YxVv12bw==}
 
-  '@tangle-network/charts@0.6.0':
-    resolution: {integrity: sha512-pO6OACdaOn6eSb5ZpGk+xFdKohPArHXAkMdsvesJVEP8CwdhzK0m2vCRSDVfEC/vfo45TAqqxolW0iJplElfVA==}
+  '@tangle-network/charts@0.12.0':
+    resolution: {integrity: sha512-9KeYY/75p8GHVIb8dtGp7LdMredF6OGHE9co4ymTeU+lTldO/3AV0Pnq5fwnPtQE5ObQr4MRS1baU+vfmsjBwg==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
@@ -1179,10 +1180,6 @@ packages:
   commander@11.1.0:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
-
-  commander@15.0.0:
-    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
-    engines: {node: '>=22.12.0'}
 
   commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
@@ -1521,10 +1518,6 @@ packages:
 
   katex@0.18.2:
     resolution: {integrity: sha512-3snve4y0SXTMequLim1FMiPvLGElySam0blN5xQZBqEY3lOJz1TnuaaiugnBZBqHzlSAGmFTYL7MCQkORuLKCA==}
-    hasBin: true
-
-  katex@0.19.0:
-    resolution: {integrity: sha512-v6Tznz3zJ7u3niRCoDTsumM2+HA2XXcCu+WAacCeHD2z3p9A9Ks987o5FzfTGBN0e8A0vjEgIDvLbICrXpdw/Q==}
     hasBin: true
 
   lightningcss-android-arm64@1.33.0:
@@ -2554,22 +2547,6 @@ snapshots:
 
   '@cloudflare/workers-types@5.20261011.1': {}
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tangle-network/charts': 0.6.0(react@19.3.0)
-      '@tangle-network/harness-sessions': 0.1.0
-      katex: 0.19.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      react-markdown: 10.1.0(@types/react@19.3.0)(react@19.3.0)
-      rehype-katex: 7.0.1
-      remark-gfm: 4.0.1
-      remark-math: 6.0.0
-      zod: 4.6.5
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
-
   '@emnapi/core@1.11.1':
     dependencies:
       '@emnapi/wasi-threads': 1.2.2
@@ -3062,7 +3039,7 @@ snapshots:
 
   '@tangle-network/agent-trace-contract@2.0.0': {}
 
-  '@tangle-network/charts@0.6.0(react@19.3.0)':
+  '@tangle-network/charts@0.12.0(react@19.3.0)':
     optionalDependencies:
       react: 19.3.0
 
@@ -3286,8 +3263,6 @@ snapshots:
   comma-separated-tokens@2.0.3: {}
 
   commander@11.1.0: {}
-
-  commander@15.0.0: {}
 
   commander@8.3.0: {}
 
@@ -3757,10 +3732,6 @@ snapshots:
   katex@0.18.2:
     dependencies:
       commander: 8.3.0
-
-  katex@0.19.0:
-    dependencies:
-      commander: 15.0.0
 
   lightningcss-android-arm64@1.33.0:
     optional: true
