@@ -2,8 +2,8 @@
 import type { RunRecord } from '@drewstone/agent-record/record'
 import AgentRecordView, { type EventIdMap } from './AgentRecordView'
 import '@drewstone/agent-record/styles.css'
-interface Props { records: RunRecord[]; idmap: EventIdMap }
-const { records, idmap } = Astro.props
+interface Props { records: RunRecord[]; idmap: EventIdMap; behaviors?: unknown[] }
+const { records, idmap, behaviors = [] } = Astro.props
 ---
 <style is:global>
   .record-view-switch { display: flex; gap: .4rem; margin: 0 0 .75rem; }
@@ -28,5 +28,5 @@ const { records, idmap } = Astro.props
     --ar-mono: var(--font-mono);
   }
 </style>
-<AgentRecordView records={records} idmap={idmap} client:load />
+<AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:load />
 <noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>

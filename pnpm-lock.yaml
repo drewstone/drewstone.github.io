@@ -24,8 +24,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       '@drewstone/agent-record':
-        specifier: https://github.com/drewstone/agent-record/releases/download/v0.42.5/drewstone-agent-record-0.42.5.tgz
-        version: https://github.com/drewstone/agent-record/releases/download/v0.42.5/drewstone-agent-record-0.42.5.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz
+        version: https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@tangle-network/harness-sessions':
         specifier: 0.1.0
         version: 0.1.0
@@ -275,9 +275,9 @@ packages:
   '@cloudflare/workers-types@5.20261011.1':
     resolution: {integrity: sha512-6dgFMnwq6Wn238QWGHHb93gqIXjbSQMALcurXmI+9SHkM0QeEdHDhbyxwnE8v1m41MUzCtNO/gnTRwI4FsS9fQ==}
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.42.5/drewstone-agent-record-0.42.5.tgz':
-    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.42.5/drewstone-agent-record-0.42.5.tgz}
-    version: 0.42.5
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz':
+    resolution: {tarball: https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz}
+    version: 0.42.8
     hasBin: true
     peerDependencies:
       react: '>=18.3.0 <20'
@@ -2554,7 +2554,7 @@ snapshots:
 
   '@cloudflare/workers-types@5.20261011.1': {}
 
-  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.42.5/drewstone-agent-record-0.42.5.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@drewstone/agent-record@https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@tangle-network/charts': 0.6.0(react@19.3.0)
       '@tangle-network/harness-sessions': 0.1.0
@@ -3576,13 +3576,13 @@ snapshots:
 
   hast-util-from-dom@5.0.1:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       hastscript: 9.0.1
       web-namespaces: 2.0.1
 
   hast-util-from-html-isomorphic@2.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       hast-util-from-dom: 5.0.1
       hast-util-from-html: 2.0.3
       unist-util-remove-position: 5.0.0
@@ -3923,7 +3923,7 @@ snapshots:
 
   mdast-util-math@3.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       longest-streak: 3.1.0

@@ -5,6 +5,7 @@ import EvidenceExplorer from '../../components/EvidenceExplorer.astro'
 import { getCollection, render } from 'astro:content'
 import { readFile } from 'node:fs/promises'
 import { parseRecord } from '@drewstone/agent-record/record'
+import { readFileSync, existsSync } from 'node:fs'
 export async function getStaticPaths() {
   return (await getCollection('research')).map((entry) => ({
     params: { slug: entry.id },
@@ -20,6 +21,10 @@ const records = await Promise.all(
   ),
 )
 const { records: allIds } = JSON.parse(await readFile('research/publications/idmap.json', 'utf8'))
+// Behavior battery reports are build-time static data, like the records themselves.
+const behaviorReports = entry.data.record_ids
+  .filter((id: string) => existsSync(`public/research/behaviors/${id}.json`))
+  .map((id: string) => JSON.parse(readFileSync(`public/research/behaviors/${id}.json`, 'utf8')))
 const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, allIds[id] ?? {}]))
 ---
 
@@ -70,7 +75,7 @@ const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, 
   {records.length > 0 && (
     <section id="agent-record" class="record">
       <h2>Agent record</h2>
-      <EvidenceExplorer records={records} idmap={idmap} />
+      <EvidenceExplorer records={records} idmap={idmap} behaviors={behaviorReports} />
     </section>
   )}
 </Base>
