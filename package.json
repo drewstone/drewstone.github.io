@@ -25,7 +25,7 @@
     "@astrojs/react": "7.0.0",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.0",
-    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.42.8/drewstone-agent-record-0.42.8.tgz",
+    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.43.0/drewstone-agent-record-0.43.0.tgz",
     "@tangle-network/harness-sessions": "0.1.0",
     "astro": "^7.3.5",
     "katex": "^0.18.2",
