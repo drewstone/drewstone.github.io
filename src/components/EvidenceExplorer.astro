@@ -57,6 +57,63 @@ const { records, idmap, behaviors = [] } = Astro.props
     --chart-checker-3: #f87171;
   }
 
+
+  /* Unified typography: the charts library's clean 12-13px sans everywhere,
+     not the viewer's 15px mono for structural labels. */
+  .research-agent-record {
+    --ar-text-s: 13px;
+    --ar-text-m: 15px;
+    --ar-text-l: 22px;
+  }
+  .research-agent-record svg .axis-label,
+  .research-agent-record svg .lane-label {
+    font: 11px var(--font-sans, ui-sans-serif, system-ui);
+    letter-spacing: 0.01em;
+  }
+  .research-agent-record svg[data-tokens] .axis-label {
+    font-size: 10px;
+  }
+  /* All top-level dropdown summaries: same compact style. */
+  .research-agent-record details > summary {
+    font: 500 12px/1.4 var(--font-sans, ui-sans-serif, system-ui);
+    color: var(--ar-muted);
+    cursor: pointer;
+    list-style: none;
+    padding: 6px 0;
+  }
+  .research-agent-record details > summary::marker,
+  .research-agent-record details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .research-agent-record details > summary::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 10px;
+    transition: transform 0.15s;
+    color: var(--ar-subtle);
+  }
+  .research-agent-record details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+  .research-agent-record .topology-tree > summary,
+  .research-agent-record .activity-replay > summary,
+  .research-agent-record .assignment > summary,
+  .research-agent-record .coverage > summary {
+    font: 500 12px/1.4 var(--font-sans, ui-sans-serif, system-ui);
+    padding: 6px 0.85rem;
+    border-bottom: 1px solid var(--ar-line);
+  }
+  /* Timeline heading controls: tighter. */
+  .research-agent-record .timeline-heading {
+    padding: 4px 0.85rem;
+    font-size: 12px;
+  }
+  .research-agent-record .timeline-heading label {
+    font-size: 11px;
+    color: var(--ar-muted);
+  }
+
   /* Dense terminal-style tool call feed: no boxed cards, 22px rows, no per-item borders. */
   .research-agent-record .chat-message {
     padding: 0.25rem 0.5rem 0.25rem 1.8rem !important;
