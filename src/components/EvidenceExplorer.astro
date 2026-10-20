@@ -26,6 +26,35 @@ const { records, idmap, behaviors = [] } = Astro.props
     --ar-foreground: var(--fg);
     --ar-font: var(--font-body);
     --ar-mono: var(--font-mono);
+
+    --ar-accent: var(--accent);
+    /* Charts library tokens mapped to the site theme (dark default). */
+    --chart-canvas: var(--ar-background);
+    --chart-ink: var(--ar-foreground);
+    --chart-ink-muted: var(--ar-muted);
+    --chart-muted: var(--ar-muted);
+    --chart-grid: var(--ar-line);
+    --chart-rule: var(--ar-line);
+    --chart-shade: color-mix(in srgb, var(--ar-foreground) 4%, transparent);
+    --chart-accent: var(--ar-accent);
+    --chart-pass: #4ade80;
+    --chart-breach: #f87171;
+    --chart-outcome-ok: #4ade80;
+    --chart-outcome-lost: #f87171;
+    --chart-outcome-neutral: var(--ar-muted);
+    --chart-outcome-oom: #fb923c;
+    --chart-outcome-quota: #fb923c;
+    --chart-outcome-rate-limit: #fbbf24;
+    --chart-outcome-refused: var(--ar-muted);
+    --chart-outcome-other: var(--ar-muted);
+    --chart-tier-a: var(--ar-accent);
+    --chart-tier-b: var(--ar-muted);
+    --chart-tier-c: var(--ar-subtle);
+    --chart-tier-s: var(--ar-foreground);
+    --chart-checker-0: var(--ar-accent);
+    --chart-checker-1: #4ade80;
+    --chart-checker-2: #fbbf24;
+    --chart-checker-3: #f87171;
   }
 
   /* Dense terminal-style tool call feed: no boxed cards, 22px rows, no per-item borders. */
