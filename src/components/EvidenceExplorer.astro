@@ -104,9 +104,33 @@ const { records, idmap, behaviors = [] } = Astro.props
     padding: 6px 0.85rem;
     border-bottom: 1px solid var(--ar-line);
   }
+
+  /* Align topology and timeline to the same horizontal grid. */
+  .research-agent-record .topology-tree,
+  .research-agent-record .activity-replay {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+  .research-agent-record .topology-tree > summary,
+  .research-agent-record .activity-replay > summary {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .research-agent-record .topology-tree .tgc-timeline-view {
+    margin: 0;
+  }
+  .research-agent-record .timeline-scroll {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   /* Timeline heading controls: tighter. */
   .research-agent-record .timeline-heading {
-    padding: 4px 0.85rem;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 4px 0;
     font-size: 12px;
   }
   .research-agent-record .timeline-heading label {
