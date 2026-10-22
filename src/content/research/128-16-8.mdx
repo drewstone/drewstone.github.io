@@ -1,0 +1,113 @@
+---
+title: 'An indecomposable full-Clifford [[128,16,8]] code at check weight 8'
+description: 'A catalogue extension: the first indecomposable CSS code past eight logical qubits whose depth-one two-local circuits generate the full logical Clifford group, at unchanged rate and distance.'
+assessed: '2026-10-13'
+claim: 'An indecomposable self-dual CSS [[128,16,8]] code with stabilizer check weight 8 and qubit degree 8 has 218 depth-one two-local code-preserving circuits whose logical image is the full symplectic group Sp(32,2).'
+limitation: 'A catalogue extension, not a frontier move: rate 1/8 and distance 8 are unchanged from the [[64,8,8]] incumbent, weight-8 [[128,16,8]] parameters already occur in published bivariate-bicycle codes, and no practical fault-tolerant implementation is claimed.'
+area: 'Quantum information'
+order: 7
+---
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+There is now an explicitly certified indecomposable CSS quantum code with parameters [[128,16,8]] whose depth-one two-local circuits generate the full logical Clifford group Sp(32,2), at stabilizer check weight 8 and qubit degree 8.
+Within Victor V. Albert's pinned census of full codes [[1]](#ref-1), this extends the maximum indecomposable logical count from 8 to 16 qubits.
+
+The honest scope is narrower than a frontier result, and it is stated here first: **this is a catalogue extension**.
+The rate stays 1/8 and the distance stays 8, exactly the incumbent's values.
+Weight-8 [[128,16,8]] parameters already occur in published bivariate-bicycle constructions, and two copies of the incumbent code match every listed parameter except indecomposability.
+An outside critique on October 11, 2026 [[3]](#ref-3) confirmed the mathematics and wrote this scoping; this post adopts it.
+
+## The bar
+
+Albert certified 218 CSS codes whose depth-one two-local code-preserving circuits generate the full logical Clifford group $\operatorname{Sp}(2k,2)$, the group of the $k$ logical qubits modulo logical Paulis [[1]](#ref-1).
+A depth-one layer is a matching of the physical qubits: each pair receives an arbitrary two-qubit Clifford, each unmatched qubit an arbitrary single-qubit Clifford, and the matching may change between layers.
+Among his codes with check weight at most 8 and each qubit in at most 8 checks, both the best distance and the largest logical count stop at 8: the incumbent is [[64,8,8]] `ar:097e4c94`.
+The mounted check for this result, written before the code existed, demanded one indecomposable full code in that weight and degree regime with $d \geq 10$ and $k \geq 8$, or with $d \geq 8$ and $k \geq 12$.
+The delivered code takes the second route: $k = 16$, $d = 8$ exactly.
+
+## The code
+
+The construction is a self-dual CSS code: the X and Z checks are the same set, 56 checks of weight 8 for each side, with $C_X = C_Z \subseteq C_X^\perp$, so
+
+$$
+k = 128 - \operatorname{rank} H_X - \operatorname{rank} H_Z = 128 - 56 - 56 = 16.
+$$
+
+Every listed check has weight 8.
+Qubit degrees are 4, 6 or 8 (12, 40 and 76 qubits respectively), so the maximum is 8 and the average is 7.
+It was built as a two-sheet cover of the incumbent `ar:097e4c94`, found by a search over 1,056 qubit matchings that kept 136 depth-one generators with distinct logical actions.
+
+Its minimum-weight logical operator is explicit:
+
+$$
+Z_7\,Z_{11}\,Z_{39}\,Z_{43}\,Z_{67}\,Z_{79}\,Z_{99}\,Z_{111},
+$$
+
+weight 8, commuting with every check and anticommuting with a supplied logical X, so $d \leq 8$.
+
+## The distance is exactly 8
+
+The lower bound is exhaustive, not heuristic.
+A meet-in-the-middle search stores the syndromes of all 349,633 supports of at most 3 qubits and queries the 11,017,633 supports of exactly 4; every support of weight at most 7 splits as $3 + 4$, and two partial syndromes agree exactly when the full syndrome vanishes.
+No support of weight at most 7 commutes with every X check while failing to commute with a supplied logical: there is no nontrivial pure-Pauli logical of weight at most 7.
+Because the code is self-dual, one search covers both Pauli types.
+A mixed-Pauli logical in a CSS code contains the support of a nontrivial pure component, so the pure bounds give the exact code distance.
+With the weight-8 witness above, $d = 8$ exactly.
+
+## The full logical Clifford group
+
+The certificate is a straight-line program: 218 generator strings (114 distinct binary actions), 162 macros, and 47 words that multiply exactly to the transvections
+
+$$
+T_{e_i},\; T_{f_i}\;(1 \leq i \leq 16), \qquad T_{e_i + e_{i+1}}\;(1 \leq i < 16),
+$$
+
+on $\mathbb{F}_2^{32}$, written in the supplied symplectic logical basis.
+Every generator is depth-one two-local, symplectic, and preserves the stabilizer group; each word's product is verified exactly, matrix entry by matrix entry.
+
+Those 47 transvections generate all of $\operatorname{Sp}(32,2)$.
+Two independent arguments support that final step:
+
+- An orbit search in C under the transvections reaches all $2^{32} - 1$ nonzero vectors from $e_1$ (65 BFS levels, 14 minutes). By Dickson's criterion, a transvection group transitive on nonzero vectors is the full symplectic group. The program calibrates: it answers yes at $k = 8$ and $k = 12$ and no when one transvection is dropped.
+- The outside critique gives an elementary proof [[3]](#ref-3): $T_{e_i}$ and $T_{f_i}$ give the logical phase gates, their product gives the logical Hadamard, and $T_{e_i+e_j} T_{e_i} T_{e_j}$ gives an entangler between adjacent logical qubits; local Cliffords plus adjacent entanglers, with routing through swaps, generate the whole group.
+
+## What this is not
+
+The outside critique of October 11, 2026 fixed this scope, and nothing here goes beyond it.
+
+- **Not better parameters.** Rate $1/8$ and distance 8 equal the incumbent's. Two copies of `ar:097e4c94` also give an indecomposable-free [[128,16,8]] at weight and degree 8 that is full (transversal CNOT between blocks supplies the entanglement). The new content is indecomposability at $k = 16$ within the census.
+- **Not new parameters.** Weight-8 [[128,16,8]] codes appear in Liang and Chen's self-dual bivariate bicycle table and in qSIEVE's bivariate bicycle example. The critique distinguishes this code from both by exact invariants (294 minimum-weight stabilizers against 192 and 384; a per-qubit commutant algebra of dimension 4 against 2). Global priority is not exhaustively established.
+- **Not a practical fault-tolerance scheme.** The certified words compile to roughly 777,000 depth-one layers per target transvection after reducing the seed's exponent (that figure is not a lower bound). One listed layer has an explicit pair of two-fault scenarios with the same syndrome that differ by a logical, so two arbitrary two-qubit gate faults are not always correctable. No syndrome-extraction circuit, decoder, or noise analysis exists here.
+- **Not a frontier claim.** The open frontier the check encoded stays open: rate above $1/8$ at $d \geq 8$, or $d \geq 10$, at weight and degree at most 8.
+
+## Verification
+
+Two independent checkers ran fresh on October 13, 2026, on the machine-readable construction (SHA-256 `1b19793e...`, the exact file the critique audited).
+
+| Check | Code | Result |
+| --- | --- | --- |
+| All gates: pages, CSS, commuting, $-I \notin S$, $k = 16$, span, weight 8, degree 8, self-dual, symplectic basis, witness, distance, indecomposable, 218 generators, 47 words | standalone verifier, standard library only [[4]](#ref-4) | exit 0, every gate PASS, 10 s |
+| Same construction under the run's own mounted check, with the census controls ([[64,8,8]] and [[32,4,6]] relabelled at random, seed 20261013, Z-diagonal ablation, from the pinned records [[2]](#ref-2)) | the mounted check of the play, verbatim | exit 0, 26 PASS lines, 15 s |
+| Tampering | standalone verifier | 9 mutated copies (stabilizer bit flip, deleted check, wrong claimed $d$, trivial and short witnesses, missing and swapped words, truncated macro, non-depth-one generator) all rejected at the expected gate |
+
+The standalone verifier also confirms the matrix identities behind the critique's generation proof and calibrates the Dickson orbit criterion exactly at $k = 2, 4, 6, 8$.
+The $2^{32}$ orbit itself is not machine-checked in either replay; it is carried by the retained C program, the critique's elementary proof, and the standard generation theorem.
+That split is written out in the private proof packet.
+
+## Attribution and retained attempt
+
+The code was not found by the run that recorded it.
+The cancelled run `albert-full-ldpc-symmetry-20261011a` built it as a two-sheet lift of the incumbent and reported 136 depth-one generators, then died in a coordination outage at 13:38 UTC on October 11, 2026.
+The operator salvaged that sandbox, ran the root's own certificate builder to produce the 47 transvection words (218 generators, 1,144 items), published the four files with SHA-256 sums, and relayed them through the search lead's mail.
+The run `albert-full-ldpc-symmetry-20261011b` verified the files, recorded them as its deliverable, and reran the unmodified mounted check itself; its retained verdict records and the byte-exact run record live in the private proof packet and the lab workspace [[5]](#ref-5).
+Two runs passed the check that day (the second, `albert-full-ldpc-lift-20261011b`, at 15:55 UTC), and hardened rechecks on October 12 passed all 26 gates for both.
+The outside critique is the work of GPT-6 Pro, commissioned the same day; its full text is retained alongside the construction [[3]](#ref-3).
+No peer review or publication acceptance is asserted, and the critique's own qualifications (82 of the 218 raw strings need Pauli sign corrections in Albert's allowed convention; 114 of 218 binary actions are distinct) are part of the record.
+
+<ResearchBibliography entries={[
+  { authors: 'V. V. Albert', title: 'Beyond transversality: structure of Clifford circuits for CSS codes', url: 'https://arxiv.org/abs/2608.05688', publication: 'arXiv:2608.05688v2. Section VI.A and the certified full-code records pinned at a049b30d: 218 full codes; the low-weight regime tops out at [[64,8,8]] ar:097e4c94.' },
+  { title: 'Certified full-code records (data)', url: 'https://github.com/valbert4/two-fold-transversal/tree/a049b30d84f594a8a816032650c3bd86b5f33498', publication: 'valbert4/two-fold-transversal at a049b30d, the release corresponding to v2. The mounted check reproduces the [[64,8,8]] and [[32,4,6]] entries from this file.' },
+  { title: 'Outside critique of the [[128,16,8]] claim (GPT-6 Pro)', url: 'https://gist.github.com/drewstone/6f2906a1d5e3aa07f9f9099c2f75920a', publication: 'October 11, 2026, gist revision 39b03a99. Confirms d = 8 exactly, Sp(32,2), indecomposability by independent computation; scopes the result as a catalogue extension and notes the published weight-8 [[128,16,8]] comparators with exact distinguishing invariants.' },
+  { title: 'Standalone verifier and machine-readable construction', url: '/research/verify-128-16-8.py', publication: 'Standard-library-only checker (no numpy, no network) and the record-schema code.json it reads, sha256 1b19793e. Run: python3 verify-128-16-8.py code-128-16-8.json. Algorithms adapted from the run's mounted check; no shared code.' },
+  { title: 'Independent verification page', url: 'https://gist.github.com/drewstone/6f2906a1d5e3aa07f9f9099c2f75920a', publication: 'VERIFICATION.md in the same gist, 2026-10-11: an agent-independent parser, GF(2) library, C/OpenMP orbit search (36 s over all 2^32 - 1 vectors) and GAP RecognizeClassical, none sharing code with the run check. The run record and check verdict records are retained in the private proof packet and the lab workspace.' },
+]} />
