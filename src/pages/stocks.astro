@@ -51,7 +51,10 @@ const ALL = Object.values(GROUPS).flat()
             <button class="chip" data-group={g.toLowerCase()}>{g}</button>
           ))}
         </div>
-        <button class="chip active" id="stream" type="button" aria-pressed="true">Live</button>
+        <div class="modes">
+          <button class="chip active" id="stream" type="button" aria-pressed="true">Streaming on</button>
+          <button class="chip" id="refresh" type="button">Refresh</button>
+        </div>
       </div>
     </div>
   </header>
@@ -63,8 +66,12 @@ const ALL = Object.values(GROUPS).flat()
           <th>Symbol</th>
           <th>Name</th>
           <th class="num">Price</th>
-          <th class="num">Change</th>
-          <th class="num">Change%</th>
+          <th class="num">1D</th>
+          <th class="num">1D%</th>
+          <th class="num">30D</th>
+          <th class="num">30D%</th>
+          <th class="num">50D MA</th>
+          <th class="num">200D MA</th>
           <th>Updated</th>
         </tr>
       </thead>
@@ -78,14 +85,13 @@ const ALL = Object.values(GROUPS).flat()
           >
             <td class="ticker">{sym}</td>
             <td class="name">{name}</td>
-            <td class="num muted" colspan="3">loading…</td>
+            <td class="num muted" colspan="7">loading…</td>
             <td class="muted">—</td>
           </tr>
         ))}
       </tbody>
     </table>
   </div>
-
 </Base>
 
 <script>
@@ -93,206 +99,168 @@ const ROWS = [...document.querySelectorAll('.stock-row')]
 const filterInput = document.getElementById('filter')
 const chips = [...document.querySelectorAll('.filters .chip')]
 const streamBtn = document.getElementById('stream')
-const CHART_QUERY = 'range=1d&interval=1d&includePrePost=true'
-const STREAM_URL = 'wss://streamer.finance.yahoo.com/?version=2'
+const refreshBtn = document.getElementById('refresh')
+const POLL_MS = 20000
+const DAY = 24 * 60 * 60
 
-let socket = null
-let streamOn = true
-let reconnectTimer = 0
-let heartbeatTimer = 0
+let pollTimer = 0
+let busy = false
 
-function fmt(n, d = 2) {
+function fmt(n) {
   return n == null || Number.isNaN(Number(n))
     ? '—'
     : Number(n).toLocaleString('en-US', {
-        minimumFractionDigits: d,
-        maximumFractionDigits: d,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       })
 }
 
-function readVarint(bytes, index) {
-  let result = 0n
-  let shift = 0n
-  let i = index
-  while (i < bytes.length) {
-    const b = bytes[i++]
-    result |= BigInt(b & 0x7f) << shift
-    if ((b & 0x80) === 0) return [result, i]
-    shift += 7n
-  }
-  return [result, i]
+function signed(n) {
+  if (n == null || Number.isNaN(Number(n))) return '—'
+  const text = fmt(n)
+  return n > 0 ? `+${text}` : text
 }
 
-function decodePricing(b64) {
-  const bin = atob(b64)
-  const bytes = new Uint8Array(bin.length)
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
-  const view = new DataView(bytes.buffer)
-  const out = {}
-  let i = 0
-  while (i < bytes.length) {
-    const [tag, next] = readVarint(bytes, i)
-    i = next
-    const field = Number(tag >> 3n)
-    const wt = Number(tag & 7n)
-    if (wt === 0) {
-      const [v, after] = readVarint(bytes, i)
-      i = after
-      if (field === 3) out.ts = Number((v >> 1n) ^ -(v & 1n))
-    } else if (wt === 5) {
-      const value = view.getFloat32(i, true)
-      i += 4
-      if (field === 2) out.price = value
-      else if (field === 12) out.regChg = value
-      else if (field === 8) out.regPct = value
-      else if (field === 46) out.chg = value
-      else if (field === 47) out.pct = value
-    } else if (wt === 1) {
-      i += 8
-    } else if (wt === 2) {
-      const [len, after] = readVarint(bytes, i)
-      i = after
-      const n = Number(len)
-      if (field === 1) out.sym = new TextDecoder().decode(bytes.subarray(i, i + n))
-      i += n
-    } else {
-      break
-    }
-  }
-  return out
+function signedPct(n) {
+  const text = signed(n)
+  return text === '—' ? text : `${text}%`
 }
 
-function paint(tr, q) {
-  const have = Number(tr.dataset.ts || 0)
-  if (have && q.ts && q.ts < have) return
-  const up = q.chg >= 0
-  const cls = up ? 'ok' : 'fail'
-  tr.dataset.priced = '1'
-  if (q.prev != null) tr.dataset.prev = String(q.prev)
-  if (q.ts) tr.dataset.ts = String(q.ts)
-  const when = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
-  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num">${fmt(q.price)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.chg)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.pct)}%</td><td class="muted">${when}</td>`
+function tone(n) {
+  if (n == null || Number.isNaN(Number(n))) return 'num'
+  return n >= 0 ? 'num ok' : 'num fail'
 }
 
-function markUnavailable(tr) {
-  if (tr.dataset.priced === '1') return
-  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num fail" colspan="3">unavailable</td><td class="muted">—</td>`
+function finite(n) {
+  return typeof n === 'number' && Number.isFinite(n)
+}
+
+function mean(bars, count, key) {
+  if (bars.length < count) return null
+  let sum = 0
+  for (let i = bars.length - count; i < bars.length; i++) sum += bars[i][key]
+  return sum / count
 }
 
 function parseChart(sym, body) {
-  const res = body.chart?.result?.[0]
+  const res = body?.chart?.result?.[0]
   const meta = res?.meta
   if (!meta) throw new Error('empty')
-  const price = meta.fulldayPrice ?? meta.regularMarketPrice
-  const prev = meta.previousClose ?? meta.chartPreviousClose
-  if (price == null || prev == null) throw new Error('missing')
-  const chg = meta.fulldayChange ?? price - prev
-  const pct = meta.fulldayChangePercent ?? (chg / prev) * 100
-  return { sym, price, prev, chg, pct, ts: (meta.regularMarketTime ?? 0) * 1000 }
-}
-
-async function fetchChart(url, sym) {
-  const r = await fetch('https://proxy.cors.dev/' + url)
-  if (r.status === 429) return { sym, error: '429' }
-  if (!r.ok) return { sym, error: String(r.status) }
-  return parseChart(sym, await r.json())
+  const stamps = res.timestamp || []
+  const quote = res.indicators?.quote?.[0]?.close || []
+  const adj = res.indicators?.adjclose?.[0]?.adjclose || []
+  const bars = []
+  for (let i = 0; i < stamps.length; i++) {
+    const close = quote[i]
+    const adjusted = adj[i]
+    if (!finite(close) && !finite(adjusted)) continue
+    bars.push({
+      t: stamps[i],
+      close: finite(close) ? close : adjusted,
+      adj: finite(adjusted) ? adjusted : close,
+    })
+  }
+  if (bars.length < 2) throw new Error('short')
+  const last = bars[bars.length - 1]
+  const prior = bars[bars.length - 2]
+  const regular = finite(meta.regularMarketPrice) ? meta.regularMarketPrice : last.close
+  const price = finite(meta.fulldayPrice) ? meta.fulldayPrice : regular
+  const prevClose = Math.abs(last.close - regular) > 0.02 ? last.close : prior.close
+  const dayChg = price - prevClose
+  const dayPct = prevClose ? (dayChg / prevClose) * 100 : null
+  const factor = last.close ? last.adj / last.close : 1
+  const liveAdj = price * (Number.isFinite(factor) ? factor : 1)
+  const target = last.t - 30 * DAY
+  let base = null
+  for (let i = bars.length - 1; i >= 0; i--) {
+    if (bars[i].t <= target) {
+      base = bars[i]
+      break
+    }
+  }
+  const enoughHistory = base && last.t - base.t >= 20 * DAY
+  const m30 = enoughHistory ? liveAdj - base.adj : null
+  const m30pct = enoughHistory && base.adj ? (m30 / base.adj) * 100 : null
+  return {
+    sym,
+    price,
+    dayChg,
+    dayPct,
+    m30,
+    m30pct,
+    ma50: mean(bars, 50, 'adj'),
+    ma200: mean(bars, 200, 'adj'),
+    ts: (meta.regularMarketTime || last.t) * 1000,
+  }
 }
 
 async function fetchQuote(sym) {
-  const targets = [
-    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?${CHART_QUERY}`,
-    `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?${CHART_QUERY}`,
-  ]
+  const hosts = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']
   let error = 'unavailable'
   for (let attempt = 0; attempt < 2; attempt++) {
-    for (const url of targets) {
+    for (const host of hosts) {
+      const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}?range=1y&interval=1d&includeAdjustedClose=true`
       try {
-        const quote = await fetchChart(url, sym)
-        if (!quote.error) return quote
-        error = quote.error
-        if (quote.error !== '429') continue
+        const r = await fetch('https://proxy.cors.dev/' + url, { cache: 'no-store' })
+        if (r.status === 429) {
+          error = '429'
+          continue
+        }
+        if (!r.ok) {
+          error = String(r.status)
+          continue
+        }
+        return parseChart(sym, await r.json())
       } catch (e) {
         error = e.message || 'unavailable'
       }
     }
     if (error !== '429') break
-    await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)))
+    await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)))
   }
   return { sym, error }
 }
 
+function paint(tr, q) {
+  tr.dataset.priced = '1'
+  const when = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
+  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num">${fmt(q.price)}</td><td class="${tone(q.dayChg)}">${signed(q.dayChg)}</td><td class="${tone(q.dayPct)}">${signedPct(q.dayPct)}</td><td class="${tone(q.m30)}">${signed(q.m30)}</td><td class="${tone(q.m30pct)}">${signedPct(q.m30pct)}</td><td class="num">${fmt(q.ma50)}</td><td class="num">${fmt(q.ma200)}</td><td class="muted">${when}</td>`
+}
+
+function markUnavailable(tr) {
+  if (tr.dataset.priced === '1') return
+  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num fail" colspan="7">unavailable</td><td class="muted">—</td>`
+}
+
 async function loadAll() {
-  let cursor = 0
-  async function worker() {
-    while (cursor < ROWS.length) {
-      const tr = ROWS[cursor++]
-      const q = await fetchQuote(tr.dataset.sym)
-      if (q.error) markUnavailable(tr)
-      else paint(tr, q)
+  if (busy) return
+  busy = true
+  refreshBtn.disabled = true
+  try {
+    let cursor = 0
+    async function worker() {
+      while (cursor < ROWS.length) {
+        const tr = ROWS[cursor++]
+        const q = await fetchQuote(tr.dataset.sym)
+        if (q.error) markUnavailable(tr)
+        else paint(tr, q)
+      }
     }
+    const workers = Math.min(4, ROWS.length)
+    await Promise.all(Array.from({ length: workers }, () => worker()))
+  } finally {
+    busy = false
+    refreshBtn.disabled = false
   }
-  const workers = Math.min(4, ROWS.length)
-  await Promise.all(Array.from({ length: workers }, () => worker()))
 }
 
-function applyTick(raw) {
-  const tr = ROWS.find((row) => row.dataset.sym === raw.sym)
-  if (!tr || raw.price == null || Number.isNaN(raw.price)) return
-  const stored = tr.dataset.prev
-  const prev = stored != null && stored !== '' ? Number(stored) : null
-  let chg = raw.chg
-  let pct = raw.pct
-  if (prev != null && Number.isFinite(prev) && prev !== 0) {
-    chg = raw.price - prev
-    pct = (chg / prev) * 100
-  } else if (chg == null) {
-    chg = raw.regChg
-    pct = raw.regPct
-  }
-  if (chg == null || pct == null || Number.isNaN(chg) || Number.isNaN(pct)) return
-  const knownPrev = prev != null && Number.isFinite(prev) ? prev : raw.price - chg
-  paint(tr, { price: raw.price, prev: knownPrev, chg, pct, ts: raw.ts || Date.now() })
-}
-
-function subscribe() {
-  if (!socket || socket.readyState !== 1) return
-  socket.send(JSON.stringify({ subscribe: ROWS.map((tr) => tr.dataset.sym) }))
-}
-
-function stopStream() {
-  streamOn = false
-  clearTimeout(reconnectTimer)
-  clearInterval(heartbeatTimer)
-  if (!socket) return
-  socket.onclose = null
-  socket.close()
-  socket = null
-}
-
-function startStream() {
-  streamOn = true
-  if (socket && socket.readyState <= 1) return
-  socket = new WebSocket(STREAM_URL)
-  socket.onopen = () => {
-    subscribe()
-    clearInterval(heartbeatTimer)
-    heartbeatTimer = setInterval(subscribe, 15000)
-  }
-  socket.onmessage = (ev) => {
-    try {
-      const data = JSON.parse(ev.data)
-      if (data.type !== 'pricing' || !data.message) return
-      applyTick(decodePricing(data.message))
-    } catch {
-      // Ignore a malformed frame and keep the last good price.
-    }
-  }
-  socket.onclose = () => {
-    clearInterval(heartbeatTimer)
-    socket = null
-    if (!streamOn) return
-    reconnectTimer = setTimeout(startStream, 2000)
-  }
+function setStreaming(on) {
+  streamBtn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  streamBtn.classList.toggle('active', on)
+  streamBtn.textContent = on ? 'Streaming on' : 'Streaming off'
+  clearInterval(pollTimer)
+  pollTimer = 0
+  if (on) pollTimer = setInterval(loadAll, POLL_MS)
 }
 
 function applyFilters() {
@@ -315,16 +283,12 @@ for (const chip of chips) {
 }
 
 streamBtn.addEventListener('click', () => {
-  const on = streamBtn.getAttribute('aria-pressed') !== 'true'
-  streamBtn.setAttribute('aria-pressed', on ? 'true' : 'false')
-  streamBtn.classList.toggle('active', on)
-  if (on) startStream()
-  else stopStream()
+  setStreaming(streamBtn.getAttribute('aria-pressed') !== 'true')
 })
+refreshBtn.addEventListener('click', loadAll)
 
-startStream()
+setStreaming(true)
 loadAll()
-setInterval(loadAll, 60000)
 </script>
 
 <style>
@@ -346,6 +310,12 @@ setInterval(loadAll, 60000)
     gap: 0.6rem;
   }
 
+  .modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
   #filter {
     font-family: var(--font-mono);
     font-size: 0.85rem;
@@ -361,6 +331,11 @@ setInterval(loadAll, 60000)
   #filter:focus {
     outline: none;
     border-color: var(--border-strong);
+  }
+
+  #refresh:disabled {
+    opacity: 0.55;
+    cursor: default;
   }
 
   .filters {
@@ -402,13 +377,13 @@ setInterval(loadAll, 60000)
   .stock-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.92rem;
+    font-size: 0.8rem;
     line-height: 1.35;
   }
 
   .stock-table th,
   .stock-table td {
-    padding: 0.45rem 0.6rem;
+    padding: 0.4rem 0.45rem;
     border-bottom: 1px solid var(--border);
     text-align: left;
     vertical-align: top;
@@ -417,11 +392,12 @@ setInterval(loadAll, 60000)
   .stock-table th {
     font-family: var(--font-mono);
     font-weight: 500;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     color: var(--fg-faint);
     border-bottom: 2px solid var(--fg);
+    white-space: nowrap;
   }
 
   .stock-table tr:hover td {
@@ -432,6 +408,7 @@ setInterval(loadAll, 60000)
     font-family: var(--font-mono);
     font-weight: 600;
     letter-spacing: 0.02em;
+    white-space: nowrap;
   }
 
   .name {
@@ -455,5 +432,6 @@ setInterval(loadAll, 60000)
 
   .muted {
     color: var(--fg-faint);
+    white-space: nowrap;
   }
 </style>
