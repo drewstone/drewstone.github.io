@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro'
+
+const SYMBOLS = ['AAPL', 'AMZN', 'NET', 'INTC', 'NVDA', 'CBRS']
+const DESCRIPTIONS = {
+  AAPL: 'Apple Inc.',
+  AMZN: 'Amazon.com Inc.',
+  NET: 'Cloudflare Inc.',
+  INTC: 'Intel Corporation',
+  NVDA: 'NVIDIA Corporation',
+  CBRS: 'Cerebras Systems Inc.',
+}
+---
+
+<Base title="Stocks" description="Live prices for tracked tickers." wide>
+  <header class="page-head">
+    <p class="tag">Watchlist</p>
+    <h1>Stocks</h1>
+    <p class="lede">Six names, refreshed every minute.</p>
+  </header>
+
+  <div class="table-wrap">
+    <table class="stock-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Name</th>
+          <th class="num">Price</th>
+          <th class="num">Change</th>
+          <th class="num">Change%</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        {SYMBOLS.map((s) => (
+          <tr id={`row-${s}`}
+            <td class="ticker">{s}</td>
+            <td class="name">{DESCRIBIONS[s]}</td>
+            <td class="num muted" colspan="3">loading…</td>
+            <td class="muted">—</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="footnote">Quotes from Yahoo Finance. Not financial advice.</p>
+</Base>
+
+<script>
+const SYMBOLS = ['AAPL', 'AMZN', 'NET', 'INTC', 'NVDA', 'CBRS']
+
+function fmt(n, d = 2) {
+  return n == null
+    ? '—'
+    : Number(n).toLocaleString('en-US', {
+        minimumFractionDigits: d,
+        maximumFractionDigits: d,
+      })
+}
+
+async function fetchQuote(sym) {
+  try {
+    const r = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`,
+    )
+    if (!r.ok) throw new Error(String(r.status))
+    const j = await r.json()
+    const res = j.chart.result[0]
+    const meta = res.meta
+    const prev = res.previousClose ?? meta.chartPreviousClose
+    const price = meta.regularMarketPrice
+    const chg = price - prev
+    const pct = (chg / prev) * 100
+    return { sym, price, chg, pct, ts: meta.regularMarketTime }
+  } catch (e) {
+    return { sym, error: e.message }
+  }
+}
+
+async function loadAll() {
+  const results = await Promise.all(SYMBOLS.map(fetchQuote))
+  for (const q of results) {
+    const tr = document.getElementById(`row-${q.sym}`)
+    if (!tr) continue
+    if (q.error) {
+      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="name">${tr.querySelector('.name')?.textContent ?? ''}</td><td class="num fail" colspan="3">unavailable</td><td class="muted">—</td>`
+    } else {
+      const up = q.chg >= 0
+      const cls = up ? 'ok' : 'fail'
+      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="name">${tr.querySelector('.name')?.textContent ?? ''}</td><td class="num">${fmt(q.price)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.chg)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.pct)}%</td><td class="muted">${new Date(q.ts * 1000).toLocaleTimeString()}</td>`
+    }
+  }
+}
+
+loadAll()
+setInterval(loadAll, 60000)
+</script>
+
+<style>
+  .page-head {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .lede {
+    color: var(--fg-muted);
+    font-size: 1.05rem;
+    margin-bottom: 0;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+
+  .stock-table th,
+  .stock-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .stock-table th {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-faint);
+    border-bottom: 2px solid var(--fg);
+  }
+
+  .stock-table tr:hover td {
+    background: var(--bg-alt);
+  }
+
+  .ticker {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .name {
+    color: var(--fg-muted);
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ok {
+    color: var(--c-ok);
+  }
+
+  .fail {
+    color: var(--c-fail);
+  }
+
+  .muted {
+    color: var(--fg-faint);
+  }
+
+  .footnote {
+    margin-top: var(--space-xl);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--fg-faint);
+  }
+</style>
