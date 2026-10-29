@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Tracker</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #e6edf3; padding: 24px; }
+  h1 { font-size: 1.5rem; margin-bottom: 20px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 8px; overflow: hidden; }
+  th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #21262d; }
+  th { background: #21262d; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #1c2128; }
+  .ticker { font-weight: 600; color: #58a6ff; }
+  .price { font-variant-numeric: tabular-nums; }
+  .up { color: #3fb950; }
+  .down { color: #f85149; }
+  .muted { color: #8b949e; font-size: 0.85rem; }
+  .refresh { margin-top: 16px; background: #21262d; border: 1px solid #30363d; color: #e6edf3; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+  .refresh:hover { background: #30363d; }
+  .error { color: #f85149; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<h1>Stock Tracker</h1>
+<table>
+  <thead><tr><th>Symbol</th><th>Price</th><th>Change</th><th>Change%</th><th>Updated</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<button class="refresh" onclick="loadAll()">Refresh</button>
+<script>
+const SYMBOLS = ['AAPL','AMZN','NET','INTC','NVDA','CBRS'];
+const rows = document.getElementById('rows);
+
+function fmt(n, d=2) { return n == null ? '—' : Number(n).toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d}); }
+
+async function fetchQuote(sym) {
+  try {
+    const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`);
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json();
+    const res = j.chart.result[0];
+    const meta = res.meta;
+    const prev = res.previousClose ?? meta.chartPreviousClose;
+    const price = meta.regularMarketPrice;
+    const chg = price - prev;
+    const pct = (chg / prev) * 100;
+    return { sym, price, chg, pct, ts: meta.regularMarketTime };
+  } catch (e) {
+    return { sym, error: e.message };
+  }
+}
+
+async function loadAll() {
+  rows.innerHTML = SYMBOLS.map(s => `<tr id="row-${s}"><td class="ticker">${s}</td><td class="muted" colspan="4">loading…</td></tr>`).join('');
+  const results = await Promise.all(SYMBOLS.map(fetchQuote));
+  for (const q of results) {
+    const tr = document.getElementById(`row-${q.sym}`);
+    if (q.error) {
+      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="error" colspan="4">unavailable</td>`;
+    } else {
+      const up = q.chg >= 0;
+      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="price">${fmt(q.price)}</td><td class="${up?'up':'down'}">${up?'+':''}${fmt(q.chg)}</td><td class="${up?'up':'down'}">${up?'+':''}${fmt(q.pct)}%</td><td class="muted">${new Date(q.ts*1000).toLocaleTimeString()}</td>`;
+    }
+  }
+}
+
+loadAll();
+setInterval(loadAll, 60000);
+</script>
+</body>
+</html>
