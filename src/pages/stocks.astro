@@ -39,18 +39,19 @@ const GROUPS = {
 const ALL = Object.values(GROUPS).flat()
 ---
 
-<Base title="Stocks" description="Live prices for tracked tickers." wide>
+<Base title="Stocks" description="Stocks" wide>
   <header class="page-head">
-    <p class="tag">Watchlist</p>
     <h1>Stocks</h1>
-    <p class="lede">{ALL.length} names across semiconductors and tech. Refreshed every minute.</p>
     <div class="toolbar">
       <input type="search" id="filter" placeholder="Filter by symbol or name" autocomplete="off" />
-      <div class="filters" role="group" aria-label="Filter by group">
-        <button class="chip active" data-group="all">All</button>
-        {Object.keys(GROUPS).map((g) => (
-          <button class="chip" data-group={g.toLowerCase()}>{g}</button>
-        ))}
+      <div class="toolbar-row">
+        <div class="filters" role="group" aria-label="Filter by group">
+          <button class="chip active" data-group="all">All</button>
+          {Object.keys(GROUPS).map((g) => (
+            <button class="chip" data-group={g.toLowerCase()}>{g}</button>
+          ))}
+        </div>
+        <button class="chip active" id="stream" type="button" aria-pressed="true">Live</button>
       </div>
     </div>
   </header>
@@ -85,16 +86,23 @@ const ALL = Object.values(GROUPS).flat()
     </table>
   </div>
 
-  <p class="footnote">Quotes from Yahoo Finance. Not financial advice.</p>
 </Base>
 
 <script>
 const ROWS = [...document.querySelectorAll('.stock-row')]
 const filterInput = document.getElementById('filter')
-const chips = [...document.querySelectorAll('.chip')]
+const chips = [...document.querySelectorAll('.filters .chip')]
+const streamBtn = document.getElementById('stream')
+const CHART_QUERY = 'range=1d&interval=1d&includePrePost=true'
+const STREAM_URL = 'wss://streamer.finance.yahoo.com/?version=2'
+
+let socket = null
+let streamOn = true
+let reconnectTimer = 0
+let heartbeatTimer = 0
 
 function fmt(n, d = 2) {
-  return n == null
+  return n == null || Number.isNaN(Number(n))
     ? '—'
     : Number(n).toLocaleString('en-US', {
         minimumFractionDigits: d,
@@ -102,37 +110,188 @@ function fmt(n, d = 2) {
       })
 }
 
-async function fetchQuote(sym) {
-  try {
-    const r = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=2d`,
-    )
-    if (!r.ok) throw new Error(String(r.status))
-    const j = await r.json()
-    const res = j.chart.result[0]
-    const meta = res.meta
-    const prev = res.previousClose ?? meta.chartPreviousClose
-    const price = meta.regularMarketPrice
-    const chg = price - prev
-    const pct = (chg / prev) * 100
-    return { sym, price, chg, pct, ts: meta.regularMarketTime }
-  } catch (e) {
-    return { sym, error: e.message }
+function readVarint(bytes, index) {
+  let result = 0n
+  let shift = 0n
+  let i = index
+  while (i < bytes.length) {
+    const b = bytes[i++]
+    result |= BigInt(b & 0x7f) << shift
+    if ((b & 0x80) === 0) return [result, i]
+    shift += 7n
   }
+  return [result, i]
+}
+
+function decodePricing(b64) {
+  const bin = atob(b64)
+  const bytes = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+  const view = new DataView(bytes.buffer)
+  const out = {}
+  let i = 0
+  while (i < bytes.length) {
+    const [tag, next] = readVarint(bytes, i)
+    i = next
+    const field = Number(tag >> 3n)
+    const wt = Number(tag & 7n)
+    if (wt === 0) {
+      const [v, after] = readVarint(bytes, i)
+      i = after
+      if (field === 3) out.ts = Number((v >> 1n) ^ -(v & 1n))
+    } else if (wt === 5) {
+      const value = view.getFloat32(i, true)
+      i += 4
+      if (field === 2) out.price = value
+      else if (field === 12) out.regChg = value
+      else if (field === 8) out.regPct = value
+      else if (field === 46) out.chg = value
+      else if (field === 47) out.pct = value
+    } else if (wt === 1) {
+      i += 8
+    } else if (wt === 2) {
+      const [len, after] = readVarint(bytes, i)
+      i = after
+      const n = Number(len)
+      if (field === 1) out.sym = new TextDecoder().decode(bytes.subarray(i, i + n))
+      i += n
+    } else {
+      break
+    }
+  }
+  return out
+}
+
+function paint(tr, q) {
+  const have = Number(tr.dataset.ts || 0)
+  if (have && q.ts && q.ts < have) return
+  const up = q.chg >= 0
+  const cls = up ? 'ok' : 'fail'
+  tr.dataset.priced = '1'
+  if (q.prev != null) tr.dataset.prev = String(q.prev)
+  if (q.ts) tr.dataset.ts = String(q.ts)
+  const when = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
+  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num">${fmt(q.price)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.chg)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.pct)}%</td><td class="muted">${when}</td>`
+}
+
+function markUnavailable(tr) {
+  if (tr.dataset.priced === '1') return
+  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num fail" colspan="3">unavailable</td><td class="muted">—</td>`
+}
+
+function parseChart(sym, body) {
+  const res = body.chart?.result?.[0]
+  const meta = res?.meta
+  if (!meta) throw new Error('empty')
+  const price = meta.fulldayPrice ?? meta.regularMarketPrice
+  const prev = meta.previousClose ?? meta.chartPreviousClose
+  if (price == null || prev == null) throw new Error('missing')
+  const chg = meta.fulldayChange ?? price - prev
+  const pct = meta.fulldayChangePercent ?? (chg / prev) * 100
+  return { sym, price, prev, chg, pct, ts: (meta.regularMarketTime ?? 0) * 1000 }
+}
+
+async function fetchChart(url, sym) {
+  const r = await fetch('https://proxy.cors.dev/' + url)
+  if (r.status === 429) return { sym, error: '429' }
+  if (!r.ok) return { sym, error: String(r.status) }
+  return parseChart(sym, await r.json())
+}
+
+async function fetchQuote(sym) {
+  const targets = [
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?${CHART_QUERY}`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?${CHART_QUERY}`,
+  ]
+  let error = 'unavailable'
+  for (let attempt = 0; attempt < 2; attempt++) {
+    for (const url of targets) {
+      try {
+        const quote = await fetchChart(url, sym)
+        if (!quote.error) return quote
+        error = quote.error
+        if (quote.error !== '429') continue
+      } catch (e) {
+        error = e.message || 'unavailable'
+      }
+    }
+    if (error !== '429') break
+    await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)))
+  }
+  return { sym, error }
 }
 
 async function loadAll() {
-  const results = await Promise.all(ROWS.map((tr) => fetchQuote(tr.dataset.sym)))
-  for (const q of results) {
-    const tr = document.querySelector(`.stock-row[data-sym="${q.sym}"]`)
-    if (!tr) continue
-    if (q.error) {
-      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="name">${tr.dataset.name}</td><td class="num fail" colspan="3">unavailable</td><td class="muted">—</td>`
-    } else {
-      const up = q.chg >= 0
-      const cls = up ? 'ok' : 'fail'
-      tr.innerHTML = `<td class="ticker">${q.sym}</td><td class="name">${tr.dataset.name}</td><td class="num">${fmt(q.price)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.chg)}</td><td class="num ${cls}">${up ? '+' : ''}${fmt(q.pct)}%</td><td class="muted">${new Date(q.ts * 1000).toLocaleTimeString()}</td>`
+  let cursor = 0
+  async function worker() {
+    while (cursor < ROWS.length) {
+      const tr = ROWS[cursor++]
+      const q = await fetchQuote(tr.dataset.sym)
+      if (q.error) markUnavailable(tr)
+      else paint(tr, q)
     }
+  }
+  const workers = Math.min(4, ROWS.length)
+  await Promise.all(Array.from({ length: workers }, () => worker()))
+}
+
+function applyTick(raw) {
+  const tr = ROWS.find((row) => row.dataset.sym === raw.sym)
+  if (!tr || raw.price == null || Number.isNaN(raw.price)) return
+  const stored = tr.dataset.prev
+  const prev = stored != null && stored !== '' ? Number(stored) : null
+  let chg = raw.chg
+  let pct = raw.pct
+  if (prev != null && Number.isFinite(prev) && prev !== 0) {
+    chg = raw.price - prev
+    pct = (chg / prev) * 100
+  } else if (chg == null) {
+    chg = raw.regChg
+    pct = raw.regPct
+  }
+  if (chg == null || pct == null || Number.isNaN(chg) || Number.isNaN(pct)) return
+  const knownPrev = prev != null && Number.isFinite(prev) ? prev : raw.price - chg
+  paint(tr, { price: raw.price, prev: knownPrev, chg, pct, ts: raw.ts || Date.now() })
+}
+
+function subscribe() {
+  if (!socket || socket.readyState !== 1) return
+  socket.send(JSON.stringify({ subscribe: ROWS.map((tr) => tr.dataset.sym) }))
+}
+
+function stopStream() {
+  streamOn = false
+  clearTimeout(reconnectTimer)
+  clearInterval(heartbeatTimer)
+  if (!socket) return
+  socket.onclose = null
+  socket.close()
+  socket = null
+}
+
+function startStream() {
+  streamOn = true
+  if (socket && socket.readyState <= 1) return
+  socket = new WebSocket(STREAM_URL)
+  socket.onopen = () => {
+    subscribe()
+    clearInterval(heartbeatTimer)
+    heartbeatTimer = setInterval(subscribe, 15000)
+  }
+  socket.onmessage = (ev) => {
+    try {
+      const data = JSON.parse(ev.data)
+      if (data.type !== 'pricing' || !data.message) return
+      applyTick(decodePricing(data.message))
+    } catch {
+      // Ignore a malformed frame and keep the last good price.
+    }
+  }
+  socket.onclose = () => {
+    clearInterval(heartbeatTimer)
+    socket = null
+    if (!streamOn) return
+    reconnectTimer = setTimeout(startStream, 2000)
   }
 }
 
@@ -155,6 +314,15 @@ for (const chip of chips) {
   })
 }
 
+streamBtn.addEventListener('click', () => {
+  const on = streamBtn.getAttribute('aria-pressed') !== 'true'
+  streamBtn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  streamBtn.classList.toggle('active', on)
+  if (on) startStream()
+  else stopStream()
+})
+
+startStream()
 loadAll()
 setInterval(loadAll, 60000)
 </script>
@@ -164,16 +332,18 @@ setInterval(loadAll, 60000)
     margin-bottom: var(--space-2xl);
   }
 
-  .lede {
-    color: var(--fg-muted);
-    font-size: 1.05rem;
-    margin-bottom: var(--space-lg);
-  }
-
   .toolbar {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+  }
+
+  .toolbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
   }
 
   #filter {
@@ -284,13 +454,6 @@ setInterval(loadAll, 60000)
   }
 
   .muted {
-    color: var(--fg-faint);
-  }
-
-  .footnote {
-    margin-top: var(--space-xl);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
     color: var(--fg-faint);
   }
 </style>
