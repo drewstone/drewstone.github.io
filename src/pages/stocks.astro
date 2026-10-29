@@ -40,71 +40,158 @@ const ALL = Object.values(GROUPS).flat()
 ---
 
 <Base title="Stocks" description="Stocks" wide>
-  <header class="page-head">
-    <h1>Stocks</h1>
-    <div class="toolbar">
-      <input type="search" id="filter" placeholder="Filter by symbol or name" autocomplete="off" />
-      <div class="toolbar-row">
-        <div class="filters" role="group" aria-label="Filter by group">
-          <button class="chip active" data-group="all">All</button>
-          {Object.keys(GROUPS).map((g) => (
-            <button class="chip" data-group={g.toLowerCase()}>{g}</button>
-          ))}
-        </div>
-        <div class="modes">
-          <button class="chip active" id="stream" type="button" aria-pressed="true">Streaming on</button>
-          <button class="chip" id="refresh" type="button">Refresh</button>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  />
+  <div class="board">
+    <header class="page-head">
+      <h1>Stocks</h1>
+      <div class="toolbar">
+        <input type="search" id="filter" placeholder="Filter by symbol or name" autocomplete="off" />
+        <div class="toolbar-row">
+          <div class="filters" role="group" aria-label="Filter by group">
+            <button class="chip active" data-group="all" type="button">All</button>
+            {Object.keys(GROUPS).map((g) => (
+              <button class="chip" type="button" data-group={g.toLowerCase()}>{g}</button>
+            ))}
+          </div>
+          <div class="toolbar-actions">
+            <div class="views" role="group" aria-label="Layout">
+              <button class="chip active" id="view-table" type="button" aria-pressed="true">Table</button>
+              <button class="chip" id="view-cards" type="button" aria-pressed="false">Cards</button>
+            </div>
+            <div class="modes">
+              <button class="chip active" id="stream" type="button" aria-pressed="true">Streaming on</button>
+              <button class="chip" id="refresh" type="button">Refresh</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div class="table-wrap">
-    <table class="stock-table">
-      <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Name</th>
-          <th class="num">Price</th>
-          <th class="num">1D</th>
-          <th class="num">1D%</th>
-          <th class="num">30D</th>
-          <th class="num">30D%</th>
-          <th class="num">50D MA</th>
-          <th class="num">200D MA</th>
-          <th>Updated</th>
-        </tr>
-      </thead>
-      <tbody id="rows">
-        {ALL.map(([sym, name]) => (
-          <tr
-            class="stock-row"
-            data-group={Object.entries(GROUPS).find(([, list]) => list.some(([s]) => s === sym))?.[0].toLowerCase()}
-            data-sym={sym}
-            data-name={name}
-          >
-            <td class="ticker">{sym}</td>
-            <td class="name">{name}</td>
-            <td class="num muted" colspan="7">loading…</td>
-            <td class="muted">—</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <section id="detail" class="detail" hidden>
+      <div class="detail-top">
+        <div>
+          <h2 class="detail-sym" id="detail-sym"></h2>
+          <p class="detail-name" id="detail-name"></p>
+        </div>
+        <button class="chip" id="detail-close" type="button">Close</button>
+      </div>
+      <div class="detail-stats" id="detail-stats"></div>
+      <div class="detail-chart" id="detail-chart"></div>
+      <div class="legend">
+        <span><i class="swatch price"></i>Price</span>
+        <span><i class="swatch ma50"></i>50D</span>
+        <span><i class="swatch ma200"></i>200D</span>
+        <span class="readout" id="detail-readout"></span>
+      </div>
+    </section>
+
+    <div id="table-view">
+      <div class="table-wrap">
+        <table class="stock-table">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Name</th>
+              <th>1Y</th>
+              <th class="num">Price</th>
+              <th class="num">1D</th>
+              <th class="num">1D%</th>
+              <th class="num">30D</th>
+              <th class="num">30D%</th>
+              <th class="num">50D MA</th>
+              <th class="num">200D MA</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            {ALL.map(([sym, name]) => (
+              <tr
+                class="stock-row"
+                tabindex="0"
+                data-group={Object.entries(GROUPS).find(([, list]) => list.some(([s]) => s === sym))?.[0].toLowerCase()}
+                data-sym={sym}
+                data-name={name}
+              >
+                <td class="ticker">{sym}</td>
+                <td class="name">{name}</td>
+                <td class="spark" data-spark></td>
+                <td class="num price">—</td>
+                <td class="num d1">—</td>
+                <td class="num d1p">—</td>
+                <td class="num d30">—</td>
+                <td class="num d30p">—</td>
+                <td class="num ma50">—</td>
+                <td class="num ma200">—</td>
+                <td class="muted when">—</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="card-view" class="card-grid" hidden>
+      {ALL.map(([sym, name]) => (
+        <button
+          class="card"
+          type="button"
+          data-group={Object.entries(GROUPS).find(([, list]) => list.some(([s]) => s === sym))?.[0].toLowerCase()}
+          data-sym={sym}
+          data-name={name}
+        >
+          <div class="card-top">
+            <span class="ticker">{sym}</span>
+            <span class="spark" data-spark></span>
+          </div>
+          <div class="name">{name}</div>
+          <div class="num price card-price">—</div>
+          <div class="card-metrics">
+            <span class="k">1D</span>
+            <span class="num d1">—</span>
+            <span class="num d1p">—</span>
+            <span class="k">30D</span>
+            <span class="num d30">—</span>
+            <span class="num d30p">—</span>
+            <span class="k">50D</span>
+            <span class="num ma50">—</span>
+            <span></span>
+            <span class="k">200D</span>
+            <span class="num ma200">—</span>
+            <span></span>
+          </div>
+          <div class="muted when">—</div>
+        </button>
+      ))}
+    </div>
   </div>
 </Base>
 
 <script>
-const ROWS = [...document.querySelectorAll('.stock-row')]
+const ROWS = [...document.querySelectorAll('tr.stock-row')]
 const filterInput = document.getElementById('filter')
 const chips = [...document.querySelectorAll('.filters .chip')]
 const streamBtn = document.getElementById('stream')
 const refreshBtn = document.getElementById('refresh')
+const tableView = document.getElementById('table-view')
+const cardView = document.getElementById('card-view')
+const viewTable = document.getElementById('view-table')
+const viewCards = document.getElementById('view-cards')
+const detail = document.getElementById('detail')
+const detailChart = document.getElementById('detail-chart')
+const detailReadout = document.getElementById('detail-readout')
 const POLL_MS = 20000
 const DAY = 24 * 60 * 60
+const BOOKS = new Map()
 
 let pollTimer = 0
 let busy = false
+let selected = null
+let chartState = null
 
 function fmt(n) {
   return n == null || Number.isNaN(Number(n))
@@ -126,13 +213,12 @@ function signedPct(n) {
   return text === '—' ? text : `${text}%`
 }
 
-function tone(n) {
-  if (n == null || Number.isNaN(Number(n))) return 'num'
-  return n >= 0 ? 'num ok' : 'num fail'
-}
-
 function finite(n) {
   return typeof n === 'number' && Number.isFinite(n)
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 function mean(bars, count, key) {
@@ -140,6 +226,17 @@ function mean(bars, count, key) {
   let sum = 0
   for (let i = bars.length - count; i < bars.length; i++) sum += bars[i][key]
   return sum / count
+}
+
+function rolling(values, count) {
+  const out = new Array(values.length).fill(null)
+  let sum = 0
+  for (let i = 0; i < values.length; i++) {
+    sum += values[i]
+    if (i >= count) sum -= values[i - count]
+    if (i >= count - 1) out[i] = sum / count
+  }
+  return out
 }
 
 function parseChart(sym, body) {
@@ -183,6 +280,7 @@ function parseChart(sym, body) {
   const m30pct = enoughHistory && base.adj ? (m30 / base.adj) * 100 : null
   return {
     sym,
+    name: meta.shortName || meta.longName || '',
     price,
     dayChg,
     dayPct,
@@ -191,7 +289,58 @@ function parseChart(sym, body) {
     ma50: mean(bars, 50, 'adj'),
     ma200: mean(bars, 200, 'adj'),
     ts: (meta.regularMarketTime || last.t) * 1000,
+    bars,
   }
+}
+
+async function readChart(url) {
+  const loaders = [
+    async () => {
+      const r = await fetch('https://proxy.cors.dev/' + url, {
+        cache: 'no-store',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(12000),
+      })
+      if (!r.ok) {
+        const err = new Error(String(r.status))
+        err.retry = r.status === 429 || r.status >= 500
+        throw err
+      }
+      return r.json()
+    },
+    async () => {
+      const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(url), {
+        cache: 'no-store',
+        credentials: 'omit',
+        signal: AbortSignal.timeout(12000),
+      })
+      if (!r.ok) {
+        const err = new Error(String(r.status))
+        err.retry = r.status === 429 || r.status >= 500
+        throw err
+      }
+      const wrapped = await r.json()
+      const code = wrapped?.status?.http_code
+      if (code && code >= 400) {
+        const err = new Error(String(code))
+        err.retry = code === 429 || code >= 500
+        throw err
+      }
+      const contents = wrapped?.contents
+      if (contents == null) throw new Error('empty proxy')
+      return typeof contents === 'string' ? JSON.parse(contents) : contents
+    },
+  ]
+  let error = 'unavailable'
+  for (const load of loaders) {
+    try {
+      return { body: await load() }
+    } catch (e) {
+      error = e.message || 'unavailable'
+      if (e.retry === false) break
+    }
+  }
+  return { error }
 }
 
 async function fetchQuote(sym) {
@@ -200,58 +349,258 @@ async function fetchQuote(sym) {
   for (let attempt = 0; attempt < 2; attempt++) {
     for (const host of hosts) {
       const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}?range=1y&interval=1d&includeAdjustedClose=true`
-      try {
-        const r = await fetch('https://proxy.cors.dev/' + url, { cache: 'no-store' })
-        if (r.status === 429) {
-          error = '429'
+      const result = await readChart(url)
+      if (result.body) {
+        try {
+          return parseChart(sym, result.body)
+        } catch (e) {
+          error = e.message || 'unavailable'
           continue
         }
-        if (!r.ok) {
-          error = String(r.status)
-          continue
-        }
-        return parseChart(sym, await r.json())
-      } catch (e) {
-        error = e.message || 'unavailable'
       }
+      error = result.error || error
     }
-    if (error !== '429') break
-    await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)))
+    if (attempt === 0) await delay(400)
   }
   return { sym, error }
 }
 
-function paint(tr, q) {
-  tr.dataset.priced = '1'
-  const when = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
-  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num">${fmt(q.price)}</td><td class="${tone(q.dayChg)}">${signed(q.dayChg)}</td><td class="${tone(q.dayPct)}">${signedPct(q.dayPct)}</td><td class="${tone(q.m30)}">${signed(q.m30)}</td><td class="${tone(q.m30pct)}">${signedPct(q.m30pct)}</td><td class="num">${fmt(q.ma50)}</td><td class="num">${fmt(q.ma200)}</td><td class="muted">${when}</td>`
+function setTone(el, n) {
+  el.classList.remove('ok', 'fail')
+  if (n == null || Number.isNaN(Number(n))) return
+  el.classList.add(n >= 0 ? 'ok' : 'fail')
 }
 
-function markUnavailable(tr) {
-  if (tr.dataset.priced === '1') return
-  tr.innerHTML = `<td class="ticker">${tr.dataset.sym}</td><td class="name">${tr.dataset.name}</td><td class="num fail" colspan="7">unavailable</td><td class="muted">—</td>`
+function sparkSvg(bars) {
+  const values = bars.map((bar) => bar.adj).filter(finite)
+  if (values.length < 2) return ''
+  const maxPoints = 56
+  const pts = []
+  if (values.length <= maxPoints) pts.push(...values)
+  else {
+    const step = (values.length - 1) / (maxPoints - 1)
+    for (let i = 0; i < maxPoints; i++) pts.push(values[Math.round(i * step)])
+  }
+  const w = 104
+  const h = 34
+  const min = Math.min(...pts)
+  const max = Math.max(...pts)
+  const span = max - min || 1
+  const points = pts
+    .map((v, i) => {
+      const x = (i / (pts.length - 1)) * (w - 2) + 1
+      const y = (1 - (v - min) / span) * (h - 6) + 3
+      return `${x.toFixed(1)},${y.toFixed(1)}`
+    })
+    .join(' ')
+  const up = pts[pts.length - 1] >= pts[0]
+  const color = up ? '#3dd68c' : '#ff5d6c'
+  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" points="${points}"/></svg>`
+}
+
+function fill(node, q) {
+  node.dataset.priced = '1'
+  const price = node.querySelector('.price')
+  if (price) price.textContent = fmt(q.price)
+  const pairs = [
+    ['.d1', signed(q.dayChg), q.dayChg],
+    ['.d1p', signedPct(q.dayPct), q.dayPct],
+    ['.d30', signed(q.m30), q.m30],
+    ['.d30p', signedPct(q.m30pct), q.m30pct],
+  ]
+  for (const [sel, text, n] of pairs) {
+    const el = node.querySelector(sel)
+    if (!el) continue
+    el.textContent = text
+    setTone(el, n)
+  }
+  const ma50 = node.querySelector('.ma50')
+  const ma200 = node.querySelector('.ma200')
+  const when = node.querySelector('.when')
+  const spark = node.querySelector('[data-spark]')
+  if (ma50) ma50.textContent = fmt(q.ma50)
+  if (ma200) ma200.textContent = fmt(q.ma200)
+  if (when) when.textContent = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
+  if (spark) spark.innerHTML = sparkSvg(q.bars)
+}
+
+function paint(q) {
+  BOOKS.set(q.sym, q)
+  for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(q.sym)}"]`)) fill(node, q)
+  if (selected === q.sym) renderDetail(q)
+}
+
+function markUnavailable(sym) {
+  for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(sym)}"]`)) {
+    if (node.dataset.priced === '1') continue
+    const price = node.querySelector('.price')
+    if (!price) continue
+    price.textContent = 'unavailable'
+    price.classList.add('fail')
+  }
 }
 
 async function loadAll() {
   if (busy) return
   busy = true
   refreshBtn.disabled = true
+  const failed = []
   try {
     let cursor = 0
     async function worker() {
       while (cursor < ROWS.length) {
         const tr = ROWS[cursor++]
         const q = await fetchQuote(tr.dataset.sym)
-        if (q.error) markUnavailable(tr)
-        else paint(tr, q)
+        if (q.error) failed.push(tr.dataset.sym)
+        else paint(q)
       }
     }
-    const workers = Math.min(4, ROWS.length)
-    await Promise.all(Array.from({ length: workers }, () => worker()))
+    await Promise.all(Array.from({ length: 1 }, () => worker()))
+    for (const sym of failed) {
+      if (document.querySelector(`tr.stock-row[data-sym="${CSS.escape(sym)}"]`)?.dataset.priced === '1') continue
+      await delay(600)
+      const q = await fetchQuote(sym)
+      if (q.error) markUnavailable(sym)
+      else paint(q)
+    }
   } finally {
     busy = false
     refreshBtn.disabled = false
   }
+}
+
+function linePoints(values, plot, min, max) {
+  const span = max - min || 1
+  const parts = []
+  let open = false
+  values.forEach((v, i) => {
+    if (!finite(v)) {
+      open = false
+      return
+    }
+    const x = plot.l + (i / Math.max(values.length - 1, 1)) * plot.w
+    const y = plot.t + (1 - (v - min) / span) * plot.h
+    parts.push(`${open ? 'L' : 'M'}${x.toFixed(2)} ${y.toFixed(2)}`)
+    open = true
+  })
+  return parts.join(' ')
+}
+
+function renderDetail(q) {
+  detail.hidden = false
+  document.getElementById('detail-sym').textContent = q.sym
+  document.getElementById('detail-name').textContent = q.name || document.querySelector(`[data-sym="${CSS.escape(q.sym)}"]`)?.dataset.name || ''
+  document.getElementById('detail-stats').innerHTML = [
+    `<span class="stat"><b class="num">${fmt(q.price)}</b></span>`,
+    `<span class="stat">1D <b class="num ${q.dayChg >= 0 ? 'ok' : 'fail'}">${signed(q.dayChg)} ${signedPct(q.dayPct)}</b></span>`,
+    `<span class="stat">30D <b class="num ${q.m30 == null ? '' : q.m30 >= 0 ? 'ok' : 'fail'}">${signed(q.m30)} ${signedPct(q.m30pct)}</b></span>`,
+    `<span class="stat">50D <b class="num">${fmt(q.ma50)}</b></span>`,
+    `<span class="stat">200D <b class="num">${fmt(q.ma200)}</b></span>`,
+  ].join('')
+
+  const values = q.bars.map((bar) => bar.adj)
+  const ma50 = rolling(values, 50)
+  const ma200 = rolling(values, 200)
+  const finiteVals = [...values, ...ma50, ...ma200].filter(finite)
+  const min = Math.min(...finiteVals)
+  const max = Math.max(...finiteVals)
+  const pad = (max - min || 1) * 0.08
+  const y0 = min - pad
+  const y1 = max + pad
+  const plot = { l: 12, t: 16, w: 620, h: 236 }
+  const vb = { w: 720, h: 280 }
+  const ticks = 4
+  let grid = ''
+  let labels = ''
+  for (let i = 0; i <= ticks; i++) {
+    const value = y0 + ((y1 - y0) * i) / ticks
+    const y = plot.t + (1 - i / ticks) * plot.h
+    grid += `<line x1="${plot.l}" y1="${y.toFixed(1)}" x2="${plot.l + plot.w}" y2="${y.toFixed(1)}" stroke="rgba(231,236,243,0.08)" />`
+    labels += `<text x="${plot.l + plot.w + 8}" y="${(y + 4).toFixed(1)}" fill="#8b97a8" font-size="11" font-family="IBM Plex Mono, ui-monospace, monospace">${fmt(value)}</text>`
+  }
+  const start = new Date(q.bars[0].t * 1000).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  const end = new Date(q.bars[q.bars.length - 1].t * 1000).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  chartState = { q, values, ma50, ma200, y0, y1, plot }
+  detailChart.innerHTML = `<svg class="chart" viewBox="0 0 ${vb.w} ${vb.h}" role="img" aria-label="${q.sym} one year adjusted price with moving averages">
+    ${grid}
+    <path d="${linePoints(ma200, plot, y0, y1)}" fill="none" stroke="#7eb6ff" stroke-width="1.4" />
+    <path d="${linePoints(ma50, plot, y0, y1)}" fill="none" stroke="#e2c07a" stroke-width="1.4" />
+    <path d="${linePoints(values, plot, y0, y1)}" fill="none" stroke="#f4f7fb" stroke-width="1.7" />
+    <line class="cursor-line" x1="0" y1="${plot.t}" x2="0" y2="${plot.t + plot.h}" stroke="rgba(244,247,251,0.45)" visibility="hidden" />
+    ${labels}
+    <text x="${plot.l}" y="${vb.h - 6}" fill="#8b97a8" font-size="11" font-family="IBM Plex Mono, ui-monospace, monospace">${start}</text>
+    <text x="${plot.l + plot.w}" y="${vb.h - 6}" fill="#8b97a8" font-size="11" font-family="IBM Plex Mono, ui-monospace, monospace" text-anchor="end">${end}</text>
+  </svg>`
+  const last = values.length - 1
+  detailReadout.textContent = readoutAt(last)
+}
+
+function readoutAt(index) {
+  if (!chartState) return ''
+  const { q, values, ma50, ma200 } = chartState
+  const i = Math.max(0, Math.min(values.length - 1, index))
+  const when = new Date(q.bars[i].t * 1000).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+  const bits = [`${when}`, fmt(values[i])]
+  if (finite(ma50[i])) bits.push(`50D ${fmt(ma50[i])}`)
+  if (finite(ma200[i])) bits.push(`200D ${fmt(ma200[i])}`)
+  return bits.join('  ')
+}
+
+function moveCursor(event) {
+  if (!chartState) return
+  const svg = detailChart.querySelector('svg')
+  if (!svg) return
+  const point = svg.createSVGPoint()
+  point.x = event.clientX
+  point.y = event.clientY
+  const ctm = svg.getScreenCTM()
+  if (!ctm) return
+  const local = point.matrixTransform(ctm.inverse())
+  const { plot, values } = chartState
+  const ratio = (local.x - plot.l) / plot.w
+  if (ratio < 0 || ratio > 1) return
+  const index = Math.round(ratio * (values.length - 1))
+  const x = plot.l + (index / Math.max(values.length - 1, 1)) * plot.w
+  const line = svg.querySelector('.cursor-line')
+  if (line) {
+    line.setAttribute('x1', x.toFixed(2))
+    line.setAttribute('x2', x.toFixed(2))
+    line.setAttribute('visibility', 'visible')
+  }
+  detailReadout.textContent = readoutAt(index)
+}
+
+function selectSymbol(sym) {
+  if (selected === sym) {
+    clearSelection()
+    return
+  }
+  selected = sym
+  for (const node of document.querySelectorAll('.is-selected')) node.classList.remove('is-selected')
+  for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(sym)}"]`)) node.classList.add('is-selected')
+  const q = BOOKS.get(sym)
+  if (q) renderDetail(q)
+  else {
+    detail.hidden = false
+    document.getElementById('detail-sym').textContent = sym
+    document.getElementById('detail-name').textContent = document.querySelector(`[data-sym="${CSS.escape(sym)}"]`)?.dataset.name || ''
+    document.getElementById('detail-stats').textContent = ''
+    detailChart.innerHTML = ''
+    detailReadout.textContent = ''
+    chartState = null
+  }
+  detail.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+}
+
+function clearSelection() {
+  selected = null
+  chartState = null
+  detail.hidden = true
+  for (const node of document.querySelectorAll('.is-selected')) node.classList.remove('is-selected')
 }
 
 function setStreaming(on) {
@@ -263,13 +612,22 @@ function setStreaming(on) {
   if (on) pollTimer = setInterval(loadAll, POLL_MS)
 }
 
+function setView(cards) {
+  tableView.hidden = cards
+  cardView.hidden = !cards
+  viewTable.classList.toggle('active', !cards)
+  viewCards.classList.toggle('active', cards)
+  viewTable.setAttribute('aria-pressed', cards ? 'false' : 'true')
+  viewCards.setAttribute('aria-pressed', cards ? 'true' : 'false')
+}
+
 function applyFilters() {
   const q = filterInput.value.trim().toLowerCase()
   const group = chips.find((c) => c.classList.contains('active'))?.dataset.group ?? 'all'
-  for (const tr of ROWS) {
-    const matchGroup = group === 'all' || tr.dataset.group === group
-    const matchText = !q || tr.dataset.sym.toLowerCase().includes(q) || tr.dataset.name.toLowerCase().includes(q)
-    tr.hidden = !(matchGroup && matchText)
+  for (const node of document.querySelectorAll('tr.stock-row, button.card')) {
+    const matchGroup = group === 'all' || node.dataset.group === group
+    const matchText = !q || node.dataset.sym.toLowerCase().includes(q) || node.dataset.name.toLowerCase().includes(q)
+    node.hidden = !(matchGroup && matchText)
   }
 }
 
@@ -286,152 +644,398 @@ streamBtn.addEventListener('click', () => {
   setStreaming(streamBtn.getAttribute('aria-pressed') !== 'true')
 })
 refreshBtn.addEventListener('click', loadAll)
+viewTable.addEventListener('click', () => setView(false))
+viewCards.addEventListener('click', () => setView(true))
+document.getElementById('detail-close').addEventListener('click', clearSelection)
+detailChart.addEventListener('pointermove', moveCursor)
+detailChart.addEventListener('pointerleave', () => {
+  const line = detailChart.querySelector('.cursor-line')
+  if (line) line.setAttribute('visibility', 'hidden')
+  if (chartState) detailReadout.textContent = readoutAt(chartState.values.length - 1)
+})
+
+for (const row of ROWS) {
+  row.addEventListener('click', () => selectSymbol(row.dataset.sym))
+  row.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      selectSymbol(row.dataset.sym)
+    }
+  })
+}
+for (const card of document.querySelectorAll('button.card')) {
+  card.addEventListener('click', () => selectSymbol(card.dataset.sym))
+}
 
 setStreaming(true)
 loadAll()
 </script>
 
-<style>
-  .page-head {
-    margin-bottom: var(--space-2xl);
+<style is:global>
+  .board {
+    --ink: #f4f7fb;
+    --dim: #8b97a8;
+    --faint: #667386;
+    --line: rgba(244, 247, 251, 0.1);
+    --up: #3dd68c;
+    --down: #ff5d6c;
+    color-scheme: dark;
+    background: #0e1116;
+    color: var(--ink);
+    border: 1px solid rgba(244, 247, 251, 0.08);
+    border-radius: 14px;
+    padding: 1.35rem 1.15rem 1.5rem;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.95rem;
+    line-height: 1.4;
   }
 
-  .toolbar {
+  .board h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(2.8rem, 6vw, 4rem);
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    margin: 0 0 1rem;
+    color: var(--ink);
+  }
+
+  .board h2,
+  .board p {
+    margin: 0;
+  }
+
+  .board button {
+    font: inherit;
+    color: inherit;
+    background: none;
+  }
+
+  .board .page-head {
+    margin-bottom: 1.1rem;
+  }
+
+  .board .toolbar {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: 0.75rem;
   }
 
-  .toolbar-row {
+  .board .toolbar-row,
+  .board .toolbar-actions,
+  .board .modes,
+  .board .views,
+  .board .filters,
+  .board .legend {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.6rem;
-  }
-
-  .modes {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0.4rem;
   }
 
-  #filter {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+  .board .toolbar-row {
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .board .toolbar-actions {
+    margin-left: auto;
+  }
+
+  .board #filter {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.92rem;
     width: 100%;
     max-width: 28rem;
-    padding: 0.45rem 0.7rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--bg);
-    color: var(--fg);
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #141922;
+    color: var(--ink);
   }
 
-  #filter:focus {
+  .board #filter:focus {
     outline: none;
-    border-color: var(--border-strong);
+    border-color: rgba(244, 247, 251, 0.45);
   }
 
-  #refresh:disabled {
-    opacity: 0.55;
-    cursor: default;
-  }
-
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
+  .board .chip {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.3rem 0.7rem;
-    border: 1px solid var(--border);
+    letter-spacing: 0.06em;
+    padding: 0.38rem 0.72rem;
+    border: 1px solid var(--line);
     border-radius: 999px;
     background: transparent;
-    color: var(--fg-muted);
+    color: var(--dim);
     cursor: pointer;
   }
 
-  .chip:hover {
-    color: var(--fg);
-    border-color: var(--border-strong);
+  .board .chip:hover {
+    color: var(--ink);
+    border-color: rgba(244, 247, 251, 0.35);
   }
 
-  .chip.active {
-    background: var(--fg);
-    color: var(--bg);
-    border-color: var(--fg);
+  .board .chip.active {
+    background: var(--ink);
+    color: #0e1116;
+    border-color: var(--ink);
   }
 
-  .table-wrap {
+  .board #refresh:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .board .detail {
+    margin-bottom: 1.15rem;
+    padding: 0.9rem 0.9rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #12171e;
+  }
+
+  .board .detail-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .board .detail-sym {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 0.9;
+    color: var(--ink);
+  }
+
+  .board .detail-name {
+    margin-top: 0.25rem;
+    color: var(--dim);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  .board .detail-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    margin: 0.85rem 0 0.35rem;
+    color: var(--dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .board .detail-stats b {
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.95rem;
+  }
+
+  .board .detail-chart {
+    width: 100%;
+    touch-action: none;
+  }
+
+  .board .chart {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .board .legend {
+    gap: 0.9rem;
+    margin-top: 0.2rem;
+    color: var(--dim);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .board .readout {
+    margin-left: auto;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.78rem;
+    color: var(--ink);
+  }
+
+  .board .swatch {
+    display: inline-block;
+    width: 0.7rem;
+    height: 2px;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+
+  .board .swatch.price { background: #f4f7fb; }
+  .board .swatch.ma50 { background: #e2c07a; }
+  .board .swatch.ma200 { background: #7eb6ff; }
+
+  .board .table-wrap {
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
   }
 
-  .stock-table {
+  .board .stock-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.8rem;
-    line-height: 1.35;
+    font-size: 0.92rem;
   }
 
-  .stock-table th,
-  .stock-table td {
-    padding: 0.4rem 0.45rem;
-    border-bottom: 1px solid var(--border);
+  .board .stock-table th,
+  .board .stock-table td {
+    padding: 0.48rem 0.45rem;
+    border-bottom: 1px solid var(--line);
     text-align: left;
-    vertical-align: top;
+    vertical-align: middle;
   }
 
-  .stock-table th {
-    font-family: var(--font-mono);
+  .board .stock-table th {
     font-weight: 500;
     font-size: 0.68rem;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--fg-faint);
-    border-bottom: 2px solid var(--fg);
+    letter-spacing: 0.08em;
+    color: var(--faint);
     white-space: nowrap;
   }
 
-  .stock-table tr:hover td {
-    background: var(--bg-alt);
+  .board tbody tr {
+    cursor: pointer;
   }
 
-  .ticker {
-    font-family: var(--font-mono);
+  .board tbody tr:hover td,
+  .board tr.is-selected td {
+    background: rgba(244, 247, 251, 0.045);
+  }
+
+  .board .ticker {
     font-weight: 600;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     white-space: nowrap;
   }
 
-  .name {
-    color: var(--fg-muted);
+  .board .name {
+    color: var(--dim);
+    font-size: 0.82rem;
   }
 
-  .num {
-    font-family: var(--font-mono);
+  .board .num {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
     text-align: right;
     white-space: nowrap;
+    font-weight: 500;
   }
 
-  .ok {
-    color: var(--c-ok);
+  .board .price {
+    font-size: 1.02rem;
   }
 
-  .fail {
-    color: var(--c-fail);
-  }
-
-  .muted {
-    color: var(--fg-faint);
+  .board .ok { color: var(--up); }
+  .board .fail { color: var(--down); }
+  .board .muted {
+    color: var(--faint);
     white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  .board .spark {
+    width: 108px;
+  }
+
+  .board .sparkline {
+    display: block;
+  }
+
+  .board .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.7rem;
+  }
+
+  .board .card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    text-align: left;
+    padding: 0.85rem 0.85rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #141922;
+    cursor: pointer;
+  }
+
+  .board .card:hover,
+  .board .card.is-selected {
+    border-color: rgba(244, 247, 251, 0.38);
+    background: #1a212c;
+  }
+
+  .board .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .board .card-price {
+    font-size: 1.65rem;
+    line-height: 1.1;
+    text-align: left;
+    margin: 0.15rem 0;
+  }
+
+  .board .card-metrics {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.18rem 0.55rem;
+    align-items: baseline;
+    font-size: 0.78rem;
+  }
+
+  .board .card-metrics .k {
+    color: var(--faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.66rem;
+  }
+
+  .board .card .when {
+    margin-top: 0.2rem;
+  }
+
+  .board tr:focus-visible,
+  .board .card:focus-visible,
+  .board .chip:focus-visible {
+    outline: 1px solid rgba(244, 247, 251, 0.7);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    .board {
+      padding: 1rem 0.75rem 1.15rem;
+      border-radius: 10px;
+    }
+
+    .board .toolbar-actions {
+      margin-left: 0;
+    }
+
+    .board .readout {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .board .card-price {
+      font-size: 1.45rem;
+    }
   }
 </style>
