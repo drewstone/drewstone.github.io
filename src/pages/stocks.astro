@@ -122,7 +122,8 @@ async function fetchQuote(sym) {
 }
 
 async function loadAll() {
-  const results = await Promise.all(ROWS.map((tr) => fetchQuote(tr.dataset.sym)))n  for (const q of results) {
+  const results = await Promise.all(ROWS.map((tr) => fetchQuote(tr.dataset.sym)))
+  for (const q of results) {
     const tr = document.querySelector(`.stock-row[data-sym="${q.sym}"]`)
     if (!tr) continue
     if (q.error) {
