@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [self-hosted, beelink]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,10 +34,10 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [self-hosted, beelink]
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
