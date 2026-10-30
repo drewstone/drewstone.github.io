@@ -633,10 +633,14 @@ async function evidence(args, { allowFailure = false } = {}) {
 }
 
 async function converter(version) {
-  const current = join(ROOT, 'node_modules', CONVERTER)
-  const root = version && version !== (await readJson(join(current, 'package.json'))).version ? `${current}-${version}` : current
+  const current = await readJson(join(ROOT, 'node_modules', CONVERTER, 'package.json'))
+  const name = !version || version === current.version ? CONVERTER : `${CONVERTER}-${version}`
+  if (name !== CONVERTER && !Object.hasOwn((await readJson(join(ROOT, 'package.json'))).devDependencies ?? {}, name)) throw new Error(`Unsupported retained converter version: ${version}`)
+  const root = join(ROOT, 'node_modules', name)
+  const pkg = await readJson(join(root, 'package.json'))
+  if (pkg.name !== CONVERTER || version && pkg.version !== version) throw new Error(`Installed converter ${pkg.name}@${pkg.version} differs from requested ${CONVERTER}@${version}`)
   const adapter = await import(pathToFileURL(join(root, 'dist/agent-runtime.js')).href)
-  return { root, pkg: await readJson(join(root, 'package.json')), adapter, ingest: join(root, 'tools/ingest.mjs') }
+  return { pkg, adapter, ingest: join(root, 'tools/ingest.mjs') }
 }
 
 /** Materialize the cited snapshot, convert it with the pinned converter and apply the review. */
@@ -650,7 +654,6 @@ async function regenerate(id, manifest, overlay, work, conv, { runDir: localRun 
   if (`sha256:${sha256(await readFile(snapshotPath))}` !== snapshot.snapshot) throw new Error('the snapshot manifest does not hash to its digest')
   const snapshotManifest = await readJson(snapshotPath)
   let runDir = join(work, 'run')
-  let materialized
   if (localRun) {
     // A local copy (the trace drive, a pin mirror) stands in for the store only when every file matches the manifest.
     runDir = localRun
@@ -661,21 +664,17 @@ async function regenerate(id, manifest, overlay, work, conv, { runDir: localRun 
       else if (`sha256:${sha256(bytes)}` !== file.sha256) bad.push(`${file.path} does not match the snapshot (sha256 ${sha256(bytes).slice(0, 12)})`)
     }
     if (bad.length) throw new Error(`${runDir}: ${bad.slice(0, 3).join('; ')}${bad.length > 3 ? ` (+${bad.length - 3})` : ''}`)
-    materialized = { out: runDir, manifest: snapshot.snapshot, files: snapshotManifest.files.length, local: true }
-  } else {
-    ;[materialized] = await evidence(['materialize', snapshot.namespace, snapshot.snapshot, '--out', runDir, '--prefix', prefix])
-  }
+  } else await evidence(['materialize', snapshot.namespace, snapshot.snapshot, '--out', runDir, '--prefix', prefix])
   const recordPath = join(work, 'record.json')
   // A bundle (several harnesses as one record) names its own record id; a run directory takes the publication's.
   const bundle = existsSync(join(runDir, 'bundle.json'))
-  const { stdout } = await exec(process.execPath, [conv.ingest, runDir, ...(bundle ? [] : ['--run-id', id]), '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
-  const summary = JSON.parse(stdout.trim().split('\n').at(-1))
+  await exec(process.execPath, [conv.ingest, runDir, ...(bundle ? [] : ['--run-id', id]), '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
   const recordBytes = await readFile(recordPath)
   const record = JSON.parse(recordBytes.toString('utf8'))
   if (record.runId !== id) throw new Error(`the snapshot converts to record ${record.runId}, not ${id}`)
   const projected = applyOverlay(record, overlay)
   const reviewIssues = await checkReviewSources(record, overlay, runDir)
-  return { materialized, summary, record, recordDigest: `sha256:${sha256(recordBytes)}`, projected, reviewIssues, snapshotManifest }
+  return { record, recordDigest: `sha256:${sha256(recordBytes)}`, projected, reviewIssues, snapshotManifest }
 }
 
 function converterIdentity(conv, record) {
