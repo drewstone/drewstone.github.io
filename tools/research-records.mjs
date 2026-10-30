@@ -632,11 +632,11 @@ async function evidence(args, { allowFailure = false } = {}) {
   }
 }
 
-async function converter() {
-  const root = join(ROOT, 'node_modules', CONVERTER)
-  const pkg = await readJson(join(root, 'package.json'))
+async function converter(version) {
+  const current = join(ROOT, 'node_modules', CONVERTER)
+  const root = version && version !== (await readJson(join(current, 'package.json'))).version ? `${current}-${version}` : current
   const adapter = await import(pathToFileURL(join(root, 'dist/agent-runtime.js')).href)
-  return { root, pkg, adapter, ingest: join(root, 'tools/ingest.mjs') }
+  return { root, pkg: await readJson(join(root, 'package.json')), adapter, ingest: join(root, 'tools/ingest.mjs') }
 }
 
 /** Materialize the cited snapshot, convert it with the pinned converter and apply the review. */
@@ -741,7 +741,6 @@ export async function build({ ids } = {}) {
 
 export async function verify({ ids, runDir } = {}) {
   const gate = new Gate()
-  const conv = await converter()
   const targets = ids?.length ? ids : await recordIds()
   for (const id of targets) {
     const pub = await readPublication(id)
@@ -751,6 +750,7 @@ export async function verify({ ids, runDir } = {}) {
       gate.fail('G1', id, 'manifest, overlay and lock are required')
       continue
     }
+    const conv = await converter(manifest.converter.version)
     const cited = manifest.snapshots ?? [{ prefix: manifest.store?.prefix, namespace: manifest.store?.namespace, snapshot: manifest.snapshot }]
     // G2: every object of every cited snapshot is present with its length and digest.
     for (const item of cited) {
