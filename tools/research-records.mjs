@@ -20,7 +20,7 @@
  *                                                    snapshot once every file matches its manifest;
  *                                                    --if-changed skips when no gated path changed (pre-push)
  *
- * build and verify need the evidence store: EVIDENCE_CLI (discovery-lab tools/evidence.mjs) and its credentials
+ * build and verify need the evidence store: EVIDENCE_CLI (discovery-lab tools/evidence-cli.mjs) and its credentials
  * (DISCOVERY_EVIDENCE_ENV with DOTENV_KEYS, or DISCOVERY_EVIDENCE_STORE). build signs with BLOG_RECORDS_SIGNING_KEY from
  * the same encrypted file. The site build never downloads evidence: G10 checks that signature instead, so a lock edited
  * by hand (a re-hashed overlay, a manifest naming another snapshot) fails the deployed build.
@@ -604,7 +604,7 @@ export async function check({ ids } = {}) {
 // GTR defaults: the deployed discovery-lab and the encrypted store credentials the research tool also reads.
 const HOME = process.env.HOME ?? ''
 const STORE_ENV = {
-  EVIDENCE_CLI: join(HOME, '.local/share/discovery-lab-rollup/tools/evidence.mjs'),
+  EVIDENCE_CLI: join(HOME, '.local/share/discovery-lab-rollup/tools/evidence-cli.mjs'),
   DISCOVERY_EVIDENCE_ENV: join(HOME, '.local/state/fleet/discovery/evidence-store.env'),
   DOTENV_KEYS: join(HOME, 'company/devops/secrets/.env.keys'),
 }
@@ -618,12 +618,12 @@ function storeEnvironment() {
 async function evidence(args, { allowFailure = false } = {}) {
   const env = storeEnvironment()
   const cli = env.EVIDENCE_CLI
-  if (!cli || !existsSync(cli)) throw new Error('EVIDENCE_CLI must name discovery-lab tools/evidence.mjs (build and verify run on GTR)')
+  if (!cli || !existsSync(cli)) throw new Error('EVIDENCE_CLI must name discovery-lab tools/evidence-cli.mjs (build and verify run on GTR)')
   try {
     const { stdout } = await exec(process.execPath, [cli, ...args], { maxBuffer: 1 << 28, cwd: dirname(dirname(cli)), env })
-    return stdout.trim().split('\n').filter(Boolean).map((line) => JSON.parse(line))
+    return stdout.trim().split('\n').map((line) => JSON.parse(line))
   } catch (error) {
-    if (allowFailure && error.stdout?.trim()) return error.stdout.trim().split('\n').filter(Boolean).map((line) => JSON.parse(line))
+    if (allowFailure && error.stdout?.trim()) return error.stdout.trim().split('\n').map((line) => JSON.parse(line))
     // The CLI's own reason: its `[evidence] Error: …` line, or the status it printed (for example `missing`).
     const reason = (error.stderr ?? '').split('\n').find((line) => line.startsWith('[evidence] Error:'))?.replace('[evidence] Error: ', '')
       ?? (error.stdout?.trim() ? JSON.parse(error.stdout.trim().split('\n').at(-1)).status : null)
@@ -690,7 +690,7 @@ export async function build({ ids } = {}) {
   await checkPins(pins)
   if (pins.failures.length) {
     pins.report('pins')
-    throw new Error('the cited snapshots are not pinned; run evidence.mjs pin --from research/publications, then build')
+    throw new Error('the cited snapshots are not pinned; run evidence-cli.mjs pin --from research/publications, then build')
   }
   const targets = ids?.length ? ids : await recordIds()
   const ledgerPath = join(PUB, 'published-ids.json')
@@ -781,7 +781,7 @@ export async function verify({ ids, runDir } = {}) {
 
 /**
  * G11: the research tool converts the snapshot the publication cites, so both show one record (one digest, one set of
- * event ids). Its store index (discovery-lab tools/evidence.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
+ * event ids). Its store index (discovery-lab tools/evidence-cli.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
  */
 async function checkStoreIndex(gate, ids) {
   const path = process.env.DISCO_STORE_INDEX ?? '/mnt/traces/discovery-index/store.jsonl'
@@ -801,7 +801,7 @@ async function checkStoreIndex(gate, ids) {
     if (!manifest?.snapshot) continue
     const row = latest.get(id)
     if (row?.snapshot !== manifest.snapshot)
-      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
+      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence-cli.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
   }
 }
 
@@ -816,7 +816,7 @@ async function checkPins(gate) {
     const mirrorHere = existsSync(mirror)
     const rulesOk = pin && !pin.rules?.missing?.length && !pin.lifecycle?.deleting?.length
     const mirrorOk = pin && !pin.mirrored?.missing?.length && !pin.mirrored?.mismatched?.length
-    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
+    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence-cli.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
     if (mirrorHere && !mirrorOk) gate.fail('G3', null, `pin mirror incomplete: ${JSON.stringify({ missing: pin?.mirrored?.missing?.slice(0, 3), mismatched: pin?.mirrored?.mismatched?.slice(0, 3) })}`)
     if (!mirrorHere) process.stderr.write(`[research-records] G3: ${mirror} is not on this host; bucket lock and lifecycle rules checked, the mirror is checked on its host\n`)
   } catch (error) {
