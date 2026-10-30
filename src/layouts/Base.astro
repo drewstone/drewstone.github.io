@@ -68,6 +68,11 @@ const websiteJsonLd = isHome
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline>
+      const scheme = matchMedia('(prefers-color-scheme: dark)');
+      const applyTheme = () => { document.documentElement.dataset.theme = scheme.matches ? 'dark' : 'light'; };
+      scheme.addEventListener('change', applyTheme); applyTheme();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>

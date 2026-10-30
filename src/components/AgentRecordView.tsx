@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { AgentRecord, RecordWorkGraph, type RecordSelection, type RunRecord } from '@drewstone/agent-record'
+import { AgentRecord, RecordWorkGraph, type BehaviorReport } from '@tangle-network/sandbox-ui/record'
+import type { RecordSelection, RunRecord } from '@drewstone/agent-record/record'
 
 /** Old event ids per record, each mapped to its current id (research/publications/idmap.json). */
 export type EventIdMap = Record<string, Record<string, string>>
@@ -18,7 +19,7 @@ function resolveEvent(record: RunRecord | undefined, idmap: EventIdMap, id: stri
 }
 
 /** URL ownership stays with the site; the shared viewer has no routing side effects. */
-export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: Array<{ runId: string; verdicts: Array<{ behavior: string; verdict: string; confidence: number; evidence?: Array<{ eventId: string; quote?: string }> }> }> }) {
+export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: readonly BehaviorReport[] }) {
   const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '' })
   useEffect(() => {
     const read = () => {
@@ -68,8 +69,7 @@ export default function AgentRecordView({ records, idmap = {}, behaviors = [] }:
     history.replaceState(null, '', url)
   }
   // A record that carries claims, outside verdicts or publications also opens as one provenance graph: its agents and
-  // review sessions, the claims they made or judged, and what cites them, joined only by recorded ids (agent-record
-  // RecordWorkGraph). `?graph=provenance` keeps the choice in the URL.
+  // review sessions, the claims they made or judged, and what cites them, joined only by recorded ids. `?graph=provenance` keeps the choice in the URL.
   const record = records.find((item) => item.runId === selection.runId) ?? records[0]
   const traced = !!record && ((record.claims?.length ?? 0) > 0 || (record.verdicts?.length ?? 0) > 0 || (record.publications?.length ?? 0) > 0)
   const [graph, setGraph] = useState(false)

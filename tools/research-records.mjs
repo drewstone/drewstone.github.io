@@ -20,7 +20,7 @@
  *                                                    snapshot once every file matches its manifest;
  *                                                    --if-changed skips when no gated path changed (pre-push)
  *
- * build and verify need the evidence store: EVIDENCE_CLI (discovery-lab tools/evidence.mjs) and its credentials
+ * build and verify need the evidence store: EVIDENCE_CLI (discovery-lab tools/evidence-cli.mjs) and its credentials
  * (DISCOVERY_EVIDENCE_ENV with DOTENV_KEYS, or DISCOVERY_EVIDENCE_STORE). build signs with BLOG_RECORDS_SIGNING_KEY from
  * the same encrypted file. The site build never downloads evidence: G10 checks that signature instead, so a lock edited
  * by hand (a re-hashed overlay, a manifest naming another snapshot) fails the deployed build.
@@ -604,7 +604,7 @@ export async function check({ ids } = {}) {
 // GTR defaults: the deployed discovery-lab and the encrypted store credentials the research tool also reads.
 const HOME = process.env.HOME ?? ''
 const STORE_ENV = {
-  EVIDENCE_CLI: join(HOME, '.local/share/discovery-lab-rollup/tools/evidence.mjs'),
+  EVIDENCE_CLI: join(HOME, '.local/share/discovery-lab-rollup/tools/evidence-cli.mjs'),
   DISCOVERY_EVIDENCE_ENV: join(HOME, '.local/state/fleet/discovery/evidence-store.env'),
   DOTENV_KEYS: join(HOME, 'company/devops/secrets/.env.keys'),
 }
@@ -618,25 +618,29 @@ function storeEnvironment() {
 async function evidence(args, { allowFailure = false } = {}) {
   const env = storeEnvironment()
   const cli = env.EVIDENCE_CLI
-  if (!cli || !existsSync(cli)) throw new Error('EVIDENCE_CLI must name discovery-lab tools/evidence.mjs (build and verify run on GTR)')
+  if (!cli || !existsSync(cli)) throw new Error('EVIDENCE_CLI must name discovery-lab tools/evidence-cli.mjs (build and verify run on GTR)')
   try {
     const { stdout } = await exec(process.execPath, [cli, ...args], { maxBuffer: 1 << 28, cwd: dirname(dirname(cli)), env })
-    return stdout.trim().split('\n').filter(Boolean).map((line) => JSON.parse(line))
+    return stdout.trim().split('\n').map((line) => JSON.parse(line))
   } catch (error) {
-    if (allowFailure && error.stdout?.trim()) return error.stdout.trim().split('\n').filter(Boolean).map((line) => JSON.parse(line))
+    if (allowFailure && error.stdout?.trim()) return error.stdout.trim().split('\n').map((line) => JSON.parse(line))
     // The CLI's own reason: its `[evidence] Error: …` line, or the status it printed (for example `missing`).
-    const reason = (error.stderr ?? '').split('\n').find((line) => line.startsWith('[evidence] Error:'))?.replace('[evidence] Error: ', '')
-      ?? (error.stdout?.trim() ? JSON.parse(error.stdout.trim().split('\n').at(-1)).status : null)
-      ?? (error.stderr || error.message).trim().split('\n')[0]
+    const reason = (error.stderr ?? '').split('\n').filter(line => line.startsWith('[evidence] Error:') || line.startsWith('[evidence] transport:')).map(line => line.replace(/^\[evidence\] (?:Error: )?/, '')).join('; ')
+      || (error.stdout?.trim() ? JSON.parse(error.stdout.trim().split('\n').at(-1)).status : null)
+      || (error.stderr || error.message).trim().split('\n')[0]
     throw new Error(`evidence ${args[0]} ${args[1] ?? ''} ${args[2] ?? ''}: ${reason}`.replace(/\s+:/, ':'))
   }
 }
 
-async function converter() {
-  const root = join(ROOT, 'node_modules', CONVERTER)
+async function converter(version) {
+  const current = await readJson(join(ROOT, 'node_modules', CONVERTER, 'package.json'))
+  const name = !version || version === current.version ? CONVERTER : `${CONVERTER}-${version}`
+  if (name !== CONVERTER && !Object.hasOwn((await readJson(join(ROOT, 'package.json'))).devDependencies ?? {}, name)) throw new Error(`Unsupported retained converter version: ${version}`)
+  const root = join(ROOT, 'node_modules', name)
   const pkg = await readJson(join(root, 'package.json'))
+  if (pkg.name !== CONVERTER || version && pkg.version !== version) throw new Error(`Installed converter ${pkg.name}@${pkg.version} differs from requested ${CONVERTER}@${version}`)
   const adapter = await import(pathToFileURL(join(root, 'dist/agent-runtime.js')).href)
-  return { root, pkg, adapter, ingest: join(root, 'tools/ingest.mjs') }
+  return { pkg, adapter, ingest: join(root, 'tools/ingest.mjs') }
 }
 
 /** Materialize the cited snapshot, convert it with the pinned converter and apply the review. */
@@ -650,7 +654,6 @@ async function regenerate(id, manifest, overlay, work, conv, { runDir: localRun 
   if (`sha256:${sha256(await readFile(snapshotPath))}` !== snapshot.snapshot) throw new Error('the snapshot manifest does not hash to its digest')
   const snapshotManifest = await readJson(snapshotPath)
   let runDir = join(work, 'run')
-  let materialized
   if (localRun) {
     // A local copy (the trace drive, a pin mirror) stands in for the store only when every file matches the manifest.
     runDir = localRun
@@ -661,21 +664,17 @@ async function regenerate(id, manifest, overlay, work, conv, { runDir: localRun 
       else if (`sha256:${sha256(bytes)}` !== file.sha256) bad.push(`${file.path} does not match the snapshot (sha256 ${sha256(bytes).slice(0, 12)})`)
     }
     if (bad.length) throw new Error(`${runDir}: ${bad.slice(0, 3).join('; ')}${bad.length > 3 ? ` (+${bad.length - 3})` : ''}`)
-    materialized = { out: runDir, manifest: snapshot.snapshot, files: snapshotManifest.files.length, local: true }
-  } else {
-    ;[materialized] = await evidence(['materialize', snapshot.namespace, snapshot.snapshot, '--out', runDir, '--prefix', prefix])
-  }
+  } else await evidence(['materialize', snapshot.namespace, snapshot.snapshot, '--out', runDir, '--prefix', prefix])
   const recordPath = join(work, 'record.json')
   // A bundle (several harnesses as one record) names its own record id; a run directory takes the publication's.
   const bundle = existsSync(join(runDir, 'bundle.json'))
-  const { stdout } = await exec(process.execPath, [conv.ingest, runDir, ...(bundle ? [] : ['--run-id', id]), '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
-  const summary = JSON.parse(stdout.trim().split('\n').at(-1))
+  await exec(process.execPath, [conv.ingest, runDir, ...(bundle ? [] : ['--run-id', id]), '--manifest', snapshotPath, '--out', recordPath], { maxBuffer: 1 << 26 })
   const recordBytes = await readFile(recordPath)
   const record = JSON.parse(recordBytes.toString('utf8'))
   if (record.runId !== id) throw new Error(`the snapshot converts to record ${record.runId}, not ${id}`)
   const projected = applyOverlay(record, overlay)
   const reviewIssues = await checkReviewSources(record, overlay, runDir)
-  return { materialized, summary, record, recordDigest: `sha256:${sha256(recordBytes)}`, projected, reviewIssues, snapshotManifest }
+  return { record, recordDigest: `sha256:${sha256(recordBytes)}`, projected, reviewIssues, snapshotManifest }
 }
 
 function converterIdentity(conv, record) {
@@ -690,7 +689,7 @@ export async function build({ ids } = {}) {
   await checkPins(pins)
   if (pins.failures.length) {
     pins.report('pins')
-    throw new Error('the cited snapshots are not pinned; run evidence.mjs pin --from research/publications, then build')
+    throw new Error('the cited snapshots are not pinned; run evidence-cli.mjs pin --from research/publications, then build')
   }
   const targets = ids?.length ? ids : await recordIds()
   const ledgerPath = join(PUB, 'published-ids.json')
@@ -741,7 +740,6 @@ export async function build({ ids } = {}) {
 
 export async function verify({ ids, runDir } = {}) {
   const gate = new Gate()
-  const conv = await converter()
   const targets = ids?.length ? ids : await recordIds()
   for (const id of targets) {
     const pub = await readPublication(id)
@@ -751,12 +749,13 @@ export async function verify({ ids, runDir } = {}) {
       gate.fail('G1', id, 'manifest, overlay and lock are required')
       continue
     }
+    const conv = await converter(manifest.converter.version)
     const cited = manifest.snapshots ?? [{ prefix: manifest.store?.prefix, namespace: manifest.store?.namespace, snapshot: manifest.snapshot }]
-    // G2: every object of every cited snapshot is present with its length and digest.
-    for (const item of cited) {
+    // A local input still needs the remote G2 read; remote regeneration verifies every object while materializing.
+    if (runDir) for (const item of cited) {
       const results = await evidence(['verify', item.namespace, item.snapshot, '--prefix', item.prefix ?? 'runs/'], { allowFailure: true }).catch((error) => [{ ok: false, error: error.message }])
       for (const result of results)
-        if (!result.ok) gate.fail('G2', id, result.error ?? `${item.namespace}@${item.snapshot.slice(0, 19)}: missing ${JSON.stringify(result.missing?.slice(0, 3))}, mismatched ${JSON.stringify(result.mismatched?.slice(0, 3))}`)
+        if (!result.ok) gate.fail('G2', id, result.error ?? `${item.namespace}@${item.snapshot.slice(0, 19)}: missing ${JSON.stringify(result.missing?.slice(0, 3))}, mismatched ${JSON.stringify(result.mismatched?.slice(0, 3))}, transport ${JSON.stringify(result.transport?.slice(0, 3))}`)
     }
     // G4 and G5: the pinned converter reproduces the record; the review still matches its sources; the projection
     // equals the committed bytes. Materialize downloads and hashes every object (the full G2 read).
@@ -781,7 +780,7 @@ export async function verify({ ids, runDir } = {}) {
 
 /**
  * G11: the research tool converts the snapshot the publication cites, so both show one record (one digest, one set of
- * event ids). Its store index (discovery-lab tools/evidence.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
+ * event ids). Its store index (discovery-lab tools/evidence-cli.mjs, store.jsonl) lives on GTR; elsewhere this is skipped.
  */
 async function checkStoreIndex(gate, ids) {
   const path = process.env.DISCO_STORE_INDEX ?? '/mnt/traces/discovery-index/store.jsonl'
@@ -801,7 +800,7 @@ async function checkStoreIndex(gate, ids) {
     if (!manifest?.snapshot) continue
     const row = latest.get(id)
     if (row?.snapshot !== manifest.snapshot)
-      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
+      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence-cli.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
   }
 }
 
@@ -816,7 +815,7 @@ async function checkPins(gate) {
     const mirrorHere = existsSync(mirror)
     const rulesOk = pin && !pin.rules?.missing?.length && !pin.lifecycle?.deleting?.length
     const mirrorOk = pin && !pin.mirrored?.missing?.length && !pin.mirrored?.mismatched?.length
-    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
+    if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence-cli.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
     if (mirrorHere && !mirrorOk) gate.fail('G3', null, `pin mirror incomplete: ${JSON.stringify({ missing: pin?.mirrored?.missing?.slice(0, 3), mismatched: pin?.mirrored?.mismatched?.slice(0, 3) })}`)
     if (!mirrorHere) process.stderr.write(`[research-records] G3: ${mirror} is not on this host; bucket lock and lifecycle rules checked, the mirror is checked on its host\n`)
   } catch (error) {
