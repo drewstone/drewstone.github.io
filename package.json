@@ -33,11 +33,14 @@
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "shiki": "^4.0.2",
-    "@tangle-network/charts": "0.12.0",
+    "@tangle-network/charts": "3.0.2",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "zod": "^4.6.5",
-    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v0.52.1/drewstone-agent-record-0.52.1.tgz"
+    "@drewstone/agent-record": "https://github.com/drewstone/agent-record/releases/download/v2.0.0/drewstone-agent-record-2.0.0.tgz",
+    "@tangle-network/sandbox-ui": "2.0.22",
+    "@tangle-network/ui": "11.51.4",
+    "@tangle-network/brand": "1.31.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261011.1",
