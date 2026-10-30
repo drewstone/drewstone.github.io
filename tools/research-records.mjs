@@ -800,7 +800,7 @@ async function checkStoreIndex(gate, ids) {
     if (!manifest?.snapshot) continue
     const row = latest.get(id)
     if (row?.snapshot !== manifest.snapshot)
-      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}: on GTR run evidence-cli.mjs index ${manifest.store?.namespace ?? id} ${manifest.snapshot}`)
+      gate.fail('G11', id, `the research tool's store index names ${row?.snapshot ?? 'no snapshot'}, not the cited ${manifest.snapshot}; the retained catalog and cited publication disagree`)
   }
 }
 
