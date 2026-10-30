@@ -625,9 +625,9 @@ async function evidence(args, { allowFailure = false } = {}) {
   } catch (error) {
     if (allowFailure && error.stdout?.trim()) return error.stdout.trim().split('\n').map((line) => JSON.parse(line))
     // The CLI's own reason: its `[evidence] Error: …` line, or the status it printed (for example `missing`).
-    const reason = (error.stderr ?? '').split('\n').find((line) => line.startsWith('[evidence] Error:'))?.replace('[evidence] Error: ', '')
-      ?? (error.stdout?.trim() ? JSON.parse(error.stdout.trim().split('\n').at(-1)).status : null)
-      ?? (error.stderr || error.message).trim().split('\n')[0]
+    const reason = (error.stderr ?? '').split('\n').filter(line => line.startsWith('[evidence] Error:') || line.startsWith('[evidence] transport:')).map(line => line.replace(/^\[evidence\] (?:Error: )?/, '')).join('; ')
+      || (error.stdout?.trim() ? JSON.parse(error.stdout.trim().split('\n').at(-1)).status : null)
+      || (error.stderr || error.message).trim().split('\n')[0]
     throw new Error(`evidence ${args[0]} ${args[1] ?? ''} ${args[2] ?? ''}: ${reason}`.replace(/\s+:/, ':'))
   }
 }
@@ -751,11 +751,11 @@ export async function verify({ ids, runDir } = {}) {
     }
     const conv = await converter(manifest.converter.version)
     const cited = manifest.snapshots ?? [{ prefix: manifest.store?.prefix, namespace: manifest.store?.namespace, snapshot: manifest.snapshot }]
-    // G2: every object of every cited snapshot is present with its length and digest.
-    for (const item of cited) {
+    // A local input still needs the remote G2 read; remote regeneration verifies every object while materializing.
+    if (runDir) for (const item of cited) {
       const results = await evidence(['verify', item.namespace, item.snapshot, '--prefix', item.prefix ?? 'runs/'], { allowFailure: true }).catch((error) => [{ ok: false, error: error.message }])
       for (const result of results)
-        if (!result.ok) gate.fail('G2', id, result.error ?? `${item.namespace}@${item.snapshot.slice(0, 19)}: missing ${JSON.stringify(result.missing?.slice(0, 3))}, mismatched ${JSON.stringify(result.mismatched?.slice(0, 3))}`)
+        if (!result.ok) gate.fail('G2', id, result.error ?? `${item.namespace}@${item.snapshot.slice(0, 19)}: missing ${JSON.stringify(result.missing?.slice(0, 3))}, mismatched ${JSON.stringify(result.mismatched?.slice(0, 3))}, transport ${JSON.stringify(result.transport?.slice(0, 3))}`)
     }
     // G4 and G5: the pinned converter reproduces the record; the review still matches its sources; the projection
     // equals the committed bytes. Materialize downloads and hashes every object (the full G2 read).
