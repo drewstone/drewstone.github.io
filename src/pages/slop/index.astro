@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro'
+import DataTable, { type Col } from '../../components/DataTable.astro'
+import { getCollection } from 'astro:content'
+
+const posts = (await getCollection('slop', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+
+const short = (m: string | undefined): string => {
+  if (!m || m === 'unknown') return 'unknown'
+  if (m.startsWith('claude-')) {
+    const p = m.replace(/^claude-/, '').split('-')
+    if (p.length >= 2) return p[0][0].toUpperCase() + p[0].slice(1) + ' ' + p.slice(1).join('.')
+  }
+  if (m.startsWith('gpt-')) return 'GPT-' + m.replace(/^gpt-/, '')
+  return m
+}
+
+const rows = posts.map((post) => {
+  const revs = post.data.revisions ?? []
+  const latest = [...revs].sort((a, b) => b.date.valueOf() - a.date.valueOf())[0]
+  const updated = latest?.date ?? post.data.date
+  return {
+    date: post.data.date.toISOString(),
+    title: post.data.title,
+    href: `/slop/${post.id}`,
+    tags: (post.data.tags ?? []).slice(0, 3).join(' · '),
+    revs: revs.length || 0,
+    updated: updated.toISOString(),
+    model: short(latest?.model),
+    featured: post.data.featured ? '✦' : '',
+  }
+})
+
+const columns: Col[] = [
+  { key: 'date',     label: 'Date',     type: 'date', width: '6.5rem' },
+  { key: 'title',    label: 'Title',    type: 'link', linkKey: 'href' },
+  { key: 'tags',     label: 'Tags',     type: 'mono', width: '14rem' },
+  { key: 'revs',     label: 'Revs',     type: 'num',  align: 'right', width: '4.5rem' },
+  { key: 'updated',  label: 'Updated',  type: 'date', width: '6.5rem' },
+  { key: 'model',    label: 'Last model', type: 'mono', width: '7rem',
+    tone: (v) => v === 'unknown' ? 'neutral' : 'action' as any },
+  { key: 'featured', label: '★',        type: 'mono', width: '2.5rem', align: 'center' },
+]
+
+---
+
+<Base title="Slop" description="AI-generated and heavily assisted pieces, sortable by date, tags, model, and revision count. Posts span AI infrastructure, agent design, evals, optimization loops, and applied math." wide>
+  <section class="archive-head">
+    <h1>Slop</h1>
+    <p>AI-generated or heavily AI-assisted pieces. Full traces, revision history, and authorship records are still attached. Read for entertainment or curiosity.</p>
+  </section>
+
+  <DataTable
+    columns={columns}
+    rows={rows}
+    initialSort={{ key: 'date', dir: 'desc' }}
+  />
+</Base>
+
+<style>
+  .archive-head {
+    margin: var(--space-xl) 0 var(--space-lg);
+    max-width: 760px;
+  }
+  .archive-head h1 {
+    font-size: 2.2rem;
+    margin: 0 0 var(--space-sm);
+    letter-spacing: -0.02em;
+  }
+</style>

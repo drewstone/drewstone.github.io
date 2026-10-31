@@ -192,4 +192,84 @@ const research = defineCollection({
   }),
 })
 
-export const collections = { posts, traces, research }
+const slop = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/slop' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    tags: z.array(z.string()).optional(),
+    draft: z.boolean().optional(),
+    featured: z.boolean().optional(),
+    figure: figureSchema.optional(),
+    /**
+     * `original: true` marks a human-authored post. Distinct color, distinct
+     * AuthorBadge treatment, excluded from /traces and /experiment, and
+     * AI agents are forbidden from editing it (see CLAUDE.md hard rule).
+     */
+    original: z.boolean().optional(),
+    authors: z.array(authorSchema).optional(),
+    revisions: z.array(revisionSchema).optional(),
+    /** Optional series slug for multi-post projects. */
+    series: z.string().optional(),
+    /** Shared trace that produced the initial AI outline for this post. */
+    outline_trace_id: z.string().optional(),
+    /** Research traces used as source material, not authorship/prose traces. */
+    supporting_trace_ids: z.array(z.string()).optional(),
+    /** Human handoff state for AI-outlined drafts. */
+    human_takeover: z.enum(['pending', 'in-progress', 'complete']).optional(),
+  }),
+})
+
+const toolCallDetailSchema = z.object({
+  name: z.string(),
+  input_preview: z.string().optional(),
+  file_path: z.string().optional(),
+  result_preview: z.string().optional(),
+})
+
+const turnSchema = z.object({
+  seq: z.number().optional(),
+  role: z.enum(['user', 'assistant', 'system', 'tool']),
+  text: z.string().optional(),
+  text_summary: z.string().optional(),
+  tool_calls: z.number().optional(),
+  tool_names: z.array(z.string()).optional(),
+  tool_call_details: z.array(toolCallDetailSchema).optional(),
+  files_touched: z.array(z.string()).optional(),
+  had_thinking: z.boolean().optional(),
+  ts: z.string().optional(),
+})
+
+const fileDiffStatSchema = z.object({
+  path: z.string(),
+  additions: z.number(),
+  deletions: z.number(),
+})
+
+const traceJudgeScoreSchema = z.object({
+  judge: z.string(),
+  scored_at: z.string().optional(),
+  overall: z.number().optional(),
+  dimensions: z.record(z.string(), z.number()).optional(),
+  notes: z.string().optional(),
+})
+
+/**
+ * Custom loader for trace JSON files.
+ * Walks traces/ recursively, loads any *.json as an entry keyed by its
+ * top-level `trace_id` field.
+ */
+async function* walkTraces(dir: string): AsyncGenerator<string> {
+  let entries
+  try { entries = await readdir(dir, { withFileTypes: true }) } catch { return }
+  for (const e of entries) {
+    const p = join(dir, e.name)
+    if (e.isDirectory()) yield* walkTraces(p)
+    else if (e.isFile() && p.endsWith('.json')) yield p
+  }
+}
+
+
+export const collections = { posts, slop, traces, research }

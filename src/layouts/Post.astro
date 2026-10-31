@@ -38,6 +38,7 @@ interface Props {
   updated?: Date
   tags?: string[]
   slug?: string
+  basePath?: string
   authors?: Author[]
   revisions?: Revision[]
   supportingTraceIds?: string[]
@@ -48,6 +49,7 @@ interface Props {
   figure?: CollectionEntry<'posts'>['data']['figure']
 }
 
+const basePath = Astro.props.basePath ?? '/posts'
 const {
   title,
   description,
@@ -83,7 +85,7 @@ const formatSeriesDate = (iso: string) =>
 const repo = import.meta.env.PUBLIC_REPO_SLUG as string | undefined
 
 const site = Astro.site ?? new URL('https://drewstone.github.io')
-const url = slug ? new URL(`/posts/${slug}`, site).toString() : new URL(Astro.url.pathname, site).toString()
+const url = slug ? new URL(`${basePath}/${slug}`, site).toString() : new URL(Astro.url.pathname, site).toString()
 
 const articleJsonLd = {
   '@context': 'https://schema.org',
@@ -129,8 +131,8 @@ const articleJsonLd = {
           <div class="post-series-head">
             <h2>{seriesLabel ? `${seriesLabel} series` : 'Series'}</h2>
             <div class="post-series-nav">
-              {prevInSeries && <a href={`/posts/${prevInSeries.slug}`} class="series-nav-link">← {prevInSeries.title}</a>}
-              {nextInSeries && <a href={`/posts/${nextInSeries.slug}`} class="series-nav-link">Next → {nextInSeries.title}</a>}
+              {prevInSeries && <a href={`${basePath}/${prevInSeries.slug}`} class="series-nav-link">← {prevInSeries.title}</a>}
+              {nextInSeries && <a href={`${basePath}/${nextInSeries.slug}`} class="series-nav-link">Next → {nextInSeries.title}</a>}
             </div>
           </div>
           <details class="post-series-directory">
@@ -142,7 +144,7 @@ const articleJsonLd = {
                   {entry.slug === slug ? (
                     <span class="series-current">{entry.title}</span>
                   ) : (
-                    <a href={`/posts/${entry.slug}`}>{entry.title}</a>
+                    <a href={`${basePath}/${entry.slug}`}>{entry.title}</a>
                   )}
                 </li>
               ))}

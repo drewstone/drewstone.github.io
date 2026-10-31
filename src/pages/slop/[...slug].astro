@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from 'astro:content'
+import Post from '../../layouts/Post.astro'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('slop')
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+
+const allPosts = await getCollection('slop', ({ data }) => !data.draft)
+
+const orderedSeriesPosts =
+  post.data.series
+    ? allPosts
+        .filter((p) => p.data.series === post.data.series)
+        .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf())
+    : []
+
+const seriesPosts = orderedSeriesPosts.map((s) => ({
+  slug: s.id,
+  title: s.data.title,
+  date: s.data.date.toISOString(),
+}))
+
+const seriesLabel = post.data.series
+  ? post.data.series
+      .replace(/[_-]/g, ' ')
+      .replace(/\b\w/g, (m) => m.toUpperCase())
+  : undefined
+---
+
+<Post
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  tags={post.data.tags}
+  slug={post.id}
+  basePath="/slop"
+  authors={post.data.authors}
+  revisions={post.data.revisions}
+  supportingTraceIds={post.data.supporting_trace_ids}
+  seriesLabel={seriesLabel}
+  seriesPosts={seriesPosts}
+  original={post.data.original}
+  draft={post.data.draft}
+  figure={post.data.figure}
+>
+  <Content />
+</Post>
