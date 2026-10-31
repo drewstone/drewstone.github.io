@@ -263,7 +263,6 @@ let nextNonLeader = 0
 let advanceCount = 0
 let pages = [[]]
 let hoverPaused = false
-let pagingLock = false
 let lastSig = ''
 
 function fmt(n) {
@@ -803,13 +802,15 @@ function movers(list) {
 }
 
 function pageSize() {
-  if (!deskStage) return 6
-  const top = deskStage.getBoundingClientRect().top
+  const minRows = window.innerWidth >= 1100 ? 8 : 4
+  const sample = deskTrack?.querySelector('.desk-row')
+  const rowH = sample ? Math.max(52, Math.ceil(sample.getBoundingClientRect().height)) : 64
   const footer = document.querySelector('footer')
-  const footerH = footer ? footer.offsetHeight : 40
-  const available = window.innerHeight - Math.max(top, 0) - footerH - 16
-  if (available < 76) return 4
-  return Math.max(3, Math.min(10, Math.floor(available / 76)))
+  const footerH = footer ? Math.ceil(footer.getBoundingClientRect().height) : 48
+  const top = deskStage ? deskStage.getBoundingClientRect().top : 0
+  let available = window.innerHeight - top - footerH - 12
+  if (!(top > 0) || available < rowH * 2) available = Math.round(window.innerHeight * 0.46)
+  return Math.max(minRows, Math.floor(available / rowH))
 }
 
 function chunk(list, size) {
@@ -819,9 +820,16 @@ function chunk(list, size) {
   return out.length ? out : [[]]
 }
 
+function boardBody() {
+  const vis = visibleSymbols()
+  const sorted = sortSymbols(vis)
+  const featured = new Set(movers(vis).slice(0, 4).map((item) => item.sym))
+  const rest = sorted.filter((item) => !featured.has(item.sym))
+  return { vis, rest: rest.length ? rest : sorted }
+}
+
 function recomputePages() {
-  const sorted = sortSymbols(visibleSymbols())
-  pages = chunk(sorted, pageSize())
+  pages = chunk(boardBody().rest, pageSize())
   if (pageIndex >= pages.length) pageIndex = 0
   if (nextNonLeader >= pages.length) nextNonLeader = Math.min(1, pages.length - 1)
 }
@@ -863,7 +871,15 @@ function updateIndicator() {
   dots.innerHTML = Array.from({ length: count }, (_, i) => `<i class="${i === pageIndex ? 'on' : ''}"></i>`).join('')
 }
 
+function revealTrack() {
+  if (!deskTrack) return
+  deskTrack.classList.remove('is-out', 'is-in', 'is-turn')
+  deskTrack.style.removeProperty('opacity')
+  deskTrack.style.removeProperty('transform')
+}
+
 function writePage() {
+  revealTrack()
   const rows = pages[pageIndex] || []
   deskTrack.innerHTML = rows.map((item) => rowMarkup(item, false)).join('')
   refill(deskTrack)
@@ -876,27 +892,32 @@ function renderFeatured() {
   refill(featuredEl)
 }
 
-function renderDesk({ reset = false } = {}) {
+function renderDesk({ reset = false, fromLayout = false } = {}) {
   if (reset) {
     pageIndex = 0
     advanceCount = 0
     nextNonLeader = 0
   }
-  recomputePages()
   renderFeatured()
+  recomputePages()
   writePage()
   lastSig = orderSig()
+  if (!fromLayout) {
+    requestAnimationFrame(() => {
+      if (currentView !== 'board') return
+      if (orderSig() !== lastSig) renderDesk({ fromLayout: true })
+    })
+  }
 }
 
 function orderSig() {
-  const vis = visibleSymbols()
-  const sorted = sortSymbols(vis).map((s) => s.sym).join(',')
+  const { vis, rest } = boardBody()
   const feat = movers(vis).slice(0, 4).map((s) => s.sym).join(',')
-  return `${prefs.primary}|${prefs.extra.join('.')}|${prefs.sort}|${feat}|${sorted}|${pageSize()}`
+  return `${prefs.primary}|${prefs.extra.join('.')}|${prefs.sort}|${feat}|${rest.map((s) => s.sym).join(',')}|${pageSize()}`
 }
 
 function syncDeskOrder() {
-  if (pagingLock || currentView !== 'board') return
+  if (currentView !== 'board') return
   const sig = orderSig()
   if (sig === lastSig) return
   lastSig = sig
@@ -907,22 +928,14 @@ function goToPage(index, animate) {
   recomputePages()
   const n = pages.length
   pageIndex = n ? Math.min(Math.max(index, 0), n - 1) : 0
-  if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    writePage()
-    return
-  }
-  pagingLock = true
-  deskTrack.classList.add('is-out')
-  window.setTimeout(() => {
-    writePage()
-    deskTrack.classList.remove('is-out')
-    deskTrack.classList.add('is-in')
-    requestAnimationFrame(() => {
-      deskTrack.classList.remove('is-in')
-      pagingLock = false
-      syncDeskOrder()
-    })
-  }, 280)
+  writePage()
+  const motion = animate
+    && !document.hidden
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!motion || !deskTrack) return
+  deskTrack.classList.remove('is-turn')
+  void deskTrack.offsetWidth
+  deskTrack.classList.add('is-turn')
 }
 
 function tickPage() {
@@ -1122,6 +1135,17 @@ window.addEventListener('resize', () => {
     if (currentView === 'board') renderDesk({ reset: false })
   }, 150)
 })
+document.addEventListener('visibilitychange', () => {
+  revealTrack()
+  if (document.hidden) stopPaging()
+  else if (currentView === 'board') {
+    renderDesk({ reset: false })
+    startPaging()
+  }
+})
+if (deskTrack) {
+  deskTrack.addEventListener('animationend', () => deskTrack.classList.remove('is-turn'))
+}
 
 prefs = loadPrefs()
 syncPeriodControls()
@@ -1661,8 +1685,8 @@ loadAll()
   .hero {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.2rem;
+    align-items: stretch;
+    gap: 0.15rem;
     min-width: 0;
     text-align: left;
     padding: 0.85rem 0.9rem 0.8rem;
@@ -1682,8 +1706,18 @@ loadAll()
   }
 
   .hero .spark {
+    display: block;
     width: 100%;
-    margin: 0.25rem 0 0.15rem;
+    height: 3.25rem;
+    flex: 0 0 3.25rem;
+    margin: 0.45rem 0 0.65rem;
+    overflow: hidden;
+  }
+
+  .hero .spark .sparkline {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .board .hero-price {
@@ -1693,6 +1727,7 @@ loadAll()
     letter-spacing: -0.04em;
     line-height: 1;
     text-align: left;
+    margin-top: 0.1rem;
   }
 
   .hero-change,
@@ -1712,17 +1747,16 @@ loadAll()
   }
 
   .desk-track {
-    transition: opacity 0.32s ease, transform 0.32s ease;
+    opacity: 1;
   }
 
-  .desk-track.is-out {
-    opacity: 0;
-    transform: translateY(-10px);
+  .desk-track.is-turn {
+    animation: desk-turn 0.32s ease;
   }
 
-  .desk-track.is-in {
-    opacity: 0;
-    transform: translateY(12px);
+  @keyframes desk-turn {
+    from { transform: translateY(8px); }
+    to { transform: none; }
   }
 
   .desk-row {
@@ -1730,9 +1764,10 @@ loadAll()
     align-items: center;
     gap: 0.85rem 1.15rem;
     width: 100%;
+    opacity: 1;
     text-align: left;
-    padding: 0.45rem 0.15rem;
-    min-height: 4.5rem;
+    padding: 0.4rem 0.15rem;
+    min-height: 3.7rem;
     border-bottom: 1px solid var(--line);
     background: transparent;
   }
