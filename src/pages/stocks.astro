@@ -44,7 +44,7 @@ const ALL = Object.values(GROUPS).flat()
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
   />
   <div class="board">
     <header class="page-head">
@@ -122,7 +122,7 @@ const ALL = Object.values(GROUPS).flat()
                 <td class="spark" data-spark></td>
                 <td class="num price">—</td>
                 <td class="num d1">—</td>
-                <td class="num d1p">—</td>
+                <td class="num d1p"><span class="chg">—</span></td>
                 <td class="num d30">—</td>
                 <td class="num d30p">—</td>
                 <td class="num ma50">—</td>
@@ -153,7 +153,7 @@ const ALL = Object.values(GROUPS).flat()
           <div class="card-metrics">
             <span class="k">1D</span>
             <span class="num d1">—</span>
-            <span class="num d1p">—</span>
+            <span class="num d1p"><span class="chg">—</span></span>
             <span class="k">30D</span>
             <span class="num d30">—</span>
             <span class="num d30p">—</span>
@@ -411,8 +411,10 @@ function fill(node, q) {
   for (const [sel, text, n] of pairs) {
     const el = node.querySelector(sel)
     if (!el) continue
-    el.textContent = text
-    setTone(el, n)
+    const chip = el.querySelector('.chg')
+    const target = chip || el
+    target.textContent = text
+    setTone(target, n)
   }
   const ma50 = node.querySelector('.ma50')
   const ma200 = node.querySelector('.ma200')
@@ -856,6 +858,18 @@ loadAll()
     font-size: 0.95rem;
   }
 
+  .board .detail-stats .stat:first-child b {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.03em;
+  }
+
+  .board .detail-stats .stat:nth-child(2) b {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
   .board .detail-chart {
     width: 100%;
     touch-action: none;
@@ -934,14 +948,18 @@ loadAll()
   }
 
   .board .ticker {
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-weight: 700;
+    font-size: 1.12rem;
+    letter-spacing: 0.03em;
+    color: var(--ink);
     white-space: nowrap;
   }
 
   .board .name {
-    color: var(--dim);
-    font-size: 0.82rem;
+    color: var(--faint);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
   }
 
   .board .stock-table .name {
@@ -956,16 +974,75 @@ loadAll()
     font-weight: 500;
   }
 
-  .board .price {
-    font-size: 1.02rem;
+  .board td.price,
+  .board .card-price {
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .board td.price {
+    font-size: 1.72rem;
+  }
+
+  .board td.d1,
+  .board .card .d1 {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .board td.d30,
+  .board td.d30p,
+  .board .card .d30,
+  .board .card .d30p {
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+
+  .board .ma50,
+  .board .ma200 {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--faint);
+  }
+
+  .board .d1p .chg {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.92rem;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .board .d1p .chg.ok,
+  .board .d1p .chg.fail {
+    padding: 0.16rem 0.42rem;
+    border-radius: 3px;
+  }
+
+  .board .d1p .chg.ok {
+    color: var(--up);
+    background: rgba(61, 214, 140, 0.14);
+  }
+
+  .board .d1p .chg.fail {
+    color: var(--down);
+    background: rgba(255, 93, 108, 0.16);
   }
 
   .board .ok { color: var(--up); }
   .board .fail { color: var(--down); }
   .board .muted {
-    color: var(--faint);
+    color: #556170;
     white-space: nowrap;
-    font-size: 0.75rem;
+    font-size: 0.64rem;
+    font-weight: 400;
   }
 
   .board .spark {
@@ -986,13 +1063,14 @@ loadAll()
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.35rem;
+    gap: 0.28rem;
     text-align: left;
-    padding: 0.85rem 0.85rem 0.7rem;
+    padding: 0.9rem 0.9rem 0.75rem;
     border: 1px solid var(--line);
     border-radius: 12px;
     background: #141922;
     cursor: pointer;
+    container-type: inline-size;
   }
 
   .board .card:hover,
@@ -1008,19 +1086,27 @@ loadAll()
     gap: 0.5rem;
   }
 
+  .board .card .ticker {
+    font-size: 1.2rem;
+  }
+
   .board .card-price {
-    font-size: 1.65rem;
-    line-height: 1.1;
+    font-size: clamp(1.75rem, 18cqi, 2.2rem);
     text-align: left;
-    margin: 0.15rem 0;
+    margin: 0.28rem 0 0.15rem;
+  }
+
+  .board .card .d1p .chg {
+    font-size: 1.02rem;
   }
 
   .board .card-metrics {
     display: grid;
     grid-template-columns: auto 1fr auto;
-    gap: 0.18rem 0.55rem;
-    align-items: baseline;
+    gap: 0.22rem 0.55rem;
+    align-items: center;
     font-size: 0.78rem;
+    margin-top: 0.15rem;
   }
 
   .board .card-metrics .k {
@@ -1028,6 +1114,11 @@ loadAll()
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-size: 0.66rem;
+  }
+
+  .board .card-metrics .k:first-child {
+    color: var(--dim);
+    font-weight: 600;
   }
 
   .board .card .when {
@@ -1057,8 +1148,21 @@ loadAll()
       width: 100%;
     }
 
+    .board td.price {
+      font-size: 1.42rem;
+    }
+
+    .board .stock-table .ticker {
+      font-size: 1rem;
+    }
+
     .board .card-price {
-      font-size: 1.45rem;
+      font-size: 1.95rem;
+    }
+
+    .board .d1p .chg.ok,
+    .board .d1p .chg.fail {
+      padding: 0.12rem 0.36rem;
     }
   }
 </style>
