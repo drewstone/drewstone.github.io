@@ -286,6 +286,7 @@ const detail = document.getElementById('detail')
 const detailChart = document.getElementById('detail-chart')
 const detailReadout = document.getElementById('detail-readout')
 const POLL_MS = 20000
+const INTRA_MS = 60000
 const DAY = 24 * 60 * 60
 const BOOKS = new Map()
 const PERIODS = [
@@ -304,6 +305,9 @@ const FIELD = {
 }
 
 let pollTimer = 0
+let intraTimer = 0
+let intraBusy = false
+let intraArmed = false
 let busy = false
 let selected = null
 let chartState = null
@@ -428,6 +432,7 @@ function parseChart(sym, body) {
     ma50: mean(bars, 50, 'adj'),
     ma200: mean(bars, 200, 'adj'),
     ts: (meta.regularMarketTime || last.t) * 1000,
+    prevClose,
     bars,
   }
 }
@@ -504,6 +509,88 @@ async function fetchQuote(sym) {
   return { sym, error }
 }
 
+function latestSession(bars) {
+  const groups = []
+  let current = []
+  let key = ''
+  for (const bar of bars) {
+    const day = new Date(bar.t * 1000).toLocaleDateString('en-CA', { timeZone: 'America/New_York' })
+    if (day !== key) {
+      if (current.length) groups.push(current)
+      current = []
+      key = day
+    }
+    current.push(bar)
+  }
+  if (current.length) groups.push(current)
+  for (let i = groups.length - 1; i >= 0; i--) {
+    if (groups[i].length >= 2) return groups[i]
+  }
+  return bars
+}
+
+function parseIntraday(body) {
+  const res = body?.chart?.result?.[0]
+  const meta = res?.meta
+  if (!res) return null
+  const stamps = res.timestamp || []
+  const quote = res.indicators?.quote?.[0]?.close || []
+  const bars = []
+  for (let i = 0; i < stamps.length; i++) {
+    if (!finite(quote[i])) continue
+    bars.push({ t: stamps[i], close: quote[i] })
+  }
+  if (bars.length < 2) return null
+  const session = latestSession(bars)
+  if (session.length < 2) return null
+  const baseline = finite(meta?.chartPreviousClose)
+    ? meta.chartPreviousClose
+    : finite(meta?.previousClose)
+      ? meta.previousClose
+      : null
+  return { points: session.map((bar) => bar.close), baseline }
+}
+
+async function fetchIntraday(sym) {
+  const hosts = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']
+  const ranges = [['1d', '5m'], ['2d', '15m'], ['5d', '30m']]
+  for (const [range, interval] of ranges) {
+    for (const host of hosts) {
+      const url = `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=${interval}&includePrePost=false`
+      const result = await readChart(url)
+      if (!result.body) continue
+      const parsed = parseIntraday(result.body)
+      if (parsed && parsed.points.length >= 8) return parsed
+    }
+  }
+  return null
+}
+
+function sliceDaily(bars, periodId) {
+  if (!bars || bars.length < 2) return []
+  if (periodId === '1y') return bars.map((bar) => bar.adj)
+  const last = bars[bars.length - 1]
+  const days = periodId === '7d' ? 7 : 30
+  const cutoff = last.t - days * DAY
+  const sliced = bars.filter((bar) => bar.t >= cutoff)
+  const use = sliced.length >= 2 ? sliced : bars.slice(-Math.min(bars.length, periodId === '7d' ? 6 : 22))
+  return use.map((bar) => bar.adj)
+}
+
+function seriesFor(q, periodId) {
+  const period = periodById(periodId)
+  const change = q[period.chg]
+  const up = finite(change) ? change >= 0 : null
+  if (period.id === '1d') {
+    if (q.intraday && q.intraday.length >= 2) {
+      const baseline = finite(q.intraBase) ? q.intraBase : q.prevClose
+      return { values: q.intraday, baseline, up }
+    }
+    return { values: [], baseline: null, up }
+  }
+  return { values: sliceDaily(q.bars, period.id), baseline: null, up }
+}
+
 function toneClass(n) {
   if (n == null || Number.isNaN(Number(n))) return ''
   return n >= 0 ? 'ok' : 'fail'
@@ -515,29 +602,32 @@ function setTone(el, n) {
   el.classList.add(n >= 0 ? 'ok' : 'fail')
 }
 
-function sparkSvg(bars, w = 104, h = 34) {
-  const values = bars.map((bar) => bar.adj).filter(finite)
-  if (values.length < 2) return ''
+function sparkSvg(values, w = 104, h = 34, up = null, baseline = null) {
+  const nums = values.filter(finite)
+  if (nums.length < 2) return ''
   const maxPoints = w > 140 ? 96 : 56
-  const pts = []
-  if (values.length <= maxPoints) pts.push(...values)
-  else {
-    const step = (values.length - 1) / (maxPoints - 1)
-    for (let i = 0; i < maxPoints; i++) pts.push(values[Math.round(i * step)])
+  let pts = nums
+  if (nums.length > maxPoints) {
+    pts = []
+    const step = (nums.length - 1) / (maxPoints - 1)
+    for (let i = 0; i < maxPoints; i++) pts.push(nums[Math.round(i * step)])
   }
-  const min = Math.min(...pts)
-  const max = Math.max(...pts)
+  const scaleVals = finite(baseline) ? [...pts, baseline] : pts
+  const min = Math.min(...scaleVals)
+  const max = Math.max(...scaleVals)
   const span = max - min || 1
+  const yOf = (v) => (1 - (v - min) / span) * (h - 6) + 3
   const points = pts
     .map((v, i) => {
       const x = (i / (pts.length - 1)) * (w - 2) + 1
-      const y = (1 - (v - min) / span) * (h - 6) + 3
-      return `${x.toFixed(1)},${y.toFixed(1)}`
+      return `${x.toFixed(1)},${yOf(v).toFixed(1)}`
     })
     .join(' ')
-  const up = pts[pts.length - 1] >= pts[0]
-  const color = up ? '#3dd68c' : '#ff5d6c'
-  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true"><polyline fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" points="${points}"/></svg>`
+  const color = up == null ? '#8b97a8' : up ? '#3dd68c' : '#ff5d6c'
+  const base = finite(baseline)
+    ? `<line x1="1" y1="${yOf(baseline).toFixed(1)}" x2="${w - 1}" y2="${yOf(baseline).toFixed(1)}" stroke="rgba(244,247,251,0.35)" stroke-dasharray="2.5 2.5" stroke-width="1" />`
+    : ''
+  return `<svg class="sparkline" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-hidden="true">${base}<polyline fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" points="${points}"/></svg>`
 }
 
 function fill(node, q) {
@@ -572,7 +662,11 @@ function fill(node, q) {
   if (spark) {
     const sw = Number(spark.dataset.w) || 104
     const sh = Number(spark.dataset.h) || 34
-    spark.innerHTML = sparkSvg(q.bars, sw, sh)
+    const periodId = prefs.primary || '1d'
+    const series = seriesFor(q, periodId)
+    const drawn = sparkSvg(series.values, sw, sh, series.up, series.baseline)
+    const tag = spark.closest('.hero') ? `<span class="spark-tag">${esc(periodById(periodId).label)}</span>` : ''
+    spark.innerHTML = drawn + tag
   }
   const bigAbs = node.querySelector('.big-abs')
   const bigPct = node.querySelector('.big-pct')
@@ -591,6 +685,11 @@ function fill(node, q) {
 }
 
 function paint(q) {
+  const prev = BOOKS.get(q.sym)
+  if (prev) {
+    if (!q.intraday && prev.intraday) q.intraday = prev.intraday
+    if (!finite(q.intraBase) && finite(prev.intraBase)) q.intraBase = prev.intraBase
+  }
   BOOKS.set(q.sym, q)
   for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(q.sym)}"]`)) fill(node, q)
   if (selected === q.sym) renderDetail(q)
@@ -633,6 +732,36 @@ async function loadAll() {
   } finally {
     busy = false
     refreshBtn.disabled = false
+    if (!intraArmed && streamBtn.getAttribute('aria-pressed') === 'true') {
+      intraArmed = true
+      loadIntraday()
+    }
+  }
+}
+
+async function loadIntraday() {
+  if (intraBusy || busy) return
+  intraBusy = true
+  try {
+    for (const tr of ROWS) {
+      const sym = tr.dataset.sym
+      if (!BOOKS.has(sym)) continue
+      const got = await fetchIntraday(sym)
+      if (!got) continue
+      const q = BOOKS.get(sym)
+      if (!q) continue
+      q.intraday = got.points
+      if (finite(got.baseline)) q.intraBase = got.baseline
+      for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(sym)}"]`)) fill(node, q)
+    }
+  } finally {
+    intraBusy = false
+  }
+}
+
+function redrawQuotes() {
+  for (const q of BOOKS.values()) {
+    for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(q.sym)}"]`)) fill(node, q)
   }
 }
 
@@ -779,8 +908,13 @@ function setStreaming(on) {
   streamBtn.classList.toggle('active', on)
   streamBtn.textContent = on ? 'Streaming on' : 'Streaming off'
   clearInterval(pollTimer)
+  clearInterval(intraTimer)
   pollTimer = 0
-  if (on) pollTimer = setInterval(loadAll, POLL_MS)
+  intraTimer = 0
+  if (on) {
+    pollTimer = setInterval(loadAll, POLL_MS)
+    intraTimer = setInterval(() => { if (!busy) loadIntraday() }, INTRA_MS)
+  }
 }
 
 function loadPrefs() {
@@ -1087,6 +1221,7 @@ function setPrimary(id) {
   savePrefs()
   syncPeriodControls()
   renderDesk({ reset: true })
+  redrawQuotes()
 }
 
 function toggleExtra(id) {
@@ -1890,11 +2025,24 @@ loadAll()
 
   .hero .spark {
     display: block;
+    position: relative;
     width: 100%;
     height: 3.25rem;
     flex: 0 0 3.25rem;
     margin: 0.45rem 0 0.65rem;
     overflow: hidden;
+  }
+
+  .spark-tag {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: var(--faint);
+    line-height: 1;
+    pointer-events: none;
   }
 
   .hero .spark .sparkline {
