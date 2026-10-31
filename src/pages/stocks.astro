@@ -37,6 +37,37 @@ const GROUPS = {
 }
 
 const ALL = Object.values(GROUPS).flat()
+
+const DOMAINS = {
+  NVDA: 'nvidia.com',
+  TSM: 'tsmc.com',
+  AVGO: 'broadcom.com',
+  AMD: 'amd.com',
+  INTC: 'intel.com',
+  QCOM: 'qualcomm.com',
+  TXN: 'ti.com',
+  AMAT: 'appliedmaterials.com',
+  ASML: 'asml.com',
+  LRCX: 'lamresearch.com',
+  MU: 'micron.com',
+  KLAC: 'kla.com',
+  ADI: 'analog.com',
+  IFNNY: 'infineon.com',
+  STM: 'st.com',
+  ARM: 'arm.com',
+  MRVL: 'marvell.com',
+  NXPI: 'nxp.com',
+  ON: 'onsemi.com',
+  GFS: 'gf.com',
+  CDNS: 'cadence.com',
+  SNPS: 'synopsys.com',
+  MSFT: 'microsoft.com',
+  GOOGL: 'google.com',
+  AAPL: 'apple.com',
+  AMZN: 'amazon.com',
+  NET: 'cloudflare.com',
+  CBRS: 'cerebras.ai',
+}
 ---
 
 <Base title="Stocks" description="Stocks" wide>
@@ -75,9 +106,12 @@ const ALL = Object.values(GROUPS).flat()
 
     <section id="detail" class="detail" hidden>
       <div class="detail-top">
-        <div>
-          <h2 class="detail-sym" id="detail-sym"></h2>
-          <p class="detail-name" id="detail-name"></p>
+        <div class="detail-id">
+          <span class="logo logo-lg" id="detail-logo" aria-hidden="true"></span>
+          <div>
+            <p class="detail-name" id="detail-name"></p>
+            <h2 class="detail-sym" id="detail-sym"></h2>
+          </div>
         </div>
         <button class="chip" id="detail-close" type="button">Close</button>
       </div>
@@ -157,7 +191,15 @@ const ALL = Object.values(GROUPS).flat()
                 data-sym={sym}
                 data-name={name}
               >
-                <td class="ticker">{sym}</td>
+                <td class="sym-cell">
+                  <span class="ident">
+                    <span class="logo" aria-hidden="true">
+                      <img alt="" src={`https://www.google.com/s2/favicons?domain=${DOMAINS[sym]}&sz=128`} data-alt-src={`https://icons.duckduckgo.com/ip3/${DOMAINS[sym]}.ico`} />
+                      <span class="mono">{sym.slice(0, 2)}</span>
+                    </span>
+                    <span class="ticker">{sym}</span>
+                  </span>
+                </td>
                 <td class="name">{name}</td>
                 <td class="spark" data-spark></td>
                 <td class="num price">—</td>
@@ -189,10 +231,18 @@ const ALL = Object.values(GROUPS).flat()
           data-name={name}
         >
           <div class="card-top">
-            <span class="ticker">{sym}</span>
+            <span class="ident">
+              <span class="logo" aria-hidden="true">
+                <img alt="" src={`https://www.google.com/s2/favicons?domain=${DOMAINS[sym]}&sz=128`} data-alt-src={`https://icons.duckduckgo.com/ip3/${DOMAINS[sym]}.ico`} />
+                <span class="mono">{sym.slice(0, 2)}</span>
+              </span>
+              <span class="ident-text">
+                <span class="co">{name}</span>
+                <span class="ticker">{sym}</span>
+              </span>
+            </span>
             <span class="spark" data-spark></span>
           </div>
-          <div class="name">{name}</div>
           <div class="num price card-price">—</div>
           <div class="card-metrics">
             <span class="k">1D</span>
@@ -212,10 +262,12 @@ const ALL = Object.values(GROUPS).flat()
         </button>
       ))}
     </div>
+    <script type="application/json" id="logo-domains" is:inline set:html={JSON.stringify(DOMAINS)} />
   </div>
 </Base>
 
 <script>
+const DOMAINS = JSON.parse(document.getElementById('logo-domains').textContent)
 const ROWS = [...document.querySelectorAll('tr.stock-row')]
 const filterInput = document.getElementById('filter')
 const chips = [...document.querySelectorAll('.filters .chip')]
@@ -603,6 +655,7 @@ function linePoints(values, plot, min, max) {
 
 function renderDetail(q) {
   detail.hidden = false
+  paintDetailLogo(q.sym)
   document.getElementById('detail-sym').textContent = q.sym
   document.getElementById('detail-name').textContent = q.name || document.querySelector(`[data-sym="${CSS.escape(q.sym)}"]`)?.dataset.name || ''
   document.getElementById('detail-stats').innerHTML = [
@@ -703,6 +756,7 @@ function selectSymbol(sym) {
   if (q) renderDetail(q)
   else {
     detail.hidden = false
+    paintDetailLogo(sym)
     document.getElementById('detail-sym').textContent = sym
     document.getElementById('detail-name').textContent = document.querySelector(`[data-sym="${CSS.escape(sym)}"]`)?.dataset.name || ''
     document.getElementById('detail-stats').textContent = ''
@@ -842,14 +896,38 @@ function changeMarkup(period, big) {
   return `<span class="desk-sec"><span class="k">${period.label}</span><span class="num ${abs}">—</span><span class="num ${pct}"><span class="chg">—</span></span></span>`
 }
 
+function logoHtml(sym, large) {
+  const domain = DOMAINS[sym] || ''
+  const letters = esc(String(sym).slice(0, 2))
+  const cls = large ? 'logo logo-lg' : 'logo'
+  if (!domain) return `<span class="${cls} is-fallback" aria-hidden="true"><span class="mono">${letters}</span></span>`
+  const google = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
+  const ddg = `https://icons.duckduckgo.com/ip3/${domain}.ico`
+  return `<span class="${cls}" aria-hidden="true"><img alt="" src="${google}" data-alt-src="${ddg}" /><span class="mono">${letters}</span></span>`
+}
+
+function identHtml(sym, name, large) {
+  return `<span class="ident">${logoHtml(sym, large)}<span class="ident-text"><span class="co">${esc(name)}</span><span class="ticker">${esc(sym)}</span></span></span>`
+}
+
+function paintDetailLogo(sym) {
+  const tile = document.getElementById('detail-logo')
+  if (!tile) return
+  const holder = document.createElement('div')
+  holder.innerHTML = logoHtml(sym, true)
+  const next = holder.firstElementChild
+  next.id = 'detail-logo'
+  tile.replaceWith(next)
+}
+
 function rowMarkup(item, hero) {
   const period = periodById(prefs.primary)
   const extras = PERIODS.filter((p) => prefs.extra.includes(p.id))
   const attrs = `type="button" data-sym="${esc(item.sym)}" data-name="${esc(item.name)}" data-group="${esc(item.group)}" data-period="${period.id}"`
   if (hero) {
-    return `<button ${attrs} class="hero"><span class="ticker">${esc(item.sym)}</span><span class="name">${esc(item.name)}</span><span class="spark" data-spark data-w="200" data-h="52"></span><span class="num price hero-price">—</span><span class="hero-change">${changeMarkup(period, true)}</span></button>`
+    return `<button ${attrs} class="hero">${identHtml(item.sym, item.name, true)}<span class="spark" data-spark data-w="200" data-h="52"></span><span class="num price hero-price">—</span><span class="hero-change">${changeMarkup(period, true)}</span></button>`
   }
-  return `<button ${attrs} class="desk-row"><span class="ticker">${esc(item.sym)}</span><span class="spark" data-spark></span><span class="num price desk-price">—</span>${changeMarkup(period, true)}${extras.map((p) => changeMarkup(p, false)).join('')}</button>`
+  return `<button ${attrs} class="desk-row">${identHtml(item.sym, item.name, false)}<span class="spark" data-spark></span><span class="num price desk-price">—</span>${changeMarkup(period, true)}${extras.map((p) => changeMarkup(p, false)).join('')}</button>`
 }
 
 function refill(root) {
@@ -1103,6 +1181,19 @@ document.getElementById('sort-set').addEventListener('click', (event) => {
 document.getElementById('desk-play').addEventListener('click', () => setPlaying(!prefs.playing))
 deskView.addEventListener('mouseenter', () => pauseForHover(true))
 deskView.addEventListener('mouseleave', () => pauseForHover(false))
+document.querySelector('.board').addEventListener('error', (event) => {
+  const img = event.target
+  if (!img || img.tagName !== 'IMG' || !img.closest('.logo')) return
+  const tile = img.closest('.logo')
+  const next = img.dataset.altSrc
+  if (img.dataset.step !== 'alt' && next) {
+    img.dataset.step = 'alt'
+    img.src = next
+    return
+  }
+  tile.classList.add('is-fallback')
+  img.remove()
+}, true)
 deskView.addEventListener('click', (event) => {
   const hit = event.target.closest('.hero, .desk-row')
   if (hit) selectSymbol(hit.dataset.sym)
@@ -1305,6 +1396,13 @@ loadAll()
     gap: 1rem;
   }
 
+  .board .detail-id {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+  }
+
   .board .detail-sym {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: clamp(2rem, 4vw, 2.8rem);
@@ -1315,10 +1413,11 @@ loadAll()
   }
 
   .board .detail-name {
-    margin-top: 0.25rem;
-    color: var(--dim);
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
+    margin: 0 0 0.2rem;
+    color: #f4f7fb;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
   }
 
   .board .detail-stats {
@@ -1430,21 +1529,93 @@ loadAll()
 
   .board .ticker {
     font-weight: 700;
-    font-size: 1.12rem;
+    font-size: 1.45rem;
     letter-spacing: 0.03em;
-    color: var(--ink);
+    color: #fff;
     white-space: nowrap;
+    line-height: 1.05;
   }
 
-  .board .name {
-    color: var(--faint);
-    font-size: 0.7rem;
-    font-weight: 400;
+  .board .name,
+  .board .co {
+    color: #f4f7fb;
+    font-size: 0.98rem;
+    font-weight: 500;
     letter-spacing: 0.01em;
+    line-height: 1.15;
   }
 
   .board .stock-table .name {
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 16rem;
+  }
+
+  .ident {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
+  .ident-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+    min-width: 0;
+  }
+
+  .board .co {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 10px;
+    background: #1c232e;
+    border: 1px solid rgba(244, 247, 251, 0.1);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .logo-lg {
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
+    border-radius: 12px;
+  }
+
+  .logo img {
+    width: 68%;
+    height: 68%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .logo .mono {
+    display: none;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: #f4f7fb;
+  }
+
+  .logo-lg .mono {
+    font-size: 0.95rem;
+  }
+
+  .logo.is-fallback .mono {
+    display: block;
+  }
+
+  .logo.is-fallback img {
+    display: none;
   }
 
   .board .num {
@@ -1572,7 +1743,11 @@ loadAll()
   }
 
   .board .card .ticker {
-    font-size: 1.2rem;
+    font-size: 1.35rem;
+  }
+
+  .board .card .ident {
+    flex: 1 1 auto;
   }
 
   .board .card-price {
@@ -1701,8 +1876,16 @@ loadAll()
     background: #1a212c;
   }
 
+  .hero .ident {
+    margin-bottom: 0.15rem;
+  }
+
   .hero .ticker {
-    font-size: 1.35rem;
+    font-size: 1.7rem;
+  }
+
+  .hero .co {
+    font-size: 0.95rem;
   }
 
   .hero .spark {
@@ -1777,17 +1960,30 @@ loadAll()
     background: rgba(244, 247, 251, 0.045);
   }
 
-  .desk-row .ticker {
-    flex: 0 0 5rem;
-    font-size: 1.2rem;
+  .desk-row .ident {
+    flex: 0 1 22rem;
   }
 
-  .desk-row .spark {
-    flex: 0 0 108px;
+  .desk-row .ticker {
+    font-size: 1.55rem;
+  }
+
+  .board .desk-row .spark {
+    flex: 1 1 12rem;
+    width: auto;
+    min-width: 8rem;
+    max-width: 18rem;
+    height: 2.5rem;
+  }
+
+  .board .desk-row .spark .sparkline {
+    width: 100%;
+    height: 100%;
   }
 
   .board .desk-price {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    margin-left: auto;
     font-size: 2rem;
     font-weight: 700;
     color: #fff;
@@ -1883,7 +2079,21 @@ loadAll()
     }
 
     .board .stock-table .ticker {
-      font-size: 1rem;
+      font-size: 1.15rem;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      flex-basis: 36px;
+    }
+
+    .desk-row .ident {
+      flex: 1 1 12rem;
+    }
+
+    .desk-row .ticker {
+      font-size: 1.25rem;
     }
 
     .board .card-price {
@@ -1906,8 +2116,11 @@ loadAll()
       padding: 0.7rem 0.05rem;
     }
 
-    .desk-row .spark {
-      flex-basis: 5.5rem;
+    .board .desk-row .spark {
+      flex: 1 1 100%;
+      max-width: none;
+      min-width: 0;
+      height: 2.1rem;
     }
 
     .board .desk-price {
