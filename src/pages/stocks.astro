@@ -60,7 +60,8 @@ const ALL = Object.values(GROUPS).flat()
           </div>
           <div class="toolbar-actions">
             <div class="views" role="group" aria-label="Layout">
-              <button class="chip active" id="view-table" type="button" aria-pressed="true">Table</button>
+              <button class="chip active" id="view-board" type="button" aria-pressed="true">Board</button>
+              <button class="chip" id="view-table" type="button" aria-pressed="false">Table</button>
               <button class="chip" id="view-cards" type="button" aria-pressed="false">Cards</button>
             </div>
             <div class="modes">
@@ -90,19 +91,58 @@ const ALL = Object.values(GROUPS).flat()
       </div>
     </section>
 
-    <div id="table-view">
+    <div id="desk-view" class="desk">
+      <div class="desk-controls">
+        <div class="period-set" id="primary-set" role="group" aria-label="Primary change">
+          <span class="k">Big</span>
+          <button class="chip" type="button" data-primary="1d">1D</button>
+          <button class="chip" type="button" data-primary="7d">7D</button>
+          <button class="chip" type="button" data-primary="30d">30D</button>
+          <button class="chip" type="button" data-primary="1y">1Y</button>
+        </div>
+        <div class="period-set" id="extra-set" role="group" aria-label="Also show">
+          <span class="k">Show</span>
+          <button class="chip" type="button" data-extra="1d">1D</button>
+          <button class="chip" type="button" data-extra="7d">7D</button>
+          <button class="chip" type="button" data-extra="30d">30D</button>
+          <button class="chip" type="button" data-extra="1y">1Y</button>
+          <button class="chip" type="button" data-extra="all">All</button>
+        </div>
+        <div class="sorts" id="sort-set" role="group" aria-label="Sort">
+          <button class="chip" type="button" data-sort="movers">Movers</button>
+          <button class="chip" type="button" data-sort="gainers">Gainers</button>
+          <button class="chip" type="button" data-sort="losers">Losers</button>
+          <button class="chip" type="button" data-sort="symbol">Symbol</button>
+        </div>
+        <div class="pager">
+          <span id="page-label" class="page-label">1/1</span>
+          <span id="page-dots" class="dots" aria-hidden="true"></span>
+          <button class="chip" id="desk-play" type="button" aria-pressed="true">Auto</button>
+        </div>
+      </div>
+      <div id="featured" class="featured"></div>
+      <div id="desk-stage" class="desk-stage">
+        <div id="desk-track" class="desk-track"></div>
+      </div>
+    </div>
+
+    <div id="table-view" hidden>
       <div class="table-wrap">
         <table class="stock-table">
           <thead>
             <tr>
               <th>Symbol</th>
               <th>Name</th>
-              <th>1Y</th>
+              <th>Chart</th>
               <th class="num">Price</th>
               <th class="num">1D</th>
               <th class="num">1D%</th>
+              <th class="num">7D</th>
+              <th class="num">7D%</th>
               <th class="num">30D</th>
               <th class="num">30D%</th>
+              <th class="num">1Y</th>
+              <th class="num">1Y%</th>
               <th class="num">50D MA</th>
               <th class="num">200D MA</th>
               <th>Updated</th>
@@ -123,8 +163,12 @@ const ALL = Object.values(GROUPS).flat()
                 <td class="num price">—</td>
                 <td class="num d1">—</td>
                 <td class="num d1p"><span class="chg">—</span></td>
+                <td class="num d7">—</td>
+                <td class="num d7p">—</td>
                 <td class="num d30">—</td>
                 <td class="num d30p">—</td>
+                <td class="num y1">—</td>
+                <td class="num y1p">—</td>
                 <td class="num ma50">—</td>
                 <td class="num ma200">—</td>
                 <td class="muted when">—</td>
@@ -179,19 +223,48 @@ const streamBtn = document.getElementById('stream')
 const refreshBtn = document.getElementById('refresh')
 const tableView = document.getElementById('table-view')
 const cardView = document.getElementById('card-view')
+const deskView = document.getElementById('desk-view')
+const viewBoard = document.getElementById('view-board')
 const viewTable = document.getElementById('view-table')
 const viewCards = document.getElementById('view-cards')
+const featuredEl = document.getElementById('featured')
+const deskStage = document.getElementById('desk-stage')
+const deskTrack = document.getElementById('desk-track')
 const detail = document.getElementById('detail')
 const detailChart = document.getElementById('detail-chart')
 const detailReadout = document.getElementById('detail-readout')
 const POLL_MS = 20000
 const DAY = 24 * 60 * 60
 const BOOKS = new Map()
+const PERIODS = [
+  { id: '1d', label: '1D', chg: 'dayChg', pct: 'dayPct' },
+  { id: '7d', label: '7D', chg: 'm7', pct: 'm7pct' },
+  { id: '30d', label: '30D', chg: 'm30', pct: 'm30pct' },
+  { id: '1y', label: '1Y', chg: 'y1', pct: 'y1pct' },
+]
+const STORE_KEY = 'stocks-desk'
+const PAGE_MS = 10000
+const FIELD = {
+  '1d': ['d1', 'd1p'],
+  '7d': ['d7', 'd7p'],
+  '30d': ['d30', 'd30p'],
+  '1y': ['y1', 'y1p'],
+}
 
 let pollTimer = 0
 let busy = false
 let selected = null
 let chartState = null
+let currentView = 'board'
+let prefs = { primary: '1d', extra: [], sort: 'movers', playing: true }
+let pageTimer = 0
+let pageIndex = 0
+let nextNonLeader = 0
+let advanceCount = 0
+let pages = [[]]
+let hoverPaused = false
+let pagingLock = false
+let lastSig = ''
 
 function fmt(n) {
   return n == null || Number.isNaN(Number(n))
@@ -226,6 +299,25 @@ function mean(bars, count, key) {
   let sum = 0
   for (let i = bars.length - count; i < bars.length; i++) sum += bars[i][key]
   return sum / count
+}
+
+function lookback(bars, last, liveAdj, days, minDays) {
+  const target = last.t - days * DAY
+  let base = null
+  for (let i = bars.length - 1; i >= 0; i--) {
+    if (bars[i].t <= target) {
+      base = bars[i]
+      break
+    }
+  }
+  if (!base && days >= 300) {
+    const first = bars[0]
+    if (last.t - first.t >= minDays * DAY) base = first
+  }
+  const enough = base && last.t - base.t >= minDays * DAY && base.adj
+  if (!enough) return { chg: null, pct: null }
+  const chg = liveAdj - base.adj
+  return { chg, pct: (chg / base.adj) * 100 }
 }
 
 function rolling(values, count) {
@@ -267,25 +359,21 @@ function parseChart(sym, body) {
   const dayPct = prevClose ? (dayChg / prevClose) * 100 : null
   const factor = last.close ? last.adj / last.close : 1
   const liveAdj = price * (Number.isFinite(factor) ? factor : 1)
-  const target = last.t - 30 * DAY
-  let base = null
-  for (let i = bars.length - 1; i >= 0; i--) {
-    if (bars[i].t <= target) {
-      base = bars[i]
-      break
-    }
-  }
-  const enoughHistory = base && last.t - base.t >= 20 * DAY
-  const m30 = enoughHistory ? liveAdj - base.adj : null
-  const m30pct = enoughHistory && base.adj ? (m30 / base.adj) * 100 : null
+  const w7 = lookback(bars, last, liveAdj, 7, 4)
+  const w30 = lookback(bars, last, liveAdj, 30, 20)
+  const w1 = lookback(bars, last, liveAdj, 365, 300)
   return {
     sym,
     name: meta.shortName || meta.longName || '',
     price,
     dayChg,
     dayPct,
-    m30,
-    m30pct,
+    m7: w7.chg,
+    m7pct: w7.pct,
+    m30: w30.chg,
+    m30pct: w30.pct,
+    y1: w1.chg,
+    y1pct: w1.pct,
     ma50: mean(bars, 50, 'adj'),
     ma200: mean(bars, 200, 'adj'),
     ts: (meta.regularMarketTime || last.t) * 1000,
@@ -365,24 +453,27 @@ async function fetchQuote(sym) {
   return { sym, error }
 }
 
+function toneClass(n) {
+  if (n == null || Number.isNaN(Number(n))) return ''
+  return n >= 0 ? 'ok' : 'fail'
+}
+
 function setTone(el, n) {
   el.classList.remove('ok', 'fail')
   if (n == null || Number.isNaN(Number(n))) return
   el.classList.add(n >= 0 ? 'ok' : 'fail')
 }
 
-function sparkSvg(bars) {
+function sparkSvg(bars, w = 104, h = 34) {
   const values = bars.map((bar) => bar.adj).filter(finite)
   if (values.length < 2) return ''
-  const maxPoints = 56
+  const maxPoints = w > 140 ? 96 : 56
   const pts = []
   if (values.length <= maxPoints) pts.push(...values)
   else {
     const step = (values.length - 1) / (maxPoints - 1)
     for (let i = 0; i < maxPoints; i++) pts.push(values[Math.round(i * step)])
   }
-  const w = 104
-  const h = 34
   const min = Math.min(...pts)
   const max = Math.max(...pts)
   const span = max - min || 1
@@ -405,8 +496,12 @@ function fill(node, q) {
   const pairs = [
     ['.d1', signed(q.dayChg), q.dayChg],
     ['.d1p', signedPct(q.dayPct), q.dayPct],
+    ['.d7', signed(q.m7), q.m7],
+    ['.d7p', signedPct(q.m7pct), q.m7pct],
     ['.d30', signed(q.m30), q.m30],
     ['.d30p', signedPct(q.m30pct), q.m30pct],
+    ['.y1', signed(q.y1), q.y1],
+    ['.y1p', signedPct(q.y1pct), q.y1pct],
   ]
   for (const [sel, text, n] of pairs) {
     const el = node.querySelector(sel)
@@ -423,13 +518,32 @@ function fill(node, q) {
   if (ma50) ma50.textContent = fmt(q.ma50)
   if (ma200) ma200.textContent = fmt(q.ma200)
   if (when) when.textContent = q.ts ? new Date(q.ts).toLocaleTimeString() : '—'
-  if (spark) spark.innerHTML = sparkSvg(q.bars)
+  if (spark) {
+    const sw = Number(spark.dataset.w) || 104
+    const sh = Number(spark.dataset.h) || 34
+    spark.innerHTML = sparkSvg(q.bars, sw, sh)
+  }
+  const bigAbs = node.querySelector('.big-abs')
+  const bigPct = node.querySelector('.big-pct')
+  if (bigAbs || bigPct) {
+    const period = PERIODS.find((p) => p.id === (node.dataset.period || prefs.primary)) || PERIODS[0]
+    if (bigAbs) {
+      bigAbs.textContent = signed(q[period.chg])
+      setTone(bigAbs, q[period.chg])
+    }
+    if (bigPct) {
+      const chip = bigPct.querySelector('.chg') || bigPct
+      chip.textContent = signedPct(q[period.pct])
+      setTone(chip, q[period.pct])
+    }
+  }
 }
 
 function paint(q) {
   BOOKS.set(q.sym, q)
   for (const node of document.querySelectorAll(`[data-sym="${CSS.escape(q.sym)}"]`)) fill(node, q)
   if (selected === q.sym) renderDetail(q)
+  if (currentView === 'board') syncDeskOrder()
 }
 
 function markUnavailable(sym) {
@@ -494,8 +608,10 @@ function renderDetail(q) {
   document.getElementById('detail-name').textContent = q.name || document.querySelector(`[data-sym="${CSS.escape(q.sym)}"]`)?.dataset.name || ''
   document.getElementById('detail-stats').innerHTML = [
     `<span class="stat"><b class="num">${fmt(q.price)}</b></span>`,
-    `<span class="stat">1D <b class="num ${q.dayChg >= 0 ? 'ok' : 'fail'}">${signed(q.dayChg)} ${signedPct(q.dayPct)}</b></span>`,
-    `<span class="stat">30D <b class="num ${q.m30 == null ? '' : q.m30 >= 0 ? 'ok' : 'fail'}">${signed(q.m30)} ${signedPct(q.m30pct)}</b></span>`,
+    `<span class="stat">1D <b class="num ${toneClass(q.dayChg)}">${signed(q.dayChg)} ${signedPct(q.dayPct)}</b></span>`,
+    `<span class="stat">7D <b class="num ${toneClass(q.m7)}">${signed(q.m7)} ${signedPct(q.m7pct)}</b></span>`,
+    `<span class="stat">30D <b class="num ${toneClass(q.m30)}">${signed(q.m30)} ${signedPct(q.m30pct)}</b></span>`,
+    `<span class="stat">1Y <b class="num ${toneClass(q.y1)}">${signed(q.y1)} ${signedPct(q.y1pct)}</b></span>`,
     `<span class="stat">50D <b class="num">${fmt(q.ma50)}</b></span>`,
     `<span class="stat">200D <b class="num">${fmt(q.ma200)}</b></span>`,
   ].join('')
@@ -614,13 +730,316 @@ function setStreaming(on) {
   if (on) pollTimer = setInterval(loadAll, POLL_MS)
 }
 
-function setView(cards) {
-  tableView.hidden = cards
-  cardView.hidden = !cards
-  viewTable.classList.toggle('active', !cards)
-  viewCards.classList.toggle('active', cards)
-  viewTable.setAttribute('aria-pressed', cards ? 'false' : 'true')
-  viewCards.setAttribute('aria-pressed', cards ? 'true' : 'false')
+function loadPrefs() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE_KEY) || 'null')
+    if (!raw || typeof raw !== 'object') return { ...prefs }
+    const ids = new Set(PERIODS.map((p) => p.id))
+    const primary = ids.has(raw.primary) ? raw.primary : '1d'
+    const extra = Array.isArray(raw.extra) ? raw.extra.filter((id) => ids.has(id) && id !== primary) : []
+    const sort = ['movers', 'gainers', 'losers', 'symbol'].includes(raw.sort) ? raw.sort : 'movers'
+    return { primary, extra, sort, playing: raw.playing !== false }
+  } catch {
+    return { primary: '1d', extra: [], sort: 'movers', playing: true }
+  }
+}
+
+function savePrefs() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(prefs)) } catch { /* private mode */ }
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]))
+}
+
+function periodById(id) {
+  return PERIODS.find((p) => p.id === id) || PERIODS[0]
+}
+
+function visibleSymbols() {
+  const q = filterInput.value.trim().toLowerCase()
+  const group = chips.find((c) => c.classList.contains('active'))?.dataset.group ?? 'all'
+  return ROWS.filter((tr) => {
+    const matchGroup = group === 'all' || tr.dataset.group === group
+    const matchText = !q || tr.dataset.sym.toLowerCase().includes(q) || (tr.dataset.name || '').toLowerCase().includes(q)
+    return matchGroup && matchText
+  }).map((tr) => ({ sym: tr.dataset.sym, name: tr.dataset.name || '', group: tr.dataset.group || '' }))
+}
+
+function metric(sym) {
+  const q = BOOKS.get(sym)
+  if (!q) return null
+  const n = q[periodById(prefs.primary).pct]
+  return finite(n) ? n : null
+}
+
+function sortSymbols(list) {
+  const arr = [...list]
+  arr.sort((a, b) => {
+    if (prefs.sort === 'symbol') return a.sym.localeCompare(b.sym)
+    const pa = metric(a.sym)
+    const pb = metric(b.sym)
+    if (pa == null && pb == null) return a.sym.localeCompare(b.sym)
+    if (pa == null) return 1
+    if (pb == null) return -1
+    if (prefs.sort === 'gainers') return pb - pa
+    if (prefs.sort === 'losers') return pa - pb
+    return Math.abs(pb) - Math.abs(pa)
+  })
+  return arr
+}
+
+function movers(list) {
+  return [...list].sort((a, b) => {
+    const pa = metric(a.sym)
+    const pb = metric(b.sym)
+    if (pa == null && pb == null) return a.sym.localeCompare(b.sym)
+    if (pa == null) return 1
+    if (pb == null) return -1
+    return Math.abs(pb) - Math.abs(pa)
+  })
+}
+
+function pageSize() {
+  if (!deskStage) return 6
+  const top = deskStage.getBoundingClientRect().top
+  const footer = document.querySelector('footer')
+  const footerH = footer ? footer.offsetHeight : 40
+  const available = window.innerHeight - Math.max(top, 0) - footerH - 16
+  if (available < 76) return 4
+  return Math.max(3, Math.min(10, Math.floor(available / 76)))
+}
+
+function chunk(list, size) {
+  const out = []
+  const n = Math.max(1, size)
+  for (let i = 0; i < list.length; i += n) out.push(list.slice(i, i + n))
+  return out.length ? out : [[]]
+}
+
+function recomputePages() {
+  const sorted = sortSymbols(visibleSymbols())
+  pages = chunk(sorted, pageSize())
+  if (pageIndex >= pages.length) pageIndex = 0
+  if (nextNonLeader >= pages.length) nextNonLeader = Math.min(1, pages.length - 1)
+}
+
+function changeMarkup(period, big) {
+  if (big) {
+    return `<span class="desk-primary"><span class="num big-abs">—</span><span class="big-pct"><span class="chg">—</span></span></span>`
+  }
+  const [abs, pct] = FIELD[period.id]
+  return `<span class="desk-sec"><span class="k">${period.label}</span><span class="num ${abs}">—</span><span class="num ${pct}"><span class="chg">—</span></span></span>`
+}
+
+function rowMarkup(item, hero) {
+  const period = periodById(prefs.primary)
+  const extras = PERIODS.filter((p) => prefs.extra.includes(p.id))
+  const attrs = `type="button" data-sym="${esc(item.sym)}" data-name="${esc(item.name)}" data-group="${esc(item.group)}" data-period="${period.id}"`
+  if (hero) {
+    return `<button ${attrs} class="hero"><span class="ticker">${esc(item.sym)}</span><span class="name">${esc(item.name)}</span><span class="spark" data-spark data-w="200" data-h="52"></span><span class="num price hero-price">—</span><span class="hero-change">${changeMarkup(period, true)}</span></button>`
+  }
+  return `<button ${attrs} class="desk-row"><span class="ticker">${esc(item.sym)}</span><span class="spark" data-spark></span><span class="num price desk-price">—</span>${changeMarkup(period, true)}${extras.map((p) => changeMarkup(p, false)).join('')}</button>`
+}
+
+function refill(root) {
+  if (!root) return
+  for (const node of root.querySelectorAll('[data-sym]')) {
+    const q = BOOKS.get(node.dataset.sym)
+    if (q) fill(node, q)
+    if (selected && node.dataset.sym === selected) node.classList.add('is-selected')
+  }
+}
+
+function updateIndicator() {
+  const label = document.getElementById('page-label')
+  const dots = document.getElementById('page-dots')
+  const n = pages.length
+  if (label) label.textContent = n && pages[0].length ? `${pageIndex + 1}/${n}` : '0/0'
+  if (!dots) return
+  const count = Math.min(n, 12)
+  dots.innerHTML = Array.from({ length: count }, (_, i) => `<i class="${i === pageIndex ? 'on' : ''}"></i>`).join('')
+}
+
+function writePage() {
+  const rows = pages[pageIndex] || []
+  deskTrack.innerHTML = rows.map((item) => rowMarkup(item, false)).join('')
+  refill(deskTrack)
+  updateIndicator()
+}
+
+function renderFeatured() {
+  const top = movers(visibleSymbols()).slice(0, 4)
+  featuredEl.innerHTML = top.map((item) => rowMarkup(item, true)).join('')
+  refill(featuredEl)
+}
+
+function renderDesk({ reset = false } = {}) {
+  if (reset) {
+    pageIndex = 0
+    advanceCount = 0
+    nextNonLeader = 0
+  }
+  recomputePages()
+  renderFeatured()
+  writePage()
+  lastSig = orderSig()
+}
+
+function orderSig() {
+  const vis = visibleSymbols()
+  const sorted = sortSymbols(vis).map((s) => s.sym).join(',')
+  const feat = movers(vis).slice(0, 4).map((s) => s.sym).join(',')
+  return `${prefs.primary}|${prefs.extra.join('.')}|${prefs.sort}|${feat}|${sorted}|${pageSize()}`
+}
+
+function syncDeskOrder() {
+  if (pagingLock || currentView !== 'board') return
+  const sig = orderSig()
+  if (sig === lastSig) return
+  lastSig = sig
+  renderDesk({ reset: false })
+}
+
+function goToPage(index, animate) {
+  recomputePages()
+  const n = pages.length
+  pageIndex = n ? Math.min(Math.max(index, 0), n - 1) : 0
+  if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    writePage()
+    return
+  }
+  pagingLock = true
+  deskTrack.classList.add('is-out')
+  window.setTimeout(() => {
+    writePage()
+    deskTrack.classList.remove('is-out')
+    deskTrack.classList.add('is-in')
+    requestAnimationFrame(() => {
+      deskTrack.classList.remove('is-in')
+      pagingLock = false
+      syncDeskOrder()
+    })
+  }, 280)
+}
+
+function tickPage() {
+  if (currentView !== 'board' || !prefs.playing || hoverPaused) return
+  recomputePages()
+  const n = pages.length
+  if (n <= 1) {
+    updateIndicator()
+    return
+  }
+  advanceCount += 1
+  if (advanceCount % 3 === 0) {
+    goToPage(0, true)
+    return
+  }
+  nextNonLeader += 1
+  if (nextNonLeader >= n) nextNonLeader = 1
+  if (nextNonLeader === pageIndex) {
+    nextNonLeader += 1
+    if (nextNonLeader >= n) nextNonLeader = 1
+  }
+  goToPage(nextNonLeader, true)
+}
+
+function stopPaging() {
+  clearInterval(pageTimer)
+  pageTimer = 0
+}
+
+function startPaging() {
+  stopPaging()
+  if (currentView !== 'board' || !prefs.playing || hoverPaused) return
+  pageTimer = setInterval(tickPage, PAGE_MS)
+}
+
+function syncPeriodControls() {
+  for (const btn of document.querySelectorAll('[data-primary]')) {
+    const on = btn.dataset.primary === prefs.primary
+    btn.classList.toggle('active', on)
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+  const others = PERIODS.map((p) => p.id).filter((id) => id !== prefs.primary)
+  for (const btn of document.querySelectorAll('[data-extra]')) {
+    const id = btn.dataset.extra
+    if (id === 'all') {
+      const allOn = others.length > 0 && others.every((x) => prefs.extra.includes(x))
+      btn.classList.toggle('active', allOn)
+      btn.setAttribute('aria-pressed', allOn ? 'true' : 'false')
+      continue
+    }
+    btn.hidden = id === prefs.primary
+    const on = prefs.extra.includes(id)
+    btn.classList.toggle('active', on)
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+  for (const btn of document.querySelectorAll('[data-sort]')) {
+    const on = btn.dataset.sort === prefs.sort
+    btn.classList.toggle('active', on)
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+  const play = document.getElementById('desk-play')
+  play.classList.toggle('active', prefs.playing)
+  play.setAttribute('aria-pressed', prefs.playing ? 'true' : 'false')
+  play.textContent = prefs.playing ? 'Auto' : 'Paused'
+}
+
+function setPrimary(id) {
+  if (!PERIODS.some((p) => p.id === id)) return
+  prefs.primary = id
+  prefs.extra = prefs.extra.filter((x) => x !== id)
+  savePrefs()
+  syncPeriodControls()
+  renderDesk({ reset: true })
+}
+
+function toggleExtra(id) {
+  if (id === 'all') {
+    const others = PERIODS.map((p) => p.id).filter((x) => x !== prefs.primary)
+    const allOn = others.every((x) => prefs.extra.includes(x))
+    prefs.extra = allOn ? [] : others
+  } else if (id !== prefs.primary) {
+    prefs.extra = prefs.extra.includes(id) ? prefs.extra.filter((x) => x !== id) : [...prefs.extra, id]
+  }
+  savePrefs()
+  syncPeriodControls()
+  renderDesk({ reset: false })
+}
+
+function setSort(sort) {
+  prefs.sort = sort
+  savePrefs()
+  syncPeriodControls()
+  renderDesk({ reset: true })
+}
+
+function setPlaying(on) {
+  prefs.playing = on
+  savePrefs()
+  syncPeriodControls()
+  if (on) startPaging()
+  else stopPaging()
+}
+
+function setView(mode) {
+  currentView = mode
+  deskView.hidden = mode !== 'board'
+  tableView.hidden = mode !== 'table'
+  cardView.hidden = mode !== 'cards'
+  for (const [btn, id] of [[viewBoard, 'board'], [viewTable, 'table'], [viewCards, 'cards']]) {
+    const on = mode === id
+    btn.classList.toggle('active', on)
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false')
+  }
+  if (mode === 'board') {
+    renderDesk({ reset: false })
+    startPaging()
+  } else stopPaging()
 }
 
 function applyFilters() {
@@ -631,6 +1050,13 @@ function applyFilters() {
     const matchText = !q || node.dataset.sym.toLowerCase().includes(q) || node.dataset.name.toLowerCase().includes(q)
     node.hidden = !(matchGroup && matchText)
   }
+  if (currentView === 'board') renderDesk({ reset: true })
+}
+
+function pauseForHover(on) {
+  hoverPaused = on
+  if (on) stopPaging()
+  else startPaging()
 }
 
 filterInput.addEventListener('input', applyFilters)
@@ -646,8 +1072,28 @@ streamBtn.addEventListener('click', () => {
   setStreaming(streamBtn.getAttribute('aria-pressed') !== 'true')
 })
 refreshBtn.addEventListener('click', loadAll)
-viewTable.addEventListener('click', () => setView(false))
-viewCards.addEventListener('click', () => setView(true))
+viewBoard.addEventListener('click', () => setView('board'))
+viewTable.addEventListener('click', () => setView('table'))
+viewCards.addEventListener('click', () => setView('cards'))
+document.getElementById('primary-set').addEventListener('click', (event) => {
+  const btn = event.target.closest('[data-primary]')
+  if (btn) setPrimary(btn.dataset.primary)
+})
+document.getElementById('extra-set').addEventListener('click', (event) => {
+  const btn = event.target.closest('[data-extra]')
+  if (btn) toggleExtra(btn.dataset.extra)
+})
+document.getElementById('sort-set').addEventListener('click', (event) => {
+  const btn = event.target.closest('[data-sort]')
+  if (btn) setSort(btn.dataset.sort)
+})
+document.getElementById('desk-play').addEventListener('click', () => setPlaying(!prefs.playing))
+deskView.addEventListener('mouseenter', () => pauseForHover(true))
+deskView.addEventListener('mouseleave', () => pauseForHover(false))
+deskView.addEventListener('click', (event) => {
+  const hit = event.target.closest('.hero, .desk-row')
+  if (hit) selectSymbol(hit.dataset.sym)
+})
 document.getElementById('detail-close').addEventListener('click', clearSelection)
 detailChart.addEventListener('pointermove', moveCursor)
 detailChart.addEventListener('pointerleave', () => {
@@ -669,6 +1115,17 @@ for (const card of document.querySelectorAll('button.card')) {
   card.addEventListener('click', () => selectSymbol(card.dataset.sym))
 }
 
+let resizeTimer = 0
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer)
+  resizeTimer = window.setTimeout(() => {
+    if (currentView === 'board') renderDesk({ reset: false })
+  }, 150)
+})
+
+prefs = loadPrefs()
+syncPeriodControls()
+setView('board')
 setStreaming(true)
 loadAll()
 </script>
@@ -994,8 +1451,12 @@ loadAll()
     font-weight: 600;
   }
 
+  .board td.d7,
+  .board td.d7p,
   .board td.d30,
   .board td.d30p,
+  .board td.y1,
+  .board td.y1p,
   .board .card .d30,
   .board .card .d30p {
     font-size: 0.72rem;
@@ -1127,9 +1588,243 @@ loadAll()
 
   .board tr:focus-visible,
   .board .card:focus-visible,
+  .board .hero:focus-visible,
+  .board .desk-row:focus-visible,
   .board .chip:focus-visible {
     outline: 1px solid rgba(244, 247, 251, 0.7);
     outline-offset: 2px;
+  }
+
+  .desk-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 1.15rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .period-set,
+  .sorts,
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .desk-controls .k {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .page-label {
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    min-width: 2.4rem;
+  }
+
+  .dots {
+    display: inline-flex;
+    gap: 0.28rem;
+    align-items: center;
+  }
+
+  .dots i {
+    width: 0.32rem;
+    height: 0.32rem;
+    border-radius: 50%;
+    background: rgba(244, 247, 251, 0.28);
+    display: block;
+  }
+
+  .dots i.on {
+    background: #f4f7fb;
+  }
+
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .hero,
+  .desk-row {
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    min-width: 0;
+    text-align: left;
+    padding: 0.85rem 0.9rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #141922;
+  }
+
+  .hero:hover,
+  .hero.is-selected {
+    border-color: rgba(244, 247, 251, 0.38);
+    background: #1a212c;
+  }
+
+  .hero .ticker {
+    font-size: 1.35rem;
+  }
+
+  .hero .spark {
+    width: 100%;
+    margin: 0.25rem 0 0.15rem;
+  }
+
+  .board .hero-price {
+    font-size: 2.35rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-align: left;
+  }
+
+  .hero-change,
+  .desk-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .hero .big-abs {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .desk-stage {
+    min-height: 8rem;
+  }
+
+  .desk-track {
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+
+  .desk-track.is-out {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  .desk-track.is-in {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .desk-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem 1.15rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.45rem 0.15rem;
+    min-height: 4.5rem;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+  }
+
+  .desk-row:hover,
+  .desk-row.is-selected {
+    background: rgba(244, 247, 251, 0.045);
+  }
+
+  .desk-row .ticker {
+    flex: 0 0 5rem;
+    font-size: 1.2rem;
+  }
+
+  .desk-row .spark {
+    flex: 0 0 108px;
+  }
+
+  .board .desk-price {
+    flex: 1 1 auto;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-align: right;
+  }
+
+  .board .desk-row .big-abs {
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+
+  .board .big-pct .chg {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .board .big-pct .chg.ok,
+  .board .big-pct .chg.fail {
+    padding: 0.22rem 0.55rem;
+    border-radius: 4px;
+  }
+
+  .big-pct .chg.ok,
+  .desk-sec .chg.ok {
+    color: var(--up);
+    background: rgba(61, 214, 140, 0.14);
+  }
+
+  .big-pct .chg.fail,
+  .desk-sec .chg.fail {
+    color: var(--down);
+    background: rgba(255, 93, 108, 0.16);
+  }
+
+  .desk-sec {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    color: var(--dim);
+  }
+
+  .desk-sec .k {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .desk-sec .num {
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .desk-sec .chg {
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .desk-sec .chg.ok,
+  .desk-sec .chg.fail {
+    padding: 0.08rem 0.32rem;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desk-track {
+      transition: none;
+    }
   }
 
   @media (max-width: 720px) {
@@ -1163,6 +1858,45 @@ loadAll()
     .board .d1p .chg.ok,
     .board .d1p .chg.fail {
       padding: 0.12rem 0.36rem;
+    }
+
+    .featured {
+      grid-template-columns: 1fr;
+    }
+
+    .desk-row {
+      flex-wrap: wrap;
+      gap: 0.35rem 0.75rem;
+      min-height: 0;
+      padding: 0.7rem 0.05rem;
+    }
+
+    .desk-row .spark {
+      flex-basis: 5.5rem;
+    }
+
+    .board .desk-price {
+      font-size: 1.55rem;
+    }
+
+    .board .big-pct .chg {
+      font-size: 1.35rem;
+    }
+
+    .desk-primary,
+    .desk-sec {
+      flex: 1 0 100%;
+      justify-content: flex-end;
+    }
+
+    .board .hero-price {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 980px) and (min-width: 721px) {
+    .featured {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>
