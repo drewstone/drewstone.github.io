@@ -1,6 +1,6 @@
 # 06 Test-Time Compute
 
-Post: `src/content/posts/self-improving-stack-test-time-compute.mdx`
+Post: `src/content/slop/self-improving-stack-test-time-compute.mdx`
 Status: full draft
 Last updated: 2026-06-06
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

@@ -1,6 +1,6 @@
 # 05 Multi-Agent Coordination
 
-Post: `src/content/posts/self-improving-stack-multi-agent-coordination.mdx`
+Post: `src/content/slop/self-improving-stack-multi-agent-coordination.mdx`
 Status: polished draft
 Last updated: 2026-06-06
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

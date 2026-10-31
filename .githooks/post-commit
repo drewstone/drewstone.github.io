@@ -15,8 +15,13 @@
 # metadata.
 set -uo pipefail
 
-changed=$(git show --no-renames --name-only --format='' HEAD | grep '^src/content/posts/.*\.mdx$' || true)
+changed=$(git show --no-renames --name-only --format='' HEAD | grep -E '^src/content/(posts|slop)/.+\.mdx$' || true)
 if [ -z "$changed" ]; then
+  exit 0
+fi
+
+# Mechanical commits (link rewrites, path moves) are not authorship.
+if [ "${BLOG_TRACE_SKIP:-}" = "1" ]; then
   exit 0
 fi
 
@@ -71,7 +76,7 @@ else
 fi
 
 # Amend the commit to include new trace files + frontmatter updates if any.
-if ! git diff --quiet src/content/posts traces 2>/dev/null; then
-  git add src/content/posts traces 2>/dev/null
+if ! git diff --quiet -- src/content/posts src/content/slop traces 2>/dev/null; then
+  git add -- src/content/posts src/content/slop traces 2>/dev/null
   GIT_EDITOR=true git commit --amend --no-edit >/dev/null 2>&1 || true
 fi

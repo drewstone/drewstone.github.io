@@ -18,6 +18,9 @@ Full-width hover states make list items and click targets clear.
 
 Post lists follow a vertical reading path.
 Use a grid only when the content benefits from comparison and fills it well.
+Research articles are a single reading column inside the wide container.
+Section links sit in a collapsed control at the top of that column. They do not reserve a sidebar.
+Plots, tables, and code may break into the side margins.
 Keep the page free of ornamental marks, decorative borders, floating page frames, and template mastheads.
 Use the existing layout's reading and wide-container modes rather than introduce another width system.
 Code blocks may extend beyond the reading column on wide screens.

@@ -26,6 +26,11 @@ const behaviorReports = entry.data.record_ids
   .filter((id: string) => existsSync(`public/research/behaviors/${id}.json`))
   .map((id: string) => JSON.parse(readFileSync(`public/research/behaviors/${id}.json`, 'utf8')))
 const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, allIds[id] ?? {}]))
+const sectionLinks = [
+  ...headings.filter((heading) => heading.depth === 2).map((heading) => ({ href: `#${heading.slug}`, label: heading.text })),
+  { href: '#references', label: 'References' },
+  ...(records.length > 0 ? [{ href: '#agent-record', label: 'Agent record' }] : []),
+]
 ---
 
 <Base
@@ -47,31 +52,43 @@ const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, 
       </a>
     </p>
   </header>
-  <div class="article-grid">
-    <nav class="contents" aria-label="On this page">
-      <ol>
-        {headings
-          .filter((h) => h.depth === 2)
-          .map((h) => (
+  <div class="article-feed">
+    <details class="page-contents">
+      <summary>
+        On this page
+        <span class="page-contents-count">{sectionLinks.length}</span>
+      </summary>
+      <nav aria-label="On this page">
+        <ol>
+          {sectionLinks.map((link) => (
             <li>
-              <a href={`#${h.slug}`}>{h.text}</a>
+              <a href={link.href}>{link.label}</a>
             </li>
           ))}
-        <li>
-          <a href="#references">References</a>
-        </li>
-        {records.length > 0 && (
-          <li>
-            <a href="#agent-record">Agent record</a>
-          </li>
-        )}
-      </ol>
-    </nav>
+        </ol>
+      </nav>
+    </details>
     <article class="prose">
       {entry.data.figure && <Figure {...entry.data.figure} />}
       <Content />
     </article>
   </div>
+  <script>
+    const box = document.querySelector('.page-contents')
+    if (box instanceof HTMLDetailsElement) {
+      const close = () => {
+        box.open = false
+      }
+      box.querySelectorAll('a').forEach((link) => link.addEventListener('click', close))
+      document.addEventListener('click', (event) => {
+        if (!box.open || !(event.target instanceof Node) || box.contains(event.target)) return
+        close()
+      })
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && box.open) close()
+      })
+    }
+  </script>
   {records.length > 0 && (
     <section id="agent-record" class="record">
       <h2>Agent record</h2>
@@ -85,9 +102,15 @@ const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, 
     font: 0.7rem var(--font-mono);
     color: var(--fg-muted);
   }
+  .research-header,
+  .article-feed {
+    max-width: var(--max-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
   .research-header {
-    max-width: 51rem;
-    margin: 0.7rem 0 1.1rem;
+    margin-top: 0.7rem;
+    margin-bottom: 1.1rem;
   }
   h1 {
     font-size: clamp(1.55rem, 4vw, 1.9rem);
@@ -95,60 +118,89 @@ const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, 
   .claim {
     font-size: 1rem;
   }
-  .article-grid {
-    display: grid;
-    grid-template-columns: 9rem minmax(0, 1fr);
-    gap: 1.5rem;
-  }
-  .contents {
-    align-self: start;
+  .page-contents {
     position: sticky;
-    top: 1.5rem;
-    font-size: 0.85rem;
+    top: 0.4rem;
+    z-index: 4;
+    margin: 0 0 1.25rem;
+    font: 0.72rem var(--font-mono);
   }
-  .contents ol {
+  .page-contents > summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    width: fit-content;
+    padding: 0.15rem 0;
+    color: var(--fg-muted);
+    background: var(--bg);
+    cursor: pointer;
+    list-style: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .page-contents > summary::-webkit-details-marker {
+    display: none;
+  }
+  .page-contents > summary::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.1rem) rotate(-45deg);
+  }
+  .page-contents[open] > summary::before {
+    transform: translateY(0.05rem) rotate(45deg);
+  }
+  .page-contents-count {
+    color: var(--fg-faint);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .page-contents nav {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    right: 0;
+    max-height: min(70vh, 24rem);
+    overflow: auto;
+    margin-top: 0.2rem;
+    padding: 0.45rem 0.8rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .page-contents ol {
+    margin: 0;
     padding: 0;
     list-style: none;
   }
-  .contents li {
-    padding: 0.15rem 0;
+  .page-contents a {
+    display: block;
+    padding: 0.28rem 0;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    text-transform: none;
+    text-decoration: none;
   }
-  .prose {
-    min-width: 0;
+  .page-contents a:hover {
+    text-decoration: underline;
   }
   .prose :global(h2:first-child) {
     margin-top: 0;
   }
-  .prose :global(pre) {
-    margin-left: 0;
-    margin-right: 0;
-    padding: 1rem;
-    font-size: 0.8rem;
+  /* Plots use the wide container's side margins. Text stays on the reading measure. */
+  .prose :global(.witness-explorer) {
+    margin-left: calc(-1 * var(--space-lg));
+    margin-right: calc(-1 * var(--space-lg));
   }
-  /* The global table breakout (-3rem each side) would cover the contents column. */
-  .prose :global(table) {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+  @media (min-width: 800px) {
+    .prose :global(.witness-explorer) {
+      margin-left: -5rem;
+      margin-right: -5rem;
+    }
   }
   .record {
     margin-top: 1.75rem;
-  }
-  @media (max-width: 800px) {
-    .article-grid {
-      display: block;
-    }
-    .contents {
-      position: static;
-      border-block: 1px solid var(--border);
-      padding: 0.7rem 0;
-      margin-bottom: 1rem;
-    }
-    .contents ol {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 1rem;
-      margin: 0;
-    }
   }
 </style>

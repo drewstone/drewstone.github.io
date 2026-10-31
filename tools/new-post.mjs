@@ -11,11 +11,11 @@
  *
  * Editor selection: $BLOG_EDITOR > $EDITOR > 'cursor'.
  */
-import { existsSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { locatePost } from './content-paths.mjs'
 
 function parse(argv) {
   const args = { title: '', open: true, ai: false, slug: null, tags: null }
@@ -90,11 +90,13 @@ async function main() {
   }
 
   const repoRoot = resolve(fileURLToPath(new URL('..', import.meta.url)))
-  const path = join(repoRoot, 'src', 'content', 'posts', `${slug}.mdx`)
-  if (existsSync(path)) {
-    console.error(`refusing to overwrite ${path}`)
+  const collection = original ? 'posts' : 'slop'
+  const existing = locatePost(repoRoot, slug)
+  if (existing) {
+    console.error(`refusing to overwrite ${existing.rel}`)
     process.exit(1)
   }
+  const path = join(repoRoot, 'src', 'content', collection, `${slug}.mdx`)
 
   const tags = args.tags ?? (original ? ['original'] : [])
   const fm = frontmatter({ title: args.title, date: today(), tags, original })
@@ -102,7 +104,7 @@ async function main() {
 
   const rel = path.replace(repoRoot + '/', '')
   console.log(`created ${rel}`)
-  console.log(`  url:      /posts/${slug}`)
+  console.log(`  url:      /${collection}/${slug}`)
   console.log(`  type:     ${original ? 'original (human-authored, AI cannot edit)' : 'AI-authored'}`)
   console.log(`  draft:    true (set draft: false to publish)`)
 

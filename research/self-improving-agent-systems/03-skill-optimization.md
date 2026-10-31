@@ -1,6 +1,6 @@
 # 03 Skill Optimization
 
-Post: `src/content/posts/self-improving-stack-skill-optimization.mdx`
+Post: `src/content/slop/self-improving-stack-skill-optimization.mdx`
 Status: full draft
 Last updated: 2026-06-05
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

@@ -250,7 +250,7 @@ import Base from '../layouts/Base.astro'
       for (const [sub, rs] of groups)
         h += `<div class="op-subfield"><h3>${esc(sub)} · ${rs.length}</h3><ol class="op-rows">${rs.map(rowHTML).join('')}</ol></div>`
       if (famous.length)
-        h += `<details class="op-famous"><summary>the well-known ones · ${famous.length} — collected for completeness</summary><ol class="op-rows">${famous.map(rowHTML).join('')}</ol></details>`
+        h += `<details class="op-famous ui-disclosure"><summary>the well-known ones · ${famous.length} — collected for completeness</summary><ol class="op-rows">${famous.map(rowHTML).join('')}</ol></details>`
       const facetIds: string[] = (facets as any)[slug] || []
       if (facetIds.length) {
         const fr = facetIds.slice(0, 120).map((fid: string) => {

@@ -7,7 +7,7 @@ import type { GetStaticPaths } from 'astro'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const PER_PAGE = 10
-  const posts = (await getCollection('posts', ({ data }) => !data.draft && !data.original))
+  const posts = (await getCollection('slop', ({ data }) => !data.draft && !data.original))
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   const total = posts.length
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
@@ -21,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const PER_PAGE = 10
 const { page: safePage, totalPages, total } = Astro.props as { page: number; totalPages: number; total: number }
 
-const allPosts = (await getCollection('posts', ({ data }) => !data.draft && !data.original))
+const allPosts = (await getCollection('slop', ({ data }) => !data.draft && !data.original))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 const allTraces = await getCollection('traces')
 
@@ -34,7 +34,6 @@ for (const t of allTraces) {
 }
 
 const posts = allPosts.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
-const sortedPosts = allPosts // alias for stats
 
 // Headline stats
 const totalTraces = allTraces.length
@@ -43,10 +42,10 @@ const totalToolCalls = allTraces.reduce(
   (s, t) => s + t.data.turns.reduce((ss, tr) => ss + (tr.tool_calls ?? 0), 0),
   0
 )
-const totalRevisions = posts.reduce((s, p) => s + (p.data.revisions?.length ?? 0), 0)
+const totalRevisions = allPosts.reduce((s, p) => s + (p.data.revisions?.length ?? 0), 0)
 
 const modelCounts: Record<string, number> = {}
-for (const p of posts) {
+for (const p of allPosts) {
   for (const a of p.data.authors ?? []) {
     const m = a.model || 'unknown'
     modelCounts[m] = (modelCounts[m] ?? 0) + 1
@@ -85,7 +84,7 @@ const short = (m: string | null | undefined): string => {
   </section>
 
   <section class="stats">
-    <div class="stat-card"><div class="sv">{posts.length}</div><div class="sl">Posts</div></div>
+    <div class="stat-card"><div class="sv">{allPosts.length}</div><div class="sl">Slop</div></div>
     <div class="stat-card"><div class="sv">{totalRevisions}</div><div class="sl">Revisions</div></div>
     <div class="stat-card"><div class="sv">{totalTraces}</div><div class="sl">Traces</div></div>
     <div class="stat-card"><div class="sv">{totalTurns}</div><div class="sl">Turns</div></div>
@@ -128,7 +127,7 @@ const short = (m: string | null | undefined): string => {
 
     <div class="phc-list">
       {posts.map((post) => (
-        <PostHistoryCard post={post} traces={tracesByPost.get(post.id) ?? []} />
+        <PostHistoryCard post={post} traces={tracesByPost.get(post.id) ?? []} basePath="/slop" />
       ))}
     </div>
 

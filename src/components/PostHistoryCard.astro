@@ -10,11 +10,12 @@
 import type { CollectionEntry } from 'astro:content'
 
 interface Props {
-  post: CollectionEntry<'posts'>
+  post: CollectionEntry<'posts'> | CollectionEntry<'slop'>
   traces: CollectionEntry<'traces'>[]
+  basePath?: string
 }
 
-const { post, traces } = Astro.props
+const { post, traces, basePath = '/posts' } = Astro.props
 
 const short = (m: string | null | undefined): string => {
   if (!m || m === 'unknown') return 'unknown'
@@ -49,7 +50,7 @@ const updatedDate = latestRevision?.date ?? post.data.date
     <span class="phc-chev" aria-hidden="true">
       <svg viewBox="0 0 10 10" width="10" height="10"><path d="M3 1l4 4-4 4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </span>
-    <span class="phc-title"><a href={`/posts/${post.id}`}>{post.data.title}</a></span>
+    <span class="phc-title"><a href={`${basePath}/${post.id}`}>{post.data.title}</a></span>
     <span class="phc-created">{fmtDate(post.data.date)}</span>
     <span class={`phc-model ${createdModel === 'unknown' ? 'is-unknown' : ''}`}>{short(createdModel)}</span>
     <span class="phc-updated">{fmtDate(updatedDate)}</span>

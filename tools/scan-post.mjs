@@ -15,13 +15,12 @@
  * Zero hits exits 0; any hit prints file:line and exits 1.
  */
 import { execSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { readdir, readFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { listContentFiles, locatePost } from './content-paths.mjs'
 
 const REPO = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const POSTS_DIR = join(REPO, 'src', 'content', 'posts')
 
 // Each rule: [id, regex, fix hint]. Kept deliberately short and concrete:
 // every entry traces to a rule in AGENTS.md "Writing Anti-Patterns" or
@@ -70,10 +69,9 @@ function scanText(text, offset, source, hits) {
   })
 }
 
-async function scanFile(file, allMode) {
-  const path = join(POSTS_DIR, file)
-  const rel = `src/content/posts/${file}`
-  const raw = await readFile(path, 'utf8')
+async function scanFile(entry, allMode) {
+  const rel = entry.rel
+  const raw = await readFile(entry.abs, 'utf8')
   if (/^original:\s*true\s*$/m.test(raw.split('---')[1] ?? '')) return 0
   const { description, descriptionLine, body, bodyStart } = splitPost(raw)
 
@@ -106,19 +104,20 @@ async function main() {
 
   let files
   if (query) {
-    const exact = `${query}.mdx`
-    if (!existsSync(join(POSTS_DIR, exact))) {
-      const fuzzy = (await readdir(POSTS_DIR)).filter((f) => f.endsWith('.mdx') && f.includes(query.toLowerCase()))
+    const exact = locatePost(REPO, query)
+    if (exact) {
+      files = [exact]
+    } else {
+      const needle = query.toLowerCase()
+      const fuzzy = listContentFiles(REPO).filter((f) => f.slug.includes(needle) || f.file.includes(needle))
       if (fuzzy.length !== 1) {
         console.error(`post not found: ${query}`)
         process.exit(2)
       }
-      files = [fuzzy[0]]
-    } else {
-      files = [exact]
+      files = fuzzy
     }
   } else {
-    files = (await readdir(POSTS_DIR)).filter((f) => f.endsWith('.mdx')).sort()
+    files = listContentFiles(REPO)
   }
 
   let total = 0

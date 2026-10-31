@@ -63,6 +63,10 @@ const websiteJsonLd = isHome
       inLanguage: 'en',
     }
   : null
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/'
+const projects = [{ href: '/stocks', label: 'stocks' }]
+const onProject = projects.some((item) => path === item.href)
 ---
 
 <!doctype html>
@@ -169,6 +173,14 @@ const websiteJsonLd = isHome
           <a href="/slop">slop</a>
           <a href="/about">about</a>
           <a href="/traces">traces</a>
+          <details class="nav-menu">
+            <summary class={onProject ? 'is-current' : undefined}>projects</summary>
+            <div class="nav-menu-list">
+              {projects.map((item) => (
+                <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
+              ))}
+            </div>
+          </details>
           <a href="/rss.xml" title="RSS feed">
             rss
           </a>
@@ -207,11 +219,22 @@ const websiteJsonLd = isHome
 
       updateScrollableTableFocus()
       window.addEventListener('resize', updateScrollableTableFocus, { passive: true })
+
+      for (const menu of document.querySelectorAll<HTMLDetailsElement>('.nav-menu')) {
+        document.addEventListener('click', (event) => {
+          if (!menu.contains(event.target as Node)) menu.open = false
+        })
+        menu.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') menu.open = false
+        })
+      }
     </script>
   </body>
 </html>
 <style>
   .site-header {
+    position: relative;
+    z-index: 5;
     padding: 1.1rem 0 0.6rem;
   }
 
@@ -251,6 +274,65 @@ const websiteJsonLd = isHome
   }
 
   .nav-links a:hover {
+    color: var(--fg);
+  }
+
+  .nav-menu {
+    position: relative;
+  }
+  .nav-menu > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+  .nav-menu > summary::-webkit-details-marker {
+    display: none;
+  }
+  .nav-menu > summary::before {
+    content: none;
+    display: none;
+  }
+  .nav-menu > summary::after {
+    content: '';
+    width: 0.32rem;
+    height: 0.32rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-0.12rem) rotate(45deg);
+  }
+  .nav-menu[open] > summary,
+  .nav-menu > summary.is-current {
+    color: var(--fg);
+  }
+  .nav-menu[open] > summary::after {
+    transform: translateY(0.08rem) rotate(225deg);
+  }
+  .nav-menu-list {
+    position: absolute;
+    z-index: 6;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    min-width: 8.5rem;
+    padding: 0.25rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: grid;
+  }
+  .nav-menu-list a {
+    padding: 0.35rem 0.55rem;
+    border-radius: 3px;
+  }
+  .nav-menu-list a:hover,
+  .nav-menu-list a[aria-current='page'] {
+    background: var(--bg-alt);
     color: var(--fg);
   }
 

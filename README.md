@@ -57,7 +57,7 @@ Use `--harness=claude-code` in Claude Code.
 pnpm blog write long-running-task-systems --harness=codex --role=draft
 ```
 
-The printed prompt tells the agent it may edit `src/content/posts/long-running-task-systems.mdx` if the post is not `original: true`.
+The printed prompt tells the agent it may edit `src/content/slop/long-running-task-systems.mdx` if the post is not `original: true`. Agent posts live in `src/content/slop`. Posts you write live in `src/content/posts`.
 
 At the end, the agent runs:
 
@@ -76,6 +76,7 @@ If a research thread becomes a new post:
 
 ```bash
 pnpm new "Post Title" --ai --tags=agents,systems --no-open
+# writes src/content/slop/post-title.mdx. Omit --ai to write src/content/posts/.
 pnpm blog finish post-title --research --harness=codex --note="supporting research for initial draft"
 pnpm write post-title
 ```

@@ -1,6 +1,6 @@
 # 04 Agent Runtime Topology
 
-Post: `src/content/posts/self-improving-stack-agent-runtime-topology.mdx`
+Post: `src/content/slop/self-improving-stack-agent-runtime-topology.mdx`
 Status: polished draft
 Last updated: 2026-06-05
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

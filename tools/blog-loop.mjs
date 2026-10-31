@@ -11,13 +11,13 @@
  *   pnpm blog finish <post> --write --harness=codex --marker=<token> --note="drafted section"
  */
 import { existsSync } from 'node:fs'
-import { readdir, readFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { listContentFiles } from './content-paths.mjs'
 
 const REPO = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const POSTS_DIR = join(REPO, 'src', 'content', 'posts')
 
 function parse(argv) {
   const [cmd, ...rest] = argv
@@ -42,18 +42,18 @@ function field(fm, name) {
 }
 
 async function posts() {
-  const files = (await readdir(POSTS_DIR)).filter((f) => f.endsWith('.mdx')).sort()
   const out = []
-  for (const file of files) {
-    const path = join(POSTS_DIR, file)
-    const raw = await readFile(path, 'utf8')
+  for (const file of listContentFiles(REPO)) {
+    const raw = await readFile(file.abs, 'utf8')
     const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
     if (!m) continue
     out.push({
-      slug: file.replace(/\.mdx$/, ''),
-      title: field(m[1], 'title') ?? file.replace(/\.mdx$/, ''),
+      slug: file.slug,
+      title: field(m[1], 'title') ?? file.slug,
       draft: field(m[1], 'draft') !== 'false',
       original: field(m[1], 'original') === 'true',
+      rel: file.rel,
+      collection: file.collection,
     })
   }
   return out
@@ -96,7 +96,7 @@ function printPrompt(mode, post, harness, role, marker) {
         `Start your first visible assistant update with exactly: TRACE_MARKER ${marker}`,
         `Include exactly this marker in the final response before finishing: TRACE_MARKER ${marker}`,
         `Read AGENTS.md, VOICE.md, and SECONDARY_VOICE.md before editing. VOICE.md owns the author voice; SECONDARY_VOICE.md is a rigor layer, not an imitation target. Write as Drew, not as a survey author.`,
-        `You may edit src/content/posts/${post.slug}.mdx unless it has original: true. If original: true, stop. Preserve frontmatter provenance fields; the finish command adds the revision entry.`,
+        `You may edit ${post.rel} unless it has original: true. If original: true, stop. Preserve frontmatter provenance fields; the finish command adds the revision entry.`,
         `Prose gates (pnpm blog scan ${post.slug} enforces these on your diff): no em dashes; no AI filler ("delve", "it's worth noting", "in today's landscape", "let's dive in"); no process labels, note-to-self headings, or placeholders.`,
         `Keep the math, dated source trail, and technical vocabulary. Explain symbols instead of removing them. Rewrites change the entry vector and add falsification pressure, not synonyms.`,
         `Before finishing, run pnpm blog scan ${post.slug} and pnpm build. Fix failures first.`,
@@ -136,7 +136,7 @@ async function main() {
   const all = await posts()
 
   if (!cmd || cmd === 'list') {
-    for (const p of all) console.log(`${p.slug.padEnd(36)} ${p.draft ? 'draft' : 'live'} ${p.original ? 'original' : 'ai'}  ${p.title}`)
+    for (const p of all) console.log(`${p.collection.padEnd(5)} ${p.slug.padEnd(42)} ${p.draft ? 'draft' : 'live'} ${p.original ? 'original' : 'ai'}  ${p.title}`)
     return
   }
 

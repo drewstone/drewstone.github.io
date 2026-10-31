@@ -11,12 +11,14 @@ export const pageCovers = {
   about: { title: 'Drew Stone', section: 'About', art: 'text' },
   experiment: { title: 'Writing with agents', section: 'Authorship & revision history', art: 'traces' },
   traces: { title: 'The work behind the writing', section: 'Agent records', art: 'traces' },
+  slop: { title: 'Slop', section: 'Agent-written', art: 'traces' },
 } satisfies Record<string, { title: string; section: string; art: OgArtKind }>
 
 export function pageCoverUrl(pathname: string): string {
   const path = pathname.replace(/^\/+|\/+$/g, '')
-  if (path.startsWith('posts/')) return coverUrl(path.slice(6))
-  if (path.startsWith('research/')) return coverUrl(`research-${path.slice(9)}`)
+  if (path.startsWith('posts/')) return coverUrl(path.slice('posts/'.length))
+  if (path.startsWith('slop/')) return coverUrl(path.slice('slop/'.length))
+  if (path.startsWith('research/')) return coverUrl(`research-${path.slice('research/'.length)}`)
   if (path.startsWith('traces/')) return coverUrl('traces')
   const key = path === '' ? 'home' : path === 'posts' ? 'essays' : path
   return coverUrl(Object.hasOwn(pageCovers, key) ? key : 'home')

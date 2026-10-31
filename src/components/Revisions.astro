@@ -9,6 +9,7 @@
  */
 import { execSync } from 'node:child_process'
 import { codeToHtml } from 'shiki'
+import { candidatePaths } from '../../tools/content-paths.mjs'
 
 interface Revision {
   date: Date
@@ -32,14 +33,15 @@ const { revisions = [], repo, slug } = Astro.props
 const isHuman = (m: string) => m === 'human' || m === 'drew-stone'
 const isOutline = (r: Revision) => r.role === 'outline'
 
-const postPath = slug ? `src/content/posts/${slug}.mdx` : null
+const postPaths = slug ? candidatePaths(process.cwd(), slug) : []
 
 type DiffData = { html: string; additions: number; deletions: number } | null
 
 async function resolveDiff(commit: string): Promise<DiffData> {
-  if (!postPath) return null
+  if (!postPaths.length) return null
   try {
-    const cmd = `git show --no-renames --format='' ${commit} -- '${postPath}'`
+    const quoted = postPaths.map((path) => `'${path}'`).join(' ')
+    const cmd = `git show --no-renames --format='' ${commit} -- ${quoted}`
     const raw = execSync(cmd, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }).toString()
     if (!raw.trim()) return null
     let additions = 0, deletions = 0

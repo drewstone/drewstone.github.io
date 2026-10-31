@@ -8,7 +8,7 @@ Scripts that capture, shape, and evaluate the blog's agentic data.
 # Create a human-authored draft and open it.
 pnpm new "Post title" --tags=agents,systems
 
-# Create an AI-assisted draft.
+# Create an AI-assisted draft in src/content/slop. Without --ai, the draft lands in src/content/posts.
 pnpm new "Post title" --ai --tags=agents,systems
 
 # Open an existing post by slug or title substring.
@@ -105,7 +105,7 @@ Adding a new harness is one file implementing the `TraceHarness` interface in `h
 pnpm install:hooks   # runs: git config core.hooksPath .githooks
 ```
 
-`.githooks/post-commit` is the only copy of the hook. After enabling it, every commit that touches a post under `src/content/posts/` either captures a session trace (agent commits) or logs a human revision, then amends the commit with the trace files and the frontmatter update. Failures are non-blocking and logged to stderr.
+`.githooks/post-commit` is the only copy of the hook. After enabling it, every commit that touches a file under `src/content/posts/` or `src/content/slop/` either captures a session trace (agent commits) or logs a human revision, then amends the commit with the trace files and the frontmatter update. Failures are non-blocking and logged to stderr.
 
 ### Session directive path for AI phase marking
 

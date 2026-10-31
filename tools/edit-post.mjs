@@ -13,13 +13,13 @@
  * `pnpm install:hooks` once if commits are not creating revision entries.
  */
 import { existsSync } from 'node:fs'
-import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { spawn, spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { listContentFiles } from './content-paths.mjs'
 
 const REPO = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const POSTS_DIR = join(REPO, 'src', 'content', 'posts')
 
 function parse(argv) {
   const args = { query: null, list: false, open: true, done: false, publish: false, commit: false, note: null }
@@ -65,18 +65,16 @@ function setField(fm, name, value) {
 }
 
 async function loadPosts() {
-  const files = (await readdir(POSTS_DIR)).filter((f) => f.endsWith('.mdx')).sort()
   const posts = []
-  for (const file of files) {
-    const path = join(POSTS_DIR, file)
-    const raw = await readFile(path, 'utf8')
+  for (const file of listContentFiles(REPO)) {
+    const raw = await readFile(file.abs, 'utf8')
     const parsed = parseFrontmatter(raw)
     if (!parsed) continue
-    const slug = file.replace(/\.mdx$/, '')
     posts.push({
-      slug,
-      path,
-      title: field(parsed.raw, 'title') ?? slug,
+      slug: file.slug,
+      path: file.abs,
+      collection: file.collection,
+      title: field(parsed.raw, 'title') ?? file.slug,
       draft: field(parsed.raw, 'draft') !== 'false',
       original: field(parsed.raw, 'original') === 'true',
       takeover: field(parsed.raw, 'human_takeover'),
@@ -136,7 +134,7 @@ async function main() {
   if (args.list) {
     for (const p of posts) {
       const flags = [p.draft ? 'draft' : 'live', p.original ? 'original' : 'ai', p.takeover].filter(Boolean).join(', ')
-      console.log(`${p.slug.padEnd(36)} ${flags.padEnd(28)} ${p.title}`)
+      console.log(`${p.collection.padEnd(5)} ${p.slug.padEnd(42)} ${flags.padEnd(28)} ${p.title}`)
     }
     return
   }

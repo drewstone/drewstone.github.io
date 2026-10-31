@@ -1,6 +1,6 @@
 # 12 Safety, Security, And Governance
 
-Post: `src/content/posts/self-improving-stack-governance.mdx`
+Post: `src/content/slop/self-improving-stack-governance.mdx`
 Status: drafted
 Last updated: 2026-06-06
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

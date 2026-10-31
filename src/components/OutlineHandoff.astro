@@ -9,9 +9,10 @@ interface Props {
   series?: string
   status?: 'pending' | 'in-progress' | 'complete'
   posts?: LinkedPost[]
+  basePath?: string
 }
 
-const { traceId, series, status = 'pending', posts = [] } = Astro.props
+const { traceId, series, status = 'pending', posts = [], basePath = '/slop' } = Astro.props
 
 const statusLabel = status === 'in-progress'
   ? 'human edit in progress'
@@ -33,7 +34,7 @@ const statusLabel = status === 'in-progress'
     {posts.length > 0 && (
       <ul class="handoff-posts">
         {posts.map((post) => (
-          <li><a href={`/posts/${post.slug}`}>{post.title}</a></li>
+          <li><a href={`${basePath}/${post.slug}`}>{post.title}</a></li>
         ))}
       </ul>
     )}

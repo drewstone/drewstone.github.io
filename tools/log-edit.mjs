@@ -25,12 +25,11 @@
  */
 import { readFile, writeFile } from 'node:fs/promises'
 import { execSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { candidatePaths, locatePost, slugsFromGitNames } from './content-paths.mjs'
 
 const REPO = resolve(fileURLToPath(new URL('..', import.meta.url)))
-const POSTS_DIR = join(REPO, 'src', 'content', 'posts')
 
 function git(cmd) {
   try { return execSync(`git ${cmd}`, { cwd: REPO, encoding: 'utf8' }).trim() } catch { return '' }
@@ -41,15 +40,7 @@ function headCommit() {
 }
 
 function changedPostsAt(commit) {
-  const out = git(`show --name-only --pretty=format: ${commit}`)
-  return Array.from(
-    new Set(
-      out.split('\n')
-        .map((p) => p.trim())
-        .filter((p) => p.startsWith('src/content/posts/') && p.endsWith('.mdx'))
-        .map((p) => p.replace(/^src\/content\/posts\//, '').replace(/\.mdx$/, '')),
-    ),
-  )
+  return slugsFromGitNames(git(`show --name-only --pretty=format: ${commit}`))
 }
 
 /**
@@ -59,13 +50,17 @@ function changedPostsAt(commit) {
  * NEXT commit's `git add -A`. Logging those would cascade forever.
  */
 function isPhantomEdit(commit, slug) {
-  const path = `src/content/posts/${slug}.mdx`
-  const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
-  if (!diff) return false
-  const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
-  if (!lines.length) return false
-  // Every changed line must look like a revision array entry to count as phantom.
-  return lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))
+  let sawDiff = false
+  for (const path of candidatePaths(REPO, slug)) {
+    const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
+    if (!diff) continue
+    const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
+    if (!lines.length) continue
+    sawDiff = true
+    // A real body edit on either path means this commit is not phantom.
+    if (!lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))) return false
+  }
+  return sawDiff
 }
 
 function parseArgs(argv) {
@@ -100,8 +95,9 @@ function inferNote(commit) {
  * Returns 'added' | 'duplicate'.
  */
 async function appendRevision(slug, entry) {
-  const path = join(POSTS_DIR, `${slug}.mdx`)
-  if (!existsSync(path)) throw new Error(`post not found: ${slug}`)
+  const located = locatePost(REPO, slug)
+  if (!located) throw new Error(`post not found: ${slug}`)
+  const path = located.abs
   const raw = await readFile(path, 'utf8')
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
   if (!m) throw new Error(`no frontmatter in ${slug}`)

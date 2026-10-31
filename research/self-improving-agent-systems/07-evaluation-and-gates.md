@@ -1,6 +1,6 @@
 # 07 Evaluation And Gates
 
-Post: `src/content/posts/self-improving-stack-evaluation-gates.mdx`
+Post: `src/content/slop/self-improving-stack-evaluation-gates.mdx`
 Status: full draft
 Last updated: 2026-06-06
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

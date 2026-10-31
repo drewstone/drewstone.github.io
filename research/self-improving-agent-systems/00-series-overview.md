@@ -1,6 +1,6 @@
 # 00 Series Overview
 
-Post: `src/content/posts/the-self-improving-stack.mdx`
+Post: `src/content/slop/the-self-improving-stack.mdx`
 Status: published
 Last updated: 2026-06-06
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

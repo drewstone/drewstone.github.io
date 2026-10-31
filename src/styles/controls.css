@@ -134,20 +134,18 @@ details > summary {
 details > summary::-webkit-details-marker {
   display: none;
 }
-details > summary::before {
+/* Plain disclosures only. Components that draw a chevron must not inherit a boxed glyph. */
+.ui-disclosure > summary::before {
   content: '+';
-  display: inline-grid;
-  place-items: center;
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  font: 0.78rem var(--font-mono);
+  display: inline-block;
+  width: 0.9em;
   flex-shrink: 0;
+  font: 0.9em var(--font-mono);
+  color: var(--fg-faint);
 }
-details[open] > summary::before {
+.ui-disclosure[open] > summary::before {
   content: '−';
-  border-color: var(--border-strong);
+  color: var(--fg-muted);
 }
 details > summary:hover {
   color: var(--fg);

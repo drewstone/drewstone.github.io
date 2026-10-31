@@ -26,9 +26,9 @@ High-confidence sources:
 
 Secondary comparison sources:
 
-- `src/content/posts/the-ensemble-and-the-edit.mdx`
-- `src/content/posts/lifting-auto-research.mdx`
-- `src/content/posts/convergence-as-eval-primitive.mdx`
+- `src/content/slop/the-ensemble-and-the-edit.mdx`
+- `src/content/slop/lifting-auto-research.mdx`
+- `src/content/slop/convergence-as-eval-primitive.mdx`
 - the published self-improving stack series
 
 Current confidence: medium. The repo has only two published `original: true` posts, so recalibrate as Drew writes more.

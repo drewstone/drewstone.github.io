@@ -4,13 +4,19 @@ import { renderOgPng, type OgInput } from '../../../tools/og-render'
 import { essayArt, pageCovers } from '../../lib/social-images'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const [posts, research] = await Promise.all([
-    getCollection('posts', ({ data }) => !data.draft), getCollection('research'),
+  const [posts, slop, research] = await Promise.all([
+    getCollection('posts', ({ data }) => !data.draft),
+    getCollection('slop', ({ data }) => !data.draft),
+    getCollection('research'),
   ])
   const researchArt = { bcww: 'bcww', ghz: 'ghz', 'linden-winter': 'linden-winter' } as const
   const covers: { slug: string; cover: OgInput }[] = [
     ...posts.map(post => ({ slug: post.id, cover: {
       title: post.data.title, section: 'Essay', art: essayArt(post.id), original: !!post.data.original,
+      figure: post.data.figure?.src,
+    } })),
+    ...slop.map(post => ({ slug: post.id, cover: {
+      title: post.data.title, section: 'Slop', art: essayArt(post.id),
       figure: post.data.figure?.src,
     } })),
     ...research.map(entry => ({ slug: `research-${entry.id}`, cover: {

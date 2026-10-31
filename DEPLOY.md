@@ -82,7 +82,8 @@ SITE=https://<you>.github.io/<repo>
 curl -fsS "$SITE/" | grep -c "Drew"                         # should be > 0
 curl -fsS "$SITE/traces" | grep -c "Session traces"         # > 0
 curl -fsS "$SITE/experiment" | grep -c "The experiment"     # > 0
-curl -fsS "$SITE/posts/convergence-as-eval-primitive" >/dev/null   # 200
+curl -fsS "$SITE/slop/convergence-as-eval-primitive" >/dev/null   # 200
+curl -fsS "$SITE/posts/convergence-as-eval-primitive" | grep -c "/slop/convergence-as-eval-primitive"   # old URL redirects
 ```
 
 Worker smoke:
@@ -102,7 +103,7 @@ git config core.hooksPath .githooks
 chmod +x .githooks/post-commit
 ```
 
-After that, every commit that touches a post under `src/content/posts/` triggers `trace-capture.ts capture --auto`, captures the session behind the commit, and amends the commit to include the new trace + frontmatter entry.
+After that, every commit that touches a file under `src/content/posts/` or `src/content/slop/` triggers `trace-capture.ts capture --auto`, captures the session behind the commit, and amends the commit to include the new trace + frontmatter entry.
 
 ## Rollback
 

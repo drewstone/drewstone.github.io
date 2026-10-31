@@ -1,6 +1,6 @@
 # 01 Optimization Theory
 
-Post: `src/content/posts/self-improving-stack-optimization-theory.mdx`
+Post: `src/content/slop/self-improving-stack-optimization-theory.mdx`
 Status: outline checkpoint
 Last updated: 2026-06-05
 Supporting trace: `2026-06-05T12-08-35-196Z-gpt-5.5`

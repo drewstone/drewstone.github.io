@@ -36,9 +36,9 @@ import ClaudeCodeHarness from './harness/claude-code.js'
 import CodexHarness from './harness/codex.js'
 import ManualHarness from './harness/manual.js'
 import { dedupeAdjacentTurns, type TraceFile, type TraceHarness, type Turn } from './harness/types.js'
+import { candidatePaths, locatePost, slugsFromGitNames } from './content-paths.mjs'
 
 const ROOT = process.cwd()
-const POSTS_DIR = join(ROOT, 'src/content/posts')
 const TRACES_DIR = join(ROOT, 'traces')
 
 type Args = Record<string, string | boolean>
@@ -71,24 +71,29 @@ function headCommit(): string | null {
 }
 
 function changedPostsAtHead(): string[] {
-  const out = git('show --no-renames --name-only --format="" HEAD')
-  return out
-    .split('\n')
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith('src/content/posts/') && l.endsWith('.mdx'))
-    .map((l) => l.replace('src/content/posts/', '').replace(/\.mdx$/, ''))
+  return slugsFromGitNames(git('show --no-renames --name-only --format="" HEAD'))
 }
 
 /** True iff the only change to this post in `commit` is additions to the
  *  frontmatter `revisions:` array (a phantom edit caused by the post-commit
  *  hook's prior write being dragged in by the next `git add -A`). */
 function isPhantomEdit(commit: string, slug: string): boolean {
-  const path = `src/content/posts/${slug}.mdx`
-  const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
-  if (!diff) return false
-  const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
-  if (!lines.length) return false
-  return lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))
+  let sawDiff = false
+  for (const path of candidatePaths(ROOT, slug)) {
+    const diff = git(`show --no-renames --format= ${commit} -- ${path}`)
+    if (!diff) continue
+    const lines = diff.split('\n').filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l))
+    if (!lines.length) continue
+    sawDiff = true
+    if (!lines.every((l) => /^[+-]\s*-\s*\{\s*date:/.test(l))) return false
+  }
+  return sawDiff
+}
+
+function postFile(slug: string): string {
+  const located = locatePost(ROOT, slug)
+  if (!located) throw new Error(`post not found: ${slug}`)
+  return located.abs
 }
 
 function harnessByName(name: string, input?: string): TraceHarness {
@@ -101,27 +106,27 @@ function harnessByName(name: string, input?: string): TraceHarness {
 }
 
 async function autoDetectHarness(postSlug: string): Promise<TraceHarness | null> {
-  const postPath = join('src/content/posts', `${postSlug}.mdx`)
+  const postPaths = candidatePaths(ROOT, postSlug)
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000) // last 24h
   for (const h of [new ClaudeCodeHarness(), new CodexHarness()] as TraceHarness[]) {
-    const sessions = await h.findSessions({ since, cwd: ROOT, filesTouched: [postPath], limit: 1 })
+    const sessions = await h.findSessions({ since, cwd: ROOT, filesTouched: postPaths, limit: 1 })
     if (sessions.length) return h
   }
   return null
 }
 
 async function chooseSession(harness: TraceHarness, postSlug: string, sessionId?: string) {
-  const postPath = join('src/content/posts', `${postSlug}.mdx`)
+  const postPaths = candidatePaths(ROOT, postSlug)
   const since = new Date(Date.now() - 48 * 60 * 60 * 1000)
   const sessions = await harness.findSessions({
-    since, cwd: ROOT, filesTouched: [postPath],
+    since, cwd: ROOT, filesTouched: postPaths,
   })
   if (sessionId) {
     const match = sessions.find((s) => s.id === sessionId || s.id.startsWith(sessionId))
     if (!match) throw new Error(`session ${sessionId} not found in ${harness.name}`)
     return match
   }
-  if (!sessions.length) throw new Error(`no ${harness.name} sessions touching ${postPath} in the last 48h`)
+  if (!sessions.length) throw new Error(`no ${harness.name} sessions touching ${postPaths[0]} in the last 48h`)
   return sessions[0] // most recent
 }
 
@@ -224,7 +229,7 @@ function appendAuthorToFrontmatter(
 }
 
 async function appendFrontmatterRevision(postSlug: string, entry: { date: string; model: string | null; role: string; note: string; commit?: string; trace_id: string }) {
-  const path = join(POSTS_DIR, `${postSlug}.mdx`)
+  const path = postFile(postSlug)
   const raw = await readFile(path, 'utf8')
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
   if (!m) throw new Error(`no frontmatter in ${postSlug}`)
@@ -252,7 +257,7 @@ async function appendFrontmatterRevision(postSlug: string, entry: { date: string
 }
 
 async function appendSupportingTrace(postSlug: string, traceId: string) {
-  const path = join(POSTS_DIR, `${postSlug}.mdx`)
+  const path = postFile(postSlug)
   const raw = await readFile(path, 'utf8')
   const m = raw.match(/^---\n([\s\S]*?)\n---\n/)
   if (!m) throw new Error(`no frontmatter in ${postSlug}`)
@@ -371,7 +376,7 @@ async function capture(flags: Args): Promise<void> {
         seen.add(rel)
       }
     }
-    if (!seen.size) seen.add(`src/content/posts/${postSlug}.mdx`)
+    if (!seen.size) seen.add(locatePost(ROOT, postSlug)?.rel ?? `src/content/slop/${postSlug}.mdx`)
 
     // Pull commit subject + body and per-file diffstat when commit is real.
     let commit_subject: string | undefined
@@ -420,7 +425,7 @@ async function capture(flags: Args): Promise<void> {
 
     if (attach === 'supporting') {
       await appendSupportingTrace(postSlug, trace_id)
-      console.log(`attached supporting trace to src/content/posts/${postSlug}.mdx`)
+      console.log(`attached supporting trace to ${locatePost(ROOT, postSlug)?.rel ?? postSlug}`)
     } else if (attach === 'revision') {
       await appendFrontmatterRevision(postSlug, {
         date: started_at.slice(0, 10),
@@ -430,7 +435,7 @@ async function capture(flags: Args): Promise<void> {
         commit,
         trace_id,
       })
-      console.log(`appended revision entry to src/content/posts/${postSlug}.mdx`)
+      console.log(`appended revision entry to ${locatePost(ROOT, postSlug)?.rel ?? postSlug}`)
     } else if (attach !== 'none') {
       throw new Error(`unknown --attach=${attach}`)
     }

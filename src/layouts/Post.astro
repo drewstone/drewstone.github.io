@@ -135,7 +135,7 @@ const articleJsonLd = {
               {nextInSeries && <a href={`${basePath}/${nextInSeries.slug}`} class="series-nav-link">Next → {nextInSeries.title}</a>}
             </div>
           </div>
-          <details class="post-series-directory">
+          <details class="post-series-directory ui-disclosure">
             <summary>Browse all {orderedSeriesPosts.length} posts</summary>
             <ol class="post-series-list">
               {orderedSeriesPosts.map((entry) => (

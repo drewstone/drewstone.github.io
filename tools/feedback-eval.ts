@@ -7,7 +7,7 @@
  * Sources (each optional; skip silently if unconfigured):
  *   - Reactions: D1 events table via `wrangler d1 execute`
  *   - Comments:  GitHub Discussions API (via gh CLI; giscus writes discussions)
- *   - Revisions: post frontmatter (./src/content/posts/ *.mdx)
+ *   - Revisions: post frontmatter (src/content/posts and src/content/slop)
  *   - Traffic:   Plausible / Cloudflare Web Analytics — noted but not fetched here
  *
  * Usage:
@@ -16,17 +16,16 @@
  *   pnpm tsx tools/feedback-eval.ts --post=slug  # focus one post
  */
 
-import { readdir, readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { execSync } from 'node:child_process'
-
-const POSTS_DIR = 'src/content/posts'
+import { listContentFiles } from './content-paths.mjs'
 const ARGS = new Set(process.argv.slice(2))
 const POST_FLAG = process.argv.find((a) => a.startsWith('--post='))?.slice(7)
 const AS_MD = ARGS.has('--md')
 
 type PostMeta = {
   slug: string
+  href: string
   title: string
   date: string
   tags: string[]
@@ -38,11 +37,11 @@ type ReactionCounts = Record<string, Record<string, number>> // slug → { like,
 type CommentSummary = { slug: string; count: number; topics: string[] }
 
 async function readPosts(): Promise<PostMeta[]> {
-  const files = (await readdir(POSTS_DIR)).filter((f) => f.endsWith('.mdx'))
+  const files = listContentFiles(process.cwd())
   const out: PostMeta[] = []
-  for (const f of files) {
-    const body = await readFile(join(POSTS_DIR, f), 'utf8')
-    const slug = f.replace(/\.mdx$/, '')
+  for (const file of files) {
+    const body = await readFile(file.abs, 'utf8')
+    const slug = file.slug
     const fm = body.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? ''
     const title = fm.match(/^title:\s*['"]?(.+?)['"]?\s*$/m)?.[1] ?? slug
     const date = fm.match(/^date:\s*(.+)$/m)?.[1]?.trim() ?? ''
@@ -51,7 +50,7 @@ async function readPosts(): Promise<PostMeta[]> {
     const authorModels = Array.from(new Set(
       Array.from(fm.matchAll(/model:\s*['"]?([\w\-\.]+)['"]?/g)).map((m) => m[1])
     ))
-    out.push({ slug, title, date, tags, revisionCount, authorModels })
+    out.push({ slug, href: file.href, title, date, tags, revisionCount, authorModels })
   }
   return out.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
 }
@@ -138,7 +137,7 @@ async function main() {
     console.log('|---|---:|---:|---:|---:|---:|')
     for (const { post, s } of rows) {
       console.log(
-        `| [${post.title}](/posts/${post.slug}) | ${s.reactions.like ?? 0} | ${s.reactions.insight ?? 0} | ${s.reactions.meh ?? 0} | ${s.commentCount} | ${s.aggregate} |`
+        `| [${post.title}](${post.href}) | ${s.reactions.like ?? 0} | ${s.reactions.insight ?? 0} | ${s.reactions.meh ?? 0} | ${s.commentCount} | ${s.aggregate} |`
       )
     }
     console.log('')
@@ -158,6 +157,7 @@ async function main() {
 
   const out = rows.map(({ post, s }) => ({
     slug: post.slug,
+    href: post.href,
     title: post.title,
     date: post.date,
     authors: post.authorModels,
