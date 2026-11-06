@@ -8,22 +8,7 @@ Everything below assumes a clean clone of this repo and a working `pnpm` / `wran
 
 ## 1 — Blog (GitHub Pages)
 
-Create a GitHub repo, push, enable Pages. Five commands:
-
-```bash
-# Replace <owner>/<repo> with your own
-gh repo create <owner>/<repo> --public --source=. --remote=origin
-git push -u origin main
-
-# Edit astro.config.mjs → set site to your Pages URL:
-#   https://<owner>.github.io/<repo>   (project site)
-#   or your custom domain
-
-# In GitHub: Settings → Pages → Source: GitHub Actions
-# The Action at .github/workflows/deploy.yml runs on push to main.
-```
-
-First deploy takes ~2 minutes. Subsequent deploys are automatic on every `git push main`.
+Deployed at <https://drewstone.github.io> (user site; `site` in `astro.config.mjs`). The Action at `.github/workflows/deploy.yml` runs on every push to `main`; a first deploy takes ~2 minutes. After a Pages reset, set Settings → Pages → Source: GitHub Actions.
 
 ## 2 — Reactions worker (Cloudflare)
 
@@ -76,8 +61,7 @@ Astro reads `PUBLIC_*` variables from `.env` at build time. If you prefer GitHub
 After the first Pages deploy:
 
 ```bash
-# Replace with your deployed origin
-SITE=https://<you>.github.io/<repo>
+SITE=https://drewstone.github.io
 
 curl -fsS "$SITE/" | grep -c "Drew"                         # should be > 0
 curl -fsS "$SITE/traces" | grep -c "Session traces"         # > 0
