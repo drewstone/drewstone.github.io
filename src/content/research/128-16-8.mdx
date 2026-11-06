@@ -1,6 +1,6 @@
 ---
 title: 'An indecomposable full-Clifford [[128,16,8]] code at check weight 8'
-description: 'A catalogue extension: the first indecomposable CSS code past eight logical qubits whose depth-one two-local circuits generate the full logical Clifford group, at unchanged rate and distance.'
+description: 'A catalogue extension: past the eight-logical-qubit ceiling of Albert's pinned full-code census, an indecomposable CSS code whose depth-one two-local circuits generate the full logical Clifford group, at unchanged rate and distance.'
 assessed: '2026-10-13'
 claim: 'An indecomposable self-dual CSS [[128,16,8]] code with stabilizer check weight 8 and qubit degree 8 has 218 depth-one two-local code-preserving circuits whose logical image is the full symplectic group Sp(32,2).'
 limitation: 'A catalogue extension, not a frontier move: rate 1/8 and distance 8 are unchanged from the [[64,8,8]] incumbent, weight-8 [[128,16,8]] parameters already occur in published bivariate-bicycle codes, and no practical fault-tolerant implementation is claimed.'
@@ -48,7 +48,7 @@ weight 8, commuting with every check and anticommuting with a supplied logical X
 ## The distance is exactly 8
 
 The lower bound is exhaustive, not heuristic.
-A meet-in-the-middle search stores the syndromes of all 349,633 supports of at most 3 qubits and queries the 11,017,633 supports of exactly 4; every support of weight at most 7 splits as $3 + 4$, and two partial syndromes agree exactly when the full syndrome vanishes.
+A meet-in-the-middle search stores the syndromes of all 349,633 supports of at most 3 qubits and queries the $\binom{128}{4} = 10{,}668{,}000$ supports of exactly 4; every support of weight at most 7 splits as $3 + 4$, and two partial syndromes agree exactly when the full syndrome vanishes.
 No support of weight at most 7 commutes with every X check while failing to commute with a supplied logical: there is no nontrivial pure-Pauli logical of weight at most 7.
 Because the code is self-dual, one search covers both Pauli types.
 A mixed-Pauli logical in a CSS code contains the support of a nontrivial pure component, so the pure bounds give the exact code distance.
@@ -94,15 +94,12 @@ The standalone verifier also confirms the matrix identities behind the critique'
 The $2^{32}$ orbit itself is not machine-checked in either replay; it is carried by the retained C program, the critique's elementary proof, and the standard generation theorem.
 That split is written out in the private proof packet.
 
-## Attribution and retained attempt
+## Attribution
 
-The code was not found by the run that recorded it.
-The cancelled run `albert-full-ldpc-symmetry-20261011a` built it as a two-sheet lift of the incumbent and reported 136 depth-one generators, then died in a coordination outage at 13:38 UTC on October 11, 2026.
-The operator salvaged that sandbox, ran the root's own certificate builder to produce the 47 transvection words (218 generators, 1,144 items), published the four files with SHA-256 sums, and relayed them through the search lead's mail.
-The run `albert-full-ldpc-symmetry-20261011b` verified the files, recorded them as its deliverable, and reran the unmodified mounted check itself; its retained verdict records and the byte-exact run record live in the private proof packet and the lab workspace [[5]](#ref-5).
-Two runs passed the check that day (the second, `albert-full-ldpc-lift-20261011b`, at 15:55 UTC), and hardened rechecks on October 12 passed all 26 gates for both.
-The outside critique is the work of GPT-6 Pro, commissioned the same day; its full text is retained alongside the construction [[3]](#ref-3).
-No peer review or publication acceptance is asserted, and the critique's own qualifications (82 of the 218 raw strings need Pauli sign corrections in Albert's allowed convention; 114 of 218 binary actions are distinct) are part of the record.
+The code was found by a cancelled discovery run and certified by a second run the same day; two runs passed the mounted check on October 11 and hardened rechecks on October 12 passed all 26 gates for both.
+The run-level history, including run identifiers, the coordination outage, the salvage of the certificate files, and where each retained record lives, is kept in `research/albert-128-16-8-attribution/` in this repository [[5]](#ref-5).
+The outside critique is the work of GPT-6 Pro, commissioned October 11, 2026; its full text is retained alongside the construction [[3]](#ref-3).
+No peer review or publication acceptance is asserted, and the critique's qualifications (82 of the 218 raw generator strings need Pauli sign corrections in Albert's allowed convention) are part of the record.
 
 <ResearchBibliography entries={[
   { authors: 'V. V. Albert', title: 'Beyond transversality: structure of Clifford circuits for CSS codes', url: 'https://arxiv.org/abs/2608.05688', publication: 'arXiv:2608.05688v2. Section VI.A and the certified full-code records pinned at a049b30d: 218 full codes; the low-weight regime tops out at [[64,8,8]] ar:097e4c94.' },
