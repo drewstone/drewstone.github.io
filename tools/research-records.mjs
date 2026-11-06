@@ -91,18 +91,21 @@ async function readPublication(id) {
   return { id, manifest: await read('manifest.json'), overlay: await read('overlay.json'), lock: await read('lock.json') }
 }
 
+/** record_ids of one front-matter block (inline or block list). */
+function recordIdsOf(front) {
+  const inline = /^record_ids:\s*\[(.*)\]\s*$/m.exec(front)?.[1]
+  const block = /^record_ids:\s*\n((?:\s+-\s+.*\n?)+)/m.exec(front)?.[1]
+  return inline !== undefined
+    ? inline.split(',').map((item) => item.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
+    : (block ?? '').split('\n').map((line) => line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
+}
+
 /** record_ids of every research post (front matter, inline or block list). */
 async function citedRecords() {
   const cited = new Map()
   for (const name of (await readdir(POSTS)).filter((file) => /\.mdx?$/.test(file))) {
     const text = await readFile(join(POSTS, name), 'utf8')
-    const front = /^---\n([\s\S]*?)\n---/.exec(text)?.[1] ?? ''
-    const inline = /^record_ids:\s*\[(.*)\]\s*$/m.exec(front)?.[1]
-    const block = /^record_ids:\s*\n((?:\s+-\s+.*\n?)+)/m.exec(front)?.[1]
-    const ids = inline !== undefined
-      ? inline.split(',').map((item) => item.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
-      : (block ?? '').split('\n').map((line) => line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
-    cited.set(name.replace(/\.mdx?$/, ''), ids)
+    cited.set(name.replace(/\.mdx?$/, ''), recordIdsOf(/^---\n([\s\S]*?)\n---/.exec(text)?.[1] ?? ''))
   }
   return cited
 }
@@ -825,13 +828,18 @@ async function checkPins(gate) {
 
 // ---------------------------------------------------------------- command line
 
-// Paths whose change requires the store gates before a push (.ai-agent-hooks.json runs `verify --if-changed`).
-const GATED = ['research/publications', 'src/content/research', 'public/research/records', 'package.json', 'pnpm-lock.yaml']
+// Store gates run when a publication object, projection or pinned converter changes, or when a post's record_ids
+// citations change (.ai-agent-hooks.json runs `verify --if-changed`); a prose edit citing no record skips them.
+const GATED = ['research/publications', 'public/research/records', 'package.json', 'pnpm-lock.yaml']
+const POSTS_GATED = 'src/content/research'
 async function changedSinceBase() {
   const git = async (...args) => (await exec('git', args, { cwd: ROOT })).stdout.trim()
   const base = await git('merge-base', 'HEAD', 'origin/main').catch(() => '')
-  if (!base) return GATED
-  return (await git('diff', '--name-only', base, 'HEAD', '--', ...GATED)).split('\n').filter(Boolean)
+  if (!base) return [...GATED, POSTS_GATED]
+  const changed = (await git('diff', '--name-only', base, 'HEAD', '--', ...GATED, POSTS_GATED)).split('\n').filter(Boolean)
+  if (changed.some((path) => !path.startsWith(POSTS_GATED))) return changed
+  const idsAt = async (tree, file) => JSON.stringify(recordIdsOf(/^---\n([\s\S]*?)\n---/.exec((await git('show', `${tree}:${file}`).catch(() => '')))?.[1] ?? ''))
+  return (await Promise.all(changed.map(async (file) => (await idsAt(base, file)) !== (await idsAt('HEAD', file))))).some(Boolean) ? changed : []
 }
 
 async function main([command, ...rest]) {
@@ -843,7 +851,7 @@ async function main([command, ...rest]) {
   if (ifChanged) {
     const changed = await changedSinceBase()
     if (!changed.length) {
-      process.stderr.write('[research-records] no research record, review or post changed since origin/main\n')
+      process.stderr.write('[research-records] no research record or record_ids citation changed since origin/main\n')
       return 0
     }
   }
