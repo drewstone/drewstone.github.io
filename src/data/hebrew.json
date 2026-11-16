@@ -26,7 +26,7 @@
     "translit": "gam",
     "meaning": "also",
     "example": "גם אנחנו בפקק",
-    "exampleNiqqud": "גַּם אֲנַחְנוּ בְּפֶקֶק",
+    "exampleNiqqud": "גַּם אֲנַחְנוּ בִּפְקָק",
     "exampleEn": "we're also in a traffic jam",
     "learned": "2026-11-16",
     "notes": "Added example."
@@ -43,12 +43,13 @@
   },
   {
     "word": "פקק",
-    "hebrewNiqqud": "פֶּקֶק",
+    "hebrewNiqqud": "פְּקָק",
     "translit": "pakak",
     "meaning": "traffic jam",
     "example": "יש פקק בכביש",
-    "exampleNiqqud": "יֵשׁ פֶּקֶק בַּכְּבִישׁ",
+    "exampleNiqqud": "יֵשׁ פְּקָק בַּכְּבִישׁ",
     "exampleEn": "there is a traffic jam on the highway",
-    "learned": "2026-11-16"
+    "learned": "2026-11-16",
+    "notes": "standard: pkak"
   }
 ]

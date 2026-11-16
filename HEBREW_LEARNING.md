@@ -54,7 +54,7 @@ Append one object to the array. Field order:
 ```
 
 - `word`: Hebrew, unpointed.
-- `hebrewNiqqud`: optional pointed spelling. Supply it for every new word. פקק is פֶּקֶק.
+- `hebrewNiqqud`: optional pointed spelling. Supply it for every new word. פקק is פְּקָק.
 - `translit`: Latin transliteration used in the lesson.
 - `meaning`: short English gloss.
 - `example`: one Hebrew sentence in the highway-driving context, unpointed. Reuse words already in the file.
