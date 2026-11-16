@@ -2,7 +2,7 @@
   "verbs": [
     {
       "infinitive": "לנסוע",
-      "infinitiveNiqqud": "לִנְסֹע",
+      "infinitiveNiqqud": "לִנְסֹעַ",
       "translit": "linso'a",
       "meaning": "to drive, to travel",
       "grammar": "Pa'al, root נ-ס-ע. The future drops the nun: אֶסַּע, נִסַּע.",
@@ -28,7 +28,7 @@
           "person": "I",
           "tense": "present",
           "he": "אני נוסע",
-          "heNiqqud": "אֲנִי נוֹסֵע",
+          "heNiqqud": "אֲנִי נוֹסֵעַ",
           "translit": "ani nose'a",
           "en": "I am driving."
         },
@@ -102,7 +102,7 @@
           "person": "it (m)",
           "tense": "future",
           "he": "יהיה",
-          "heNiqqud": "יִהְיֵה",
+          "heNiqqud": "יִהְיֶה",
           "translit": "yihye",
           "en": "There will be (masculine)."
         },
@@ -110,7 +110,7 @@
           "person": "it (f)",
           "tense": "future",
           "he": "תהיה",
-          "heNiqqud": "תִּהְיֵה",
+          "heNiqqud": "תִּהְיֶה",
           "translit": "tihye",
           "en": "There will be (feminine)."
         },
@@ -118,7 +118,7 @@
           "person": "we",
           "tense": "future",
           "he": "נהיה",
-          "heNiqqud": "נִהְיֵה",
+          "heNiqqud": "נִהְיֶה",
           "translit": "nihye",
           "en": "We will be."
         }
@@ -161,7 +161,7 @@
         {
           "tense": "present",
           "he": "אני נוסע בכביש",
-          "heNiqqud": "אֲנִי נוֹסֵע בַּכְּבִישׁ",
+          "heNiqqud": "אֲנִי נוֹסֵעַ בַּכְּבִישׁ",
           "translit": "ani nose'a ba-k'vish",
           "en": "I am driving on the highway.",
           "source": "assistant-added"
@@ -236,7 +236,7 @@
         {
           "tense": "present",
           "he": "אני נוסע במכונית",
-          "heNiqqud": "אֲנִי נוֹסֵע בַּמְּכוֹנִית",
+          "heNiqqud": "אֲנִי נוֹסֵעַ בַּמְּכוֹנִית",
           "translit": "ani nose'a ba-mekhonit",
           "en": "I am driving in the car.",
           "source": "assistant-added"
@@ -244,7 +244,7 @@
         {
           "tense": "future",
           "he": "המכונית תהיה על הכביש",
-          "heNiqqud": "הַמְּכוֹנִית תִּהְיֵה עַל הַכְּבִישׁ",
+          "heNiqqud": "הַמְּכוֹנִית תִּהְיֶה עַל הַכְּבִישׁ",
           "translit": "ha-mekhonit tihye al ha-k'vish",
           "en": "The car will be on the highway.",
           "source": "assistant-added"
@@ -298,7 +298,7 @@
         {
           "tense": "present",
           "he": "גם אני נוסע",
-          "heNiqqud": "גַּם אֲנִי נוֹסֵע",
+          "heNiqqud": "גַּם אֲנִי נוֹסֵעַ",
           "translit": "gam ani nose'a",
           "en": "I am also driving.",
           "source": "assistant-added"
@@ -372,7 +372,7 @@
         {
           "tense": "future",
           "he": "תהיה תנועה בכביש",
-          "heNiqqud": "תִּהְיֵה תְּנוּעָה בַּכְּבִישׁ",
+          "heNiqqud": "תִּהְיֶה תְּנוּעָה בַּכְּבִישׁ",
           "translit": "tihye tnu'a ba-k'vish",
           "en": "There will be traffic on the highway.",
           "source": "assistant-added"
@@ -439,7 +439,7 @@
         {
           "tense": "future",
           "he": "יהיה פקק בכביש",
-          "heNiqqud": "יִהְיֵה פְּקָק בַּכְּבִישׁ",
+          "heNiqqud": "יִהְיֶה פְּקָק בַּכְּבִישׁ",
           "translit": "yihye pkak ba-k'vish",
           "en": "There will be a traffic jam on the highway.",
           "source": "assistant-added"
@@ -447,7 +447,7 @@
         {
           "tense": "future",
           "he": "נהיה בפקק",
-          "heNiqqud": "נִהְיֵה בִּפְקָק",
+          "heNiqqud": "נִהְיֶה בִּפְקָק",
           "translit": "nihye bi-pkak",
           "en": "We will be in a traffic jam.",
           "source": "assistant-added"
