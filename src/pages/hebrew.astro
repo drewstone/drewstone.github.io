@@ -12,8 +12,6 @@ interface Entry {
   notes?: string
 }
 
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
 function requiredString(row: Record<string, unknown>, key: string, index: number) {
   const value = row[key]
   if (typeof value !== 'string' || value.trim() === '') {
@@ -49,13 +47,10 @@ function load(data: unknown): Entry[] {
   })
 }
 
-function formatLearned(iso: string) {
-  const [year, month, day] = iso.split('-')
-  return `${months[Number(month) - 1]} ${Number(day)}, ${year}`
-}
-
 const entries = load(raw)
+const entriesJson = JSON.stringify(entries).replaceAll('<', '\\u003c')
 const resumePath = 'github.com/drewstone/drewstone.github.io/blob/main/HEBREW_LEARNING.md'
+const first = entries[0]
 ---
 
 <Base title="Hebrew" description="Hebrew words.">
@@ -63,118 +58,1019 @@ const resumePath = 'github.com/drewstone/drewstone.github.io/blob/main/HEBREW_LE
     rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;500;700&display=swap"
   />
-  <h1>Hebrew</h1>
-  <ol class="lexicon">
-    {
-      entries.map((entry) => (
-        <li class="entry">
-          <h2 class="word" lang="he" dir="rtl">
-            {entry.word}
-          </h2>
-          <p class="gloss">
-            <span class="meaning">{entry.meaning}</span>
-            <span class="translit">{entry.translit}</span>
-          </p>
-          <p class="example" lang="he" dir="rtl">
-            {entry.example}
-          </p>
-          <p class="example-en">{entry.exampleEn}</p>
-          <p class="meta">
-            <time datetime={entry.learned}>{formatLearned(entry.learned)}</time>
-            {entry.notes && <span>{entry.notes}</span>}
-          </p>
-        </li>
-      ))
-    }
-  </ol>
-  <p class="resume">
-    Hebrew: resume from <a href={`https://${resumePath}`}>{resumePath}</a>
-  </p>
+  <script is:inline>
+    ;(function () {
+      var mode = 'drive'
+      var theme = 'dark'
+      try {
+        var saved = localStorage.getItem('hebrew-mode')
+        if (saved === 'review' || saved === 'list' || saved === 'drive') mode = saved
+        if (localStorage.getItem('hebrew-drive-theme') === 'light') theme = 'light'
+      } catch (e) {}
+      document.documentElement.setAttribute('data-hebrew-mode', mode)
+      if (mode === 'drive') document.body.classList.add('hebrew-drive')
+      if (theme === 'light') document.body.classList.add('hebrew-light')
+    })()
+  </script>
+
+  <div class="hebrew-page">
+    <div class="topbar">
+      <div class="modes" role="tablist" aria-label="Mode">
+        <button type="button" role="tab" data-mode="drive" aria-selected="true">Drive</button>
+        <button type="button" role="tab" data-mode="review" aria-selected="false">Review</button>
+        <button type="button" role="tab" data-mode="list" aria-selected="false">List</button>
+      </div>
+      <button type="button" id="drive-theme" class="theme-toggle" aria-pressed="true">Dark</button>
+    </div>
+
+    <section class="drive-view" aria-label="Drive">
+      <div class="phase-bar" aria-hidden="true"><i id="phase-fill"></i></div>
+      <div class="drive-stage" id="drive-stage">
+        {
+          first && (
+            <>
+              <p class="drive-word" lang="he" dir="rtl">
+                {first.word}
+              </p>
+              <p class="drive-trans" dir="ltr">
+                {first.translit}
+              </p>
+            </>
+          )
+        }
+      </div>
+      <button type="button" class="edge prev" id="drive-prev" aria-label="Previous word">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 4.5 L7.5 12 L15 19.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <button type="button" class="edge next" id="drive-next" aria-label="Next word">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 4.5 L16.5 12 L9 19.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <div class="pause-mark" id="pause-mark" hidden aria-hidden="true"><span></span><span></span></div>
+      <div class="dots" id="drive-dots" aria-label="Word progress"></div>
+    </section>
+
+    <section class="review-view" aria-label="Review">
+      <div class="review-bar">
+        <p class="due" id="due-count" aria-live="polite">0 due</p>
+        <button type="button" id="flip-dir">א → A</button>
+      </div>
+      <button type="button" class="card" id="review-card" aria-expanded="false"></button>
+      <div class="rates" id="rates" hidden>
+        <button type="button" data-grade="again" aria-keyshortcuts="1"><b>1</b> Again</button>
+        <button type="button" data-grade="hard" aria-keyshortcuts="2"><b>2</b> Hard</button>
+        <button type="button" data-grade="good" aria-keyshortcuts="3"><b>3</b> Good</button>
+        <button type="button" data-grade="easy" aria-keyshortcuts="4"><b>4</b> Easy</button>
+      </div>
+      <div class="review-empty" id="review-empty" hidden>
+        <button type="button" id="study-anyway">study anyway</button>
+      </div>
+    </section>
+
+    <section class="list-view" aria-label="List">
+      <h1>Hebrew</h1>
+      <div class="list-grid">
+        {
+          entries.map((entry) => (
+            <button type="button" class="list-card" aria-expanded="false">
+              <span class="list-word" lang="he" dir="rtl">
+                {entry.word}
+              </span>
+              <span class="list-gloss">
+                <span class="list-trans">{entry.translit}</span>
+                <span>{entry.meaning}</span>
+              </span>
+              <span class="list-sentence">
+                <span class="he" lang="he" dir="rtl">
+                  {entry.example}
+                </span>
+                <span class="en">{entry.exampleEn}</span>
+              </span>
+            </button>
+          ))
+        }
+      </div>
+      <p class="resume">
+        Hebrew: resume from <a href={`https://${resumePath}`}>{resumePath}</a>
+      </p>
+    </section>
+  </div>
+
+  <script type="application/json" id="hebrew-entries" set:html={entriesJson}></script>
+  <script is:inline>
+    ;(function () {
+      var PHASE_MS = 4500
+      var DAY = 86400000
+      var SRS_KEY = 'hebrew-srs'
+      var MODE_KEY = 'hebrew-mode'
+      var THEME_KEY = 'hebrew-drive-theme'
+      var FRONT_KEY = 'hebrew-front'
+
+      var entries = JSON.parse(document.getElementById('hebrew-entries').textContent || '[]')
+      var stage = document.getElementById('drive-stage')
+      var dots = document.getElementById('drive-dots')
+      var fill = document.getElementById('phase-fill')
+      var pauseMark = document.getElementById('pause-mark')
+      var dueCount = document.getElementById('due-count')
+      var reviewCard = document.getElementById('review-card')
+      var rates = document.getElementById('rates')
+      var reviewEmpty = document.getElementById('review-empty')
+      var flipBtn = document.getElementById('flip-dir')
+      var themeBtn = document.getElementById('drive-theme')
+      var modeButtons = Array.prototype.slice.call(document.querySelectorAll('.modes button'))
+
+      var srs = loadSrs()
+      var frontDir = 'he'
+      try {
+        if (localStorage.getItem(FRONT_KEY) === 'en') frontDir = 'en'
+      } catch (e) {}
+
+      var driveOrder = entries.slice()
+      var index = 0
+      var phase = 0
+      var userPaused = false
+      var driveLive = false
+      var reviewLive = false
+      var anyway = false
+      var queue = []
+      var revealed = false
+      var timer = 0
+      var fadeTimer = 0
+      var barRaf = 0
+      var phaseStart = 0
+      var remaining = PHASE_MS
+      var fitTimer = 0
+
+      function loadSrs() {
+        try {
+          var raw = JSON.parse(localStorage.getItem(SRS_KEY) || '{}')
+          if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {}
+          return raw
+        } catch (e) {
+          return {}
+        }
+      }
+
+      function saveSrs() {
+        try {
+          localStorage.setItem(SRS_KEY, JSON.stringify(srs))
+        } catch (e) {}
+      }
+
+      function endOfToday(now) {
+        var d = new Date(now)
+        d.setHours(23, 59, 59, 999)
+        return d.getTime()
+      }
+
+      function isDue(card, now) {
+        if (!card || !card.due) return true
+        return card.due <= endOfToday(now)
+      }
+
+      function dueEntries(now) {
+        return entries.filter(function (entry) {
+          return isDue(srs[entry.word], now)
+        })
+      }
+
+      function schedule(prev, grade, now) {
+        var ease = prev && typeof prev.ease === 'number' ? prev.ease : 2.5
+        var interval = prev && typeof prev.interval === 'number' ? prev.interval : 0
+        var reps = prev && typeof prev.reps === 'number' ? prev.reps : 0
+        if (grade === 'again') {
+          return {
+            ease: Math.max(1.3, ease - 0.2),
+            interval: 0,
+            reps: 0,
+            due: now + 10 * 60 * 1000,
+            seen: now,
+          }
+        }
+        var q = grade === 'hard' ? 3 : grade === 'easy' ? 5 : 4
+        var nextEase = ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
+        if (nextEase < 1.3) nextEase = 1.3
+        var nextInterval
+        if (grade === 'hard') nextInterval = reps === 0 ? 1 : Math.max(1, Math.round(interval * 12) / 10)
+        else if (grade === 'easy') nextInterval = reps === 0 ? 4 : Math.max(1, Math.round(interval * ease * 1.3))
+        else if (reps === 0) nextInterval = 1
+        else if (reps === 1) nextInterval = 6
+        else nextInterval = Math.max(1, Math.round(interval * ease))
+        return {
+          ease: nextEase,
+          interval: nextInterval,
+          reps: reps + 1,
+          due: now + nextInterval * DAY,
+          seen: now,
+        }
+      }
+
+      function markSeen(word) {
+        var prev = srs[word] || {}
+        srs[word] = {
+          ease: typeof prev.ease === 'number' ? prev.ease : 2.5,
+          interval: typeof prev.interval === 'number' ? prev.interval : 0,
+          reps: typeof prev.reps === 'number' ? prev.reps : 0,
+          due: typeof prev.due === 'number' ? prev.due : 0,
+          seen: Date.now(),
+        }
+        saveSrs()
+      }
+
+      function driveWeight(entry, now) {
+        var card = srs[entry.word]
+        var seen = card && card.seen ? card.seen : 0
+        var age = seen ? Math.min(30, (now - seen) / DAY) : 30
+        var weight = 1 + age
+        if (isDue(card, now)) weight *= 5
+        if (!seen) weight *= 1.5
+        return weight
+      }
+
+      function weightedOrder(now) {
+        return entries
+          .map(function (entry) {
+            var weight = driveWeight(entry, now)
+            return { entry: entry, key: Math.random() ** (1 / weight) }
+          })
+          .sort(function (a, b) {
+            return b.key - a.key
+          })
+          .map(function (item) {
+            return item.entry
+          })
+      }
+
+      var scopeName = ''
+      var scopeValue = ''
+      var scopeHost = document.querySelector('.hebrew-page')
+      if (scopeHost) {
+        for (var s = 0; s < scopeHost.attributes.length; s++) {
+          var attr = scopeHost.attributes[s]
+          if (attr.name.indexOf('data-astro-cid') === 0) {
+            scopeName = attr.name
+            scopeValue = attr.value
+            break
+          }
+        }
+      }
+
+      function el(tag, cls, text, attrs) {
+        var node = document.createElement(tag)
+        if (scopeName) node.setAttribute(scopeName, scopeValue)
+        if (cls) node.className = cls
+        if (text != null) node.textContent = text
+        if (attrs) {
+          Object.keys(attrs).forEach(function (key) {
+            node.setAttribute(key, attrs[key])
+          })
+        }
+        return node
+      }
+
+      function renderDrive() {
+        var entry = driveOrder[index]
+        if (!entry) {
+          stage.replaceChildren()
+          return
+        }
+        stage.replaceChildren()
+        if (phase === 0) {
+          stage.append(
+            el('p', 'drive-word', entry.word, { lang: 'he', dir: 'rtl' }),
+            el('p', 'drive-trans', entry.translit, { dir: 'ltr' }),
+          )
+        } else if (phase === 1) {
+          stage.append(el('p', 'drive-example', entry.example, { lang: 'he', dir: 'rtl' }))
+        } else {
+          stage.append(
+            el('p', 'drive-meaning', entry.meaning, { dir: 'ltr' }),
+            el('p', 'drive-en', entry.exampleEn, { dir: 'ltr' }),
+          )
+        }
+        dots.replaceChildren()
+        driveOrder.forEach(function (_, i) {
+          var dot = document.createElement('i')
+          if (scopeName) dot.setAttribute(scopeName, scopeValue)
+          if (i === index) dot.className = 'on'
+          dots.append(dot)
+        })
+        dots.setAttribute('aria-label', 'Word ' + (index + 1) + ' of ' + driveOrder.length)
+      }
+
+      function fadeThen(fn) {
+        clearTimeout(fadeTimer)
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          fn()
+          return
+        }
+        stage.classList.add('is-fading')
+        fadeTimer = setTimeout(function () {
+          fn()
+          void stage.offsetWidth
+          stage.classList.remove('is-fading')
+        }, 280)
+      }
+
+      function tick() {
+        cancelAnimationFrame(barRaf)
+        var p = Math.min(1, (performance.now() - phaseStart) / PHASE_MS)
+        fill.style.transform = 'scaleX(' + p + ')'
+        if (!userPaused && document.documentElement.dataset.hebrewMode === 'drive') {
+          barRaf = requestAnimationFrame(tick)
+        }
+      }
+
+      function arm(ms) {
+        clearTimeout(timer)
+        phaseStart = performance.now() - (PHASE_MS - ms)
+        remaining = ms
+        timer = setTimeout(advance, ms)
+        tick()
+      }
+
+      function haltTimer() {
+        clearTimeout(timer)
+        cancelAnimationFrame(barRaf)
+        remaining = Math.max(0, PHASE_MS - (performance.now() - phaseStart))
+      }
+
+      function paintPause() {
+        pauseMark.hidden = !userPaused
+        stage.classList.toggle('is-paused', userPaused)
+      }
+
+      function present(fade) {
+        clearTimeout(timer)
+        cancelAnimationFrame(barRaf)
+        var apply = function () {
+          renderDrive()
+          if (phase === 0 && driveOrder[index]) markSeen(driveOrder[index].word)
+          paintPause()
+          if (!userPaused) arm(PHASE_MS)
+          else {
+            remaining = PHASE_MS
+            fill.style.transform = 'scaleX(0)'
+          }
+        }
+        if (fade) fadeThen(apply)
+        else apply()
+      }
+
+      function advance() {
+        if (!driveOrder.length) return
+        if (phase < 2) phase += 1
+        else {
+          phase = 0
+          index = (index + 1) % driveOrder.length
+        }
+        present(true)
+      }
+
+      function go(delta) {
+        if (!driveOrder.length) return
+        index = (index + delta + driveOrder.length) % driveOrder.length
+        phase = 0
+        present(true)
+      }
+
+      function togglePause() {
+        userPaused = !userPaused
+        paintPause()
+        if (userPaused) haltTimer()
+        else arm(remaining > 0 ? remaining : PHASE_MS)
+      }
+
+      function startDrive() {
+        srs = loadSrs()
+        driveOrder = entries.length ? weightedOrder(Date.now()) : []
+        index = 0
+        phase = 0
+        userPaused = false
+        driveLive = true
+        present(false)
+      }
+
+      function stopDrive() {
+        driveLive = false
+        clearTimeout(timer)
+        clearTimeout(fadeTimer)
+        cancelAnimationFrame(barRaf)
+        stage.classList.remove('is-fading')
+      }
+
+      function paintDue() {
+        dueCount.textContent = dueEntries(Date.now()).length + ' due'
+      }
+
+      function paintFlip() {
+        var he = frontDir !== 'en'
+        flipBtn.textContent = he ? 'א → A' : 'A → א'
+        flipBtn.setAttribute('aria-label', he ? 'Front is Hebrew. Flip to English.' : 'Front is English. Flip to Hebrew.')
+      }
+
+      function showEmpty() {
+        reviewCard.hidden = true
+        rates.hidden = true
+        reviewEmpty.hidden = false
+        revealed = false
+        paintDue()
+      }
+
+      function showCard() {
+        var entry = queue[0]
+        if (!entry) {
+          anyway = false
+          showEmpty()
+          return
+        }
+        reviewEmpty.hidden = true
+        reviewCard.hidden = false
+        rates.hidden = !revealed
+        reviewCard.setAttribute('aria-expanded', revealed ? 'true' : 'false')
+        reviewCard.replaceChildren()
+        if (frontDir === 'en') {
+          reviewCard.append(el('span', 'review-front-en', entry.meaning, { dir: 'ltr' }))
+        } else {
+          reviewCard.append(el('span', 'review-he', entry.word, { lang: 'he', dir: 'rtl' }))
+        }
+        if (!revealed) return
+        var back = el('span', 'review-back')
+        if (frontDir === 'en') back.append(el('span', 'review-he answer', entry.word, { lang: 'he', dir: 'rtl' }))
+        back.append(el('span', 'review-trans', entry.translit, { dir: 'ltr' }))
+        if (frontDir !== 'en') back.append(el('span', 'review-meaning', entry.meaning, { dir: 'ltr' }))
+        back.append(el('span', 'review-ex', entry.example, { lang: 'he', dir: 'rtl' }))
+        back.append(el('span', 'review-ex-en', entry.exampleEn, { dir: 'ltr' }))
+        reviewCard.append(back)
+      }
+
+      function openReview() {
+        srs = loadSrs()
+        anyway = false
+        reviewLive = true
+        revealed = false
+        paintFlip()
+        var due = dueEntries(Date.now())
+        paintDue()
+        if (!due.length) {
+          queue = []
+          showEmpty()
+          return
+        }
+        queue = due.slice().sort(function (a, b) {
+          var da = (srs[a.word] && srs[a.word].due) || 0
+          var db = (srs[b.word] && srs[b.word].due) || 0
+          var sa = (srs[a.word] && srs[a.word].seen) || 0
+          var sb = (srs[b.word] && srs[b.word].seen) || 0
+          return da - db || sa - sb
+        })
+        showCard()
+      }
+
+      function studyAnyway() {
+        srs = loadSrs()
+        anyway = true
+        revealed = false
+        queue = entries.slice().sort(function (a, b) {
+          var da = (srs[a.word] && srs[a.word].due) || 0
+          var db = (srs[b.word] && srs[b.word].due) || 0
+          var sa = (srs[a.word] && srs[a.word].seen) || 0
+          var sb = (srs[b.word] && srs[b.word].seen) || 0
+          return da - db || sa - sb
+        })
+        showCard()
+      }
+
+      function reveal() {
+        if (revealed || !queue.length || reviewCard.hidden) return
+        revealed = true
+        showCard()
+      }
+
+      function rate(grade) {
+        if (!revealed || !queue.length) return
+        var entry = queue.shift()
+        var now = Date.now()
+        srs[entry.word] = schedule(srs[entry.word], grade, now)
+        saveSrs()
+        if (grade === 'again') queue.splice(Math.min(queue.length, 2), 0, entry)
+        revealed = false
+        paintDue()
+        if (!queue.length) {
+          anyway = false
+          showEmpty()
+          return
+        }
+        showCard()
+      }
+
+      function paintTheme() {
+        var light = document.body.classList.contains('hebrew-light')
+        themeBtn.textContent = light ? 'Light' : 'Dark'
+        themeBtn.setAttribute('aria-pressed', light ? 'false' : 'true')
+        themeBtn.setAttribute('aria-label', light ? 'Light background. Switch to dark.' : 'Dark background. Switch to light.')
+      }
+
+      function paintModes(mode) {
+        modeButtons.forEach(function (btn) {
+          var on = btn.dataset.mode === mode
+          btn.setAttribute('aria-selected', on ? 'true' : 'false')
+          btn.tabIndex = on ? 0 : -1
+        })
+      }
+
+      function fitList() {
+        var grid = document.querySelector('.list-grid')
+        if (!grid || document.documentElement.dataset.hebrewMode !== 'list') return
+        grid.style.height = ''
+      }
+
+      function setMode(mode) {
+        var same = document.documentElement.dataset.hebrewMode === mode
+        if (mode !== 'drive' && mode !== 'review' && mode !== 'list') mode = 'drive'
+        document.documentElement.dataset.hebrewMode = mode
+        document.body.classList.toggle('hebrew-drive', mode === 'drive')
+        paintModes(mode)
+        try {
+          localStorage.setItem(MODE_KEY, mode)
+        } catch (e) {}
+        if (mode === 'drive') {
+          if (!same || !driveLive) startDrive()
+        } else if (driveLive) stopDrive()
+        if (mode === 'review') {
+          if (!same || !reviewLive) openReview()
+        } else reviewLive = false
+        if (mode === 'list') requestAnimationFrame(fitList)
+      }
+
+      modeButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setMode(btn.dataset.mode)
+        })
+      })
+
+      themeBtn.addEventListener('click', function () {
+        document.body.classList.toggle('hebrew-light')
+        var light = document.body.classList.contains('hebrew-light')
+        try {
+          localStorage.setItem(THEME_KEY, light ? 'light' : 'dark')
+        } catch (e) {}
+        paintTheme()
+      })
+
+      document.getElementById('drive-prev').addEventListener('click', function () {
+        go(-1)
+      })
+      document.getElementById('drive-next').addEventListener('click', function () {
+        go(1)
+      })
+      document.querySelector('.drive-view').addEventListener('click', function (event) {
+        if (event.target.closest('button, a')) return
+        togglePause()
+      })
+
+      reviewCard.addEventListener('click', function () {
+        if (!revealed) reveal()
+      })
+      rates.addEventListener('click', function (event) {
+        var btn = event.target.closest('[data-grade]')
+        if (btn) rate(btn.dataset.grade)
+      })
+      document.getElementById('study-anyway').addEventListener('click', studyAnyway)
+      flipBtn.addEventListener('click', function () {
+        frontDir = frontDir === 'en' ? 'he' : 'en'
+        try {
+          localStorage.setItem(FRONT_KEY, frontDir)
+        } catch (e) {}
+        paintFlip()
+        if (queue.length) showCard()
+      })
+
+      document.querySelector('.list-grid').addEventListener('click', function (event) {
+        var card = event.target.closest('.list-card')
+        if (!card) return
+        var open = card.classList.toggle('is-open')
+        card.setAttribute('aria-expanded', open ? 'true' : 'false')
+        if (!open) return
+        Array.prototype.forEach.call(document.querySelectorAll('.list-card.is-open'), function (other) {
+          if (other === card) return
+          other.classList.remove('is-open')
+          other.setAttribute('aria-expanded', 'false')
+        })
+      })
+
+      window.addEventListener('keydown', function (event) {
+        var mode = document.documentElement.dataset.hebrewMode
+        if (mode === 'drive') {
+          if (event.key === 'ArrowRight') {
+            event.preventDefault()
+            go(1)
+          } else if (event.key === 'ArrowLeft') {
+            event.preventDefault()
+            go(-1)
+          } else if (event.key === ' ' && !event.target.closest('button, a')) {
+            event.preventDefault()
+            togglePause()
+          }
+          return
+        }
+        if (mode !== 'review') return
+        if ((event.key === ' ' || event.key === 'Enter') && !event.target.closest('button, a')) {
+          event.preventDefault()
+          reveal()
+          return
+        }
+        var grades = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' }
+        if (grades[event.key]) {
+          event.preventDefault()
+          rate(grades[event.key])
+        }
+      })
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.documentElement.dataset.hebrewMode !== 'drive' || !driveLive) return
+        if (document.hidden) haltTimer()
+        else if (!userPaused) arm(remaining > 0 ? remaining : PHASE_MS)
+      })
+
+      window.addEventListener('resize', function () {
+        clearTimeout(fitTimer)
+        fitTimer = setTimeout(fitList, 120)
+      })
+
+      paintTheme()
+      paintFlip()
+      setMode(document.documentElement.dataset.hebrewMode || 'drive')
+    })()
+  </script>
 </Base>
 
-<style>
-  .lexicon {
-    list-style: none;
+<style is:global>
+  body[data-route='/hebrew/'] {
+    background: #070708;
+    color: #f7f7f5;
+    overflow: hidden;
+  }
+
+  body[data-route='/hebrew/'] > header,
+  body[data-route='/hebrew/'] > footer {
+    display: none;
+  }
+
+  body[data-route='/hebrew/'] > main {
+    max-width: none;
+    width: 100%;
+    margin: 0;
     padding: 0;
-    margin: 0.4rem 0 0;
+    min-height: 100dvh;
+    background: #070708;
+    color: #f7f7f5;
   }
 
-  .entry {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    grid-template-areas:
-      'gloss word'
-      'translation example'
-      'meta meta';
-    column-gap: clamp(1.25rem, 4vw, 2.75rem);
-    row-gap: 0.55rem;
-    align-items: baseline;
-    padding: 1.45rem 0 1.2rem;
-    border-top: 1px solid var(--border);
+  body[data-route='/hebrew/']:not(.hebrew-drive) {
+    background: var(--bg);
+    color: var(--fg);
+    overflow: visible;
   }
 
-  .word {
-    grid-area: word;
+  body[data-route='/hebrew/']:not(.hebrew-drive) > header,
+  body[data-route='/hebrew/']:not(.hebrew-drive) > footer {
+    display: block;
+  }
+
+  body[data-route='/hebrew/']:not(.hebrew-drive) > main {
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.2rem var(--space-lg) var(--space-3xl);
+    min-height: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  body.hebrew-drive {
+    --drive-bg: #070708;
+    --drive-fg: #f7f7f5;
+    --drive-dim: #dededc;
+    --drive-soft: rgba(255, 255, 255, 0.38);
+    background: var(--drive-bg);
+    color: var(--drive-fg);
+    color-scheme: dark;
+    overflow: hidden;
+  }
+
+  body.hebrew-drive.hebrew-light {
+    --drive-bg: #f5f5f3;
+    --drive-fg: #111111;
+    --drive-dim: #2a2a2a;
+    --drive-soft: rgba(0, 0, 0, 0.32);
+    color-scheme: light;
+  }
+
+  body.hebrew-drive > header,
+  body.hebrew-drive > footer {
+    display: none;
+  }
+
+  body.hebrew-drive > main {
+    max-width: none;
+    width: 100%;
     margin: 0;
-    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'David Libre', serif;
-    font-weight: 700;
-    font-style: normal;
-    font-size: clamp(2.7rem, 7vw, 4.15rem);
-    line-height: 1;
-    letter-spacing: 0;
+    padding: 0;
+    min-height: 100dvh;
+    background: var(--drive-bg);
+    color: var(--drive-fg);
+  }
+</style>
+
+<style>
+  .drive-view[hidden],
+  .review-view[hidden],
+  .list-view[hidden],
+  .rates[hidden],
+  .review-empty[hidden],
+  .card[hidden],
+  .pause-mark[hidden] {
+    display: none !important;
   }
 
-  .gloss {
-    grid-area: gloss;
+  html[data-hebrew-mode='drive'] .review-view,
+  html[data-hebrew-mode='drive'] .list-view,
+  html[data-hebrew-mode='review'] .drive-view,
+  html[data-hebrew-mode='review'] .list-view,
+  html[data-hebrew-mode='list'] .drive-view,
+  html[data-hebrew-mode='list'] .review-view,
+  html:not([data-hebrew-mode]) .review-view,
+  html:not([data-hebrew-mode]) .list-view {
+    display: none !important;
+  }
+
+  .topbar {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.45rem 0.7rem;
-    margin: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
-  .meaning {
-    font-size: 1.2rem;
-    line-height: 1.2;
+  .modes {
+    display: flex;
+    gap: 0.35rem 0.9rem;
   }
 
-  .translit {
+  .modes button,
+  .theme-toggle,
+  #flip-dir,
+  .rates button,
+  #study-anyway,
+  .edge,
+  .card,
+  .list-card {
+    font: inherit;
+    color: inherit;
+    background: none;
+    cursor: pointer;
+  }
+
+  .modes button {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    color: var(--fg-muted);
+    border: 0;
+    border-bottom: 1px solid transparent;
+    padding: 0.55rem 0.05rem;
+    min-height: 2.75rem;
+  }
+
+  .modes button[aria-selected='true'] {
+    color: var(--fg);
+    border-bottom-color: var(--fg);
+  }
+
+  .theme-toggle {
+    display: none;
+  }
+
+  .list-view h1 {
+    margin-bottom: 0.75rem;
+  }
+
+  .review-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-height: calc(100dvh - 12rem);
+  }
+
+  .review-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .due {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
     color: var(--fg-muted);
   }
 
-  .example {
-    grid-area: example;
-    margin: 0.15rem 0 0;
-    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'David Libre', serif;
-    font-weight: 400;
-    font-size: 1.4rem;
+  #flip-dir {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', var(--font-mono), serif;
+    font-size: 1.05rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    min-height: 2.75rem;
+  }
+
+  .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    text-align: center;
+    border: 0;
+    padding: 1rem 0.5rem 1.25rem;
+    min-height: 14rem;
+  }
+
+  .review-he {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-weight: 700;
+    font-size: clamp(3.4rem, 12vw, 6.4rem);
+    line-height: 1.02;
+  }
+
+  .review-he.answer {
+    font-size: clamp(2.8rem, 9vw, 4.6rem);
+  }
+
+  .review-front-en,
+  .review-meaning {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    line-height: 1.15;
+  }
+
+  .review-back {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .review-back > span {
+    display: block;
+  }
+
+  .review-trans {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    color: var(--fg-muted);
+  }
+
+  .review-ex {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-size: clamp(1.45rem, 4vw, 2rem);
     line-height: 1.35;
   }
 
-  .example-en {
-    grid-area: translation;
-    margin: 0.15rem 0 0;
+  .review-ex-en {
     color: var(--fg-muted);
-    font-size: 1rem;
-    line-height: 1.4;
+    font-size: 1.05rem;
   }
 
-  .meta {
-    grid-area: meta;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem 0.85rem;
-    margin: 0.45rem 0 0;
+  .rates {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .rates button {
+    min-height: 3.35rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
     font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.01em;
-    color: var(--fg-faint);
+    font-size: 0.92rem;
+    padding: 0.4rem 0.3rem;
+  }
+
+  .rates button b {
+    font-weight: 500;
+    margin-right: 0.25rem;
+  }
+
+  .rates button:hover,
+  #flip-dir:hover,
+  #study-anyway:hover,
+  .list-card:hover {
+    background: var(--bg-alt);
+  }
+
+  .review-empty {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #study-anyway {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    min-height: 3.4rem;
+    padding: 0.7rem 1.2rem;
+    border: 1px solid var(--fg);
+    border-radius: 4px;
+  }
+
+  .list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.25rem), 1fr));
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+  }
+
+  .list-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
+    border: 0;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 0.45rem;
+    min-width: 0;
+    min-height: 7.5rem;
+  }
+
+  .list-word {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 4.2vw, 2.8rem);
+    line-height: 1.05;
+  }
+
+  .list-gloss,
+  .list-sentence {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.12rem;
+    line-height: 1.25;
+  }
+
+  .list-gloss {
+    color: var(--fg-muted);
+    font-size: 0.78rem;
+  }
+
+  .list-trans {
+    font-family: var(--font-mono);
+  }
+
+  .list-sentence {
+    display: none;
+    font-size: 0.9rem;
+  }
+
+  .list-sentence .he {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-size: 1.2em;
+    color: var(--fg);
+  }
+
+  .list-sentence .en {
+    color: var(--fg-muted);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .list-card:hover .list-gloss {
+      display: none;
+    }
+    .list-card:hover .list-sentence {
+      display: flex;
+    }
+  }
+
+  .list-card.is-open .list-gloss {
+    display: none;
+  }
+
+  .list-card.is-open .list-sentence {
+    display: flex;
   }
 
   .resume {
-    margin: 2.25rem 0 0;
+    margin: 0.9rem 0 0;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     line-height: 1.5;
@@ -186,21 +1082,236 @@ const resumePath = 'github.com/drewstone/drewstone.github.io/blob/main/HEBREW_LE
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 640px) {
-    .entry {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        'word'
-        'gloss'
-        'example'
-        'translation'
-        'meta';
-      row-gap: 0.35rem;
+  html[data-hebrew-mode='drive'] .hebrew-page {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: calc(0.45rem + env(safe-area-inset-top)) 0 env(safe-area-inset-bottom);
+  }
+
+  html[data-hebrew-mode='drive'] .topbar {
+    position: relative;
+    z-index: 3;
+    padding: 0.35rem 1rem 0;
+  }
+
+  html[data-hebrew-mode='drive'] .modes button,
+  html[data-hebrew-mode='drive'] .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--drive-dim);
+    border: 1px solid transparent;
+    border-radius: 999px;
+    min-height: 3.1rem;
+    padding: 0.45rem 0.95rem;
+    font-size: 1.12rem;
+    background: transparent;
+  }
+
+  html[data-hebrew-mode='drive'] .modes button[aria-selected='true'] {
+    color: var(--drive-bg);
+    background: var(--drive-fg);
+    border-color: var(--drive-fg);
+  }
+
+  html[data-hebrew-mode='drive'] .theme-toggle[aria-pressed='true'] {
+    border-color: var(--drive-soft);
+  }
+
+  .drive-view {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    user-select: none;
+  }
+
+  .phase-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--drive-soft);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .phase-bar i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--drive-fg);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .drive-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.85rem;
+    padding: 4.2rem 1rem 5.4rem;
+    transition: opacity 0.4s ease;
+  }
+
+  .drive-stage.is-fading {
+    opacity: 0;
+  }
+
+  .drive-stage p {
+    margin: 0;
+    max-width: min(16em, 100%);
+    padding-inline: clamp(3rem, 8vw, 5.5rem);
+  }
+
+  .drive-word {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-weight: 700;
+    font-size: clamp(4.4rem, 16vw, 10.5rem);
+    line-height: 0.95;
+    padding-inline: 0.2rem !important;
+  }
+
+  .drive-trans {
+    font-family: var(--font-mono);
+    font-size: clamp(1.8rem, 4.6vw, 3.3rem);
+    line-height: 1.2;
+    color: var(--drive-dim);
+  }
+
+  .drive-example {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 7vw, 5.4rem);
+    line-height: 1.25;
+  }
+
+  .drive-meaning {
+    font-size: clamp(3rem, 8vw, 6.2rem);
+    line-height: 1.05;
+    font-weight: 700;
+  }
+
+  .drive-en {
+    font-size: clamp(1.7rem, 4vw, 2.9rem);
+    line-height: 1.25;
+    color: var(--drive-dim);
+  }
+
+  .edge {
+    position: absolute;
+    top: 18%;
+    bottom: 16%;
+    width: clamp(3.4rem, 10vw, 6rem);
+    border: 0;
+    color: var(--drive-fg);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    padding: 0;
+  }
+
+  .edge svg {
+    width: 3.1rem;
+    height: 3.1rem;
+  }
+
+  .edge.prev {
+    left: 0;
+  }
+
+  .edge.next {
+    right: 0;
+  }
+
+  .edge:hover {
+    background: color-mix(in srgb, var(--drive-fg) 8%, transparent);
+  }
+
+  .pause-mark {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.45rem;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .pause-mark span {
+    width: 0.55rem;
+    height: 2.5rem;
+    background: var(--drive-fg);
+    border-radius: 2px;
+  }
+
+  .dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1.15rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.62rem;
+    padding: 0 1rem;
+  }
+
+  .dots i {
+    width: 0.72rem;
+    height: 0.72rem;
+    border-radius: 50%;
+    background: var(--drive-soft);
+    display: block;
+  }
+
+  .dots i.on {
+    background: var(--drive-fg);
+    transform: scale(1.28);
+  }
+
+  .modes button:focus-visible,
+  .theme-toggle:focus-visible,
+  .edge:focus-visible,
+  #flip-dir:focus-visible,
+  .rates button:focus-visible,
+  #study-anyway:focus-visible,
+  .card:focus-visible,
+  .list-card:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drive-stage {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .rates {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .example,
-    .example-en {
-      margin-top: 0.45rem;
+    .drive-word {
+      font-size: clamp(3.6rem, 20vw, 5.5rem);
+    }
+
+    .drive-stage p {
+      padding-inline: 2.8rem;
+    }
+
+    html[data-hebrew-mode='drive'] .modes button,
+    html[data-hebrew-mode='drive'] .theme-toggle {
+      font-size: 1rem;
+      min-height: 2.8rem;
+      padding: 0.35rem 0.7rem;
     }
   }
 </style>

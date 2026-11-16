@@ -10,6 +10,16 @@ When Drew sends that sentence, read this file and `src/data/hebrew.json`, then c
 
 The page is https://drewstone.github.io/hebrew/. It renders the JSON at build time. Pushing `main` publishes it through the "Deploy to GitHub Pages" workflow.
 
+## Page modes
+
+The page opens in Drive. The choice is saved in the browser (`hebrew-mode`).
+
+- Drive: dark full screen and large type, for a glance from the driver's seat. A Light/Dark control swaps the background (`hebrew-drive-theme`). It advances on its own, about 4.5 seconds each: Hebrew word and transliteration, then the Hebrew sentence, then the English meaning and sentence. Tap the middle to pause. Previous and next sit on the sides. Order prefers words that are due, then words least recently seen.
+- Review: a flashcard. The front is the Hebrew word, or the English gloss if the direction is flipped. Tap or space reveals the transliteration, meaning, and example. Again, Hard, Good, and Easy are keys 1, 2, 3, and 4. Ratings use a short SM-2 schedule in the browser (`hebrew-srs`, keyed by the Hebrew word). Again is due again in 10 minutes and resets the streak. Hard is due in 1 day the first time, then the interval grows by 1.2, and ease falls. Good is due in 1 day, then 6 days, then the interval times ease. Easy is due in 4 days the first time, then the interval times ease times 1.3, and ease rises. Ease starts at 2.5 and stays at or above 1.3. The page shows how many cards are due today. If none are due, it offers "study anyway".
+- List: every word in one grid. Hebrew is large, transliteration and meaning are small, and the sentence opens on hover or tap. The resume line sits at the bottom of this mode.
+
+Review ratings and which words Drive has already shown stay in the browser. They are not fields in `src/data/hebrew.json`.
+
 ## Teaching style
 
 - Slow. One word at a time.
@@ -23,7 +33,7 @@ The page is https://drewstone.github.io/hebrew/. It renders the JSON at build ti
 
 `src/data/hebrew.json` is the source of truth. It is a JSON array in learning order. Read that file for the words. Do not keep a second list in this document.
 
-The page shows, for each object: the Hebrew word, transliteration, English meaning, Hebrew example, English translation, date learned, and notes when present.
+Drive and Review read those fields from the file. List shows the word, transliteration, meaning, and sentence.
 
 ## Schema
 
