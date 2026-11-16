@@ -1,0 +1,44 @@
+[
+  {
+    "word": "כביש",
+    "translit": "k'vish",
+    "meaning": "highway",
+    "example": "אנחנו על הכביש",
+    "exampleEn": "we are on the highway",
+    "learned": "2026-11-16"
+  },
+  {
+    "word": "מכונית",
+    "translit": "mekhonit",
+    "meaning": "car",
+    "example": "המכונית על הכביש",
+    "exampleEn": "the car is on the highway",
+    "learned": "2026-11-16",
+    "notes": "Added example."
+  },
+  {
+    "word": "גם",
+    "translit": "gam",
+    "meaning": "also",
+    "example": "גם אנחנו בפקק",
+    "exampleEn": "we're also in a traffic jam",
+    "learned": "2026-11-16",
+    "notes": "Added example."
+  },
+  {
+    "word": "תנועה",
+    "translit": "tnu'a",
+    "meaning": "traffic",
+    "example": "תנועה בכביש",
+    "exampleEn": "traffic on the highway",
+    "learned": "2026-11-16"
+  },
+  {
+    "word": "פקק",
+    "translit": "pakak",
+    "meaning": "traffic jam",
+    "example": "יש פקק בכביש",
+    "exampleEn": "there is a traffic jam on the highway",
+    "learned": "2026-11-16"
+  }
+]

@@ -1,0 +1,206 @@
+---
+import Base from '../layouts/Base.astro'
+import raw from '../data/hebrew.json'
+
+interface Entry {
+  word: string
+  translit: string
+  meaning: string
+  example: string
+  exampleEn: string
+  learned: string
+  notes?: string
+}
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+function requiredString(row: Record<string, unknown>, key: string, index: number) {
+  const value = row[key]
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`src/data/hebrew.json[${index}].${key} must be a non-empty string`)
+  }
+  return value
+}
+
+function load(data: unknown): Entry[] {
+  if (!Array.isArray(data)) throw new Error('src/data/hebrew.json must be a JSON array')
+  return data.map((item, index) => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      throw new Error(`src/data/hebrew.json[${index}] must be an object`)
+    }
+    const row = item as Record<string, unknown>
+    const learned = requiredString(row, 'learned', index)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(learned)) {
+      throw new Error(`src/data/hebrew.json[${index}].learned must be YYYY-MM-DD`)
+    }
+    const notes = row.notes
+    if (notes != null && (typeof notes !== 'string' || notes.trim() === '')) {
+      throw new Error(`src/data/hebrew.json[${index}].notes must be a non-empty string when present`)
+    }
+    return {
+      word: requiredString(row, 'word', index),
+      translit: requiredString(row, 'translit', index),
+      meaning: requiredString(row, 'meaning', index),
+      example: requiredString(row, 'example', index),
+      exampleEn: requiredString(row, 'exampleEn', index),
+      learned,
+      notes: typeof notes === 'string' ? notes : undefined,
+    }
+  })
+}
+
+function formatLearned(iso: string) {
+  const [year, month, day] = iso.split('-')
+  return `${months[Number(month) - 1]} ${Number(day)}, ${year}`
+}
+
+const entries = load(raw)
+const resumePath = 'github.com/drewstone/drewstone.github.io/blob/main/HEBREW_LEARNING.md'
+---
+
+<Base title="Hebrew" description="Hebrew words.">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;500;700&display=swap"
+  />
+  <h1>Hebrew</h1>
+  <ol class="lexicon">
+    {
+      entries.map((entry) => (
+        <li class="entry">
+          <h2 class="word" lang="he" dir="rtl">
+            {entry.word}
+          </h2>
+          <p class="gloss">
+            <span class="meaning">{entry.meaning}</span>
+            <span class="translit">{entry.translit}</span>
+          </p>
+          <p class="example" lang="he" dir="rtl">
+            {entry.example}
+          </p>
+          <p class="example-en">{entry.exampleEn}</p>
+          <p class="meta">
+            <time datetime={entry.learned}>{formatLearned(entry.learned)}</time>
+            {entry.notes && <span>{entry.notes}</span>}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="resume">
+    Hebrew: resume from <a href={`https://${resumePath}`}>{resumePath}</a>
+  </p>
+</Base>
+
+<style>
+  .lexicon {
+    list-style: none;
+    padding: 0;
+    margin: 0.4rem 0 0;
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-areas:
+      'gloss word'
+      'translation example'
+      'meta meta';
+    column-gap: clamp(1.25rem, 4vw, 2.75rem);
+    row-gap: 0.55rem;
+    align-items: baseline;
+    padding: 1.45rem 0 1.2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .word {
+    grid-area: word;
+    margin: 0;
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'David Libre', serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: clamp(2.7rem, 7vw, 4.15rem);
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .gloss {
+    grid-area: gloss;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.45rem 0.7rem;
+    margin: 0;
+  }
+
+  .meaning {
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+
+  .translit {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+  }
+
+  .example {
+    grid-area: example;
+    margin: 0.15rem 0 0;
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', 'David Libre', serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    line-height: 1.35;
+  }
+
+  .example-en {
+    grid-area: translation;
+    margin: 0.15rem 0 0;
+    color: var(--fg-muted);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .meta {
+    grid-area: meta;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.85rem;
+    margin: 0.45rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.01em;
+    color: var(--fg-faint);
+  }
+
+  .resume {
+    margin: 2.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.5;
+    color: var(--fg-faint);
+  }
+
+  .resume a {
+    color: inherit;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 640px) {
+    .entry {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'word'
+        'gloss'
+        'example'
+        'translation'
+        'meta';
+      row-gap: 0.35rem;
+    }
+
+    .example,
+    .example-en {
+      margin-top: 0.45rem;
+    }
+  }
+</style>
