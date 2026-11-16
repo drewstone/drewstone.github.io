@@ -169,6 +169,7 @@ const first = entries[0]
           ))
         }
       </div>
+      <p class="deck"><a href="/hebrew/hebrew.apkg">Anki deck</a></p>
       <p class="resume">
         Hebrew: resume from <a href={`https://${resumePath}`}>{resumePath}</a>
       </p>
@@ -1201,14 +1202,23 @@ const first = entries[0]
     display: flex;
   }
 
+  .deck,
   .resume {
-    margin: 0.9rem 0 0;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     line-height: 1.5;
     color: var(--fg-faint);
   }
 
+  .deck {
+    margin: 1.15rem 0 0;
+  }
+
+  .resume {
+    margin: 0.35rem 0 0;
+  }
+
+  .deck a,
   .resume a {
     color: inherit;
     overflow-wrap: anywhere;

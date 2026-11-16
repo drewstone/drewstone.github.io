@@ -16,7 +16,7 @@ The page opens in Drive. The choice is saved in the browser (`hebrew-mode`).
 
 - Drive: dark full screen and large type, for a glance from the driver's seat. A Light/Dark control swaps the background (`hebrew-drive-theme`). The header fades after a few seconds and comes back on tap. It advances on its own, about 4.5 seconds each: Hebrew word and transliteration, then the Hebrew sentence, then the English meaning and sentence. Tap the middle to pause. Previous and next sit on the sides. Order prefers words that are due, then words least recently seen. A Nikud control (`hebrew-nikud`, default on) shows or hides vowels in Drive, Review, and List.
 - Review: a flashcard. The front is the Hebrew word, or the English gloss if the direction is flipped. Tap or space reveals the transliteration, meaning, and example. Again, Hard, Good, and Easy are keys 1, 2, 3, and 4. Ratings use a short SM-2 schedule in the browser (`hebrew-srs`, keyed by the Hebrew word). Again is due again in 10 minutes and resets the streak. Hard is due in 1 day the first time, then the interval grows by 1.2, and ease falls. Good is due in 1 day, then 6 days, then the interval times ease. Easy is due in 4 days the first time, then the interval times ease times 1.3, and ease rises. Ease starts at 2.5 and stays at or above 1.3. The page shows how many cards are due today. If none are due, it offers "study anyway".
-- List: every word in one grid. Hebrew is large, transliteration and meaning are small, and the sentence opens on hover or tap. The resume line sits at the bottom of this mode.
+- List: every word in one grid. Hebrew is large, transliteration and meaning are small, and the sentence opens on hover or tap. The resume line sits at the bottom of this mode, with a link to the Anki deck.
 
 Review ratings and which words Drive has already shown stay in the browser. They are not fields in `src/data/hebrew.json`.
 
@@ -68,7 +68,19 @@ Append one object to the array. Field order:
 ## Adding a word
 
 1. Append one object to `src/data/hebrew.json` with the schema above.
-2. Commit and push to `main`.
+2. Commit and push to `main`. The deploy rebuilds the Anki deck. Import `hebrew.apkg` again in Anki. The same GUID updates the existing note.
+
+## Anki deck
+
+`pnpm build` writes the deck from `src/data/hebrew.json` after the site build.
+
+- Package: https://drewstone.github.io/hebrew/hebrew.apkg
+- TSV fallback: https://drewstone.github.io/hebrew/hebrew.tsv
+- Deck name: `Hebrew (Drew)`
+- Deck id: `8123456700001`
+- Model id: `8123456700002`
+
+The note GUID is a deterministic hash of the unpointed `word`. Re-importing the package updates those notes instead of adding duplicates. Each note has two cards, Hebrew to English and English to Hebrew, with vowels shown. The note is tagged with its `learned` date. Fields: Hebrew, HebrewNiqqud, Transliteration, English, Example, ExampleNiqqud, ExampleEnglish, Notes, DateLearned.
 
 Shorthand Drew may use:
 

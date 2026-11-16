@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.22.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "node tools/research-records.mjs check && astro build",
+    "build": "node tools/research-records.mjs check && astro build && node tools/hebrew-anki.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "blog": "node tools/blog-loop.mjs",
