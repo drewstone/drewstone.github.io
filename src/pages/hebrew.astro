@@ -2,6 +2,34 @@
 import Base from '../layouts/Base.astro'
 import raw from '../data/hebrew.json'
 
+interface Sentence {
+  tense: 'past' | 'present' | 'future'
+  he: string
+  heNiqqud?: string
+  translit: string
+  en: string
+  source?: string
+}
+
+interface VerbForm {
+  person: string
+  tense: string
+  he: string
+  heNiqqud?: string
+  translit: string
+  en: string
+}
+
+interface Verb {
+  infinitive: string
+  infinitiveNiqqud?: string
+  translit: string
+  meaning: string
+  grammar?: string
+  source?: string
+  forms: VerbForm[]
+}
+
 interface Entry {
   word: string
   hebrewNiqqud?: string
@@ -12,6 +40,9 @@ interface Entry {
   exampleEn: string
   learned: string
   notes?: string
+  grammar?: string
+  forms?: { gender?: string; plural?: string; pluralNiqqud?: string }
+  sentences?: Sentence[]
 }
 
 function requiredString(row: Record<string, unknown>, key: string, index: number) {
@@ -31,9 +62,27 @@ function optionalString(row: Record<string, unknown>, key: string, index: number
   return value
 }
 
-function load(data: unknown): Entry[] {
-  if (!Array.isArray(data)) throw new Error('src/data/hebrew.json must be a JSON array')
-  return data.map((item, index) => {
+function loadSentence(row: Record<string, unknown>, index: number, n: number): Sentence {
+  const tense = row.tense
+  if (tense !== 'past' && tense !== 'present' && tense !== 'future') {
+    throw new Error(`src/data/hebrew.json[${index}].sentences[${n}].tense must be past, present, or future`)
+  }
+  return {
+    tense,
+    he: requiredString(row, 'he', index),
+    heNiqqud: optionalString(row, 'heNiqqud', index),
+    translit: requiredString(row, 'translit', index),
+    en: requiredString(row, 'en', index),
+    source: optionalString(row, 'source', index),
+  }
+}
+
+function load(data: unknown): { entries: Entry[]; verbs: Verb[] } {
+  const record = data && typeof data === 'object' && !Array.isArray(data) ? (data as Record<string, unknown>) : null
+  const list = Array.isArray(data) ? data : record?.entries
+  const verbList = record && Array.isArray(record.verbs) ? record.verbs : []
+  if (!Array.isArray(list)) throw new Error('src/data/hebrew.json must be an array or { entries, verbs }')
+  const entries = list.map((item, index) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
       throw new Error(`src/data/hebrew.json[${index}] must be an object`)
     }
@@ -46,6 +95,17 @@ function load(data: unknown): Entry[] {
     if (notes != null && (typeof notes !== 'string' || notes.trim() === '')) {
       throw new Error(`src/data/hebrew.json[${index}].notes must be a non-empty string when present`)
     }
+    const sentences = Array.isArray(row.sentences)
+      ? row.sentences.map((sentence, n) => {
+          if (!sentence || typeof sentence !== 'object' || Array.isArray(sentence)) {
+            throw new Error(`src/data/hebrew.json[${index}].sentences[${n}] must be an object`)
+          }
+          return loadSentence(sentence as Record<string, unknown>, index, n)
+        })
+      : undefined
+    const forms = row.forms && typeof row.forms === 'object' && !Array.isArray(row.forms)
+      ? (row.forms as Entry['forms'])
+      : undefined
     return {
       word: requiredString(row, 'word', index),
       hebrewNiqqud: optionalString(row, 'hebrewNiqqud', index),
@@ -56,12 +116,35 @@ function load(data: unknown): Entry[] {
       exampleEn: requiredString(row, 'exampleEn', index),
       learned,
       notes: typeof notes === 'string' ? notes : undefined,
+      grammar: optionalString(row, 'grammar', index),
+      forms,
+      sentences,
     }
   })
+  const verbs = verbList.map((item, index) => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      throw new Error(`src/data/hebrew.json verbs[${index}] must be an object`)
+    }
+    const row = item as Record<string, unknown>
+    const forms = Array.isArray(row.forms) ? (row.forms as VerbForm[]) : []
+    return {
+      infinitive: requiredString(row, 'infinitive', index),
+      infinitiveNiqqud: optionalString(row, 'infinitiveNiqqud', index),
+      translit: requiredString(row, 'translit', index),
+      meaning: requiredString(row, 'meaning', index),
+      grammar: optionalString(row, 'grammar', index),
+      source: optionalString(row, 'source', index),
+      forms,
+    }
+  })
+  return { entries, verbs }
 }
 
-const entries = load(raw)
-const entriesJson = JSON.stringify(entries).replaceAll('<', '\\u003c')
+const catalog = load(raw)
+const entries = catalog.entries
+const verbs = catalog.verbs
+const tenseName: Record<string, string> = { past: 'עָבָר', present: 'הֹוֶה', future: 'עָתִיד' }
+const entriesJson = JSON.stringify({ entries, verbs }).replaceAll('<', '\\u003c')
 const resumePath = 'github.com/drewstone/drewstone.github.io/blob/main/HEBREW_LEARNING.md'
 const first = entries[0]
 ---
@@ -94,6 +177,7 @@ const first = entries[0]
         <button type="button" role="tab" data-mode="list" aria-selected="false">List</button>
       </div>
       <div class="tools">
+        <button type="button" id="sentences-toggle" class="tool" aria-pressed="true">Sentences</button>
         <button type="button" id="nikud-toggle" class="tool" aria-pressed="true">Nikud</button>
         <button type="button" id="drive-theme" class="tool theme-toggle" aria-pressed="true">Dark</button>
       </div>
@@ -164,11 +248,48 @@ const first = entries[0]
                   {entry.exampleNiqqud || entry.example}
                 </span>
                 <span class="en">{entry.exampleEn}</span>
+                {entry.grammar && <span class="grammar">{entry.grammar}</span>}
+                {entry.forms?.pluralNiqqud && (
+                  <span class="plural" lang="he" dir="rtl">
+                    {entry.forms.pluralNiqqud}
+                  </span>
+                )}
+                {entry.sentences?.map((sentence) => (
+                  <span class="tense-line">
+                    <span class="tense">{tenseName[sentence.tense]} {sentence.tense}</span>
+                    <span class="tense-he" lang="he" dir="rtl" data-plain={sentence.he} data-pointed={sentence.heNiqqud || sentence.he}>
+                      {sentence.heNiqqud || sentence.he}
+                    </span>
+                    <span class="en">{sentence.en}</span>
+                  </span>
+                ))}
               </span>
             </button>
           ))
         }
       </div>
+      {verbs.length > 0 && (
+        <div class="verbs">
+          {verbs.map((verb) => (
+            <section>
+              <h2 lang="he" dir="rtl">{verb.infinitiveNiqqud || verb.infinitive}</h2>
+              <p class="verb-meaning">{verb.meaning}</p>
+              <table class="verb-table">
+                <tbody>
+                  {verb.forms.map((form) => (
+                    <tr>
+                      <td class="tense">{tenseName[form.tense] || form.tense}</td>
+                      <td>{form.person}</td>
+                      <td lang="he" dir="rtl">{form.heNiqqud || form.he}</td>
+                      <td>{form.en}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          ))}
+        </div>
+      )}
       <p class="deck"><a href="/hebrew/hebrew.apkg">Anki deck</a></p>
       <p class="resume">
         Hebrew: resume from <a href={`https://${resumePath}`}>{resumePath}</a>
@@ -186,9 +307,12 @@ const first = entries[0]
       var THEME_KEY = 'hebrew-drive-theme'
       var FRONT_KEY = 'hebrew-front'
       var NIKUD_KEY = 'hebrew-nikud'
+      var SENTENCE_KEY = 'hebrew-sentences'
       var CHROME_MS = 3800
 
-      var entries = JSON.parse(document.getElementById('hebrew-entries').textContent || '[]')
+      var catalog = JSON.parse(document.getElementById('hebrew-entries').textContent || '[]')
+      var entries = Array.isArray(catalog) ? catalog : catalog.entries || []
+      var verbs = Array.isArray(catalog) ? [] : catalog.verbs || []
       var stage = document.getElementById('drive-stage')
       var dots = document.getElementById('drive-dots')
       var fill = document.getElementById('phase-fill')
@@ -206,9 +330,11 @@ const first = entries[0]
       var srs = loadSrs()
       var frontDir = 'he'
       var nikudOn = true
+      var sentencesOn = true
       try {
         if (localStorage.getItem(FRONT_KEY) === 'en') frontDir = 'en'
         if (localStorage.getItem(NIKUD_KEY) === 'off') nikudOn = false
+        if (localStorage.getItem(SENTENCE_KEY) === 'off') sentencesOn = false
       } catch (e) {}
 
       var driveOrder = entries.slice()
@@ -235,6 +361,43 @@ const first = entries[0]
 
       function hebExample(entry) {
         return nikudOn && entry.exampleNiqqud ? entry.exampleNiqqud : entry.example
+      }
+
+      var TENSE_LABEL = { past: 'עָבָר  past', present: 'הֹוֶה  present', future: 'עָתִיד  future' }
+      var VERB_FORMS = ['נסעתי', 'נסענו', 'נוסעים', 'נוסע', 'אסע', 'ניסע', 'הייתה', 'היינו', 'הייתי', 'יהיה', 'תהיה', 'נהיה', 'היה', 'יש']
+
+      function sentenceText(sentence) {
+        return nikudOn && sentence.heNiqqud ? sentence.heNiqqud : sentence.he
+      }
+
+      function useSentences(entry) {
+        return sentencesOn && entry.sentences && entry.sentences.length
+      }
+
+      function phaseCount(entry) {
+        return useSentences(entry) ? 1 + entry.sentences.length : 3
+      }
+
+      function clozeLine(sentence, word) {
+        var pointed = (sentence.heNiqqud || sentence.he).split(' ')
+        var plain = sentence.he.split(' ')
+        var target = -1
+        for (var i = 0; i < plain.length; i++) {
+          if (VERB_FORMS.indexOf(plain[i]) >= 0) {
+            target = i
+            break
+          }
+        }
+        if (target < 0) {
+          for (var k = 0; k < plain.length; k++) {
+            if (plain[k] === word || plain[k].slice(-word.length) === word) {
+              target = k
+              break
+            }
+          }
+        }
+        if (target < 0) target = 0
+        return pointed.map(function (part, i) { return i === target ? '___' : part }).join(' ')
       }
 
       function loadSrs() {
@@ -264,9 +427,21 @@ const first = entries[0]
         return card.due <= endOfToday(now)
       }
 
+      function studyItems() {
+        var items = []
+        entries.forEach(function (entry) {
+          items.push({ kind: 'word', key: entry.word, entry: entry })
+          ;(entry.sentences || []).forEach(function (sentence) {
+            items.push({ kind: 'sentence', key: 'sent:' + sentence.he, entry: entry, sentence: sentence })
+            items.push({ kind: 'cloze', key: 'cloze:' + sentence.he, entry: entry, sentence: sentence })
+          })
+        })
+        return items
+      }
+
       function dueEntries(now) {
-        return entries.filter(function (entry) {
-          return isDue(srs[entry.word], now)
+        return studyItems().filter(function (item) {
+          return isDue(srs[item.key], now)
         })
       }
 
@@ -376,6 +551,13 @@ const first = entries[0]
             el('p', 'drive-word', hebWord(entry), { lang: 'he', dir: 'rtl' }),
             el('p', 'drive-trans', entry.translit, { dir: 'ltr' }),
           )
+        } else if (useSentences(entry)) {
+          var sentence = entry.sentences[phase - 1]
+          stage.append(
+            el('p', 'tense-tag', TENSE_LABEL[sentence.tense] || sentence.tense),
+            el('p', 'drive-example', sentenceText(sentence), { lang: 'he', dir: 'rtl' }),
+            el('p', 'drive-en', sentence.en, { dir: 'ltr' }),
+          )
         } else if (phase === 1) {
           stage.append(el('p', 'drive-example', hebExample(entry), { lang: 'he', dir: 'rtl' }))
         } else {
@@ -455,7 +637,8 @@ const first = entries[0]
 
       function advance() {
         if (!driveOrder.length) return
-        if (phase < 2) phase += 1
+        var entry = driveOrder[index]
+        if (phase < phaseCount(entry) - 1) phase += 1
         else {
           phase = 0
           index = (index + 1) % driveOrder.length
@@ -515,30 +698,49 @@ const first = entries[0]
         paintDue()
       }
 
+      function itemKey(item) {
+        return item.key || item.word
+      }
+
       function showCard() {
-        var entry = queue[0]
-        if (!entry) {
+        var item = queue[0]
+        if (!item) {
           anyway = false
           showEmpty()
           return
         }
+        var entry = item.entry || item
+        var kind = item.kind || 'word'
         reviewEmpty.hidden = true
         reviewCard.hidden = false
         rates.hidden = !revealed
         reviewCard.setAttribute('aria-expanded', revealed ? 'true' : 'false')
         reviewCard.replaceChildren()
-        if (frontDir === 'en') {
+        if (kind === 'sentence') {
+          reviewCard.append(el('span', 'tense-tag', TENSE_LABEL[item.sentence.tense] || item.sentence.tense))
+          reviewCard.append(el('span', 'review-he', sentenceText(item.sentence), { lang: 'he', dir: 'rtl' }))
+        } else if (kind === 'cloze') {
+          reviewCard.append(el('span', 'tense-tag', (TENSE_LABEL[item.sentence.tense] || item.sentence.tense)))
+          reviewCard.append(el('span', 'review-he', clozeLine(item.sentence, entry.word), { lang: 'he', dir: 'rtl' }))
+        } else if (frontDir === 'en') {
           reviewCard.append(el('span', 'review-front-en', entry.meaning, { dir: 'ltr' }))
         } else {
           reviewCard.append(el('span', 'review-he', hebWord(entry), { lang: 'he', dir: 'rtl' }))
         }
         if (!revealed) return
         var back = el('span', 'review-back')
-        if (frontDir === 'en') back.append(el('span', 'review-he answer', hebWord(entry), { lang: 'he', dir: 'rtl' }))
-        back.append(el('span', 'review-trans', entry.translit, { dir: 'ltr' }))
-        if (frontDir !== 'en') back.append(el('span', 'review-meaning', entry.meaning, { dir: 'ltr' }))
-        back.append(el('span', 'review-ex', hebExample(entry), { lang: 'he', dir: 'rtl' }))
-        back.append(el('span', 'review-ex-en', entry.exampleEn, { dir: 'ltr' }))
+        if (kind === 'sentence' || kind === 'cloze') {
+          if (kind === 'cloze') back.append(el('span', 'review-he answer', sentenceText(item.sentence), { lang: 'he', dir: 'rtl' }))
+          back.append(el('span', 'review-trans', item.sentence.translit, { dir: 'ltr' }))
+          back.append(el('span', 'review-ex-en', item.sentence.en, { dir: 'ltr' }))
+        } else {
+          if (frontDir === 'en') back.append(el('span', 'review-he answer', hebWord(entry), { lang: 'he', dir: 'rtl' }))
+          back.append(el('span', 'review-trans', entry.translit, { dir: 'ltr' }))
+          if (frontDir !== 'en') back.append(el('span', 'review-meaning', entry.meaning, { dir: 'ltr' }))
+          back.append(el('span', 'review-ex', hebExample(entry), { lang: 'he', dir: 'rtl' }))
+          back.append(el('span', 'review-ex-en', entry.exampleEn, { dir: 'ltr' }))
+          if (entry.grammar) back.append(el('span', 'review-ex-en', entry.grammar, { dir: 'ltr' }))
+        }
         reviewCard.append(back)
       }
 
@@ -556,10 +758,10 @@ const first = entries[0]
           return
         }
         queue = due.slice().sort(function (a, b) {
-          var da = (srs[a.word] && srs[a.word].due) || 0
-          var db = (srs[b.word] && srs[b.word].due) || 0
-          var sa = (srs[a.word] && srs[a.word].seen) || 0
-          var sb = (srs[b.word] && srs[b.word].seen) || 0
+          var da = (srs[itemKey(a)] && srs[itemKey(a)].due) || 0
+          var db = (srs[itemKey(b)] && srs[itemKey(b)].due) || 0
+          var sa = (srs[itemKey(a)] && srs[itemKey(a)].seen) || 0
+          var sb = (srs[itemKey(b)] && srs[itemKey(b)].seen) || 0
           return da - db || sa - sb
         })
         showCard()
@@ -569,11 +771,11 @@ const first = entries[0]
         srs = loadSrs()
         anyway = true
         revealed = false
-        queue = entries.slice().sort(function (a, b) {
-          var da = (srs[a.word] && srs[a.word].due) || 0
-          var db = (srs[b.word] && srs[b.word].due) || 0
-          var sa = (srs[a.word] && srs[a.word].seen) || 0
-          var sb = (srs[b.word] && srs[b.word].seen) || 0
+        queue = studyItems().sort(function (a, b) {
+          var da = (srs[itemKey(a)] && srs[itemKey(a)].due) || 0
+          var db = (srs[itemKey(b)] && srs[itemKey(b)].due) || 0
+          var sa = (srs[itemKey(a)] && srs[itemKey(a)].seen) || 0
+          var sb = (srs[itemKey(b)] && srs[itemKey(b)].seen) || 0
           return da - db || sa - sb
         })
         showCard()
@@ -589,7 +791,8 @@ const first = entries[0]
         if (!revealed || !queue.length) return
         var entry = queue.shift()
         var now = Date.now()
-        srs[entry.word] = schedule(srs[entry.word], grade, now)
+        var key = itemKey(entry)
+        srs[key] = schedule(srs[key], grade, now)
         saveSrs()
         if (grade === 'again') queue.splice(Math.min(queue.length, 2), 0, entry)
         revealed = false
@@ -615,9 +818,12 @@ const first = entries[0]
           var entry = entries[i]
           if (!entry) return
           var word = card.querySelector('.list-word')
-          var example = card.querySelector('.list-sentence .he')
+          var example = card.querySelector('.list-sentence > .he')
           if (word) word.textContent = hebWord(entry)
           if (example) example.textContent = hebExample(entry)
+          Array.prototype.forEach.call(card.querySelectorAll('.tense-he'), function (node) {
+            node.textContent = nikudOn ? node.dataset.pointed : node.dataset.plain
+          })
         })
       }
 
@@ -697,6 +903,21 @@ const first = entries[0]
         paintTheme()
         armChrome()
       })
+
+      var sentenceBtn = document.getElementById('sentences-toggle')
+      function paintSentences() {
+        sentenceBtn.setAttribute('aria-pressed', sentencesOn ? 'true' : 'false')
+        sentenceBtn.setAttribute('aria-label', sentencesOn ? 'Sentences on' : 'Sentences off')
+      }
+      sentenceBtn.addEventListener('click', function () {
+        sentencesOn = !sentencesOn
+        try { localStorage.setItem(SENTENCE_KEY, sentencesOn ? 'on' : 'off') } catch (e) {}
+        paintSentences()
+        phase = 0
+        if (document.documentElement.dataset.hebrewMode === 'drive' && driveLive) present(false)
+        armChrome()
+      })
+      paintSentences()
 
       nikudBtn.addEventListener('click', function () {
         nikudOn = !nikudOn
@@ -1181,8 +1402,59 @@ const first = entries[0]
     color: var(--fg);
   }
 
-  .list-sentence .en {
+  .list-sentence .en,
+  .grammar {
     color: var(--fg-muted);
+  }
+
+  .tense-line,
+  .grammar,
+  .plural {
+    display: block;
+    margin-top: 0.35rem;
+  }
+
+  .tense-line .tense,
+  .verb-table .tense {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-faint);
+  }
+
+  .tense-he,
+  .plural,
+  .verb-table td[lang='he'] {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    line-height: 1.45;
+  }
+
+  .verbs {
+    margin-top: 2rem;
+  }
+
+  .verbs h2 {
+    font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
+    font-weight: 500;
+    font-size: 1.6rem;
+    margin: 1.2rem 0 0.2rem;
+  }
+
+  .verb-meaning {
+    color: var(--fg-muted);
+    margin: 0 0 0.4rem;
+  }
+
+  .verb-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .verb-table td {
+    border-bottom: 1px solid var(--border);
+    padding: 0.32rem 0.45rem 0.32rem 0;
+    vertical-align: baseline;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -1353,6 +1625,19 @@ const first = entries[0]
   .drive-en {
     font-size: clamp(1.7rem, 4vw, 2.9rem);
     line-height: 1.25;
+    color: var(--drive-dim);
+  }
+
+  .tense-tag {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+  }
+
+  html[data-hebrew-mode='drive'] .tense-tag {
+    font-size: clamp(1rem, 2.2vw, 1.35rem);
     color: var(--drive-dim);
   }
 

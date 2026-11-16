@@ -9,6 +9,8 @@ import { crc32 } from 'node:zlib'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DECK_ID = 8123456700001
 const MODEL_ID = 8123456700002
+const SENTENCE_MODEL_ID = 8123456700003
+const CLOZE_MODEL_ID = 8123456700004
 const DECK_NAME = 'Hebrew (Drew)'
 const SEP = '\x1f'
 
@@ -75,10 +77,25 @@ function html(value) {
     .replaceAll('\n', '<br>')
 }
 
+const VERB_FORMS = ['נסעתי', 'נסענו', 'נוסעים', 'נוסע', 'אסע', 'ניסע', 'הייתה', 'היינו', 'הייתי', 'יהיה', 'תהיה', 'נהיה', 'היה', 'יש']
+
+function clozeText(sentence, word) {
+  const pointed = (sentence.heNiqqud || sentence.he).split(' ')
+  const plain = sentence.he.split(' ')
+  let target = plain.findIndex((part) => VERB_FORMS.includes(part))
+  if (target < 0) target = plain.findIndex((part) => part === word || part.endsWith(word))
+  if (target < 0) target = 0
+  return pointed.map((part, i) => (i === target ? `{{c1::${part}}}` : part)).join(' ')
+}
+
 function loadEntries() {
-  const entries = JSON.parse(readFileSync(join(root, 'src/data/hebrew.json'), 'utf8'))
-  if (!Array.isArray(entries) || entries.length === 0) throw new Error('hebrew.json must be a non-empty array')
-  return entries.map((entry, index) => {
+  const raw = JSON.parse(readFileSync(join(root, 'src/data/hebrew.json'), 'utf8'))
+  const entries = Array.isArray(raw) ? raw : raw.entries
+  const verbs = Array.isArray(raw) ? [] : raw.verbs || []
+  if (!Array.isArray(entries) || entries.length === 0) throw new Error('hebrew.json needs entries')
+  return {
+    verbs,
+    entries: entries.map((entry, index) => {
     for (const key of ['word', 'translit', 'meaning', 'example', 'exampleEn', 'learned']) {
       if (typeof entry[key] !== 'string' || entry[key].trim() === '') {
         throw new Error(`hebrew.json[${index}].${key} is required`)
@@ -94,8 +111,10 @@ function loadEntries() {
       exampleEn: entry.exampleEn,
       notes: entry.notes || '',
       learned: entry.learned,
+      sentences: Array.isArray(entry.sentences) ? entry.sentences : [],
     }
-  })
+    }),
+  }
 }
 
 function model(mod) {
@@ -155,6 +174,77 @@ function model(mod) {
   }
 }
 
+function simpleModel(id, name, fields, templates, mod, type = 0) {
+  return {
+    css: CSS,
+    did: DECK_ID,
+    flds: fields.map((fieldName, ord) => ({
+      name: fieldName,
+      ord,
+      sticky: false,
+      rtl: fieldName.startsWith('Hebrew') || fieldName === 'Text',
+      font: 'Noto Serif Hebrew',
+      size: 24,
+      media: [],
+    })),
+    id,
+    latexPost: '\\end{document}',
+    latexPre: '\\documentclass[12pt]{article}\\begin{document}',
+    latexsvg: false,
+    mod,
+    name,
+    req: type === 1 ? [[0, 'any', [0]]] : [[0, 'any', [0, 1]]],
+    sortf: 0,
+    tags: [],
+    tmpls: templates,
+    type,
+    usn: -1,
+    vers: [],
+  }
+}
+
+function sentenceModel(mod) {
+  const he = '{{#HebrewNiqqud}}{{HebrewNiqqud}}{{/HebrewNiqqud}}{{^HebrewNiqqud}}{{Hebrew}}{{/HebrewNiqqud}}'
+  return simpleModel(
+    SENTENCE_MODEL_ID,
+    'Hebrew Sentence',
+    ['Hebrew', 'HebrewNiqqud', 'Translit', 'English', 'Tense', 'Word'],
+    [{
+      name: 'Hebrew to English',
+      ord: 0,
+      qfmt: `<div class="tense">{{Tense}}</div><div class="he">${he}</div>`,
+      afmt: '{{FrontSide}}\n<hr id="answer">\n<div class="en">{{English}}</div>\n<div class="tr">{{Translit}}</div>',
+      bqfmt: '',
+      bafmt: '',
+      did: null,
+      bfont: '',
+      bsize: 0,
+    }],
+    mod,
+  )
+}
+
+function clozeModel(mod) {
+  return simpleModel(
+    CLOZE_MODEL_ID,
+    'Hebrew Cloze',
+    ['Text', 'Extra'],
+    [{
+      name: 'Cloze',
+      ord: 0,
+      qfmt: '<div class="he">{{cloze:Text}}</div>',
+      afmt: '<div class="he">{{cloze:Text}}</div><hr id="answer"><div class="en">{{Extra}}</div>',
+      bqfmt: '',
+      bafmt: '',
+      did: null,
+      bfont: '',
+      bsize: 0,
+    }],
+    mod,
+    1,
+  )
+}
+
 function collectionConf(count) {
   return {
     activeDecks: [DECK_ID],
@@ -211,7 +301,7 @@ function dconf() {
   }
 }
 
-function buildDatabase(entries, mod) {
+function buildDatabase(entries, verbs, mod) {
   const dir = join(tmpdir(), `hebrew-anki-${process.pid}`)
   mkdirSync(dir, { recursive: true })
   const dbPath = join(dir, 'collection.anki2')
@@ -290,7 +380,11 @@ function buildDatabase(entries, mod) {
     CREATE INDEX ix_revlog_cid on revlog (cid);
     CREATE INDEX ix_notes_csum on notes (csum);
   `)
-  const models = { [String(MODEL_ID)]: model(mod) }
+  const models = {
+    [String(MODEL_ID)]: model(mod),
+    [String(SENTENCE_MODEL_ID)]: sentenceModel(mod),
+    [String(CLOZE_MODEL_ID)]: clozeModel(mod),
+  }
   const decks = {
     1: deck(1, 'Default', mod),
     [String(DECK_ID)]: deck(DECK_ID, DECK_NAME, mod),
@@ -342,8 +436,65 @@ function buildDatabase(entries, mod) {
     }
     guids.push(guid)
   })
+  const sentenceNotes = []
+  for (const entry of entries) {
+    for (const sentence of entry.sentences || []) {
+      sentenceNotes.push({ ...sentence, word: entry.word, learned: entry.learned })
+    }
+  }
+  for (const verb of verbs) {
+    sentenceNotes.push({
+      he: verb.infinitive,
+      heNiqqud: verb.infinitiveNiqqud || verb.infinitive,
+      translit: verb.translit,
+      en: verb.meaning,
+      tense: 'infinitive',
+      word: verb.infinitive,
+      learned: '',
+    })
+    for (const form of verb.forms || []) {
+      sentenceNotes.push({
+        he: form.he,
+        heNiqqud: form.heNiqqud || form.he,
+        translit: form.translit,
+        en: form.en,
+        tense: form.tense,
+        word: verb.infinitive,
+        learned: '',
+      })
+    }
+  }
+  let due = entries.length * 2
+  for (const sentence of sentenceNotes) {
+    const guid = guidFor(sentence.he)
+    const nid = stableId(`sentence:${sentence.he}`)
+    if (seen.has(guid) || seen.has(nid)) throw new Error(`sentence id collision for ${sentence.he}`)
+    seen.add(guid)
+    seen.add(nid)
+    const values = [sentence.he, sentence.heNiqqud || '', sentence.translit || '', sentence.en, sentence.tense, sentence.word].map(html)
+    const tag = sentence.learned ? ` ${sentence.learned} ${sentence.tense} ` : ` ${sentence.tense} `
+    insertNote.run(nid, guid, SENTENCE_MODEL_ID, mod, -1, tag, values.join(SEP), values[0], checksum(values[0]), 0, '')
+    const cid = stableId(`sentence-card:${sentence.he}`)
+    seen.add(cid)
+    insertCard.run(cid, nid, DECK_ID, 0, mod, -1, 0, 0, ++due, 0, 0, 0, 0, 0, 0, 0, 0, '')
+    guids.push(guid)
+    if (sentence.tense === 'infinitive') continue
+    const clozeGuid = guidFor(`cloze:${sentence.he}`)
+    const clozeId = stableId(`cloze:${sentence.he}`)
+    if (seen.has(clozeGuid) || seen.has(clozeId)) throw new Error(`cloze id collision for ${sentence.he}`)
+    seen.add(clozeGuid)
+    seen.add(clozeId)
+    const text = clozeText(sentence, sentence.word)
+    const extra = html(`${sentence.en} (${sentence.tense})`)
+    insertNote.run(clozeId, clozeGuid, CLOZE_MODEL_ID, mod, -1, tag, [text, extra].join(SEP), text, checksum(text), 0, '')
+    const clozeCard = stableId(`cloze-card:${sentence.he}`)
+    seen.add(clozeCard)
+    insertCard.run(clozeCard, clozeId, DECK_ID, 0, mod, -1, 0, 0, ++due, 0, 0, 0, 0, 0, 0, 0, 0, '')
+    guids.push(clozeGuid)
+  }
   const count = db.prepare('SELECT count(*) AS n FROM notes').get().n
-  if (count !== entries.length) throw new Error(`expected ${entries.length} notes, wrote ${count}`)
+  const wordCount = db.prepare('SELECT count(*) AS n FROM notes WHERE mid = ?').get(MODEL_ID).n
+  if (wordCount !== entries.length) throw new Error(`expected ${entries.length} word notes, wrote ${wordCount}`)
   db.close()
   const bytes = readFileSync(dbPath)
   rmSync(dir, { recursive: true, force: true })
@@ -437,9 +588,10 @@ function buildTsv(entries) {
   return `${header.concat(rows).join('\n')}\n`
 }
 
-const entries = loadEntries()
+const catalog = loadEntries()
+const entries = catalog.entries
 const mod = Math.floor(Date.now() / 1000)
-const { bytes, guids } = buildDatabase(entries, mod)
+const { bytes, guids } = buildDatabase(entries, catalog.verbs, mod)
 const apkg = zipStore([
   { name: 'collection.anki2', data: bytes },
   { name: 'media', data: Buffer.from('{}') },
@@ -448,4 +600,5 @@ const outDir = join(root, 'dist/hebrew')
 mkdirSync(outDir, { recursive: true })
 writeFileSync(join(outDir, 'hebrew.apkg'), apkg)
 writeFileSync(join(outDir, 'hebrew.tsv'), buildTsv(entries))
-console.log(`hebrew deck: ${entries.length} notes, ${guids.length} guids -> dist/hebrew/hebrew.apkg`)
+const sentences = entries.reduce((sum, entry) => sum + (entry.sentences?.length || 0), 0)
+console.log(`hebrew deck: ${entries.length} words, ${sentences} sentences, ${guids.length} notes -> dist/hebrew/hebrew.apkg`)

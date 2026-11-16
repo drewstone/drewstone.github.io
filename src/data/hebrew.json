@@ -1,55 +1,458 @@
-[
-  {
-    "word": "כביש",
-    "hebrewNiqqud": "כְּבִישׁ",
-    "translit": "k'vish",
-    "meaning": "highway",
-    "example": "אנחנו על הכביש",
-    "exampleNiqqud": "אֲנַחְנוּ עַל הַכְּבִישׁ",
-    "exampleEn": "we are on the highway",
-    "learned": "2026-11-16"
-  },
-  {
-    "word": "מכונית",
-    "hebrewNiqqud": "מְכוֹנִית",
-    "translit": "mekhonit",
-    "meaning": "car",
-    "example": "המכונית על הכביש",
-    "exampleNiqqud": "הַמְּכוֹנִית עַל הַכְּבִישׁ",
-    "exampleEn": "the car is on the highway",
-    "learned": "2026-11-16",
-    "notes": "Added example."
-  },
-  {
-    "word": "גם",
-    "hebrewNiqqud": "גַּם",
-    "translit": "gam",
-    "meaning": "also",
-    "example": "גם אנחנו בפקק",
-    "exampleNiqqud": "גַּם אֲנַחְנוּ בִּפְקָק",
-    "exampleEn": "we're also in a traffic jam",
-    "learned": "2026-11-16",
-    "notes": "Added example."
-  },
-  {
-    "word": "תנועה",
-    "hebrewNiqqud": "תְּנוּעָה",
-    "translit": "tnu'a",
-    "meaning": "traffic",
-    "example": "תנועה בכביש",
-    "exampleNiqqud": "תְּנוּעָה בַּכְּבִישׁ",
-    "exampleEn": "traffic on the highway",
-    "learned": "2026-11-16"
-  },
-  {
-    "word": "פקק",
-    "hebrewNiqqud": "פְּקָק",
-    "translit": "pakak",
-    "meaning": "traffic jam",
-    "example": "יש פקק בכביש",
-    "exampleNiqqud": "יֵשׁ פְּקָק בַּכְּבִישׁ",
-    "exampleEn": "there is a traffic jam on the highway",
-    "learned": "2026-11-16",
-    "notes": "standard: pkak"
-  }
-]
+{
+  "verbs": [
+    {
+      "infinitive": "לנסוע",
+      "infinitiveNiqqud": "לִנְסֹע",
+      "translit": "linso'a",
+      "meaning": "to drive, to travel",
+      "grammar": "Pa'al, root נ-ס-ע. The future drops the nun: אֶסַּע, נִסַּע.",
+      "source": "assistant-added",
+      "forms": [
+        {
+          "person": "I",
+          "tense": "past",
+          "he": "נסעתי",
+          "heNiqqud": "נָסַעְתִּי",
+          "translit": "nasati",
+          "en": "I drove."
+        },
+        {
+          "person": "we",
+          "tense": "past",
+          "he": "נסענו",
+          "heNiqqud": "נָסַעְנוּ",
+          "translit": "nasanu",
+          "en": "We drove."
+        },
+        {
+          "person": "I",
+          "tense": "present",
+          "he": "אני נוסע",
+          "heNiqqud": "אֲנִי נוֹסֵע",
+          "translit": "ani nose'a",
+          "en": "I am driving."
+        },
+        {
+          "person": "we",
+          "tense": "present",
+          "he": "אנחנו נוסעים",
+          "heNiqqud": "אֲנַחְנוּ נוֹסְעִים",
+          "translit": "anahnu nos'im",
+          "en": "We are driving."
+        },
+        {
+          "person": "I",
+          "tense": "future",
+          "he": "אסע",
+          "heNiqqud": "אֶסַּע",
+          "translit": "esa",
+          "en": "I will drive."
+        },
+        {
+          "person": "we",
+          "tense": "future",
+          "he": "ניסע",
+          "heNiqqud": "נִסַּע",
+          "translit": "nisa",
+          "en": "We will drive."
+        }
+      ]
+    },
+    {
+      "infinitive": "להיות",
+      "infinitiveNiqqud": "לִהְיוֹת",
+      "translit": "lihyot",
+      "meaning": "to be",
+      "grammar": "Existence. Masculine היה / יהיה. Feminine הייתה / תהיה. Present יש does not change.",
+      "source": "assistant-added",
+      "forms": [
+        {
+          "person": "it (m)",
+          "tense": "past",
+          "he": "היה",
+          "heNiqqud": "הָיָה",
+          "translit": "haya",
+          "en": "There was (masculine)."
+        },
+        {
+          "person": "it (f)",
+          "tense": "past",
+          "he": "הייתה",
+          "heNiqqud": "הָיְתָה",
+          "translit": "hayta",
+          "en": "There was (feminine)."
+        },
+        {
+          "person": "we",
+          "tense": "past",
+          "he": "היינו",
+          "heNiqqud": "הָיִינוּ",
+          "translit": "hayinu",
+          "en": "We were."
+        },
+        {
+          "person": "it",
+          "tense": "present",
+          "he": "יש",
+          "heNiqqud": "יֵשׁ",
+          "translit": "yesh",
+          "en": "There is."
+        },
+        {
+          "person": "it (m)",
+          "tense": "future",
+          "he": "יהיה",
+          "heNiqqud": "יִהְיֵה",
+          "translit": "yihye",
+          "en": "There will be (masculine)."
+        },
+        {
+          "person": "it (f)",
+          "tense": "future",
+          "he": "תהיה",
+          "heNiqqud": "תִּהְיֵה",
+          "translit": "tihye",
+          "en": "There will be (feminine)."
+        },
+        {
+          "person": "we",
+          "tense": "future",
+          "he": "נהיה",
+          "heNiqqud": "נִהְיֵה",
+          "translit": "nihye",
+          "en": "We will be."
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "word": "כביש",
+      "hebrewNiqqud": "כְּבִישׁ",
+      "translit": "k'vish",
+      "meaning": "highway",
+      "example": "אנחנו על הכביש",
+      "exampleNiqqud": "אֲנַחְנוּ עַל הַכְּבִישׁ",
+      "exampleEn": "we are on the highway",
+      "learned": "2026-11-16",
+      "grammar": "Masculine noun.",
+      "forms": {
+        "gender": "m",
+        "plural": "כבישים",
+        "pluralNiqqud": "כְּבִישִׁים"
+      },
+      "sentences": [
+        {
+          "tense": "past",
+          "he": "נסעתי בכביש",
+          "heNiqqud": "נָסַעְתִּי בַּכְּבִישׁ",
+          "translit": "nasati ba-k'vish",
+          "en": "I drove on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "past",
+          "he": "היינו על הכביש",
+          "heNiqqud": "הָיִינוּ עַל הַכְּבִישׁ",
+          "translit": "hayinu al ha-k'vish",
+          "en": "We were on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "אני נוסע בכביש",
+          "heNiqqud": "אֲנִי נוֹסֵע בַּכְּבִישׁ",
+          "translit": "ani nose'a ba-k'vish",
+          "en": "I am driving on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "אנחנו על הכביש",
+          "heNiqqud": "אֲנַחְנוּ עַל הַכְּבִישׁ",
+          "translit": "anahnu al ha-k'vish",
+          "en": "We are on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "אסע בכביש",
+          "heNiqqud": "אֶסַּע בַּכְּבִישׁ",
+          "translit": "esa ba-k'vish",
+          "en": "I will drive on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "ניסע בכביש",
+          "heNiqqud": "נִסַּע בַּכְּבִישׁ",
+          "translit": "nisa ba-k'vish",
+          "en": "We will drive on the highway.",
+          "source": "assistant-added"
+        }
+      ]
+    },
+    {
+      "word": "מכונית",
+      "hebrewNiqqud": "מְכוֹנִית",
+      "translit": "mekhonit",
+      "meaning": "car",
+      "example": "המכונית על הכביש",
+      "exampleNiqqud": "הַמְּכוֹנִית עַל הַכְּבִישׁ",
+      "exampleEn": "the car is on the highway",
+      "learned": "2026-11-16",
+      "notes": "Added example.",
+      "grammar": "Feminine noun, ends in ת.",
+      "forms": {
+        "gender": "f",
+        "plural": "מכוניות",
+        "pluralNiqqud": "מְכוֹנִיּוֹת"
+      },
+      "sentences": [
+        {
+          "tense": "past",
+          "he": "המכונית הייתה על הכביש",
+          "heNiqqud": "הַמְּכוֹנִית הָיְתָה עַל הַכְּבִישׁ",
+          "translit": "ha-mekhonit hayta al ha-k'vish",
+          "en": "The car was on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "past",
+          "he": "נסעתי במכונית",
+          "heNiqqud": "נָסַעְתִּי בַּמְּכוֹנִית",
+          "translit": "nasati ba-mekhonit",
+          "en": "I drove in the car.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "המכונית על הכביש",
+          "heNiqqud": "הַמְּכוֹנִית עַל הַכְּבִישׁ",
+          "translit": "ha-mekhonit al ha-k'vish",
+          "en": "The car is on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "אני נוסע במכונית",
+          "heNiqqud": "אֲנִי נוֹסֵע בַּמְּכוֹנִית",
+          "translit": "ani nose'a ba-mekhonit",
+          "en": "I am driving in the car.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "המכונית תהיה על הכביש",
+          "heNiqqud": "הַמְּכוֹנִית תִּהְיֵה עַל הַכְּבִישׁ",
+          "translit": "ha-mekhonit tihye al ha-k'vish",
+          "en": "The car will be on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "אסע במכונית",
+          "heNiqqud": "אֶסַּע בַּמְּכוֹנִית",
+          "translit": "esa ba-mekhonit",
+          "en": "I will drive in the car.",
+          "source": "assistant-added"
+        }
+      ]
+    },
+    {
+      "word": "גם",
+      "hebrewNiqqud": "גַּם",
+      "translit": "gam",
+      "meaning": "also",
+      "example": "גם אנחנו בפקק",
+      "exampleNiqqud": "גַּם אֲנַחְנוּ בִּפְקָק",
+      "exampleEn": "we're also in a traffic jam",
+      "learned": "2026-11-16",
+      "notes": "Added example.",
+      "grammar": "Adverb. It does not change for tense or gender.",
+      "sentences": [
+        {
+          "tense": "past",
+          "he": "גם אני נסעתי בכביש",
+          "heNiqqud": "גַּם אֲנִי נָסַעְתִּי בַּכְּבִישׁ",
+          "translit": "gam ani nasati ba-k'vish",
+          "en": "I also drove on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "past",
+          "he": "גם אנחנו נסענו",
+          "heNiqqud": "גַּם אֲנַחְנוּ נָסַעְנוּ",
+          "translit": "gam anahnu nasanu",
+          "en": "We also drove.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "גם אנחנו בפקק",
+          "heNiqqud": "גַּם אֲנַחְנוּ בִּפְקָק",
+          "translit": "gam anahnu bi-pkak",
+          "en": "We are also in a traffic jam.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "גם אני נוסע",
+          "heNiqqud": "גַּם אֲנִי נוֹסֵע",
+          "translit": "gam ani nose'a",
+          "en": "I am also driving.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "גם אני אסע",
+          "heNiqqud": "גַּם אֲנִי אֶסַּע",
+          "translit": "gam ani esa",
+          "en": "I will also drive.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "גם אנחנו ניסע בכביש",
+          "heNiqqud": "גַּם אֲנַחְנוּ נִסַּע בַּכְּבִישׁ",
+          "translit": "gam anahnu nisa ba-k'vish",
+          "en": "We will also drive on the highway.",
+          "source": "assistant-added"
+        }
+      ]
+    },
+    {
+      "word": "תנועה",
+      "hebrewNiqqud": "תְּנוּעָה",
+      "translit": "tnu'a",
+      "meaning": "traffic",
+      "example": "תנועה בכביש",
+      "exampleNiqqud": "תְּנוּעָה בַּכְּבִישׁ",
+      "exampleEn": "traffic on the highway",
+      "learned": "2026-11-16",
+      "grammar": "Feminine noun, ends in ה. Existence takes הייתה, יש, תהיה.",
+      "forms": {
+        "gender": "f",
+        "plural": "תנועות",
+        "pluralNiqqud": "תְּנוּעוֹת"
+      },
+      "sentences": [
+        {
+          "tense": "past",
+          "he": "הייתה תנועה בכביש",
+          "heNiqqud": "הָיְתָה תְּנוּעָה בַּכְּבִישׁ",
+          "translit": "hayta tnu'a ba-k'vish",
+          "en": "There was traffic on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "past",
+          "he": "נסענו בתנועה",
+          "heNiqqud": "נָסַעְנוּ בַּתְּנוּעָה",
+          "translit": "nasanu ba-tnu'a",
+          "en": "We drove in the traffic.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "יש תנועה בכביש",
+          "heNiqqud": "יֵשׁ תְּנוּעָה בַּכְּבִישׁ",
+          "translit": "yesh tnu'a ba-k'vish",
+          "en": "There is traffic on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "אנחנו בתנועה",
+          "heNiqqud": "אֲנַחְנוּ בַּתְּנוּעָה",
+          "translit": "anahnu ba-tnu'a",
+          "en": "We are in the traffic.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "תהיה תנועה בכביש",
+          "heNiqqud": "תִּהְיֵה תְּנוּעָה בַּכְּבִישׁ",
+          "translit": "tihye tnu'a ba-k'vish",
+          "en": "There will be traffic on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "ניסע בתנועה",
+          "heNiqqud": "נִסַּע בַּתְּנוּעָה",
+          "translit": "nisa ba-tnu'a",
+          "en": "We will drive in the traffic.",
+          "source": "assistant-added"
+        }
+      ]
+    },
+    {
+      "word": "פקק",
+      "hebrewNiqqud": "פְּקָק",
+      "translit": "pakak",
+      "meaning": "traffic jam",
+      "example": "יש פקק בכביש",
+      "exampleNiqqud": "יֵשׁ פְּקָק בַּכְּבִישׁ",
+      "exampleEn": "there is a traffic jam on the highway",
+      "learned": "2026-11-16",
+      "notes": "standard: pkak",
+      "grammar": "Masculine noun. Existence takes היה, יש, יהיה.",
+      "forms": {
+        "gender": "m",
+        "plural": "פקקים",
+        "pluralNiqqud": "פְּקָקִים"
+      },
+      "sentences": [
+        {
+          "tense": "past",
+          "he": "היה פקק בכביש",
+          "heNiqqud": "הָיָה פְּקָק בַּכְּבִישׁ",
+          "translit": "haya pkak ba-k'vish",
+          "en": "There was a traffic jam on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "past",
+          "he": "היינו בפקק",
+          "heNiqqud": "הָיִינוּ בִּפְקָק",
+          "translit": "hayinu bi-pkak",
+          "en": "We were in a traffic jam.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "יש פקק בכביש",
+          "heNiqqud": "יֵשׁ פְּקָק בַּכְּבִישׁ",
+          "translit": "yesh pkak ba-k'vish",
+          "en": "There is a traffic jam on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "present",
+          "he": "אנחנו בפקק",
+          "heNiqqud": "אֲנַחְנוּ בִּפְקָק",
+          "translit": "anahnu bi-pkak",
+          "en": "We are in a traffic jam.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "יהיה פקק בכביש",
+          "heNiqqud": "יִהְיֵה פְּקָק בַּכְּבִישׁ",
+          "translit": "yihye pkak ba-k'vish",
+          "en": "There will be a traffic jam on the highway.",
+          "source": "assistant-added"
+        },
+        {
+          "tense": "future",
+          "he": "נהיה בפקק",
+          "heNiqqud": "נִהְיֵה בִּפְקָק",
+          "translit": "nihye bi-pkak",
+          "en": "We will be in a traffic jam.",
+          "source": "assistant-added"
+        }
+      ]
+    }
+  ]
+}

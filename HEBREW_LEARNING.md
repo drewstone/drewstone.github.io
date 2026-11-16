@@ -24,14 +24,16 @@ Review ratings and which words Drive has already shown stay in the browser. They
 
 - Slow. One word at a time.
 - Explain the new word in simple Hebrew first, using words already learned, then give the English.
+- Then use the word in the present, the past, and the future.
 - Correct gently.
-- The real-world context is highway driving.
+- The real-world context is highway driving. The learner is male: masculine singular for "I", and "we".
 - Reuse previously learned words in new sentences.
 - Review earlier words before adding a new one.
+- Building blocks: לִנְסֹעַ (נָסַעְתִּי / נָסַעְנוּ, אֲנִי נוֹסֵעַ / אֲנַחְנוּ נוֹסְעִים, אֶסַּע / נִסַּע) and existence (הָיָה / יֵשׁ / יִהְיֶה; feminine הָיְתָה / יֵשׁ / תִּהְיֶה).
 
 ## Learned words
 
-`src/data/hebrew.json` is the source of truth. It is a JSON array in learning order. Read that file for the words. Do not keep a second list in this document.
+`src/data/hebrew.json` is the source of truth. `entries` is the word list in learning order. `verbs` holds conjugations, starting with לִנְסֹעַ and לִהְיוֹת. An older file that is only an array of words is still valid. Do not keep a second list in this document.
 
 Drive and Review read those fields from the file. List shows the word, transliteration, meaning, and sentence.
 
@@ -62,6 +64,9 @@ Append one object to the array. Field order:
 - `exampleEn`: English of that sentence.
 - `learned`: `YYYY-MM-DD`, the day the word was learned.
 - `notes`: omit the field unless it is needed. When the example was written onto the card and was not produced in the lesson, set `notes` to `Added example.`
+- `grammar`: optional short note, such as `Feminine noun, ends in ה.`
+- `forms`: optional `{ "gender": "m"|"f", "plural": "...", "pluralNiqqud": "..." }` when the word has a plural.
+- `sentences`: optional array. For a new word, write at least one past, one present, and one future sentence. Each object is `{ "tense", "he", "heNiqqud", "translit", "en", "source" }`. `source` is `assistant-added` when the assistant wrote the sentence. Reuse words already in the file. פקק is פְּקָק. The future of לִנְסֹעַ for "I" is אֶסַּע.
 
 `word`, `translit`, `meaning`, `example`, `exampleEn`, and `learned` are required. The page build rejects a missing field, a bad date, or an empty note.
 
@@ -80,7 +85,7 @@ Append one object to the array. Field order:
 - Deck id: `8123456700001`
 - Model id: `8123456700002`
 
-The note GUID is a deterministic hash of the unpointed `word`. Re-importing the package updates those notes instead of adding duplicates. Each note has two cards, Hebrew to English and English to Hebrew, with vowels shown. The note is tagged with its `learned` date. Fields: Hebrew, HebrewNiqqud, Transliteration, English, Example, ExampleNiqqud, ExampleEnglish, Notes, DateLearned.
+The word-note GUID is a deterministic hash of the unpointed `word`. Sentence notes use note type `Hebrew Sentence` (fields Hebrew, HebrewNiqqud, Translit, English, Tense, Word) and a GUID hashed from the unpointed sentence. Cloze notes are separate, hashed from `cloze:` plus that sentence, so they do not collide. Re-importing the package updates those notes instead of adding duplicates. A word note has two cards, Hebrew to English and English to Hebrew. Vowels are shown. The note is tagged with its `learned` date. Word fields: Hebrew, HebrewNiqqud, Transliteration, English, Example, ExampleNiqqud, ExampleEnglish, Notes, DateLearned.
 
 Shorthand Drew may use:
 
