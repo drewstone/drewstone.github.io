@@ -14,7 +14,7 @@ The page is https://drewstone.github.io/hebrew/. It renders the JSON at build ti
 
 The page opens in Drive. The choice is saved in the browser (`hebrew-mode`).
 
-- Drive: dark full screen and large type, for a glance from the driver's seat. A Light/Dark control swaps the background (`hebrew-drive-theme`). It advances on its own, about 4.5 seconds each: Hebrew word and transliteration, then the Hebrew sentence, then the English meaning and sentence. Tap the middle to pause. Previous and next sit on the sides. Order prefers words that are due, then words least recently seen.
+- Drive: dark full screen and large type, for a glance from the driver's seat. A Light/Dark control swaps the background (`hebrew-drive-theme`). The header fades after a few seconds and comes back on tap. It advances on its own, about 4.5 seconds each: Hebrew word and transliteration, then the Hebrew sentence, then the English meaning and sentence. Tap the middle to pause. Previous and next sit on the sides. Order prefers words that are due, then words least recently seen. A Nikud control (`hebrew-nikud`, default on) shows or hides vowels in Drive, Review, and List.
 - Review: a flashcard. The front is the Hebrew word, or the English gloss if the direction is flipped. Tap or space reveals the transliteration, meaning, and example. Again, Hard, Good, and Easy are keys 1, 2, 3, and 4. Ratings use a short SM-2 schedule in the browser (`hebrew-srs`, keyed by the Hebrew word). Again is due again in 10 minutes and resets the streak. Hard is due in 1 day the first time, then the interval grows by 1.2, and ease falls. Good is due in 1 day, then 6 days, then the interval times ease. Easy is due in 4 days the first time, then the interval times ease times 1.3, and ease rises. Ease starts at 2.5 and stays at or above 1.3. The page shows how many cards are due today. If none are due, it offers "study anyway".
 - List: every word in one grid. Hebrew is large, transliteration and meaning are small, and the sentence opens on hover or tap. The resume line sits at the bottom of this mode.
 
@@ -42,19 +42,23 @@ Append one object to the array. Field order:
 ```json
 {
   "word": "כביש",
+  "hebrewNiqqud": "כְּבִישׁ",
   "translit": "k'vish",
   "meaning": "highway",
   "example": "אנחנו על הכביש",
+  "exampleNiqqud": "אֲנַחְנוּ עַל הַכְּבִישׁ",
   "exampleEn": "we are on the highway",
   "learned": "2026-11-16",
   "notes": "Added example."
 }
 ```
 
-- `word`: Hebrew. Leave it unpointed unless the points are the lesson.
+- `word`: Hebrew, unpointed.
+- `hebrewNiqqud`: optional pointed spelling. Supply it for every new word. פקק is פֶּקֶק.
 - `translit`: Latin transliteration used in the lesson.
 - `meaning`: short English gloss.
-- `example`: one Hebrew sentence in the highway-driving context. Reuse words already in the file.
+- `example`: one Hebrew sentence in the highway-driving context, unpointed. Reuse words already in the file.
+- `exampleNiqqud`: optional pointed form of that sentence. Supply it for every new word.
 - `exampleEn`: English of that sentence.
 - `learned`: `YYYY-MM-DD`, the day the word was learned.
 - `notes`: omit the field unless it is needed. When the example was written onto the card and was not produced in the lesson, set `notes` to `Added example.`
@@ -69,15 +73,15 @@ Append one object to the array. Field order:
 Shorthand Drew may use:
 
 ```
-Hebrew: add <word> | <translit> | <meaning> | <example> | <example English>
+Hebrew: add <word> | <translit> | <meaning> | <example> | <example English> | <hebrewNiqqud> | <exampleNiqqud>
 ```
 
-The separator is space, pipe, space. Five fields, in that order, mapped to `word`, `translit`, `meaning`, `example`, `exampleEn`. Set `learned` to the session date. Leave `notes` off when Drew supplied the example. Fields must not contain the separator.
+The separator is space, pipe, space. The first five fields map to `word`, `translit`, `meaning`, `example`, `exampleEn`. The last two are optional in the shorthand and map to `hebrewNiqqud` and `exampleNiqqud`. If Drew omits them, still write correct niqqud into those fields. Set `learned` to the session date. Leave `notes` off when Drew supplied the example. Fields must not contain the separator.
 
 Example:
 
 ```
-Hebrew: add כביש | k'vish | highway | אנחנו על הכביש | we are on the highway
+Hebrew: add כביש | k'vish | highway | אנחנו על הכביש | we are on the highway | כְּבִישׁ | אֲנַחְנוּ עַל הַכְּבִישׁ
 ```
 
 ## Session

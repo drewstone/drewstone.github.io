@@ -4,9 +4,11 @@ import raw from '../data/hebrew.json'
 
 interface Entry {
   word: string
+  hebrewNiqqud?: string
   translit: string
   meaning: string
   example: string
+  exampleNiqqud?: string
   exampleEn: string
   learned: string
   notes?: string
@@ -16,6 +18,15 @@ function requiredString(row: Record<string, unknown>, key: string, index: number
   const value = row[key]
   if (typeof value !== 'string' || value.trim() === '') {
     throw new Error(`src/data/hebrew.json[${index}].${key} must be a non-empty string`)
+  }
+  return value
+}
+
+function optionalString(row: Record<string, unknown>, key: string, index: number) {
+  if (!(key in row) || row[key] == null) return undefined
+  const value = row[key]
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`src/data/hebrew.json[${index}].${key} must be a non-empty string when present`)
   }
   return value
 }
@@ -37,9 +48,11 @@ function load(data: unknown): Entry[] {
     }
     return {
       word: requiredString(row, 'word', index),
+      hebrewNiqqud: optionalString(row, 'hebrewNiqqud', index),
       translit: requiredString(row, 'translit', index),
       meaning: requiredString(row, 'meaning', index),
       example: requiredString(row, 'example', index),
+      exampleNiqqud: optionalString(row, 'exampleNiqqud', index),
       exampleEn: requiredString(row, 'exampleEn', index),
       learned,
       notes: typeof notes === 'string' ? notes : undefined,
@@ -80,7 +93,10 @@ const first = entries[0]
         <button type="button" role="tab" data-mode="review" aria-selected="false">Review</button>
         <button type="button" role="tab" data-mode="list" aria-selected="false">List</button>
       </div>
-      <button type="button" id="drive-theme" class="theme-toggle" aria-pressed="true">Dark</button>
+      <div class="tools">
+        <button type="button" id="nikud-toggle" class="tool" aria-pressed="true">Nikud</button>
+        <button type="button" id="drive-theme" class="tool theme-toggle" aria-pressed="true">Dark</button>
+      </div>
     </div>
 
     <section class="drive-view" aria-label="Drive">
@@ -90,7 +106,7 @@ const first = entries[0]
           first && (
             <>
               <p class="drive-word" lang="he" dir="rtl">
-                {first.word}
+                {first.hebrewNiqqud || first.word}
               </p>
               <p class="drive-trans" dir="ltr">
                 {first.translit}
@@ -137,7 +153,7 @@ const first = entries[0]
           entries.map((entry) => (
             <button type="button" class="list-card" aria-expanded="false">
               <span class="list-word" lang="he" dir="rtl">
-                {entry.word}
+                {entry.hebrewNiqqud || entry.word}
               </span>
               <span class="list-gloss">
                 <span class="list-trans">{entry.translit}</span>
@@ -145,7 +161,7 @@ const first = entries[0]
               </span>
               <span class="list-sentence">
                 <span class="he" lang="he" dir="rtl">
-                  {entry.example}
+                  {entry.exampleNiqqud || entry.example}
                 </span>
                 <span class="en">{entry.exampleEn}</span>
               </span>
@@ -168,6 +184,8 @@ const first = entries[0]
       var MODE_KEY = 'hebrew-mode'
       var THEME_KEY = 'hebrew-drive-theme'
       var FRONT_KEY = 'hebrew-front'
+      var NIKUD_KEY = 'hebrew-nikud'
+      var CHROME_MS = 3800
 
       var entries = JSON.parse(document.getElementById('hebrew-entries').textContent || '[]')
       var stage = document.getElementById('drive-stage')
@@ -180,12 +198,16 @@ const first = entries[0]
       var reviewEmpty = document.getElementById('review-empty')
       var flipBtn = document.getElementById('flip-dir')
       var themeBtn = document.getElementById('drive-theme')
+      var nikudBtn = document.getElementById('nikud-toggle')
+      var topbar = document.querySelector('.topbar')
       var modeButtons = Array.prototype.slice.call(document.querySelectorAll('.modes button'))
 
       var srs = loadSrs()
       var frontDir = 'he'
+      var nikudOn = true
       try {
         if (localStorage.getItem(FRONT_KEY) === 'en') frontDir = 'en'
+        if (localStorage.getItem(NIKUD_KEY) === 'off') nikudOn = false
       } catch (e) {}
 
       var driveOrder = entries.slice()
@@ -203,6 +225,16 @@ const first = entries[0]
       var phaseStart = 0
       var remaining = PHASE_MS
       var fitTimer = 0
+      var chromeTimer = 0
+      var chromeIdle = false
+
+      function hebWord(entry) {
+        return nikudOn && entry.hebrewNiqqud ? entry.hebrewNiqqud : entry.word
+      }
+
+      function hebExample(entry) {
+        return nikudOn && entry.exampleNiqqud ? entry.exampleNiqqud : entry.example
+      }
 
       function loadSrs() {
         try {
@@ -340,11 +372,11 @@ const first = entries[0]
         stage.replaceChildren()
         if (phase === 0) {
           stage.append(
-            el('p', 'drive-word', entry.word, { lang: 'he', dir: 'rtl' }),
+            el('p', 'drive-word', hebWord(entry), { lang: 'he', dir: 'rtl' }),
             el('p', 'drive-trans', entry.translit, { dir: 'ltr' }),
           )
         } else if (phase === 1) {
-          stage.append(el('p', 'drive-example', entry.example, { lang: 'he', dir: 'rtl' }))
+          stage.append(el('p', 'drive-example', hebExample(entry), { lang: 'he', dir: 'rtl' }))
         } else {
           stage.append(
             el('p', 'drive-meaning', entry.meaning, { dir: 'ltr' }),
@@ -458,8 +490,10 @@ const first = entries[0]
         driveLive = false
         clearTimeout(timer)
         clearTimeout(fadeTimer)
+        clearTimeout(chromeTimer)
         cancelAnimationFrame(barRaf)
         stage.classList.remove('is-fading')
+        showChrome()
       }
 
       function paintDue() {
@@ -495,14 +529,14 @@ const first = entries[0]
         if (frontDir === 'en') {
           reviewCard.append(el('span', 'review-front-en', entry.meaning, { dir: 'ltr' }))
         } else {
-          reviewCard.append(el('span', 'review-he', entry.word, { lang: 'he', dir: 'rtl' }))
+          reviewCard.append(el('span', 'review-he', hebWord(entry), { lang: 'he', dir: 'rtl' }))
         }
         if (!revealed) return
         var back = el('span', 'review-back')
-        if (frontDir === 'en') back.append(el('span', 'review-he answer', entry.word, { lang: 'he', dir: 'rtl' }))
+        if (frontDir === 'en') back.append(el('span', 'review-he answer', hebWord(entry), { lang: 'he', dir: 'rtl' }))
         back.append(el('span', 'review-trans', entry.translit, { dir: 'ltr' }))
         if (frontDir !== 'en') back.append(el('span', 'review-meaning', entry.meaning, { dir: 'ltr' }))
-        back.append(el('span', 'review-ex', entry.example, { lang: 'he', dir: 'rtl' }))
+        back.append(el('span', 'review-ex', hebExample(entry), { lang: 'he', dir: 'rtl' }))
         back.append(el('span', 'review-ex-en', entry.exampleEn, { dir: 'ltr' }))
         reviewCard.append(back)
       }
@@ -574,6 +608,42 @@ const first = entries[0]
         themeBtn.setAttribute('aria-label', light ? 'Light background. Switch to dark.' : 'Dark background. Switch to light.')
       }
 
+      function applyListNikud() {
+        var cards = document.querySelectorAll('.list-card')
+        Array.prototype.forEach.call(cards, function (card, i) {
+          var entry = entries[i]
+          if (!entry) return
+          var word = card.querySelector('.list-word')
+          var example = card.querySelector('.list-sentence .he')
+          if (word) word.textContent = hebWord(entry)
+          if (example) example.textContent = hebExample(entry)
+        })
+      }
+
+      function paintNikud() {
+        nikudBtn.setAttribute('aria-pressed', nikudOn ? 'true' : 'false')
+        nikudBtn.setAttribute('aria-label', nikudOn ? 'Vowels on. Hide vowels.' : 'Vowels off. Show vowels.')
+        applyListNikud()
+        if (document.documentElement.dataset.hebrewMode === 'drive' && driveOrder.length) renderDrive()
+        if (document.documentElement.dataset.hebrewMode === 'review' && queue.length && !reviewCard.hidden) showCard()
+      }
+
+      function showChrome() {
+        chromeIdle = false
+        topbar.classList.remove('is-idle')
+      }
+
+      function armChrome() {
+        clearTimeout(chromeTimer)
+        showChrome()
+        if (document.documentElement.dataset.hebrewMode !== 'drive' || userPaused) return
+        chromeTimer = setTimeout(function () {
+          if (document.documentElement.dataset.hebrewMode !== 'drive' || userPaused) return
+          chromeIdle = true
+          topbar.classList.add('is-idle')
+        }, CHROME_MS)
+      }
+
       function paintModes(mode) {
         modeButtons.forEach(function (btn) {
           var on = btn.dataset.mode === mode
@@ -599,7 +669,12 @@ const first = entries[0]
         } catch (e) {}
         if (mode === 'drive') {
           if (!same || !driveLive) startDrive()
+          armChrome()
         } else if (driveLive) stopDrive()
+        if (mode !== 'drive') {
+          clearTimeout(chromeTimer)
+          showChrome()
+        }
         if (mode === 'review') {
           if (!same || !reviewLive) openReview()
         } else reviewLive = false
@@ -619,6 +694,16 @@ const first = entries[0]
           localStorage.setItem(THEME_KEY, light ? 'light' : 'dark')
         } catch (e) {}
         paintTheme()
+        armChrome()
+      })
+
+      nikudBtn.addEventListener('click', function () {
+        nikudOn = !nikudOn
+        try {
+          localStorage.setItem(NIKUD_KEY, nikudOn ? 'on' : 'off')
+        } catch (e) {}
+        paintNikud()
+        armChrome()
       })
 
       document.getElementById('drive-prev').addEventListener('click', function () {
@@ -628,8 +713,19 @@ const first = entries[0]
         go(1)
       })
       document.querySelector('.drive-view').addEventListener('click', function (event) {
-        if (event.target.closest('button, a')) return
+        if (event.target.closest('button, a')) {
+          armChrome()
+          return
+        }
+        if (chromeIdle) {
+          armChrome()
+          return
+        }
         togglePause()
+        if (userPaused) {
+          clearTimeout(chromeTimer)
+          showChrome()
+        } else armChrome()
       })
 
       reviewCard.addEventListener('click', function () {
@@ -668,12 +764,21 @@ const first = entries[0]
           if (event.key === 'ArrowRight') {
             event.preventDefault()
             go(1)
+            armChrome()
           } else if (event.key === 'ArrowLeft') {
             event.preventDefault()
             go(-1)
+            armChrome()
           } else if (event.key === ' ' && !event.target.closest('button, a')) {
             event.preventDefault()
-            togglePause()
+            if (chromeIdle) armChrome()
+            else {
+              togglePause()
+              if (userPaused) {
+                clearTimeout(chromeTimer)
+                showChrome()
+              } else armChrome()
+            }
           }
           return
         }
@@ -702,6 +807,7 @@ const first = entries[0]
       })
 
       paintTheme()
+      paintNikud()
       paintFlip()
       setMode(document.documentElement.dataset.hebrewMode || 'drive')
     })()
@@ -813,15 +919,18 @@ const first = entries[0]
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+    padding: 0.15rem 0 0.35rem;
   }
 
-  .modes {
+  .modes,
+  .tools {
     display: flex;
-    gap: 0.35rem 0.9rem;
+    align-items: center;
+    gap: 0.1rem;
   }
 
   .modes button,
-  .theme-toggle,
+  .tool,
   #flip-dir,
   .rates button,
   #study-anyway,
@@ -834,20 +943,40 @@ const first = entries[0]
     cursor: pointer;
   }
 
-  .modes button {
+  .modes button,
+  .tool {
     font-family: var(--font-mono);
-    font-size: 0.82rem;
-    letter-spacing: 0.03em;
+    font-weight: 400;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--fg-muted);
     border: 0;
-    border-bottom: 1px solid transparent;
-    padding: 0.55rem 0.05rem;
-    min-height: 2.75rem;
+    border-radius: 2px;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.4rem 0.72rem;
+    background: transparent;
+    box-shadow: inset 0 -1px 0 transparent;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      opacity 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
-  .modes button[aria-selected='true'] {
+  .modes button[aria-selected='true'],
+  .tool[aria-pressed='true'] {
     color: var(--fg);
-    border-bottom-color: var(--fg);
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    box-shadow: inset 0 -1px 0 var(--fg);
+  }
+
+  .modes button:active,
+  .tool:active {
+    transform: scale(0.97);
+    opacity: 0.7;
   }
 
   .theme-toggle {
@@ -904,8 +1033,9 @@ const first = entries[0]
   .review-he {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
     font-weight: 700;
-    font-size: clamp(3.4rem, 12vw, 6.4rem);
-    line-height: 1.02;
+    font-size: clamp(3.2rem, 11vw, 6rem);
+    line-height: 1.45;
+    padding-block: 0.06em;
   }
 
   .review-he.answer {
@@ -938,7 +1068,7 @@ const first = entries[0]
   .review-ex {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
     font-size: clamp(1.45rem, 4vw, 2rem);
-    line-height: 1.35;
+    line-height: 1.55;
   }
 
   .review-ex-en {
@@ -1009,14 +1139,15 @@ const first = entries[0]
     border-bottom: 1px solid var(--border);
     padding: 0.85rem 0.45rem;
     min-width: 0;
-    min-height: 7.5rem;
+    min-height: 8.4rem;
   }
 
   .list-word {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
     font-weight: 700;
     font-size: clamp(1.7rem, 4.2vw, 2.8rem);
-    line-height: 1.05;
+    line-height: 1.45;
+    padding-block: 0.04em;
   }
 
   .list-gloss,
@@ -1044,7 +1175,8 @@ const first = entries[0]
 
   .list-sentence .he {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
-    font-size: 1.2em;
+    font-size: 1.25em;
+    line-height: 1.5;
     color: var(--fg);
   }
 
@@ -1086,37 +1218,46 @@ const first = entries[0]
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    padding: calc(0.45rem + env(safe-area-inset-top)) 0 env(safe-area-inset-bottom);
+    padding: calc(1.05rem + env(safe-area-inset-top)) 0 env(safe-area-inset-bottom);
   }
 
   html[data-hebrew-mode='drive'] .topbar {
     position: relative;
     z-index: 3;
-    padding: 0.35rem 1rem 0;
+    padding: 0.35rem 1.2rem 1.35rem;
+    transition: opacity 0.55s ease;
+  }
+
+  html[data-hebrew-mode='drive'] .topbar.is-idle {
+    opacity: 0;
+    pointer-events: none;
   }
 
   html[data-hebrew-mode='drive'] .modes button,
-  html[data-hebrew-mode='drive'] .theme-toggle {
+  html[data-hebrew-mode='drive'] .tool {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--drive-dim);
-    border: 1px solid transparent;
-    border-radius: 999px;
-    min-height: 3.1rem;
-    padding: 0.45rem 0.95rem;
-    font-size: 1.12rem;
+    color: color-mix(in srgb, var(--drive-fg) 58%, transparent);
     background: transparent;
+    border: 0;
+    border-radius: 2px;
+    box-shadow: inset 0 -1px 0 transparent;
+    min-height: 44px;
+    padding: 0.45rem 0.78rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
   }
 
-  html[data-hebrew-mode='drive'] .modes button[aria-selected='true'] {
-    color: var(--drive-bg);
-    background: var(--drive-fg);
-    border-color: var(--drive-fg);
+  html[data-hebrew-mode='drive'] .theme-toggle {
+    display: inline-flex;
   }
 
-  html[data-hebrew-mode='drive'] .theme-toggle[aria-pressed='true'] {
-    border-color: var(--drive-soft);
+  html[data-hebrew-mode='drive'] .modes button[aria-selected='true'],
+  html[data-hebrew-mode='drive'] .tool[aria-pressed='true'] {
+    color: var(--drive-fg);
+    background: color-mix(in srgb, var(--drive-fg) 10%, transparent);
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--drive-fg) 72%, transparent);
   }
 
   .drive-view {
@@ -1129,20 +1270,21 @@ const first = entries[0]
 
   .phase-bar {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: var(--drive-soft);
-    z-index: 4;
+    left: 10%;
+    right: 10%;
+    bottom: 2.65rem;
+    height: 1px;
+    background: color-mix(in srgb, var(--drive-fg) 22%, transparent);
+    z-index: 1;
     pointer-events: none;
   }
 
   .phase-bar i {
     display: block;
-    height: 100%;
+    height: 1px;
     width: 100%;
     background: var(--drive-fg);
+    opacity: 0.8;
     transform: scaleX(0);
     transform-origin: left center;
   }
@@ -1172,9 +1314,9 @@ const first = entries[0]
   .drive-word {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
     font-weight: 700;
-    font-size: clamp(4.4rem, 16vw, 10.5rem);
-    line-height: 0.95;
-    padding-inline: 0.2rem !important;
+    font-size: clamp(3.8rem, 13vw, 8.4rem);
+    line-height: 1.45;
+    padding: 0.08em 0.2rem !important;
   }
 
   .drive-trans {
@@ -1187,8 +1329,9 @@ const first = entries[0]
   .drive-example {
     font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif;
     font-weight: 500;
-    font-size: clamp(2.6rem, 7vw, 5.4rem);
-    line-height: 1.25;
+    font-size: clamp(2.3rem, 6vw, 4.5rem);
+    line-height: 1.55;
+    padding-block: 0.06em;
   }
 
   .drive-meaning {
@@ -1255,7 +1398,7 @@ const first = entries[0]
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 1.15rem;
+    bottom: 0.85rem;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -1277,7 +1420,7 @@ const first = entries[0]
   }
 
   .modes button:focus-visible,
-  .theme-toggle:focus-visible,
+  .tool:focus-visible,
   .edge:focus-visible,
   #flip-dir:focus-visible,
   .rates button:focus-visible,
@@ -1289,7 +1432,10 @@ const first = entries[0]
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .drive-stage {
+    .drive-stage,
+    html[data-hebrew-mode='drive'] .topbar,
+    .modes button,
+    .tool {
       transition: none;
     }
   }
@@ -1300,7 +1446,7 @@ const first = entries[0]
     }
 
     .drive-word {
-      font-size: clamp(3.6rem, 20vw, 5.5rem);
+      font-size: clamp(3.2rem, 18vw, 4.8rem);
     }
 
     .drive-stage p {
@@ -1308,10 +1454,15 @@ const first = entries[0]
     }
 
     html[data-hebrew-mode='drive'] .modes button,
-    html[data-hebrew-mode='drive'] .theme-toggle {
-      font-size: 1rem;
-      min-height: 2.8rem;
-      padding: 0.35rem 0.7rem;
+    html[data-hebrew-mode='drive'] .tool {
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+      min-height: 44px;
+      padding: 0.35rem 0.48rem;
+    }
+
+    html[data-hebrew-mode='drive'] .topbar {
+      padding-inline: 0.55rem;
     }
   }
 </style>

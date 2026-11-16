@@ -1,43 +1,53 @@
 [
   {
     "word": "כביש",
+    "hebrewNiqqud": "כְּבִישׁ",
     "translit": "k'vish",
     "meaning": "highway",
     "example": "אנחנו על הכביש",
+    "exampleNiqqud": "אֲנַחְנוּ עַל הַכְּבִישׁ",
     "exampleEn": "we are on the highway",
     "learned": "2026-11-16"
   },
   {
     "word": "מכונית",
+    "hebrewNiqqud": "מְכוֹנִית",
     "translit": "mekhonit",
     "meaning": "car",
     "example": "המכונית על הכביש",
+    "exampleNiqqud": "הַמְּכוֹנִית עַל הַכְּבִישׁ",
     "exampleEn": "the car is on the highway",
     "learned": "2026-11-16",
     "notes": "Added example."
   },
   {
     "word": "גם",
+    "hebrewNiqqud": "גַּם",
     "translit": "gam",
     "meaning": "also",
     "example": "גם אנחנו בפקק",
+    "exampleNiqqud": "גַּם אֲנַחְנוּ בְּפֶקֶק",
     "exampleEn": "we're also in a traffic jam",
     "learned": "2026-11-16",
     "notes": "Added example."
   },
   {
     "word": "תנועה",
+    "hebrewNiqqud": "תְּנוּעָה",
     "translit": "tnu'a",
     "meaning": "traffic",
     "example": "תנועה בכביש",
+    "exampleNiqqud": "תְּנוּעָה בַּכְּבִישׁ",
     "exampleEn": "traffic on the highway",
     "learned": "2026-11-16"
   },
   {
     "word": "פקק",
+    "hebrewNiqqud": "פֶּקֶק",
     "translit": "pakak",
     "meaning": "traffic jam",
     "example": "יש פקק בכביש",
+    "exampleNiqqud": "יֵשׁ פֶּקֶק בַּכְּבִישׁ",
     "exampleEn": "there is a traffic jam on the highway",
     "learned": "2026-11-16"
   }
