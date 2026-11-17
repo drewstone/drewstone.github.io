@@ -27,9 +27,9 @@ $\mathcal{N}(n,3)$ is the set of these codes with no full-weight codeword, no wo
 Conjecture 4.2 of [[1]](#ref-1) says $\mathcal{C}_S \in \mathcal{N}(n,3)$ if and only if $0 \notin S$ and $t \le r/2$, and it implies their Conjecture 4.1, $|\mathcal{N}(n,3)| = \sum_{j \le r/2} \binom{r}{j}$.
 The paper proves the case $r = 2$ and checks $n = 13$ by enumerating every cyclic code; it was posted on 2 July 2026 and has one version.
 
-Since $f$ is odd, negation pairs each coset with a different one, its mirror.
-The paper's Theorem 4.2 shows that a support with $S \cap (-S) = \emptyset$ never holds a full-weight word: such a word has $(c, c) = n \neq 0$, while that spectrum forces $(c, c) = 0$.
-A support made of one mirror pair escapes the argument and still has $t \le r/2$ when $r = 4$.
+Since $f$ is odd, negation sends each coset to a different one, its mirror.
+The paper's Theorem 4.2 rules out full-weight words when $S \cap (-S) = \emptyset$: such a word has $(c, c) = n \neq 0$, while that spectrum forces $(c, c) = 0$.
+One mirror pair escapes the argument and still has $t \le r/2$ when $r = 4$.
 After $n = 13$, the smallest prime with $f$ odd and $r \ge 4$ is $n = 109$: $\operatorname{ord}_{109}(3) = 27$, and the cosets are $C_1, C_2, C_4, C_8$ with $-C_1 = C_4$ and $-C_2 = C_8$.
 
 ## The counterexample
@@ -70,45 +70,46 @@ This button runs that computation in your browser:
 <FullWeightCheck />
 
 The same check is a 35-line Python file with no imports [[2]](#ref-2).
-Which pair carries the spectrum depends on which root you call $\zeta$; with the Lab checker's choice it is $C_1 \cup C_4$.
-Either way both mirror-pair codes hold full-weight words, because the coordinate permutation $i \mapsto 2i$ maps one onto the other.
-The checker also built the code in $\mathbb{F}_{3^{27}}$ and evaluated the whole spectrum, and the operator recomputed it there separately.
+Which mirror pair carries the spectrum depends on which root you call $\zeta$; with the Lab checker's choice it is $C_1 \cup C_4$, and the permutation $i \mapsto 2i$ maps one mirror-pair code onto the other, so both hold full-weight words.
+The checker also evaluated the whole spectrum in $\mathbb{F}_{3^{27}}$, and the operator recomputed it there separately.
 
-The paper's Theorem 4.3 could have forbidden this code, and does not reach it.
+<details class="ui-disclosure">
+<summary>Why the paper's own theorems do not rule it out</summary>
+
+Theorem 4.3 of [[1]](#ref-1) could have forbidden this code, and does not reach it.
 It needs every union of cosets $T \subseteq S$ to satisfy (1) $T \cap (-T) = \emptyset$ or (2) some $\ell \neq 0$ with exactly one representation $\ell = a + b$, $a, b \in T$.
 For $T = S$ both fail: $S = -S$, and every nonzero $\ell$ has 13 or 14 representations.
 The count does break.
 Theorem 4.2 puts nine codes in $\mathcal{N}(109, 3)$: the zero code, the four single cosets and the four pairs that are not mirrors.
 Conjecture 4.1's 11 also counted the two mirror pairs, so it can only hold at $n = 109$ if the "only if" direction fails there too.
+</details>
 
 ## How the agents found it
 
 The run is `claim-cyclic-full-weight-20261117b`.
-A lead and a writer ran GLM-5.3 in the opencode harness on a flat-rate coding-plan subscription, each in its own sandbox, against a frozen checker that decides a claim in three stages: format, mathematics, and novelty against a table of dated sources.
-The operator below is the Claude Code session that runs the Lab for me; it watches runs from outside and can message a team.
+A lead and a writer ran GLM-5.3 in the opencode harness, each in its own sandbox, against a frozen checker that decides a claim in three stages: format, mathematics, and novelty against dated sources.
+The operator is the Claude Code session that runs the Lab for me; it watches runs from outside and can message a team.
 
-The method came from the day before.
-A 2-hour pilot ran annealed walks toward fewer zero entries and stalled at 7 zeros, which says nothing: a random-like $[109, 54]$ code has about $6 \times 10^{14}$ words with 7 zeros and about $3.7 \times 10^{6}$ with none, a density near $6 \times 10^{-20}$.
-The operator wrote that count into the play, with the method.
-A full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every full-weight word, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
+The method was the operator's.
+A 2-hour pilot the day before ran annealed walks toward fewer zero entries and stalled at 7 zeros, which says nothing: a random-like $[109, 54]$ code has about $6 \times 10^{14}$ words with 7 zeros and about $3.7 \times 10^{6}$ with none.
+The operator wrote that count into the play with the method: a full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every one, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
 The play registered 0.35 as the chance of a verified refutation within 4 hours.
-The idea that worked was the operator's.
 
 The agents built it and got it right.
 All times are UTC on 17 November 2026; the run started at 19:44.
-The lead [chose an exhaustive Gray-code walk over more annealing](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:30574#agent-record), built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", fixed an indexing bug, and [validated the search at $n = 13$](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51760#agent-record), where the paper's enumeration gives the answer.
+The lead [chose an exhaustive Gray-code walk over more annealing](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:30574#agent-record), built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", and [validated the search at $n = 13$](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51760#agent-record), where the paper's enumeration gives the answer.
 At 20:03:59 the C search on 8 cores [printed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51978#agent-record) `FOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0`, after about $1.8 \times 10^{9}$ patterns and 0.9 seconds, earlier than expected about one time in three.
-Within 25 seconds the lead had recomputed the word's spectrum from scratch and the mounted checker had accepted it.
+Within 25 seconds the lead had recomputed the word's spectrum and the mounted checker had accepted it.
 
 Then a typo cost thirty minutes.
 The first release, rc1, failed at 20:16 with `artifact.codeword must be 109 entries in {0, 1, 2}`.
-The lead's local copy passed, so it [concluded](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:66525#agent-record) that "the corruption happens in the Lab's unwrap/collector", moved the word into a compressed string, mistyped that by hand too, and told the writer the pipeline had mangled the array.
+The lead's local copy passed, so it [concluded](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:66525#agent-record) that "the corruption happens in the Lab's unwrap/collector", re-typed the word as a compressed string, mistyped that too, and told the writer the pipeline had mangled the array.
 At 20:28 the operator sent one fact checked outside the run: the array on the page had 110 entries, and that, not the Lab, failed rc1.
-The lead [agreed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:70298#agent-record), found the page's line now held 112 entries, pasted a code-generated line that came out at 110, and [stopped](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:73972#agent-record): "hand-copying long arrays is unworkable."
-A second operator message fixed the citations, since the play's source said conj3.2 where the PDF prints Conjecture 4.2, and asked for the Theorem 4.3 check, which the lead [did](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:90776#agent-record) by 20:40.
+The lead [agreed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:70298#agent-record), found the line now held 112 entries, watched a code-generated paste come out at 110, and [stopped](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:73972#agent-record): "hand-copying long arrays is unworkable."
+A second message fixed the citations (the play's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead [did](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:90776#agent-record) by 20:40.
 The second release, rc2, [passed all three stages](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:94258#agent-record) at 20:46; the run settled at 20:52, 68 minutes after it started.
 
-The record at the bottom of this page puts all five agents on one time line: the lead, three spawns of the writer (the first never started, the second could not see the team's pages) and a helper that read the pages back.
+The record at the bottom of this page puts all five agents on one time line: the lead, three spawns of the writer (the first never started; the other two lacked the page tools their profiles named) and a helper the last writer spawned to read the pages back.
 It shows 49 moments in the agents' own words.
 
 ## What it cost
@@ -120,16 +121,16 @@ It shows 49 moments in the agents' own words.
 | Model calls at list API prices | about USD 1.50 | about USD 7.53, a floor |
 | Result | best word had 7 zeros | verified counterexample |
 
-The model calls ran on a flat-rate subscription and added nothing to the bill.
-The list-price figure prices every recorded token of the run's 223 model calls, 22.5 million input (22.0 million cache reads) and 260,584 output, at base rates with no per-request tiers, so it is a floor.
+The model calls ran on a flat-rate coding-plan subscription and added nothing to the bill.
+The list-price figure prices the run's 223 recorded model calls, 22.5 million input tokens (22.0 million cache reads) and 260,584 output, at base rates, so it is a floor.
 
 ## What it says about research agents
 
-If the method note was the whole contribution, a person with a 200-line script could have done this in an afternoon, and I think that is roughly right.
+A person with the method note and a 200-line script could have done this in an afternoon.
 The hard step was the count that said where the words are and why annealing could not find them, and it came from outside the team.
 The agents did the tedious part well: field arithmetic matched to the checker, validation at the one length where the answer is known, and no claim until the checker agreed.
 They failed in a specific way: a low-cost model copied 109 numbers by hand, got 110, and blamed the infrastructure with confidence.
-The frozen checker refused the wrong word for the right reason, and an outside reader found the cause in one message.
+The frozen checker refused the wrong word, and an outside reader found the cause in one message.
 
 So if you build one of these, spend on the checker and the method before the model, and give the agents one hard rule: every number a claim carries is produced by code, never typed.
 
