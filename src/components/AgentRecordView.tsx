@@ -18,6 +18,23 @@ function resolveEvent(record: RunRecord | undefined, idmap: EventIdMap, id: stri
   return undefined
 }
 
+// The viewer reveals its selected row by scrolling the window (sandbox-ui 3.0.1 VirtualList, still in @tangle-network/ui
+// 11.51.29), including the default it selects on mount: a research page opened at its foot, or jumped 1,100 px when the
+// record came into view. Only the viewer calls window.scrollBy here, and it may move the page only for a reader's own
+// action in the record or a linked ?event=.
+if (typeof window !== 'undefined') {
+  let allowUntil = new URL(location.href).searchParams.has('event') ? performance.now() + 3000 : 0
+  const scrollBy = window.scrollBy.bind(window) as (options: ScrollToOptions) => void
+  window.scrollBy = ((options: ScrollToOptions) => {
+    if (performance.now() < allowUntil) scrollBy(options)
+  }) as typeof window.scrollBy
+  const allow = (event: Event) => {
+    if (event.target instanceof Element && event.target.closest('.research-agent-record')) allowUntil = performance.now() + 2500
+  }
+  window.addEventListener('pointerdown', allow, true)
+  window.addEventListener('keydown', allow, true)
+}
+
 /** URL ownership stays with the site; the shared viewer has no routing side effects. */
 export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: readonly BehaviorReport[] }) {
   const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '' })
@@ -47,9 +64,13 @@ export default function AgentRecordView({ records, idmap = {}, behaviors = [] }:
         }
         if (url.href !== location.href) history.replaceState(history.state, '', url)
       }
-      const linked = records.find((record) => record.runId === runId)?.events.find((event) => event.id === eventId)
+      const shown = records.find((record) => record.runId === runId)
+      const linked = shown?.events.find((event) => event.id === eventId)
+      // Without a linked event the record opens on its root agent, which the converter does not always list first.
+      const root = !eventId && shown?.nodes.some((node) => node.id === runId) ? runId : undefined
       setSelection({
         runId,
+        nodeId: root,
         eventId,
         view: view === 'source' || view === 'usage' ? view : 'chat',
         at: at === 'full' ? undefined : at ?? linked?.at,

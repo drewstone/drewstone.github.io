@@ -12,6 +12,6 @@
   "source": "The run directory retained on the lab host, converted read-only; each reviewed body names its source line and the sha256 of that line.",
   "unsigned": "The evidence store's index holds no snapshot of this run (its newest rows date from early October), so no store build can reproduce it and sign a lock. The overlay is the same review a signed publication takes; it moves to research/publications once the store holds the run.",
   "recordSha256": "3cc05526e5b2fe25fc7fa257bdd14a68783c4f6677b21a85774ccdfb3740f592",
-  "overlaySha256": "ee2336228739f100dac6fd7c1527817e86c0162d984381e0137ccfa9966e5f77",
-  "publicSha256": "9f7e1f0066f923a8897268bf7fafdd83014c53c8e18ec1d35b830de6fa64805d"
+  "overlaySha256": "80c90407c16db8746d63728e0b957396eab981f6968d0ab99e5dab815921a658",
+  "publicSha256": "9d7703683bb14ee46c761b32d2954b436f72e47b271a42a3da46f10e47a371b0"
 }

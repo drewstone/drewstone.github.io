@@ -36,7 +36,7 @@
     },
     {
       "id": "claim-cyclic-full-weight-20261117b:s1",
-      "label": "writer, round 1",
+      "label": "writer, draft",
       "parent": "claim-cyclic-full-weight-20261117b",
       "kind": "agent",
       "role": "Writer",
@@ -60,7 +60,7 @@
     },
     {
       "id": "claim-cyclic-full-weight-20261117b:s2",
-      "label": "writer, round 2",
+      "label": "writer, merge",
       "parent": "claim-cyclic-full-weight-20261117b",
       "kind": "agent",
       "role": "Writer",
@@ -101,7 +101,7 @@
         "status": "lossy",
         "reason": "live-stream-until-settled"
       },
-      "assignment": "Read the recorded pages back for the round-2 writer, whose session had no page tools.",
+      "assignment": "Read the recorded pages back for the merge writer, whose session had no page tools.",
       "captureNote": "Retained from its live stream until it settled."
     },
     {

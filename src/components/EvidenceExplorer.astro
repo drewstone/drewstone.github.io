@@ -12,7 +12,6 @@ const download = downloads[records[0].runId] ?? `/research/records/${records[0].
   .record-view-switch button { font: inherit; padding: .3rem .8rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
 </style>
-{/* Hydrated when it scrolls into view: the viewer reveals its first selection by scrolling the window, which on load
-   dropped a reader at the foot of the page (sandbox-ui VirtualList). A link to #agent-record still opens it at once. */}
+{/* Hydrated when it comes into view, so a reader of the essay does not load the viewer up front; a link to #agent-record opens it at once. */}
 <AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:visible />
 <noscript><p>The interactive viewer requires JavaScript. <a href={download}>Download the retained record.</a></p></noscript>

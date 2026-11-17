@@ -28,13 +28,13 @@
       "captureNote": "Only lifecycle events exist; the agent never started."
     },
     "claim-cyclic-full-weight-20261117b:s1": {
-      "label": "writer, round 1",
+      "label": "writer, draft",
       "role": "Writer",
       "assignment": "Drafted the entry page for a non-specialist reader.",
       "captureNote": "Retained as the final state of its output parts, so streaming order inside a turn is lost."
     },
     "claim-cyclic-full-weight-20261117b:s2": {
-      "label": "writer, round 2",
+      "label": "writer, merge",
       "role": "Writer",
       "assignment": "Merged the draft into the run's pages after the citation fix and the rc2 verdict.",
       "captureNote": "Retained from its live stream until it settled."
@@ -42,7 +42,7 @@
     "claim-cyclic-full-weight-20261117b:s2:s0": {
       "label": "page relay",
       "role": "Read-only helper",
-      "assignment": "Read the recorded pages back for the round-2 writer, whose session had no page tools.",
+      "assignment": "Read the recorded pages back for the merge writer, whose session had no page tools.",
       "captureNote": "Retained from its live stream until it settled."
     }
   },
