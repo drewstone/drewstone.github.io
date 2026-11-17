@@ -1,0 +1,333 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "claim-cyclic-full-weight-20261117b",
+  "title": "Li-Yuan Conjecture 4.2 counterexample, November 17",
+  "assignment": {
+    "summary": {
+      "objective": "Decide whether Conjecture 4.2 of Li and Yuan (arXiv:2607.02239v1; the play calls it li-yuan-3.2) is false by building one finite counterexample that a frozen exact checker verifies.",
+      "suppliedKnowledge": "The statement, the paper source, the frozen checker, and a method note the operator wrote after the previous day's 2-hour pilot stalled at 7 zeros: about 3.7e6 full-weight words expected among 3^54, a density near 6e-20; every full-weight word is nonzero on an information set, so an exhaustive Gray-code walk over {1, 2} patterns on 54 information coordinates should hit one after about (3/2)^55, about 5e9, steps.",
+      "deliverables": "A claim the frozen checker verifies, a methods page, and an entry page that passes the Lab's reader check.",
+      "constraints": "Excluded instances: r = 2, n = 13, and supports with S and -S disjoint. A checker pass is the only verdict; a declared result is not. Registered prediction: a verified refutation within 4 hours with probability 0.35."
+    },
+    "source": {
+      "path": "run-input.json",
+      "sha256": "c21f83ad3da744f649498885293e53f1597512c2ea4aed2c00bffc172485bd44",
+      "pointer": "/task"
+    }
+  },
+  "nodes": {
+    "claim-cyclic-full-weight-20261117b": {
+      "label": "lead",
+      "role": "Lead (GLM-5.3 on opencode)",
+      "assignment": "Built the code, ran the search, verified the word, wrote the claim and the pages, and steered the writers."
+    },
+    "claim-cyclic-full-weight-20261117b:s0": {
+      "label": "writer, first spawn",
+      "role": "Writer",
+      "assignment": "Never got a box: its profile asked for a tool the runtime does not serve.",
+      "captureNote": "Only lifecycle events exist; the agent never started."
+    },
+    "claim-cyclic-full-weight-20261117b:s1": {
+      "label": "writer, round 1",
+      "role": "Writer",
+      "assignment": "Drafted the entry page for a non-specialist reader.",
+      "captureNote": "Retained as the final state of its output parts, so streaming order inside a turn is lost."
+    },
+    "claim-cyclic-full-weight-20261117b:s2": {
+      "label": "writer, round 2",
+      "role": "Writer",
+      "assignment": "Merged the draft into the run's pages after the citation fix and the rc2 verdict.",
+      "captureNote": "Retained from its live stream until it settled."
+    },
+    "claim-cyclic-full-weight-20261117b:s2:s0": {
+      "label": "page relay",
+      "role": "Read-only helper",
+      "assignment": "Read the recorded pages back for the round-2 writer, whose session had no page tools.",
+      "captureNote": "Retained from its live stream until it settled."
+    }
+  },
+  "defaults": {
+    "metadata": "public",
+    "bodies": "withheld"
+  },
+  "events": {
+    "60df273d9cf1:30574": {
+      "sourceSha256": "2c0c528a8eede909ac3cccb7e8599535793fee788b4ed84f7e52dc0628eba9f3",
+      "mode": "full",
+      "text": "I've read the commission and sources. The task: find a full-weight codeword in a ternary cyclic code at n=109 (the smallest live instance: ord_109(3)=27, r=4, t=2 with support a negation pair), refuting the \"if\" direction of Li–Yuan Conjecture 3.2. The previous run's notes confirm this is the right target; local annealing failed (7 zeros), so I'll do a massive systematic Gray-code search over information-set patterns in C, plus spawn the required communicator."
+    },
+    "60df273d9cf1:30715": {
+      "sourceSha256": "e0422f605520bd36618160678d209f1663fff1b4c3e1e8a0bb8d62931a3af699",
+      "mode": "full",
+      "text": "8 cores, gcc 15, numpy available. The communicator spawn failed on my extra schema keys — retrying with a clean profile."
+    },
+    "60df273d9cf1:41039": {
+      "sourceSha256": "f0ca62d4c33a423ad6596d014f013a7d333ec6f349fac4c80778071542da3e5f",
+      "mode": "full",
+      "text": "Communicator spawned. Now the mathematics. I'll build the target code exactly as the checker constructs it (same irreducible modulus, same ζ), derive a systematic generator, then run a massive Gray-code enumeration in C over the 2^53 normalized information patterns."
+    },
+    "60df273d9cf1:42092": {
+      "sourceSha256": "8ffa3a963ced08f351ba38aa2da0e137fe0971ca1742a69d38cae6bf389a5a8f",
+      "mode": "full",
+      "text": "The support/zero structure is right (support cosets [1,3] = C_1 ∪ C_4 = C_1 ∪ C_{-1}, zero reps [2,8]). Bug found: `R[p][m]` must be `R[p][info[m]]` — RREF columns are original column indices, not free-index."
+    },
+    "60df273d9cf1:48221": {
+      "sourceSha256": "5cdd6f067c5b6dddab8afab70ee57f26a240de10fec8834fe10b2cc71f4b9256",
+      "mode": "full",
+      "text": "The [109,54] code is built and verified (rows vanish on zero cosets C_2 ∪ C_8 and at 0, under the checker's exact modulus and ζ). Now the fast searcher: a vectorized Gray-code walk over all 2^53 normalized information patterns, 32 patterns per SIMD block."
+    },
+    "60df273d9cf1:49695": {
+      "sourceSha256": "33feda28008c29c2c60114116d5b297bc900c87b19a0ede93a747e2299fb923e",
+      "mode": "full",
+      "text": "n=13 validation matches the source exactly: negation-pair supports hold zero full-weight words (statement true at 13), t=3 support holds 39. The C build needs `unistd.h`."
+    },
+    "60df273d9cf1:51760": {
+      "sourceSha256": "ed398c18a9a54183c44bc95406bb546d14ab4470802f2dad78c380a0550a7b62",
+      "mode": "full",
+      "text": "C search validated at n=13: pair support → NOT FOUND (matches source), t=3 → FOUND. Now cross-check the found word through the mounted checker (control statement), then launch the real n=109 search."
+    },
+    "60df273d9cf1:51894": {
+      "sourceSha256": "4da65e3d69cfd9bbafb5964d9510e7ab3d1d3a094bbe947365864b4bbdb4a139",
+      "mode": "full",
+      "text": "Pipeline verified end-to-end through the checker. Launching the real n=109 search in the background:"
+    },
+    "60df273d9cf1:51915": {
+      "sourceSha256": "ace7e0c97be136d6e55b8d198942ef81a2cd16e9434ddd7b4fdf46f10271daed",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "prt_1eb1a974c001A67zHsMBuMBDer",
+          "name": "bash",
+          "input": "{\"command\":\"cd /home/agent/workspace/work && python3 dump.py code_109_pair1.json in109_pair1.txt && rm -f in109_pair1.txt.stop found109_pair1.json && nohup ./search in109_pair1.txt found109_pair1.json 14400 > search109.log 2>&1 & echo \\\"launched pid $!\\\" && sleep 20 && tail -5 search109.log\",\"timeout\":60000}"
+        }
+      ]
+    },
+    "60df273d9cf1:51967": {
+      "sourceSha256": "a4867aecb5da6faf38208f9eb62bb36d9082297e9d34136a6d7040d72f1cb337",
+      "mode": "full",
+      "text": "The search found something within a second! Checking:"
+    },
+    "60df273d9cf1:51977": {
+      "sourceSha256": "b0af2a024d515eb2eaeb0fff56b8d49448f9e88f5da89f39ce96efb822235bd2",
+      "mode": "full",
+      "toolCalls": [
+        {
+          "id": "prt_1eb1b0a330019MHmPPCcjYqSW5",
+          "name": "bash",
+          "input": "{\"command\":\"cd /home/agent/workspace/work && cat search109.log && echo && cat found109_pair1.json\"}"
+        }
+      ]
+    },
+    "60df273d9cf1:51978": {
+      "sourceSha256": "fd1bdaf760e99a402f5c121a02bc0f94a7868fd4bf3721d4de4e98ccf81c2bdd",
+      "mode": "excerpt",
+      "text": "n=109 k=54 parn=55 prefix=3 outer=45 inner=5 lanes=32 threads=8\nFOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0\nt=5 done: patterns=2.899e+08 elapsed=0.9\nt=3 done: patterns=2.874e+08 elapsed=0.9\nt=6 done: patterns=2.881e+08 elapsed=0.9\nt=2 done: patterns=1.677e+08 elapsed=0.9\nt=0 done: patterns=1.678e+08 elapsed=0.9\nt=7 done: patterns=1.693e+08 elapsed=0.9\nt=4 done: patterns=1.691e+08 elapsed=0.9\nt=1 done: patterns=2.850e+08 elapsed=0.9\nFOUND found109_pair1.json",
+      "note": "The search log only; the found-word JSON that follows it repeats the codeword printed in the post."
+    },
+    "60df273d9cf1:52202": {
+      "sourceSha256": "7ff0c5cc7564417f35530ecb89ff3ccf1c4be51e1fd0e97245b3b678528e33e1",
+      "mode": "full",
+      "text": "Found a full-weight word after ~1.9e9 patterns in 0.9 s — consistent with the ~5e9 random-model prediction. Now independent verification from scratch in Python (full spectrum over all 109 positions), then the mounted checker:"
+    },
+    "60df273d9cf1:54790": {
+      "sourceSha256": "4cb4c6ea200ae87f4aabb6a28caa11bea58cd808a50254ed68fa87ff41942658",
+      "mode": "full",
+      "text": "**The refutation is verified.** The mounted checker confirms: n=109, f=27, r=4, t=2 ≤ r/2, support = QR-pair cosets, a full-weight codeword (all 109 coordinates nonzero, sum ≡ 0 mod 3, vanishing on the entire zero set). Exit 0, value 1.\n\nNow writing the deliverable pages. First `claim.json.md`, generated directly from the verified claim to avoid transcription errors:"
+    },
+    "60df273d9cf1:56421": {
+      "sourceSha256": "37d9b7e28fd93422b8b18944f1ad0eaf52ba52c8a36b81ad12a863941b56f0a6",
+      "mode": "full",
+      "text": "All pages recorded. Now simulating exactly what the Lab does — unwrap the fenced block from the recorded page into claim.json and run the mounted checker on it — and checking on the communicator:"
+    },
+    "60df273d9cf1:56930": {
+      "sourceSha256": "e315fab4a7ce3861192b504dd7d94af3a2d5aa85c7f89332f8e87c902fa85617",
+      "mode": "full",
+      "text": "The page-simulation check passes (unwrapped → checker → verified, exit 0). The communicator worker failed on a bad tool name in its profile — respawning with the runtime's served tool names:"
+    },
+    "60df273d9cf1:60179": {
+      "sourceSha256": "4caa3e4944759487e815b6a87fdc19d8492e6e4f06468b8e53ee8826d4fcfbb3",
+      "mode": "full",
+      "text": "The Lab's frozen-checker run refused my codeword while my local run of the same artifact passed — I need to see the exact claim.json the Lab unwrapped. Hunting for the check's working directory:"
+    },
+    "60df273d9cf1:61155": {
+      "sourceSha256": "20ecb8699c6c31a71d60b50e85e961134556df24cb4a517d3cfad29292f8b829",
+      "mode": "full",
+      "text": "The claim passed the Lab's claim stage but failed at the checker — that same refusal fires for a *missing or truncated* codeword. The communicator may have edited the page since my 20:06 write. Checking the current page state:"
+    },
+    "60df273d9cf1:62285": {
+      "sourceSha256": "f1d321e9f33937f426bc1ba6c211ec81bc767076b709b99185fc6620b76acebc",
+      "mode": "full",
+      "text": "Pages are unchanged since my write — so the Lab checked exactly my block. Testing whether the stored page text itself unwraps to a valid 109-entry codeword, by extracting directly from the knowledge-store text:"
+    },
+    "60df273d9cf1:62667": {
+      "sourceSha256": "bfbd8ffff61ea51e6e90fe9dc108a977aa982b1cc3587a443ecba8d7fdfc044d",
+      "mode": "full",
+      "text": "Local page → 109 entries → verified. The frozen acceptance copy must differ from the mounted preview. Hunting for the pinned/frozen files in this sandbox:"
+    },
+    "60df273d9cf1:66525": {
+      "sourceSha256": "fafc45f49d6ac02bb56cd60c2887b9c40f1472b86a773496d57bf47959211b96",
+      "mode": "full",
+      "text": "Everything checks out locally, so the corruption happens in the Lab's unwrap/collector between my page and the frozen checker. The signature — claim stage passed with six keys, `n` and `support` intact, codeword refused on length — points to a structural cap on long inline arrays in the re-serialization. The claim format explicitly supports a self-contained compressed artifact that bypasses any such transform. Building it:"
+    },
+    "60df273d9cf1:67184": {
+      "sourceSha256": "a2a4a91ec73eb3fcd12c7af914da53cf409fce98bbfa178a58715b6784d9c4ce",
+      "mode": "full",
+      "text": "86 bytes compressed, verified by the mounted checker. Updating `claim.json.md` with the encoded artifact (keeping the readable codeword in the notes, unfenced):"
+    },
+    "60df273d9cf1:67392": {
+      "sourceSha256": "2352c22802618a47789f4c3cf9d73f6529006f6296b4bc7753d77c8277c702e0",
+      "mode": "full",
+      "text": "I must verify the base64 string I just recorded — I may have transcribed it imperfectly. Testing the recorded page end-to-end:"
+    },
+    "60df273d9cf1:67679": {
+      "sourceSha256": "bff4c6baef4af38e4d97f2c371415da4ba4e242f8f9a220ba8032effe4ff9aad",
+      "mode": "full",
+      "text": "The recorded base64 is wrong — I transcribed it by hand instead of programmatically. Fixing with the exact computed string, read from the generated file:"
+    },
+    "e4e1953fae40:13": {
+      "sourceSha256": "ccd680527d9f86b7827c49e80be0ba6e7da8b9461557f28b8cab162e3b2f1f5a",
+      "mode": "full",
+      "text": "Update from the root while you work: release rc1 FAILED at the Lab's checker stage because the inline 109-entry codeword array did not survive the claim pipeline (the frozen checker received \"not 109 entries\"); the claim artifact in claim.json.md now travels as one zlib+base64 string (86 bytes) that the checker inflates itself, with the readable artifact printed beside the block, and README.md gained a short \"packaging lesson\" paragraph about it and now shows the checker run on the unwrapped page claim. When you write or revise the entry page prose: (1) re-read README.md and claim.json.md first — both changed at 20:2xZ; (2) keep the numbers exactly as the pages state them (n = 109, t = 2 <= r/2 = 2, weight-109 codeword, about 1.8e9 of 2^53 patterns, 0.9 s on 8 cores, registered prediction 0.35 within 4 hours); (3) do not state any Lab check verdict as fact — the rc1 verdict lines are the Lab's and may be superseded by the next release; describe the compressed-artifact packaging plainly for the non-specialist reader. Keep your round going as instructed and end with submit_result as your profile directs."
+    },
+    "60df273d9cf1:70298": {
+      "sourceSha256": "e3e0f8053386b92d803d0ebbf1a3449272763b536b32ad5a886d82989590e886",
+      "mode": "full",
+      "text": "The operator found it: my hand-typed readable array has 110 entries — the extra \"1\" was my transcription error, which also explains rc1 (the Lab never re-serialized anything). Fixing everything from code, never by hand. First, verifying the current page states:"
+    },
+    "60df273d9cf1:71327": {
+      "sourceSha256": "45be0924287e6ad559c9de378fb19a58df3f6f33b5ad157f9c4c9b2b1d749b10",
+      "mode": "full",
+      "text": "Confirmed: the recorded readable line has 112 entries; the artifact block itself is correct. Fixing the page with the code-generated canonical line, then the README explanation. Reading current digests first:"
+    },
+    "60df273d9cf1:73972": {
+      "sourceSha256": "008d66ecbdc411b1cfa4c24f8e6587392750a225cdcf41d2944b748d82fe96e3",
+      "mode": "full",
+      "text": "Still 110 — my verification *paste* and/or the page line is corrupted again; hand-copying long arrays is unworkable. Removing the long array from the page entirely, replacing it with short machine-checkable properties of the decoded artifact:"
+    },
+    "60df273d9cf1:75340": {
+      "sourceSha256": "6ba6d697183713ee3bc4ff533f3c509c28bb0afa87c353d9a8ddcc9634ad1764",
+      "mode": "full",
+      "text": "Digest typo (dropped a hex char). Re-fetching the exact digest first:"
+    },
+    "60df273d9cf1:81674": {
+      "sourceSha256": "0494a8f19b601decba9f0a289c289f9105689fda0e4599778cb57a9c435b8ed7",
+      "mode": "full",
+      "text": "The digest displays are lossy somewhere. Querying fresh via search receipt (machine-generated JSON):"
+    },
+    "60df273d9cf1:83277": {
+      "sourceSha256": "371d31aeec62fc2f2a8e2d235d6cbf59d1be4e9fe47924dda235c0f911d7326b",
+      "mode": "full",
+      "text": "README already carries the corrected rc1 explanation (the digests were my own successive writes). All three pages are now consistent: compressed artifact, code-generated properties, corrected story. Re-steering the communicator with the corrected facts:"
+    },
+    "e4e1953fae40:27": {
+      "sourceSha256": "8c188aa91c7beec32d127868c3a8362faf23dc284bf08979bee8d8037aededd3",
+      "mode": "full",
+      "text": "Correction from the root — my previous note about rc1 was wrong, please use this version. The first release (rc1) failed at the checker stage because the researcher (the root) mistyped the 109-entry codeword array when first writing it inline onto the page: the array carried extra entries, and the frozen checker rightly refused it as \"not 109 entries in {0, 1, 2}\". An operator check outside the run found the extra entries; the Lab pipeline did NOT alter anything. The fix: the claim artifact now travels as one zlib+base64 string (86 bytes) that the checker inflates itself, and claim.json.md prints no hand-typed array at all — only properties computed from the decoded artifact by code (109 entries, 62 ones, 47 twos, weight 109, sum 0 mod 3, first/last ten entries, a sha256). README.md's \"packaging fact\" paragraph and methods.md (compressed data records) already state this; keep any prose you write consistent with them, and keep the numbers exactly: n = 109, t = 2 <= r/2 = 2, weight-109 codeword, about 1.8e9 of 2^53 patterns, 0.9 s on 8 cores, registered prediction 0.35 within 4 hours. Do not touch the fenced json exact-claim block on claim.json.md; it must stay byte-identical."
+    },
+    "60df273d9cf1:84859": {
+      "sourceSha256": "7a99a6430d91c6d3dfae722c6d6032a04bfcf4972e0541c00425e211713d2488",
+      "mode": "full",
+      "text": "The communicator produced an excellent reader draft in its own sandbox, with questions and one wrong packaging lesson (from my earlier bad steer). Resuming it with answers, the corrected lesson, and instructions to record the merged page into the run's store:"
+    },
+    "60df273d9cf1:85655": {
+      "sourceSha256": "1863441be4c84e122aab708cfe5d5c401e4aca59e5bc068a345de6ff3a68370b",
+      "mode": "full",
+      "text": "Deterministic reproduction confirmed — same codeword, same hit location (thread 5, step 9058516, lane 21). All pages are consistent and every claim on them is now backed by a run in this sandbox. Ending my turn to wait for the communicator's merged entry page and the Lab's next release check."
+    },
+    "60df273d9cf1:87718": {
+      "sourceSha256": "25df1a9e45d5dd6b503c42cb1bc63c2aef8a728cf173cffd07b5306428d18def",
+      "mode": "full",
+      "text": "The operator requires printed-label fixes (Conjecture 4.2, Theorem 4.3 with its condition (2), Corollary 4.3) and a page demonstration that Theorem 4.3 covers neither condition. Trying to fetch the paper's exact statement first:"
+    },
+    "60df273d9cf1:90776": {
+      "sourceSha256": "130aad8d54c24bcd47d77704627aeeb2a8583a7bdec4805395d8ca2b08ee0405",
+      "mode": "full",
+      "text": "Perfect result: every nonzero ℓ mod 109 has **13 or 14** unordered representations (54 each) — none unique, so condition (2) fails for T = S; condition (1) also fails (|T ∩ −T| = 54). Theorem 4.3 does not cover this code. Getting fresh digests, then fixing the pages' citations:"
+    },
+    "60df273d9cf1:92750": {
+      "sourceSha256": "77a3b08623b1db0b30ae66a3e32ea9a0785471515d6b9614e1e66c54f2e7759a",
+      "mode": "full",
+      "text": "One more precise corollary worth stating: at n = 109 the two mirror-pair supports (S₁ = QR pair, S₂ = NQR pair, mapped onto each other by a non-residue multiplier, which is a coordinate permutation) both lie outside N(109,3), so Conjecture 4.1's predicted count 11 overcounts — refining that sentence:"
+    },
+    "e4e1953fae40:36": {
+      "sourceSha256": "08505a499ac3ffa4807e80fbea7a2a5f72bb761e786e5d18d13dc212ba6f5c5c",
+      "mode": "full",
+      "text": "Citation fix from the root — fold into the entry page you are recording (README.md has been updated again by the root; re-read it, page id claim-cyclic-full-weight-readme, before you write). The paper's PRINTED labels replace the ones I gave you earlier: the refuted statement is Conjecture 4.2 (Section 4 of arXiv:2607.02239v1); Conjecture 4.1 is the count |N(n,3)| = sum of binomials r-choose-j for j <= r/2, which follows from 4.2 and fails with it at n = 109 (predicted 11, but both mirror-pair supports among the six 2-coset supports give codes with full-weight words — the found word and its image under a non-residue multiplier — so the true count is at most 9); Theorem 4.2 is the orthogonality construction (S ∩ (−S) = ∅ implies no full-weight word); Theorem 4.3 is the two-obstruction theorem whose conditions must hold for EVERY nonempty union T of cosets inside the support: (1) T ∩ (−T) = ∅, or (2) some nonzero ℓ has a unique unordered representation ℓ = a + b with a, b ∈ T. For our support, T = S = C_1 ∪ C_108 fails (1) (it equals its own negation) and fails (2) by a direct count: every nonzero ℓ mod 109 has either 13 or 14 unordered representations (54 values have 13, 54 have 14), none unique. Corollary 4.3 settles r = 2 only (|N(11,3)| = 3); n = 13 was settled by the paper's enumeration (|N(13,3)| = 11). The claim block's instance id stays li-yuan-3.2 — that is the checker's name for Conjecture 4.2, not the paper's number. README.md, claim.json.md and methods.md in the run's store already carry all of this; merge your reader prose on top without changing any number or label, keep the fenced block on claim.json.md untouched, and record only via knowledge_record into pages/claim-cyclic-full-weight/."
+    },
+    "60df273d9cf1:94258": {
+      "sourceSha256": "74cf81c3d2ff958974b6f6b460a18494a94a0e20956abd5c2bee5c06508a9294",
+      "mode": "full",
+      "text": "**The Lab's check PASSED on rc2**: `SOLVED: the frozen cyclic-full-weight checker verified a refutation of li-yuan-3.2, and no dated source in its record table has published one` — VERIFIED-NEW, exactly on my compressed artifact. What remains is the entry page passing the keyed reader check. Steering the writer with the Lab's verdict and the fix list:"
+    },
+    "e4e1953fae40:62": {
+      "sourceSha256": "b74dbb648cf7a0e57c0b280903bfce683dfb821a940d24cc7b5ec87708b1d3cf",
+      "mode": "full",
+      "text": "The Lab's verdict arrived — fold it into the entry page NOW and record, because the run ends at the first release whose check passes with the reader page passing (outer deadline 22:46Z). State the verdict as the Lab's own, exactly these facts: the Lab's check passed at 2026-11-17T20:46:06Z on tag rc2 with the line \"SOLVED: the frozen cyclic-full-weight checker verified a refutation of li-yuan-3.2, and no dated source in its record table has published one\" and \"VERIFIED-NEW\", program cyclic-full-weight, field F_3-cyclic-codes, instance li-yuan-3.2, frozen checker sha256 393cdb77e63d0055f975962b88085839271125e7d590058d9c20628b3e6ed3d6, the verified artifact being the same zlib+base64 string carried in claim.json.md. The rc2 keyed reader check failed only because the page still described rc1; fix each item, change nothing else: (a) the page must describe the current release — name rc2 as the release whose check passed and note this page ships in the following release; (b) keep the found number as the check measured it: value 1, one verified refutation, codeword of weight 109 of 109 positions at n = 109, support C_1 ∪ C_108 with t = 2 <= r/2 = 2, about 1.8e9 of the 2^53 patterns, 0.9 s on 8 cores, registered prediction 0.35 within 4 hours (the outcome landed in the run's first half hour); (c) the first screen must retell: what was asked and for whom (the requester's goal, deciding the published statement false by one finite counterexample), what the team did, what it found with its number, how we know (the frozen checker's verdict, quoted as the Lab's), what is open (the \"only if\" direction, the true count at r >= 4 — Conjecture 4.1's predicted 11 at n = 109 overcounts, true count at most 9 — and a repaired bound), and what to do next (forward the claim, the checker and its sha256 to the authors as the Use clause prescribes); (d) local links must resolve inside pages/claim-cyclic-full-weight/ (claim.json.md, methods.md). Keep the printed paper labels (Conjecture 4.2 refuted; Conjecture 4.1 the count; Theorem 4.2 orthogonality; Theorem 4.3 two obstructions, neither covering this support; Corollary 4.3 r = 2; |N(13,3)| = 11 by enumeration). Record via knowledge_record into pages/claim-cyclic-full-weight/README.md (re-read it first; the root has updated it since your last read), then submit_result."
+    },
+    "5b67ab42c463:/events/42133": {
+      "sourceSha256": "1c64fdce4f3c5f1ed6d137b7d88915a66bf87b7eaafaffa540d2b038cd0899ef",
+      "mode": "full",
+      "text": "The team's pages and the drafted README are not mounted in this sandbox — only `inputs/`, `skills/`, and the verifier sources are. I have the outcome facts from the root's handoff, the commission, the prior-run notes, and the verifier's docstring, so I'll write the entry page now from those, mark what rests on unseen pages as questions, and run the reader checks. First, three grounding facts:"
+    },
+    "5b67ab42c463:/events/57876": {
+      "sourceSha256": "0fda5270ac9a3838da6bf71ae9fdf2d48e39c86b35ffc5a02c8d2297dbe395d7",
+      "mode": "full",
+      "text": "Round 1 complete — result accepted.\n\n**Entry page:** written and recorded at `pages/claim-cyclic-full-weight/README.md` (in my sandbox; full text went to the root via submit_result since the team's page folder isn't mounted here). It carries the four first-screen slots — asked, happened with number (verified value 1; weight 109 of 109; 1.8 billion of 2^53 patterns; 0.9 s on 8 cores), why it matters, next move — plus the build story, the exact verification with the compressed-artifact packaging from the root's steer, the prediction comparison (0.35 within 4 hours), open items, and a Terms glossary. No Lab verdict stated as mine; no release tag named.\n\n**Checks:** prose.mjs clean (0 about-itself, 0 jargon, 0 slop, 0 debris, 40.5% numbers traced); coldread shows all four retell slots inside the first 400 words; audit N/A for Markdown.\n\n**Open questions to the researcher** (in the submitted result): the sweep's Gray-code detail, the verifier's stderr record, whether the acceptance copy's sha256 matches the mounted one I published, confirmation of the updated claim.json.md packaging wording, and the unread rc1 README draft for merging."
+    },
+    "fed7b8878967:29096": {
+      "sourceSha256": "4317fbecaa839e26a81da2c2e97f9377fd5a753a0d9784c61fab95942761a7a0",
+      "mode": "full",
+      "text": "The server doesn't serve knowledge tools to my session at all. Let me check whether the Knowledge pages are materialized on disk somewhere in this sandbox:"
+    },
+    "fed7b8878967:44425": {
+      "sourceSha256": "3c22f155f85c593b1800a18609bd44a1e0e28e8c634de0ab5a062ce959bc32a4",
+      "mode": "full",
+      "text": "The example profile reveals it: opencode children CAN get knowledge tools — via UNDERSCORE-prefixed names (my earlier dash-form attempt was rejected on naming alone). Spawning a read-only relay worker:"
+    },
+    "9004b0b6fcef:1432": {
+      "sourceSha256": "953370144ba108d9a5d0753b09a396ee7a469b8b7ec86b26572922e6b150b73a",
+      "mode": "excerpt",
+      "text": "Search found 3 pages under `pages/claim-cyclic-full-weight/`: … # Li-Yuan Conjecture 4.2 is false: a full-weight codeword at n = 109",
+      "note": "The first line and the title of the entry page the relay read back; the page itself is summarized in the post."
+    },
+    "31c8d92898b9:53": {
+      "sourceSha256": "8825c0cb2b194d0b2e522efa35058b6a275c25256081abdb10ff9b6729a8f526",
+      "mode": "excerpt",
+      "text": "Contract failure on claim-cyclic-full-weight-20261117b/rc1 (commit 08e50816eb9e5ceeb82ea2f0f4a8389672b03429), checked 2026-11-17T20:16:05.919Z. … FAIL {\"reason\": \"the frozen cyclic-full-weight checker refused the claim: 'artifact.codeword must be 109 entries in {0, 1, 2}'\", \"stage\": \"checker\"}",
+      "note": "Wake input: the Lab's rc1 failure, from input blob sha256:78f986711243792364190d50e83ade55456421b0f546cfd2a35f4daed23681b2, which this journal line names."
+    },
+    "31c8d92898b9:72": {
+      "sourceSha256": "0c456c1ea890d15a47f4079e6f441063f43f4edf5c0f06b8f29b4d683c99883f",
+      "mode": "excerpt",
+      "text": "Operator fact, checked outside the run: the compressed artifact in claim.json.md decodes to 109 entries in {1,2}; its entry sum is 0 mod 3 and it vanishes on one mirror pair of cosets, so it is a full-weight word of the [109,54] code. The readable array printed beside it has 110 entries (one extra 1 in the long run near the end), so the page shows a different word than the one checked. That extra entry is also why rc1 failed: the inline array had 110 entries; the Lab did not re-serialize it. Generate the readable array from the decoded artifact with code, never by hand, and correct the rc1 explanation in README.md before the next release.",
+      "note": "Wake input: the first operator steer, from input blob sha256:d04e5d7c646a3b634503aa5b32bfab25dffea9f9644fc9d66a2ad3cea91c4e5c, which this journal line names."
+    },
+    "31c8d92898b9:135": {
+      "sourceSha256": "4a4529a397ac42b3732879bb3b85e4715cf5392788688f72bc25c1be1cc4049a",
+      "mode": "excerpt",
+      "text": "Operator citation fix: the play's labels are wrong. In the paper's only version (arXiv:2607.02239v1, PDF, Section 4), the statement you refute is printed as Conjecture 4.2 (it implies Conjecture 4.1, the count). The negation-free result is Theorem 4.3, and the n = 11 count cites Corollary 4.3. Keep the checker's instance id li-yuan-3.2 in the claim block, but cite the printed numbers on the page. Theorem 4.3 also has a condition (2), a unique sum a+b = l inside T. The page must show that neither condition covers your support, or a reader will think the theorem already settles this code.",
+      "note": "Wake input: the second operator steer, from input blob sha256:741241c6c5e53a1092828d8a219f92c8c5df3bcdf1e96336057d7ffa42195021, which this journal line names."
+    },
+    "31c8d92898b9:172": {
+      "sourceSha256": "b232d6d55676b712783d21247654c3b666d49b4c921393a0cdc0ad3bbacf220b",
+      "mode": "excerpt",
+      "text": "The Lab's check passed at 2026-11-17T20:46:06.397Z on tag rc2: … SOLVED: the frozen cyclic-full-weight checker verified a refutation of li-yuan-3.2, and no dated source in its record table has published one",
+      "note": "Wake input: the Lab's rc2 pass, from input blob sha256:0cf9e1e84050e3fe979e409ef15fe59ef6e5ac50836b43b4581290e193720d1c, which this journal line names."
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    }
+  ],
+  "redactionClasses": [
+    "hidden-thinking",
+    "lifecycle-prose",
+    "identity"
+  ],
+  "coverageText": "Published in the agents' own words: 49 beats, from the lead's plan through the hit, the rc1 failure and its misdiagnosis, the two operator steers, and the rc2 pass, plus the writers' key turns. The four wake inputs that carried the Lab's verdicts and the operator's steers are published as marked excerpts. Every other body is withheld, and every event keeps its time, agent and tool name. Hidden reasoning, stack traces, and subscription seat ids are removed. The first writer never started, so it has no transcript.",
+  "reviewer": {
+    "by": "drewstone",
+    "at": "2026-11-17T22:00:00Z"
+  }
+}

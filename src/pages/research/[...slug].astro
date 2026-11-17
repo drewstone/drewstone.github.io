@@ -20,6 +20,17 @@ const records = await Promise.all(
     parseRecord(JSON.parse(await readFile(`public/research/records/${id}.json`, 'utf8'))),
   ),
 )
+// A replay is reviewed and checked like a record, but no store build has signed it (research/replays).
+const replays = await Promise.all(
+  entry.data.replay_ids.map(async (id: string) =>
+    parseRecord(JSON.parse(await readFile(`public/research/replays/${id}.json`, 'utf8'))),
+  ),
+)
+const shown = [...records, ...replays]
+const downloads = Object.fromEntries([
+  ...entry.data.record_ids.map((id: string) => [id, `/research/records/${id}.json`]),
+  ...entry.data.replay_ids.map((id: string) => [id, `/research/replays/${id}.json`]),
+])
 const { records: allIds } = JSON.parse(await readFile('research/publications/idmap.json', 'utf8'))
 // Behavior battery reports are build-time static data, like the records themselves.
 const behaviorReports = entry.data.record_ids
@@ -29,7 +40,7 @@ const idmap = Object.fromEntries(entry.data.record_ids.map((id: string) => [id, 
 const sectionLinks = [
   ...headings.filter((heading) => heading.depth === 2).map((heading) => ({ href: `#${heading.slug}`, label: heading.text })),
   { href: '#references', label: 'References' },
-  ...(records.length > 0 ? [{ href: '#agent-record', label: 'Agent record' }] : []),
+  ...(shown.length > 0 ? [{ href: '#agent-record', label: 'Agent record' }] : []),
 ]
 ---
 
@@ -89,10 +100,17 @@ const sectionLinks = [
       })
     }
   </script>
-  {records.length > 0 && (
+  {shown.length > 0 && (
     <section id="agent-record" class="record">
       <h2>Agent record</h2>
-      <EvidenceExplorer records={records} idmap={idmap} behaviors={behaviorReports} />
+      {replays.length > 0 && (
+        <p class="record-status">
+          Reviewed replay, not store-signed. It is built from the run's retained traces with the same converter and review
+          as a signed record, but the evidence store holds no snapshot of this run, so no store build has reproduced and
+          signed it. Every published body names its source line and that line's sha256.
+        </p>
+      )}
+      <EvidenceExplorer records={shown} idmap={idmap} behaviors={behaviorReports} downloads={downloads} />
     </section>
   )}
 </Base>
@@ -202,5 +220,11 @@ const sectionLinks = [
   }
   .record {
     margin-top: 1.75rem;
+  }
+  .record-status {
+    max-width: var(--max-width);
+    margin: 0 auto 0.9rem;
+    font-size: 0.9rem;
+    color: var(--fg-muted);
   }
 </style>

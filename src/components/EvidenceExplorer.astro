@@ -3,8 +3,9 @@ import type { RunRecord } from '@drewstone/agent-record/record'
 import AgentRecordView, { type EventIdMap } from './AgentRecordView'
 import '@tangle-network/sandbox-ui/styles'
 import type { BehaviorReport } from '@tangle-network/sandbox-ui/record'
-interface Props { records: RunRecord[]; idmap: EventIdMap; behaviors?: readonly BehaviorReport[] }
-const { records, idmap, behaviors = [] } = Astro.props
+interface Props { records: RunRecord[]; idmap: EventIdMap; behaviors?: readonly BehaviorReport[]; downloads?: Record<string, string> }
+const { records, idmap, behaviors = [], downloads = {} } = Astro.props
+const download = downloads[records[0].runId] ?? `/research/records/${records[0].runId}.json`
 ---
 <style is:global>
   .record-view-switch { display: flex; gap: .4rem; margin: 0 0 .75rem; }
@@ -12,4 +13,4 @@ const { records, idmap, behaviors = [] } = Astro.props
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
 </style>
 <AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:load />
-<noscript><p>The interactive viewer requires JavaScript. <a href={`/research/records/${records[0].runId}.json`}>Download the retained record.</a></p></noscript>
+<noscript><p>The interactive viewer requires JavaScript. <a href={download}>Download the retained record.</a></p></noscript>
