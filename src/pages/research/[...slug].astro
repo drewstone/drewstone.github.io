@@ -105,9 +105,9 @@ const sectionLinks = [
       <h2>Agent record</h2>
       {replays.length > 0 && (
         <p class="record-status">
-          Reviewed replay, not store-signed. It is built from the run's retained traces with the same converter and review
-          as a signed record, but the evidence store holds no snapshot of this run, so no store build has reproduced and
-          signed it. Every published body names its source line and that line's sha256.
+          The agents' own messages and tool results, converted from the run's logs with private details removed. Each
+          published message names its log line and that line's SHA-256 hash. No independent rebuild has signed this
+          record yet.
         </p>
       )}
       <EvidenceExplorer records={shown} idmap={idmap} behaviors={behaviorReports} downloads={downloads} />

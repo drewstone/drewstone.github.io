@@ -2,7 +2,7 @@
 title: 'A counterexample to the Li-Yuan full-weight conjecture'
 description: 'A ternary cyclic code of length 109 with 0 outside its spectral support and only half its cosets inside still holds a codeword with no zero entry, so the "if" direction of Conjecture 4.2 of Li and Yuan is false. A check that runs in the page, the replayed agent record, and a billed cost of USD 0.38.'
 assessed: '2026-11-17'
-claim: 'The [109, 54] ternary cyclic code whose spectrum is supported on the mirror pair C₁ ∪ C₄ has 0 outside its support and t = 2 = r/2 cosets in it, yet contains a codeword with all 109 entries nonzero, so the "if" direction of Conjecture 4.2 in arXiv:2607.02239v1 is false.'
+claim: 'Li and Yuan conjectured that certain ternary cyclic codes contain no codeword with every entry nonzero. A [109, 54] code that meets their conditions contains one, so the "if" direction of their Conjecture 4.2 (arXiv:2607.02239v1) is false.'
 limitation: 'The authors have not confirmed it yet. The search method was written by the operator, not found by the agents. Only the "if" direction is refuted; the "only if" direction and the true value of |N(109, 3)| are open.'
 area: 'Coding theory'
 replay_ids: ['claim-cyclic-full-weight-20261117b']
@@ -14,7 +14,7 @@ import ResearchBibliography from '../../components/ResearchBibliography.astro'
 
 Li and Yuan conjectured that a ternary cyclic code of prime length avoids full-weight codewords exactly when 0 is outside its spectral support and at most half of the nonzero cyclotomic cosets are inside it [[1]](#ref-1).
 At length 109 that is false: the code below meets both conditions and still contains a word whose 109 entries are all nonzero.
-A team of agents in my research lab found the word in a 0.9-second search, the Lab's frozen checker verified it, and the run billed USD 0.38.
+A team of AI agents in my research lab found the word in a 0.9-second search, the lab's fixed checker (one the agents cannot change) verified it, and the run billed USD 0.38.
 The search method was not theirs, and the one error that reached the checker was an array an agent copied by hand.
 
 ## The conjecture
@@ -60,7 +60,7 @@ $C_1 \cup C_4$ is the set of quadratic residues mod 109, so $\mathcal{C}_S$ is a
 You do not need $\mathbb{F}_{3^{27}}$ to check it.
 Since $\widehat{c}_j = c(\zeta^j)$ for $c(x) = \sum_i c_i x^i$, the spectrum vanishes exactly where $\zeta^j$ is a root of $g(x) = \gcd(c(x), x^{109} - 1)$, a polynomial over $\mathbb{F}_3$:
 
-1. $\deg g = 55$.
+1. $\deg g = 55$, and since $3 \nmid 109$ the roots of $x^{109} - 1$ are distinct, so the spectrum has exactly 55 zeros.
 2. Roots over $\mathbb{F}_3$ are closed under cubing, so the zeros form a union of cosets, and $55 = 1 + 27 + 27$ forces $\{0\}$ and two nonzero cosets.
 3. $g$ equals its own reciprocal up to a scalar, so its roots are closed under $j \mapsto -j$, and the two cosets are a mirror pair.
 4. The spectrum is nonzero on exactly the other mirror pair: $0 \notin S$, $t = 2 = r/2$, and every entry of $c$ is 1 or 2.
@@ -70,8 +70,8 @@ This button runs that computation in your browser:
 <FullWeightCheck />
 
 The same check is a 35-line Python file with no imports [[2]](#ref-2).
-Which mirror pair carries the spectrum depends on which root you call $\zeta$; with the Lab checker's choice it is $C_1 \cup C_4$, and the permutation $i \mapsto 2i$ maps one mirror-pair code onto the other, so both hold full-weight words.
-The checker also evaluated the whole spectrum in $\mathbb{F}_{3^{27}}$, and the operator recomputed it there separately.
+Which mirror pair carries the spectrum depends on which root you call $\zeta$; with the lab checker's choice it is $C_1 \cup C_4$, and the permutation $i \mapsto 2i$ maps one mirror-pair code onto the other, so both hold full-weight words.
+The lab's checker also evaluated the whole spectrum in $\mathbb{F}_{3^{27}}$, and the operator recomputed it there separately.
 
 <details class="ui-disclosure">
 <summary>Why the paper's own theorems do not rule it out</summary>
@@ -86,30 +86,30 @@ Conjecture 4.1's 11 also counted the two mirror pairs, so it can only hold at $n
 
 ## How the agents found it
 
-The run is `claim-cyclic-full-weight-20261117b`.
-A lead and a writer ran GLM-5.3 in the opencode harness, each in its own sandbox, against a frozen checker that decides a claim in three stages: format, mathematics, and novelty against dated sources.
-The operator is the Claude Code session that runs the Lab for me; it watches runs from outside and can message a team.
+A lead and a writer ran GLM-5.3 in opencode, an open-source coding agent, each in its own sandbox.
+Their output is a claim: a short write-up with the codeword attached, which the fixed checker decides in three stages: format, mathematics, and novelty against dated sources.
+The operator is the Claude Code session that runs the lab for me; it watches runs from outside and can message a team.
 
 The method was the operator's.
-A 2-hour pilot the day before ran annealed walks toward fewer zero entries and stalled at 7 zeros, which says nothing: a random-like $[109, 54]$ code has about $6 \times 10^{14}$ words with 7 zeros and about $3.7 \times 10^{6}$ with none.
-The operator wrote that count into the play with the method: a full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every one, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
-The play registered 0.35 as the chance of a verified refutation within 4 hours.
+A 2-hour pilot the day before ran annealed walks toward fewer zero entries and stalled at 7 zeros, which says nothing: a random-like $[109, 54]$ code has about $9 \times 10^{14}$ words with 7 zeros and about $3.7 \times 10^{6}$ with none.
+The operator wrote that count into the run's brief with the method: a full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every one, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
+Before the run, the brief recorded 0.35 as the chance of a verified refutation within 4 hours.
 
 The agents built it and got it right.
 All times are UTC on 17 November 2026; the run started at 19:44.
 The lead [chose an exhaustive Gray-code walk over more annealing](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:30574#agent-record), built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", and [validated the search at $n = 13$](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51760#agent-record), where the paper's enumeration gives the answer.
 At 20:03:59 the C search on 8 cores [printed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51978#agent-record) `FOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0`, after about $1.8 \times 10^{9}$ patterns and 0.9 seconds, earlier than expected about one time in three.
-Within 25 seconds the lead had recomputed the word's spectrum and the mounted checker had accepted it.
+Within 25 seconds the lead had recomputed the word's spectrum and a copy of the checker in its sandbox had accepted it.
 
 Then a typo cost thirty minutes.
-The first release, rc1, failed at 20:16 with `artifact.codeword must be 109 entries in {0, 1, 2}`.
+The first submission to the checker, rc1, failed at 20:16 with `artifact.codeword must be 109 entries in {0, 1, 2}`.
 The lead's local copy passed, so it [concluded](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:66525#agent-record) that "the corruption happens in the Lab's unwrap/collector", re-typed the word as a compressed string, mistyped that too, and told the writer the pipeline had mangled the array.
-At 20:28 the operator sent one fact checked outside the run: the array on the page had 110 entries, and that, not the Lab, failed rc1.
+At 20:28 the operator sent one fact checked outside the run: the array in the write-up had 110 entries, and that, not the lab, failed rc1.
 The lead [agreed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:70298#agent-record), found the line now held 112 entries, watched a code-generated paste come out at 110, and [stopped](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:73972#agent-record): "hand-copying long arrays is unworkable."
-A second message fixed the citations (the play's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead [did](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:90776#agent-record) by 20:40.
-The second release, rc2, [passed all three stages](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:94258#agent-record) at 20:46; the run settled at 20:52, 68 minutes after it started.
+A second message fixed the citations (the brief's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead [did](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:90776#agent-record) by 20:40.
+The second submission, rc2, [passed all three stages](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:94258#agent-record) at 20:46; the run settled at 20:52, 68 minutes after it started.
 
-The record at the bottom of this page puts all five agents on one time line: the lead, three spawns of the writer (the first never started; the other two lacked the page tools their profiles named) and a helper the last writer spawned to read the pages back.
+The record at the bottom of this page puts all five agents on one time line: the lead, three spawns of the writer (the first never started; the other two lacked tools their setup asked for) and a helper the last writer spawned to read the write-up back.
 It shows 49 moments in the agents' own words.
 
 ## What it cost
@@ -130,18 +130,18 @@ A person with the method note and a 200-line script could have done this in an a
 The hard step was the count that said where the words are and why annealing could not find them, and it came from outside the team.
 The agents did the tedious part well: field arithmetic matched to the checker, validation at the one length where the answer is known, and no claim until the checker agreed.
 They failed in a specific way: a low-cost model copied 109 numbers by hand, got 110, and blamed the infrastructure with confidence.
-The frozen checker refused the wrong word, and an outside reader found the cause in one message.
+The fixed checker refused the wrong word, and the operator, reading from outside the run, found the cause and sent it in one message.
 
-So if you build one of these, spend on the checker and the method before the model, and give the agents one hard rule: every number a claim carries is produced by code, never typed.
+So if you build a research-agent team, spend on the checker and the method before the model, and give the agents one hard rule: every number a claim carries is produced by code, never typed.
 
 ## Status
 
-I wrote to Li and Yuan on 17 November 2026; they have not confirmed the counterexample yet.
-We found no published refutation, and the Lab's novelty stage found none among its dated sources.
+Li and Yuan have not confirmed the counterexample yet.
+We found no published refutation, and the checker's novelty stage found none among its dated sources.
 This refutes only the "if" direction at $n = 109$; the "only if" direction and the value of $|\mathcal{N}(109, 3)|$ are open.
 
 <ResearchBibliography entries={[
   { authors: 'Y. Li and P. Yuan', title: 'Cyclic Codes and Cyclically Covering Subspaces over Finite Fields', url: 'https://arxiv.org/abs/2607.02239v1', publication: 'arXiv:2607.02239v1, July 2, 2026, the only version. Section 4: Theorems 4.2 and 4.3, Corollary 4.3, Conjectures 4.1 and 4.2.' },
   { title: 'verify-li-yuan-109.py', url: '/research/verify-li-yuan-109.py', publication: 'Python 3, standard library only. Prints the coset structure, the weight, the entry sum, deg gcd(c(x), x^109 - 1) = 55 and the self-reciprocity of that gcd.' },
-  { title: 'Agent record of run claim-cyclic-full-weight-20261117b, November 17, 2026', url: '/research/replays/claim-cyclic-full-weight-20261117b.json', publication: 'Reviewed replay of the retained traces of four of the five agents; 49 bodies published, each bound to the sha256 of its source line. Not signed by the evidence store.' },
+  { title: 'Agent record of run claim-cyclic-full-weight-20261117b, November 17, 2026', url: '/research/replays/claim-cyclic-full-weight-20261117b.json', publication: 'The run\'s logged events for all five agents (the first writer never started, so it has none); 49 messages published in full, each tied to the SHA-256 hash of its log line. Not independently signed.' },
 ]} />
