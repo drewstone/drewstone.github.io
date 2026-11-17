@@ -35,9 +35,12 @@ if (typeof window !== 'undefined') {
   window.addEventListener('keydown', allow, true)
 }
 
+/** A record opens on its root agent, which the converter does not always list first. */
+const rootOf = (record: RunRecord | undefined) => (record?.nodes.some((node) => node.id === record.runId) ? record.runId : undefined)
+
 /** URL ownership stays with the site; the shared viewer has no routing side effects. */
 export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: readonly BehaviorReport[] }) {
-  const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '' })
+  const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '', nodeId: rootOf(records[0]) })
   useEffect(() => {
     const read = () => {
       const url = new URL(location.href)
@@ -66,11 +69,9 @@ export default function AgentRecordView({ records, idmap = {}, behaviors = [] }:
       }
       const shown = records.find((record) => record.runId === runId)
       const linked = shown?.events.find((event) => event.id === eventId)
-      // Without a linked event the record opens on its root agent, which the converter does not always list first.
-      const root = !eventId && shown?.nodes.some((node) => node.id === runId) ? runId : undefined
       setSelection({
         runId,
-        nodeId: root,
+        nodeId: eventId ? undefined : rootOf(shown),
         eventId,
         view: view === 'source' || view === 'usage' ? view : 'chat',
         at: at === 'full' ? undefined : at ?? linked?.at,
