@@ -283,7 +283,8 @@ function withoutProse(value) {
   if (Array.isArray(value)) return value.map(withoutProse)
   if (typeof value === 'string') return redactPath(value)
   if (!value || typeof value !== 'object') return value
-  return Object.fromEntries(Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key) && !IDENTITY_KEYS.has(key)).map(([key, inner]) => [key, withoutProse(inner)]))
+  const kept = Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key) && !IDENTITY_KEYS.has(key))
+  return Object.fromEntries(kept.map(([key, inner]) => [key, withoutProse(inner)]))
 }
 // A source path keeps its shape, but not the private home it names: a Pi session directory encodes its working directory
 // (trace/pi-sessions/--home-drew-code-…), which G8 refuses like /home/drew itself.
@@ -634,7 +635,8 @@ async function checkReplays(gate) {
     const dir = join(REPLAYS, id)
     if (!ID.test(id)) gate.fail('G1', id, 'replay id is not a lowercase slug')
     const read = async (path) => (existsSync(path) ? readFile(path) : null)
-    const [overlayBytes, replayBytes, publicBytes] = await Promise.all([read(join(dir, 'overlay.json')), read(join(dir, 'replay.json')), read(join(PUBLIC_REPLAYS, `${id}.json`))])
+    const paths = [join(dir, 'overlay.json'), join(dir, 'replay.json'), join(PUBLIC_REPLAYS, `${id}.json`)]
+    const [overlayBytes, replayBytes, publicBytes] = await Promise.all(paths.map(read))
     if (!overlayBytes || !replayBytes || !publicBytes) {
       gate.fail('G1', id, 'a replay needs overlay.json, replay.json and its public projection')
       continue
@@ -643,7 +645,8 @@ async function checkReplays(gate) {
     const replay = JSON.parse(replayBytes.toString('utf8'))
     const record = JSON.parse(publicBytes.toString('utf8'))
     checkOverlay(gate, id, overlay)
-    if (replay.schema !== 'publication.replay.v1' || replay.recordId !== id) gate.fail('G1', id, 'replay.json is not the publication.replay.v1 statement of this id')
+    if (replay.schema !== 'publication.replay.v1' || replay.recordId !== id)
+      gate.fail('G1', id, 'replay.json is not the publication.replay.v1 statement of this id')
     if (!replay.unsigned) gate.fail('G1', id, 'replay.json does not say why no store build signed it')
     if (replay.converter?.package !== CONVERTER || !replay.converter?.version) gate.fail('G1', id, 'replay.json names no converter version')
     for (const key of REPLAY_FIELDS) if (!HEX.test(String(replay[key]))) gate.fail('G1', id, `replay.json has no ${key}`)
@@ -667,10 +670,12 @@ async function checkReplays(gate) {
 /** Apply the review to a converted record whose snapshot the store does not hold, and write the projection and its digests. */
 export async function replay(id, recordPath) {
   const dir = join(REPLAYS, id)
-  const [recordBytes, overlayBytes, statement] = await Promise.all([readFile(recordPath), readFile(join(dir, 'overlay.json')), readJson(join(dir, 'replay.json'))])
+  const [recordBytes, overlayBytes] = await Promise.all([readFile(recordPath), readFile(join(dir, 'overlay.json'))])
+  const statement = await readJson(join(dir, 'replay.json'))
   const projected = json(applyOverlay(JSON.parse(recordBytes.toString('utf8')), JSON.parse(overlayBytes.toString('utf8'))))
   await writeAtomic(join(PUBLIC_REPLAYS, `${id}.json`), projected)
-  await writeAtomic(join(dir, 'replay.json'), json({ ...statement, recordSha256: sha256(recordBytes), overlaySha256: sha256(overlayBytes), publicSha256: sha256(projected) }))
+  const digests = { recordSha256: sha256(recordBytes), overlaySha256: sha256(overlayBytes), publicSha256: sha256(projected) }
+  await writeAtomic(join(dir, 'replay.json'), json({ ...statement, ...digests }))
 }
 
 // ---------------------------------------------------------------- the store (GTR)
@@ -944,7 +949,8 @@ async function main([command, ...rest]) {
     const store = await verify({ ids, runDir })
     return Math.max(offline.report('check'), store.report('verify'))
   }
-  process.stderr.write('usage: research-records.mjs check | build [<id>...] | verify [<id>...] [--run-dir <materialized snapshot>] [--if-changed] | replay <id> --record <converted record>\n')
+  process.stderr.write('usage: research-records.mjs check | build [<id>...] | verify [<id>...] [--run-dir <materialized snapshot>] [--if-changed]\n'
+    + '       research-records.mjs replay <id> --record <converted record>\n')
   return 64
 }
 
