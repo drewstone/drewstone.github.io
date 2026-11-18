@@ -1,19 +1,19 @@
 {
   "schema": "publication.lock.v1",
   "recordId": "research-debruijn-frontier-20261004system3",
-  "recordDigest": "sha256:f2a203dc0335aa729f8077f5daa63c5cff5a1d7f7de81b741c06fa4592de5146",
-  "overlaySha256": "a03b310b36e9247ace4d67f7c499903387626b4ba82a07a79bdb83ec7909eef6",
-  "publicSha256": "3c1fb2d62a76f16f4dd95d17a18af9b896eed5e1f439d4ff8d5dc761423d7e4e",
+  "recordDigest": "sha256:a663ce789496e0c604c760baa4a8ca61415114bfa9a36325b248a322f5331a75",
+  "overlaySha256": "04bf810ace221e7a9ee6294ab5ecaaa66d0922daa3ca307aa8b0f06af81e72ae",
+  "publicSha256": "549379fcf559ee8c34770891226a5a6f18250b07c78cf835810d7ae7efef27c8",
   "snapshot": "sha256:9a0bffa4cb74c03f34b5e9fbfaeb97c05a8afc8720d071a502d669ffafc53dc1",
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.33.1",
-    "adapter": "2.4.0",
+    "version": "4.0.0",
+    "adapter": "2.8.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-11T15:14:18.370Z",
+  "builtAt": "2026-11-18T07:47:27.356Z",
   "attestation": {
     "keyId": "7566b6e702ec87d4",
-    "signature": "D6StOI/U6OsbRjSNns6bBM0gzgMwNrp3mpCaqdtyNsFhI+YQrcEJmxzFaTrfZWD/I7JXl6Gtufo4KrsgkvkuCA=="
+    "signature": "L00/A/NsjIFKj24OGauLKK5RV5VjkY4jDge4ofvzNBlJk5lDqnbhybXv0DpVuRuVALgxObLopValJ5PuWEdZCg=="
   }
 }

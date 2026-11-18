@@ -1,19 +1,19 @@
 {
   "schema": "publication.lock.v1",
   "recordId": "research-math-20261003system4",
-  "recordDigest": "sha256:ae418ddcd56339cab87d76e248a19fa5a76118c13e59c3344a49340f6fcbd45d",
-  "overlaySha256": "f990822fa375c56e9dbc72e5b412f9edf75371bcbeffc6802ce332de981bc38a",
-  "publicSha256": "00dfd133144f2f3c90ec540988b4527666902d444edf0a953846bebf818b2a50",
+  "recordDigest": "sha256:798e00724c6e32e56ed93277ffb7f5b9688167af906b66186d901844ee8a60ba",
+  "overlaySha256": "590e9a65c5ff0577688e811dc34b0b5721a9423fd291fe44dfe95f9a0e8d95d7",
+  "publicSha256": "7131ff7e4a2586e06a778f4d49267b63431d4c22a1a8a540d24d04bc68ca7d79",
   "snapshot": "sha256:b83eaae1804edb3c690f190d4db3d09858c19701eefd81c03a599f75b820bace",
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.39.2",
-    "adapter": "2.6.0",
+    "version": "4.0.0",
+    "adapter": "2.8.0",
     "idScheme": "anchor.v1"
   },
-  "builtAt": "2026-10-15T07:26:04.018Z",
+  "builtAt": "2026-11-18T07:29:12.675Z",
   "attestation": {
     "keyId": "7566b6e702ec87d4",
-    "signature": "OB0I39XuvR35y+crxk+k9zzup5Oxy8mfVH3MAKSMvHfeOF2KZV/lJYM1Zy0dUrFtLDn470WEbbFkCx7i/qmHBg=="
+    "signature": "bgMYPiP6u43QJmw3n4azimmGTtZFhuyl1vdsnPghcLrJqqS1D74cP8ZIQzh462kdZHfNsxjTA3BfsbfB04LfBQ=="
   }
 }

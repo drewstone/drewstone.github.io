@@ -808,13 +808,14 @@ async function checkStoreIndex(gate, ids) {
 
 /**
  * G3: pinned for every cited snapshot: a bucket lock rule, no expiring lifecycle rule, and a verified copy in the pin
- * mirror. The mirror lives on the trace drive of the host that backs it up (GTR); elsewhere only the bucket is checked.
+ * mirror. The evidence CLI names its mirror (on the trace drive of the host that backs it up, GTR); where that
+ * directory is absent only the bucket is checked.
  */
 async function checkPins(gate) {
   try {
-    const mirror = process.env.EVIDENCE_PIN_MIRROR ?? '/mnt/traces/evidence-pins'
-    const [pin] = await evidence(['pin', '--from', PUB, '--check', '--mirror', mirror], { allowFailure: true })
-    const mirrorHere = existsSync(mirror)
+    const [pin] = await evidence(['pin', '--from', PUB, '--check'], { allowFailure: true })
+    const mirror = pin?.mirror ?? 'the pin mirror'
+    const mirrorHere = Boolean(pin?.mirror) && existsSync(pin.mirror)
     const rulesOk = pin && !pin.rules?.missing?.length && !pin.lifecycle?.deleting?.length
     const mirrorOk = pin && !pin.mirrored?.missing?.length && !pin.mirrored?.mismatched?.length
     if (!rulesOk) gate.fail('G3', null, `bucket pins incomplete (run evidence-cli.mjs pin --from research/publications): ${JSON.stringify({ rules: pin?.rules, lifecycle: pin?.lifecycle })}`)
