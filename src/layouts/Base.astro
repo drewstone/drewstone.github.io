@@ -261,7 +261,8 @@ const onProject = projects.some((item) => path === item.href)
 
   .nav-links {
     display: flex;
-    gap: clamp(0.65rem, 2vw, var(--space-lg));
+    flex-wrap: wrap;
+    gap: 0.35rem clamp(0.65rem, 2vw, var(--space-lg));
     align-items: baseline;
   }
 
