@@ -30,7 +30,7 @@ import { execFile } from 'node:child_process'
 import { createHash, createPrivateKey, createPublicKey, sign as signBytes, verify as verifyBytes } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
-import { hostname, tmpdir } from 'node:os'
+import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
@@ -722,7 +722,6 @@ export async function build({ ids } = {}) {
         snapshot: manifest.snapshots ?? manifest.snapshot,
         converter: manifest.converter,
         builtAt: new Date().toISOString(),
-        builtOn: hostname(),
       }
       // Signed only here, after the store reproduced the record and the review matched its sources.
       lock.attestation = { keyId: signer.keyId, signature: signBytes(null, attestation(lock, Buffer.from(manifestText)), signer.key).toString('base64') }
