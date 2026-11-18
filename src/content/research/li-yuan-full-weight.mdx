@@ -6,6 +6,7 @@ assessed: '2026-11-18'
 claim: 'A ternary cyclic code of length 109 refutes the sufficiency claim in Conjecture 4.2 of Li and Yuan. Exactly nine codes at this length have no full-weight word. Conjecture 4.1 predicts eleven.'
 limitation: 'The count is specific to length 109. The operator supplied the search method and the agents found the word.'
 area: 'Coding theory'
+replay_ids: ['claim-cyclic-full-weight-20261117b']
 order: 8
 ---
 import FullWeightRing from '../../components/FullWeightRing.astro'
@@ -101,19 +102,18 @@ A 2-hour pilot the day before ran annealed walks toward fewer zero entries and s
 The operator wrote that count into the run's brief with the method: a full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every one, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
 Before the run, the brief recorded 0.35 as the chance of a verified refutation within 4 hours.
 
-The agents built it and got it right.
 All times are UTC on 17 November 2026; the run started at 19:44.
-The lead chose an exhaustive Gray-code walk over more annealing, built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", and validated the search at $n = 13$, where the paper's enumeration gives the answer.
-At 20:03:59 the C search on 8 cores printed `FOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0`, after about $1.8 \times 10^{9}$ patterns and 0.9 seconds, earlier than expected about one time in three.
+The lead [chose an exhaustive Gray-code walk over more annealing](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:30574#agent-record), built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", and [validated the search at $n = 13$](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51760#agent-record), where the paper's enumeration gives the answer.
+At 20:03:59 the C search on 8 cores [printed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:51978#agent-record) `FOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0`, after about $1.8 \times 10^{9}$ patterns and 0.9 seconds, earlier than expected about one time in three.
 Within 25 seconds the lead had recomputed the word's spectrum and a copy of the checker in its sandbox had accepted it.
 
 Then a typo cost thirty minutes.
 The first submission to the checker, rc1, failed at 20:16 with `artifact.codeword must be 109 entries in {0, 1, 2}`.
-The lead's local copy passed, so it concluded that "the corruption happens in the Lab's unwrap/collector", re-typed the word as a compressed string, mistyped that too, and told the writer the pipeline had mangled the array.
+The lead's local copy passed, so it [concluded](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:66525#agent-record) that "the corruption happens in the Lab's unwrap/collector", re-typed the word as a compressed string, mistyped that too, and told the writer the pipeline had mangled the array.
 At 20:28 the operator sent one fact checked outside the run: the array in the write-up had 110 entries, and that, not the lab, failed rc1.
-The lead agreed, found the line now held 112 entries, watched a code-generated paste come out at 110, and stopped: "hand-copying long arrays is unworkable."
-A second message fixed the citations (the brief's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead did by 20:40.
-The second submission, rc2, passed all three stages at 20:46; the run settled at 20:52, 68 minutes after it started.
+The lead [agreed](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:70298#agent-record), found the line now held 112 entries, watched a code-generated paste come out at 110, and [stopped](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:73972#agent-record): "hand-copying long arrays is unworkable."
+A second message fixed the citations (the brief's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead [did](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:90776#agent-record) by 20:40.
+The second submission, rc2, [passed all three stages](/research/li-yuan-full-weight?pursuit=claim-cyclic-full-weight-20261117b&event=60df273d9cf1:94258#agent-record) at 20:46; the run settled at 20:52, 68 minutes after it started.
 
 Five agents took part: the lead, three spawns of the writer (the first never started; the other two lacked tools their setup asked for) and a helper the last writer spawned to read the write-up back.
 

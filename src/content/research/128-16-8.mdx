@@ -6,14 +6,13 @@ assessed: '2026-10-13'
 claim: 'An indecomposable self-dual CSS [[128,16,8]] code with stabilizer check weight 8 and qubit degree 8 has 218 depth-one two-local code-preserving circuits whose logical image is the full symplectic group Sp(32,2).'
 limitation: 'A catalogue extension, not a frontier move: rate 1/8 and distance 8 are unchanged from the [[64,8,8]] incumbent, weight-8 [[128,16,8]] parameters already occur in published bivariate-bicycle codes, and no practical fault-tolerant implementation is claimed.'
 area: 'Quantum information'
+replay_ids: ['albert-full-ldpc-symmetry-20261011a', 'albert-full-ldpc-symmetry-20261011b', 'albert-full-ldpc-lift-20261011b']
 order: 7
 ---
 import ResearchBibliography from '../../components/ResearchBibliography.astro'
 
-There is now an explicitly certified indecomposable CSS quantum code with parameters [[128,16,8]] whose depth-one two-local circuits generate the full logical Clifford group Sp(32,2), at stabilizer check weight 8 and qubit degree 8.
-Within Victor V. Albert's pinned census of full codes [[1]](#ref-1), this extends the maximum indecomposable logical count from 8 to 16 qubits.
+This quantum error-correcting code stores 16 logical qubits in 128 physical qubits. Each stabilizer check touches eight qubits at most. A set of 218 shallow circuits generates the full logical Clifford group. The previous code in Albert's census with these check limits stored eight logical qubits [[1]](#ref-1).
 
-The honest scope is narrower than a frontier result, and it is stated here first: **this is a catalogue extension**.
 The rate stays 1/8 and the distance stays 8, exactly the incumbent's values.
 Weight-8 [[128,16,8]] parameters already occur in published bivariate-bicycle constructions, and two copies of the incumbent code match every listed parameter except indecomposability.
 An outside critique on October 11, 2026 [[3]](#ref-3) confirmed the mathematics and wrote this scoping; this post adopts it.
@@ -97,8 +96,10 @@ That split is written out in the private proof packet.
 
 ## Attribution
 
-The code was found by a cancelled discovery run and certified by a second run the same day; two runs passed the mounted check on October 11 and hardened rechecks on October 12 passed all 26 gates for both.
-The run-level history, including run identifiers, the coordination outage, the salvage of the certificate files, and where each retained record lives, is kept in `research/albert-128-16-8-attribution/` in this repository [[5]](#ref-5).
+The first agent [built a two-sheet lift](/research/128-16-8?pursuit=albert-full-ldpc-symmetry-20261011a&event=b80469bb6364:419#agent-record) and [checked its distance](/research/128-16-8?pursuit=albert-full-ldpc-symmetry-20261011a&event=b80469bb6364:555#agent-record). Its [last progress report](/research/128-16-8?pursuit=albert-full-ldpc-symmetry-20261011a&event=b80469bb6364:660#agent-record) says exactly what was missing: the 47 words needed for the certificate. A coordination outage ended that run.
+
+The operator recovered the workspace and ran the agent's certificate builder. A second run [verified the 47 words and all 218 generators](/research/128-16-8?pursuit=albert-full-ldpc-symmetry-20261011b&event=b2de3ae4ba72:538#agent-record). A separate run [recorded the weight-eight logical operator](/research/128-16-8?pursuit=albert-full-ldpc-lift-20261011b&event=61534d780389:50#agent-record). Both constructions passed all 26 checks on October 12.
+
 The outside critique is the work of GPT-6 Pro, commissioned October 11, 2026; its full text is retained alongside the construction [[3]](#ref-3).
 No peer review or publication acceptance is asserted, and the critique's qualifications (82 of the 218 raw generator strings need Pauli sign corrections in Albert's allowed convention) are part of the record.
 

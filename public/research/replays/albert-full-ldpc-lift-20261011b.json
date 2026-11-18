@@ -1,0 +1,4410 @@
+{
+  "schema": "agent-record.v1",
+  "runId": "albert-full-ldpc-lift-20261011b",
+  "title": "Second check of the lift",
+  "producer": {
+    "name": "@drewstone/agent-record/adapters/agent-runtime",
+    "version": "2.8.0"
+  },
+  "format": "cloud",
+  "idScheme": "anchor.v1",
+  "input": {
+    "runIdBasis": "option"
+  },
+  "nodes": [
+    {
+      "id": "albert-full-ldpc-lift-20261011b",
+      "label": "root",
+      "parent": null,
+      "kind": "agent",
+      "role": "root",
+      "model": "glm-5.3",
+      "modelSource": "run input profile",
+      "servedModel": null,
+      "harness": "opencode",
+      "start": "2026-10-11T14:21:52.889Z",
+      "end": "2026-10-11T16:58:49.225Z",
+      "status": "no-winner",
+      "sandboxes": [
+        "sandbox-b2ae07feb781"
+      ],
+      "capture": {
+        "channel": "root",
+        "status": "lossy",
+        "reason": "resumed-attempt-replay-dropped"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "61534d780389:1",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:21:52.889Z",
+      "kind": "begin",
+      "category": "lifecycle",
+      "label": "begin",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 1
+      },
+      "detail": {
+        "lifecycle": "begin",
+        "data": {
+          "root": "albert-full-ldpc-lift-20261011b"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:2",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:21:52.889Z",
+      "kind": "spawned",
+      "category": "lifecycle",
+      "label": "spawned",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 2
+      },
+      "detail": {
+        "lifecycle": "spawned",
+        "data": {
+          "label": "root",
+          "budget": {
+            "deadlineMs": 86400000,
+            "maxIterations": 40000,
+            "maxTokens": 200000000
+          },
+          "runtime": "tangle-sandbox",
+          "identity": {
+            "profileDigest": "sha256:5acda020ab98dba77187fee30105a3d80de3a7b3fe424a8a207dc7bf68002c25",
+            "taskDigest": "sha256:415669019759afaa079bf72105f6692ddae4762b109f46114d3b9dac5e793ae3"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:3",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:21:52.889Z",
+      "kind": "root-segment",
+      "category": "lifecycle",
+      "label": "root segment",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 3
+      },
+      "detail": {
+        "lifecycle": "root-segment",
+        "data": {
+          "to": {
+            "provider": "zai-coding-plan",
+            "model": "glm-5.3",
+            "reasoningEffort": "high",
+            "harness": "opencode"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:4",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:21:55.287Z",
+      "kind": "execution-input",
+      "category": "lifecycle",
+      "label": "execution input",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 4
+      },
+      "detail": {
+        "lifecycle": "execution-input",
+        "data": {
+          "taskRef": "sha256:415669019759afaa079bf72105f6692ddae4762b109f46114d3b9dac5e793ae3",
+          "workspaceRetention": true
+        }
+      }
+    },
+    {
+      "id": "61534d780389:5",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:21:55.661Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · intent",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 5
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "intent",
+            "provider": "tangle-sandbox",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:1:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "runId": "retained-intent-run:ab2d24b69dd2e06cf4f80f3d27817ba0eff5cab8343029174713d5a09080bd74",
+            "requestedProfileDigest": "sha256:cef8b014481374f824a9d7f2c12c34d103d8999af0ef742f2d63cbcc3841e062",
+            "requestDigest": "sha256:ab2d24b69dd2e06cf4f80f3d27817ba0eff5cab8343029174713d5a09080bd74"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:6",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:07.225Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · environment",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 6
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "environment",
+            "provider": "tangle-sandbox",
+            "environmentId": "sandbox-b2ae07feb781",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:1:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:7",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:10.992Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · dispatched",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 7
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "dispatched",
+            "controlRef": {
+              "runId": "retained-execution-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "requestDigest": "sha256:897ffc61dbcbeed3e2e6455430e28b4fc792300048b7e6ad2872560d8e7d9503"
+            },
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:1:turn:0"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:103",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:20.018Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 103
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "103",
+        "toolNames": [
+          "read"
+        ],
+        "toolCallIds": [
+          "prt_12b57d8270017t4wMBj3ptCdFe"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:104",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:20.018Z",
+      "kind": "tool-result",
+      "category": "literature",
+      "label": "tool result · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 104
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b57d8270017t4wMBj3ptCdFe",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "104",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:105",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:20.205Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 105
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "105",
+        "toolNames": [
+          "read"
+        ],
+        "toolCallIds": [
+          "prt_12b57d893001O3vfweSlU5UUV6"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:106",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:20.205Z",
+      "kind": "tool-result",
+      "category": "literature",
+      "label": "tool result · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 106
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b57d893001O3vfweSlU5UUV6",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "106",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:133",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:26.596Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 133
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "133",
+        "toolNames": [
+          "read"
+        ],
+        "toolCallIds": [
+          "prt_12b57eff3001ybygTn1YBKFjSY"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:134",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:26.596Z",
+      "kind": "tool-result",
+      "category": "literature",
+      "label": "tool result · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 134
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b57eff3001ybygTn1YBKFjSY",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "134",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:135",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:26.788Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 135
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "135",
+        "toolNames": [
+          "read"
+        ],
+        "toolCallIds": [
+          "prt_12b57f051001IFEKkscfASAeCM"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:136",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:26.788Z",
+      "kind": "tool-result",
+      "category": "literature",
+      "label": "tool result · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 136
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b57f051001IFEKkscfASAeCM",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "136",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:174",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:30.177Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 174
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "174",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b57fe90001DgY4qw4ChaT4Fv"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:175",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:30.177Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 175
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b57fe90001DgY4qw4ChaT4Fv",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "175",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:176",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:30.682Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 176
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "176",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5800bc00139LcT7SzY8X60F"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:177",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:30.682Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 177
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5800bc00139LcT7SzY8X60F",
+        "isError": true,
+        "durationMs": 0,
+        "nativeRecordId": "177",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:204",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:34.695Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 204
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "204",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5810fa001IiHzIiYe24If6w"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:205",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:34.695Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 205
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5810fa001IiHzIiYe24If6w",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "205",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:206",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:35.194Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 206
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "206",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b581251001qanwJLVEY6clA9"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:207",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:35.342Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 207
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b581251001qanwJLVEY6clA9",
+        "isError": false,
+        "durationMs": 148,
+        "nativeRecordId": "207",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:492",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:44.270Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 492
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "492",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b583661001J92mnl6StERi9t"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:493",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:44.270Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 493
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b583661001J92mnl6StERi9t",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "493",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:494",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:46.285Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 494
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "494",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b58352d001Jm7m7XpjOpI8WA"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:495",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:46.285Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 495
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b58352d001Jm7m7XpjOpI8WA",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "495",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:673",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:51.340Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 673
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "673",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b58513f001mWMtbuKWiuMMKV"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:674",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:51.340Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 674
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b58513f001mWMtbuKWiuMMKV",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "674",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:675",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:57.422Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 675
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "675",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b58524e001x3kMH2XqluiIBy"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:676",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:22:57.422Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 676
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b58524e001x3kMH2XqluiIBy",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "676",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11480",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:25:44.397Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11480
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11480",
+        "anchorRange": [
+          11480,
+          11524
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11525",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:25:44.401Z",
+      "kind": "message",
+      "category": "writing",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11525
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11525",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5ae6d5001eFjldjtJx2X5sY"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11526",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:25:44.401Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11526
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5ae6d5001eFjldjtJx2X5sY",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11526",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11527",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:25:44.401Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11527
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11527",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5ae93f0017JCwFtJ9aQ05oa"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11528",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:25:44.401Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11528
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5ae93f0017JCwFtJ9aQ05oa",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11528",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11578",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:07.462Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11578
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11578",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5af95c001wgoNx16a4UuonX"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11579",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:07.462Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11579
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5af95c001wgoNx16a4UuonX",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11579",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11791",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:10.964Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11791
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11791",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5b136c001P3bSK1YR2cWm9t"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11792",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:10.964Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11792
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5b136c001P3bSK1YR2cWm9t",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11792",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11793",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:52.551Z",
+      "kind": "message",
+      "category": "waiting",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11793
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11793",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5b1460001b7dCO58sSGIKsQ"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11794",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:52.551Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11794
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5b1460001b7dCO58sSGIKsQ",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11794",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11841",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:58.038Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11841
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11841",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c1462001VPGY7C227I66iG"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11842",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:58.038Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11842
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c1462001VPGY7C227I66iG",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11842",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:11843",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:58.351Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11843
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "11843",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c1751001ioA8I4yOulYlUk"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:11844",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:26:58.351Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 11844
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c1751001ioA8I4yOulYlUk",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "11844",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12071",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:06.823Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12071
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12071",
+        "anchorRange": [
+          12071,
+          12099
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12100",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:09.406Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12100
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12100",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c3f46001yO7xA64sZu43cV"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12101",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:09.564Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12101
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c3f46001yO7xA64sZu43cV",
+        "isError": false,
+        "durationMs": 158,
+        "nativeRecordId": "12101",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12102",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:09.923Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12102
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12102",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c42b90012zlNH1RD5xAKhe"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12103",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:09.923Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12103
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c42b90012zlNH1RD5xAKhe",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "12103",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12151",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:14.867Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12151
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12151",
+        "toolNames": [
+          "read"
+        ],
+        "toolCallIds": [
+          "prt_12b5c560e0016mFW7qTPnadjKM"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12152",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:14.867Z",
+      "kind": "tool-result",
+      "category": "literature",
+      "label": "tool result · read",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12152
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c560e0016mFW7qTPnadjKM",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "12152",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12153",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:15.971Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12153
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12153",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c593e001hZ5u3y375bK626"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12154",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:15.971Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12154
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c593e001hZ5u3y375bK626",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "12154",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12499",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:24.851Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12499
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12499",
+        "anchorRange": [
+          12499,
+          12516
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12517",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:29.522Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12517
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12517",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c9065001a3vLD6Rp279MZJ"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12518",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:29.522Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12518
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c9065001a3vLD6Rp279MZJ",
+        "isError": true,
+        "durationMs": 0,
+        "nativeRecordId": "12518",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:12519",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:32.308Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12519
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "12519",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5c9a520012dUBttFpmGMyBi"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:12520",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:32.308Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 12520
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5c9a520012dUBttFpmGMyBi",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "12520",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:13109",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:57.492Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13109
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "13109",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5cfae8001JhkK4QspesbwpQ"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:13110",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:27:57.492Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13110
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5cfae8001JhkK4QspesbwpQ",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "13110",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:13325",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:15.016Z",
+      "kind": "message",
+      "category": "setup",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13325
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "13325",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5d1c23001aPLlKuypm1NMmu"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:13326",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:15.016Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13326
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5d1c23001aPLlKuypm1NMmu",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "13326",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:13327",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:23.626Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13327
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "13327",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5d6253001ylbgP4udoXcXmr"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:13328",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:23.626Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13328
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5d6253001ylbgP4udoXcXmr",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "13328",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:13329",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:23.626Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13329
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "13329",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5d63c0001ZmT1YaTHMgXJGL"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:13330",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:23.626Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 13330
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5d63c0001ZmT1YaTHMgXJGL",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "13330",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14138",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:40.941Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14138
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14138",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5da749001wOBLhRsnUJuLwu"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14139",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:40.941Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14139
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5da749001wOBLhRsnUJuLwu",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14139",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14140",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:41.455Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14140
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14140",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5daa19001O34HZUWbE1p823"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14141",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:41.455Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14141
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5daa19001O34HZUWbE1p823",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14141",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14258",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:52.943Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14258
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14258",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5dd571001uDwWCY50WA2K77"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14259",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:52.943Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14259
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5dd571001uDwWCY50WA2K77",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14259",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14260",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:52.943Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14260
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14260",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5dd6e600131eclXaOVOdtbE"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14261",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:52.943Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14261
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5dd6e600131eclXaOVOdtbE",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14261",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14262",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:57.183Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14262
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14262",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5de6f6001EICxir2hTLzEtv"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14263",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:28:57.183Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14263
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5de6f6001EICxir2hTLzEtv",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14263",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:14796",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:29:10.257Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14796
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "14796",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b5e174f001Mu1rpUxg0gOt9O"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:14797",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:29:10.257Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 14797
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b5e174f001Mu1rpUxg0gOt9O",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "14797",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:8",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:35:05.287Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 8
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 1015833,
+          "output": 18407
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 1015833,
+            "output": 18407,
+            "freshInput": 72089,
+            "cacheRead": 943744,
+            "cacheWrite": 0
+          },
+          "usd": 0.42728884,
+          "usdEstimated": 0.42728884,
+          "ms": 0,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 1015833,
+              "freshInput": 72089,
+              "cacheRead": 943744,
+              "cacheWrite": 0
+            },
+            "usd": 0.42728884,
+            "usdEstimated": 0.42728884,
+            "ms": 0,
+            "usdKnown": false
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:9",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:50:48.587Z",
+      "kind": "workspace-capture",
+      "category": "lifecycle",
+      "label": "workspace capture",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 9
+      },
+      "detail": {
+        "lifecycle": "workspace-capture",
+        "data": {
+          "executionId": "albert-full-ldpc-lift-20261011b:input:1",
+          "environmentId": "sandbox-b2ae07feb781",
+          "ahead": 0,
+          "queuedMs": 1,
+          "captureMs": 881012,
+          "outcome": "failed"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:10",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:50:52.489Z",
+      "kind": "materialized",
+      "category": "lifecycle",
+      "label": "materialized",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 10
+      },
+      "detail": {
+        "lifecycle": "materialized",
+        "data": {
+          "receipt": {
+            "status": "known",
+            "authoredProfileDigest": "sha256:5acda020ab98dba77187fee30105a3d80de3a7b3fe424a8a207dc7bf68002c25",
+            "effectiveProfileDigest": "sha256:cef8b014481374f824a9d7f2c12c34d103d8999af0ef742f2d63cbcc3841e062",
+            "materializationPlanDigest": "sha256:f29b19343d4b911c27f9819c6abc5766ce5a7a6ab8217c45ac88adb9f5684b7a",
+            "platformAttachmentsDigest": "sha256:bc6576678a87f6113d6b384f390a8c64c682bf389e9e93580354ae630eb548a1",
+            "runtime": "tangle-sandbox",
+            "backend": "tangle-sandbox",
+            "model": {
+              "status": "known",
+              "id": "glm-5.3"
+            },
+            "execution": {
+              "kind": "environment",
+              "id": "sandbox-b2ae07feb781"
+            },
+            "materializer": "environment-provider-create"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:11",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:50:53.899Z",
+      "kind": "execution-bound",
+      "category": "lifecycle",
+      "label": "execution bound",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 11
+      },
+      "detail": {
+        "lifecycle": "execution-bound",
+        "data": {
+          "binding": {
+            "status": "known",
+            "attemptId": "albert-full-ldpc-lift-20261011b:attempt:9d876de0-85c1-44ba-b70c-03d68af07182",
+            "materializationReceiptDigest": "sha256:b4872b5480afca3dbe1562c2dccd6509ce84ef46ce6c29c6a17c95d315e66402",
+            "bindingDigest": "sha256:6e559d1c09e07e562fb252c59d8d2d86fa9e10df835de706ea6c2056dd1bd6a1",
+            "descriptor": {
+              "kind": "agent-environment",
+              "transport": "provider",
+              "backend": "tangle-sandbox",
+              "coordination": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:12",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:50:55.579Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 12
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "freshInput": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "usd": 0,
+          "usdEstimated": 0,
+          "ms": 793221,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0,
+              "freshInput": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "usd": 0,
+            "usdEstimated": 0,
+            "ms": 793221,
+            "usdKnown": false
+          },
+          "accountingOnly": true
+        }
+      }
+    },
+    {
+      "id": "61534d780389:13",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:51:18.806Z",
+      "kind": "execution-result",
+      "category": "lifecycle",
+      "label": "execution result",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 13
+      },
+      "detail": {
+        "lifecycle": "execution-result",
+        "isError": true,
+        "data": {
+          "outRef": "sha256:4fc9e1cc1b0b8006e9f49335b4fa07d762173296bc7ba6b1a69913e63ca843ed",
+          "spent": {
+            "iterations": 1,
+            "tokens": {
+              "input": 1015833,
+              "freshInput": 72089,
+              "cacheRead": 943744,
+              "cacheWrite": 0
+            },
+            "usd": 0.42728884,
+            "usdKnown": false,
+            "usdEstimated": 0.42728884,
+            "ms": 793221
+          },
+          "outcome": {
+            "success": false
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:14",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:53:18.131Z",
+      "kind": "driver-attempt",
+      "category": "lifecycle",
+      "label": "driver attempt · transient",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 14
+      },
+      "detail": {
+        "lifecycle": "driver-attempt",
+        "data": {
+          "record": {
+            "attempt": 1,
+            "durationMs": 1883646,
+            "classification": "transient",
+            "madeProgress": false,
+            "retryInMs": 3337
+          },
+          "attemptId": "albert-full-ldpc-lift-20261011b:attempt:9d876de0-85c1-44ba-b70c-03d68af07182"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:15",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:53:34.022Z",
+      "kind": "execution-input",
+      "category": "lifecycle",
+      "label": "execution input",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 15
+      },
+      "detail": {
+        "lifecycle": "execution-input",
+        "data": {
+          "taskRef": "sha256:f76cff2761cec03bf18e70be59d17bc492a88c29488e08ce646175403ff00ef8",
+          "workspaceRetention": true
+        }
+      }
+    },
+    {
+      "id": "61534d780389:16",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:53:37.730Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · intent",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 16
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "intent",
+            "provider": "tangle-sandbox",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:7:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+            "runId": "retained-intent-run:efec0a3020857cb2ced100843b3931451b88440f3c78930d6d9efabda698c5c6",
+            "requestedProfileDigest": "sha256:cef8b014481374f824a9d7f2c12c34d103d8999af0ef742f2d63cbcc3841e062",
+            "requestDigest": "sha256:efec0a3020857cb2ced100843b3931451b88440f3c78930d6d9efabda698c5c6"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:17",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:53:42.851Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · environment",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 17
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "environment",
+            "provider": "tangle-sandbox",
+            "environmentId": "sandbox-b2ae07feb781",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:7:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:18",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:53:50.482Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · dispatched",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 18
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "dispatched",
+            "controlRef": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:7:turn:0"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:16410",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:17.762Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "assistant · agent-runtime-coordination_read_journal",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 16410
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "16410",
+        "toolNames": [
+          "agent-runtime-coordination_read_journal"
+        ],
+        "toolCallIds": [
+          "prt_12b751721001liUU5QIkuAbKoq"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:16411",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:17.762Z",
+      "kind": "tool-result",
+      "category": "coordination",
+      "label": "tool result · agent-runtime-coordination_read_journal",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 16411
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b751721001liUU5QIkuAbKoq",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "16411",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:19",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:17.804Z",
+      "kind": "workspace-checkpoint-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 19
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "request": {
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "name": "owner-checkpoint-11",
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:11",
+            "requestDigest": "sha256:576b8ed747f956bd992461edc5ea8bd503249b11c77b6739ec2c46d71254e00d"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-11\",\"at\":\"2026-10-11T14:54:17.804Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:20",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:17.804Z",
+      "kind": "workspace-checkpoint",
+      "category": "lifecycle",
+      "label": "workspace checkpoint",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 20
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpoint": {
+            "checkpointId": "fa5b744c4d6ae0b42c5ef0ed891fea616ad454d0c564720aa4c45c4b10201a57",
+            "provider": "tangle-sandbox",
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:11",
+            "requestDigest": "sha256:576b8ed747f956bd992461edc5ea8bd503249b11c77b6739ec2c46d71254e00d",
+            "createdAt": "2026-10-11T14:55:36.730Z"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-11\",\"at\":\"2026-10-11T14:54:17.804Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:16412",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:18.159Z",
+      "kind": "message",
+      "category": "literature",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 16412
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "16412",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b75187a001IG81NpHNIsDuWv"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:16413",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:54:18.159Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 16413
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b75187a001IG81NpHNIsDuWv",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "16413",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:21631",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:55:45.720Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21631
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "21631",
+        "anchorRange": [
+          21631,
+          21684
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:21685",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:55:51.224Z",
+      "kind": "message",
+      "category": "writing",
+      "label": "assistant · write",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21685
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "21685",
+        "toolNames": [
+          "write"
+        ],
+        "toolCallIds": [
+          "prt_12b76864b001YvT0qfuqdSuVgF"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:21686",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:55:51.224Z",
+      "kind": "tool-result",
+      "category": "writing",
+      "label": "tool result · write",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21686
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b76864b001YvT0qfuqdSuVgF",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "21686",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:21687",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:55:58.837Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21687
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "21687",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b769ae7001i2vnNr0raf1V3K"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:21688",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:55:58.838Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21688
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b769ae7001i2vnNr0raf1V3K",
+        "isError": false,
+        "durationMs": 1,
+        "nativeRecordId": "21688",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:21",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:56:00.130Z",
+      "kind": "workspace-checkpoint-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 21
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "request": {
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "name": "owner-checkpoint-13",
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:13",
+            "requestDigest": "sha256:634b43bcca28fad1dc912f13711f02996553763c9edb21678527767b4e1950d1"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-13\",\"at\":\"2026-10-11T14:56:00.130Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:22",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:56:00.130Z",
+      "kind": "workspace-checkpoint",
+      "category": "lifecycle",
+      "label": "workspace checkpoint",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 22
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpoint": {
+            "checkpointId": "0d89b79854176318f545aeb61e91fa4416ac365c1e4c10e86407b2bceb6bc997",
+            "provider": "tangle-sandbox",
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:13",
+            "requestDigest": "sha256:634b43bcca28fad1dc912f13711f02996553763c9edb21678527767b4e1950d1",
+            "createdAt": "2026-10-11T14:57:25.188Z"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-13\",\"at\":\"2026-10-11T14:56:00.130Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:21705",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:56:08.703Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21705
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "21705",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b76c6720014cgJeWxQnyJgtz"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:21706",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:56:08.703Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 21706
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b76c6720014cgJeWxQnyJgtz",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "21706",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:22206",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:56:22.505Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22206
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "22206",
+        "anchorRange": [
+          22206,
+          22234
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:22235",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:15.989Z",
+      "kind": "message",
+      "category": "writing",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22235
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "22235",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b771e1a001tGiMyJPca7bJyq"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:22236",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:15.989Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22236
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b771e1a001tGiMyJPca7bJyq",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "22236",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:22319",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:26.189Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22319
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "22319",
+        "anchorRange": [
+          22319,
+          22351
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:22352",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:26.638Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22352
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "22352",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b77fadd001Qn9SnaxfCf5NlI"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:22353",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:26.638Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22353
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b77fadd001Qn9SnaxfCf5NlI",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "22353",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:22354",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:49.351Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22354
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "22354",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b781a8e0017DyDQT1YKohMCA"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:22355",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:57:49.351Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 22355
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b781a8e0017DyDQT1YKohMCA",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "22355",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:24366",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:58:28.100Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 24366
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "24366",
+        "anchorRange": [
+          24366,
+          24380
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:24381",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:59:00.418Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 24381
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "24381",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b791870001PPneEiyD6JIxO9"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:24382",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T14:59:00.418Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 24382
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b791870001PPneEiyD6JIxO9",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "24382",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:30159",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:10:32.346Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30159
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "30159",
+        "anchorRange": [
+          30159,
+          30188
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:30189",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:10:32.402Z",
+      "kind": "message",
+      "category": "verification",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30189
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "30189",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b7aef13001FFUqMuc0TlZ76C"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:30190",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:10:32.402Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30190
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b7aef13001FFUqMuc0TlZ76C",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "30190",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:30678",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:11:08.526Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30678
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "30678",
+        "anchorRange": [
+          30678,
+          30699
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:30700",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:11:08.531Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30700
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "30700",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12b7b4835001VX2B2bkZkWeqWj"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:30701",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:11:08.531Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 30701
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12b7b4835001VX2B2bkZkWeqWj",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "30701",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:23",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:14:03.462Z",
+      "kind": "execution-bound",
+      "category": "lifecycle",
+      "label": "execution bound",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 23
+      },
+      "detail": {
+        "lifecycle": "execution-bound",
+        "data": {
+          "binding": {
+            "status": "known",
+            "attemptId": "albert-full-ldpc-lift-20261011b:attempt:c09f1ef7-a3c7-4dec-848e-0359afb0a728",
+            "materializationReceiptDigest": "sha256:b4872b5480afca3dbe1562c2dccd6509ce84ef46ce6c29c6a17c95d315e66402",
+            "bindingDigest": "sha256:c7a2fb5eeddfef91a5b851771b446a1e97cfcf500eb38a951a967ef070e97257",
+            "descriptor": {
+              "kind": "agent-environment",
+              "transport": "provider",
+              "backend": "tangle-sandbox",
+              "coordination": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:24",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:14:18.383Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 24
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 1734348,
+          "output": 20217
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 1734348,
+            "output": 20217,
+            "freshInput": 205260,
+            "cacheRead": 1529088,
+            "cacheWrite": 0
+          },
+          "usd": 0,
+          "ms": 0,
+          "tokensKnown": false,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 1734348,
+              "freshInput": 205260,
+              "cacheRead": 1529088,
+              "cacheWrite": 0
+            },
+            "usd": 0,
+            "ms": 0,
+            "tokensKnown": false,
+            "usdKnown": false
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:25",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:14:37.402Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 25
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0
+          },
+          "tokensKnown": false,
+          "usd": 0,
+          "usdKnown": false,
+          "ms": 0
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0
+            },
+            "tokensKnown": false,
+            "usd": 0,
+            "usdKnown": false,
+            "ms": 0
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:26",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:14:46.368Z",
+      "kind": "driver-attempt",
+      "category": "lifecycle",
+      "label": "driver attempt · transient",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 26
+      },
+      "detail": {
+        "lifecycle": "driver-attempt",
+        "data": {
+          "record": {
+            "attempt": 2,
+            "durationMs": 1283309,
+            "classification": "transient",
+            "madeProgress": false,
+            "retryInMs": 6092,
+            "reentry": "driver-failure"
+          },
+          "attemptId": "albert-full-ldpc-lift-20261011b:attempt:c09f1ef7-a3c7-4dec-848e-0359afb0a728"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:27",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:39:33.671Z",
+      "kind": "workspace-capture",
+      "category": "lifecycle",
+      "label": "workspace capture",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 27
+      },
+      "detail": {
+        "lifecycle": "workspace-capture",
+        "data": {
+          "executionId": "albert-full-ldpc-lift-20261011b:input:7",
+          "environmentId": "sandbox-b2ae07feb781",
+          "ahead": 0,
+          "queuedMs": 0,
+          "captureMs": 633224,
+          "outcome": "failed"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:28",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:41:08.954Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 28
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "freshInput": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "usd": 0.77388168,
+          "usdEstimated": 0.77388168,
+          "ms": 0,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0,
+              "freshInput": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "usd": 0.77388168,
+            "usdEstimated": 0.77388168,
+            "ms": 0,
+            "usdKnown": false
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:29",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:47:59.838Z",
+      "kind": "workspace-checkpoint-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 29
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "request": {
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "name": "owner-checkpoint-16",
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:16",
+            "requestDigest": "sha256:7f4b051f86cedd820d8169e727b6a1430777ba1a909fd0237bdedff5d419dfc9"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-16\",\"at\":\"2026-10-11T15:47:59.838Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:30",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:47:59.838Z",
+      "kind": "workspace-checkpoint",
+      "category": "lifecycle",
+      "label": "workspace checkpoint",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 30
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpoint": {
+            "checkpointId": "13427b4db761cb85cc7013335ef38f32d7749c1eb8d310a1966ee228dbf42355",
+            "provider": "tangle-sandbox",
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:16",
+            "requestDigest": "sha256:7f4b051f86cedd820d8169e727b6a1430777ba1a909fd0237bdedff5d419dfc9",
+            "createdAt": "2026-10-11T15:48:25.061Z"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-16\",\"at\":\"2026-10-11T15:47:59.838Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:31",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:48:33.737Z",
+      "kind": "workspace-checkpoint-fork-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint fork requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 31
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-fork-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpointId": "fa5b744c4d6ae0b42c5ef0ed891fea616ad454d0c564720aa4c45c4b10201a57",
+          "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:11:capture:18",
+          "requestDigest": "sha256:1a4d7014cdbb3032080a2df187c48dedf639594db95ec640b3daeec0a26e9169"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:32",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:48:44.978Z",
+      "kind": "workspace-checkpoint-cleanup",
+      "category": "lifecycle",
+      "label": "workspace checkpoint cleanup",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 32
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-cleanup",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpointId": "fa5b744c4d6ae0b42c5ef0ed891fea616ad454d0c564720aa4c45c4b10201a57",
+          "confirmed": false,
+          "refused": "capture failed: fork unknown: Sandbox snapshot restore outcome is unresolved: Snapshot exceeds destination workspace quota"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:33",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:50:57.369Z",
+      "kind": "workspace-capture",
+      "category": "lifecycle",
+      "label": "workspace capture",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 33
+      },
+      "detail": {
+        "lifecycle": "workspace-capture",
+        "data": {
+          "executionId": "albert-full-ldpc-lift-20261011b:input:7",
+          "environmentId": "sandbox-b2ae07feb781",
+          "ahead": 0,
+          "queuedMs": 0,
+          "captureMs": 584980,
+          "outcome": "failed"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:34",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:50:58.688Z",
+      "kind": "execution-bound",
+      "category": "lifecycle",
+      "label": "execution bound",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 34
+      },
+      "detail": {
+        "lifecycle": "execution-bound",
+        "data": {
+          "binding": {
+            "status": "known",
+            "attemptId": "albert-full-ldpc-lift-20261011b:attempt:25047775-b3be-40aa-9504-77df08c35d9c",
+            "materializationReceiptDigest": "sha256:b4872b5480afca3dbe1562c2dccd6509ce84ef46ce6c29c6a17c95d315e66402",
+            "bindingDigest": "sha256:c7a2fb5eeddfef91a5b851771b446a1e97cfcf500eb38a951a967ef070e97257",
+            "descriptor": {
+              "kind": "agent-environment",
+              "transport": "provider",
+              "backend": "tangle-sandbox",
+              "coordination": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:35",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:51:02.810Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 35
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0,
+            "freshInput": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "usd": 0,
+          "usdEstimated": 0,
+          "ms": 89680,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0,
+              "freshInput": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "usd": 0,
+            "usdEstimated": 0,
+            "ms": 89680,
+            "usdKnown": false
+          },
+          "accountingOnly": true
+        }
+      }
+    },
+    {
+      "id": "61534d780389:36",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:51:24.348Z",
+      "kind": "execution-result",
+      "category": "lifecycle",
+      "label": "execution result",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 36
+      },
+      "detail": {
+        "lifecycle": "execution-result",
+        "isError": true,
+        "data": {
+          "outRef": "sha256:42255b05dccd7766d107437792fa6cf1c57d5cdad9d9b3ac7e48cb0fdb4ac239",
+          "spent": {
+            "iterations": 1,
+            "tokens": {
+              "input": 1734348,
+              "freshInput": 205260,
+              "cacheRead": 1529088,
+              "cacheWrite": 0
+            },
+            "usd": 0.77388168,
+            "usdKnown": false,
+            "usdEstimated": 0.77388168,
+            "ms": 89680
+          },
+          "outcome": {
+            "success": false
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:37",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:52:56.660Z",
+      "kind": "workspace-checkpoint-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 37
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "request": {
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "name": "owner-checkpoint-23",
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:23",
+            "requestDigest": "sha256:39cfeb7042ad29b28495aedbb11f74925ba3210cc877bc259a38653b2952f71c"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-23\",\"at\":\"2026-10-11T15:52:56.660Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:38",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:52:56.660Z",
+      "kind": "workspace-checkpoint",
+      "category": "lifecycle",
+      "label": "workspace checkpoint",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 38
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpoint": {
+            "checkpointId": "9ed5c4c5dbe21a68792f3b96de41af145aa728abfd589010177336d4315b95c8",
+            "provider": "tangle-sandbox",
+            "source": {
+              "runId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-89008154f925618d4fc3243ed289774b0e4b8238aeb40ca4ea5c0d22b0f5c506",
+              "requestDigest": "sha256:ccbc20f04bd48c2ddd6205c7602d1b7108bf33cd373017a3e4b0db07e9896a3c"
+            },
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:23",
+            "requestDigest": "sha256:39cfeb7042ad29b28495aedbb11f74925ba3210cc877bc259a38653b2952f71c",
+            "createdAt": "2026-10-11T15:53:14.625Z"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-23\",\"at\":\"2026-10-11T15:52:56.660Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:39",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:53:30.394Z",
+      "kind": "driver-attempt",
+      "category": "lifecycle",
+      "label": "driver attempt · transient",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 39
+      },
+      "detail": {
+        "lifecycle": "driver-attempt",
+        "data": {
+          "record": {
+            "attempt": 3,
+            "durationMs": 2294452,
+            "classification": "transient",
+            "madeProgress": false,
+            "retryInMs": 16377,
+            "reentry": "driver-failure"
+          },
+          "attemptId": "albert-full-ldpc-lift-20261011b:attempt:25047775-b3be-40aa-9504-77df08c35d9c"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:40",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:53:33.392Z",
+      "kind": "workspace-checkpoint-fork-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint fork requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 40
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-fork-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpointId": "0d89b79854176318f545aeb61e91fa4416ac365c1e4c10e86407b2bceb6bc997",
+          "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:13:capture:25",
+          "requestDigest": "sha256:07786ed2f51ae30858c09b03b782529f1cacd0cf941e899cbee76f1f43b4543c"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:41",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:16.005Z",
+      "kind": "execution-input",
+      "category": "lifecycle",
+      "label": "execution input",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 41
+      },
+      "detail": {
+        "lifecycle": "execution-input",
+        "data": {
+          "taskRef": "sha256:500cd833b77bbffcffd53caf2c05b6d49edfc537aae009721d29f52f950f2c0c",
+          "workspaceRetention": true
+        }
+      }
+    },
+    {
+      "id": "61534d780389:42",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:19.751Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · intent",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 42
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "intent",
+            "provider": "tangle-sandbox",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:27:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+            "runId": "retained-intent-run:84f47ca3738fe8dba96ac85c2b21f15245635e32de2f50fc45b2244d97ada64b",
+            "requestedProfileDigest": "sha256:cef8b014481374f824a9d7f2c12c34d103d8999af0ef742f2d63cbcc3841e062",
+            "requestDigest": "sha256:84f47ca3738fe8dba96ac85c2b21f15245635e32de2f50fc45b2244d97ada64b"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:43",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:22.344Z",
+      "kind": "workspace-checkpoint-cleanup",
+      "category": "lifecycle",
+      "label": "workspace checkpoint cleanup",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 43
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-cleanup",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpointId": "0d89b79854176318f545aeb61e91fa4416ac365c1e4c10e86407b2bceb6bc997",
+          "confirmed": false,
+          "refused": "capture failed: fork unknown: Sandbox snapshot restore outcome is unresolved: Snapshot exceeds destination workspace quota"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:44",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:23.938Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · environment",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 44
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "environment",
+            "provider": "tangle-sandbox",
+            "environmentId": "sandbox-b2ae07feb781",
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:27:turn:0",
+            "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+            "executionId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:45",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:31.075Z",
+      "kind": "execution-admitted",
+      "category": "lifecycle",
+      "label": "execution admitted · dispatched",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 45
+      },
+      "detail": {
+        "lifecycle": "execution-admitted",
+        "data": {
+          "admission": {
+            "phase": "dispatched",
+            "controlRef": {
+              "runId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "requestDigest": "sha256:5dc76fd22519c171824f49d7b25603004170e673ad3ecd94d96bd3fab5c53931"
+            },
+            "idempotencyKey": "runtime:albert-full-ldpc-lift-20261011b:input:1",
+            "turnId": "albert-full-ldpc-lift-20261011b:input:27:turn:0"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:45258",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:50.826Z",
+      "kind": "message",
+      "category": "coordination",
+      "label": "assistant · agent-runtime-coordination_read_journal",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 45258
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "45258",
+        "toolNames": [
+          "agent-runtime-coordination_read_journal"
+        ],
+        "toolCallIds": [
+          "prt_12bac894e00180Sjl511XCsd6n"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:45259",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:50.826Z",
+      "kind": "tool-result",
+      "category": "coordination",
+      "label": "tool result · agent-runtime-coordination_read_journal",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 45259
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12bac894e00180Sjl511XCsd6n",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "45259",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:46",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:51.710Z",
+      "kind": "workspace-checkpoint-requested",
+      "category": "lifecycle",
+      "label": "workspace checkpoint requested",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 46
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint-requested",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "request": {
+            "source": {
+              "runId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "requestDigest": "sha256:5dc76fd22519c171824f49d7b25603004170e673ad3ecd94d96bd3fab5c53931"
+            },
+            "name": "owner-checkpoint-32",
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:32",
+            "requestDigest": "sha256:8664d0e37712a2e306be5ab6b5a1a9e290b92ccd0bc980b0214445e8282ae354"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-32\",\"at\":\"2026-10-11T15:54:51.710Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:52",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:51.710Z",
+      "kind": "workspace-checkpoint",
+      "category": "lifecycle",
+      "label": "workspace checkpoint",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 52
+      },
+      "detail": {
+        "lifecycle": "workspace-checkpoint",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "checkpoint": {
+            "checkpointId": "9b0d69cba3942c566b116717448bd3dbe86024d277cfa380f94f15396b810564",
+            "provider": "tangle-sandbox",
+            "source": {
+              "runId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "sessionId": "retained-session-b83f7aebcca4eb8eaa8a35bc602eabe469a4173bef159b6a9d54a3faf28c3387",
+              "executionId": "retained-execution-3ebfdc7d7a50e96cadce46edb9e986fe1960e0892f7565057d2a7e9d98ab4642",
+              "requestDigest": "sha256:5dc76fd22519c171824f49d7b25603004170e673ad3ecd94d96bd3fab5c53931"
+            },
+            "idempotencyKey": "albert-full-ldpc-lift-20261011b:workspace-checkpoint:32",
+            "requestDigest": "sha256:8664d0e37712a2e306be5ab6b5a1a9e290b92ccd0bc980b0214445e8282ae354",
+            "createdAt": "2026-10-11T15:55:45.708Z"
+          },
+          "marker": {
+            "path": ".agent-runtime-checkpoint",
+            "content": "{\"node\":\"albert-full-ldpc-lift-20261011b\",\"checkpoint\":\"owner-checkpoint-32\",\"at\":\"2026-10-11T15:54:51.710Z\"}\n"
+          }
+        }
+      }
+    },
+    {
+      "id": "5d3937ff6691:45260",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:51.836Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 45260
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "45260",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12bac8c3d001X54bH8bSjDXfYC"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:45261",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:54:52.058Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 45261
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12bac8c3d001X54bH8bSjDXfYC",
+        "isError": false,
+        "durationMs": 222,
+        "nativeRecordId": "45261",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:46020",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:55:05.326Z",
+      "kind": "message",
+      "category": "reasoning",
+      "label": "assistant",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 46020
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "46020",
+        "anchorRange": [
+          46020,
+          46049
+        ],
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:46050",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:55:09.845Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 46050
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "46050",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12bacc712001c5lUu5CaFlMsXq"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:46051",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:55:09.845Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 46051
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12bacc712001c5lUu5CaFlMsXq",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "46051",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "5d3937ff6691:46052",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:55:12.901Z",
+      "kind": "message",
+      "category": "compute",
+      "label": "assistant · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 46052
+      },
+      "detail": {
+        "role": "assistant",
+        "nativeRecordId": "46052",
+        "toolNames": [
+          "bash"
+        ],
+        "toolCallIds": [
+          "prt_12bacc8d1001Xz2yDbN7oKZjzQ"
+        ]
+      }
+    },
+    {
+      "id": "5d3937ff6691:46053",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:55:12.901Z",
+      "kind": "tool-result",
+      "category": "compute",
+      "label": "tool result · bash",
+      "source": {
+        "path": "root-stream.jsonl",
+        "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20",
+        "line": 46053
+      },
+      "detail": {
+        "role": "toolResult",
+        "toolCallId": "prt_12bacc8d1001Xz2yDbN7oKZjzQ",
+        "isError": false,
+        "durationMs": 0,
+        "nativeRecordId": "46053",
+        "contentOmitted": "Body not published."
+      }
+    },
+    {
+      "id": "61534d780389:47",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:57:45.183Z",
+      "kind": "execution-bound",
+      "category": "lifecycle",
+      "label": "execution bound",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 47
+      },
+      "detail": {
+        "lifecycle": "execution-bound",
+        "data": {
+          "binding": {
+            "status": "known",
+            "attemptId": "albert-full-ldpc-lift-20261011b:attempt:ed989839-be03-416d-8fbb-1fea3e637447",
+            "materializationReceiptDigest": "sha256:b4872b5480afca3dbe1562c2dccd6509ce84ef46ce6c29c6a17c95d315e66402",
+            "bindingDigest": "sha256:d5e59eeed9ba89385524006c877b616f744cc96733af96697871af680d44b363",
+            "descriptor": {
+              "kind": "agent-environment",
+              "transport": "provider",
+              "backend": "tangle-sandbox",
+              "coordination": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:48",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:57:50.612Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 48
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 566099,
+          "output": 1071
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 566099,
+            "output": 1071,
+            "freshInput": 101779,
+            "cacheRead": 464320,
+            "cacheWrite": 0
+          },
+          "usd": 0,
+          "ms": 0,
+          "tokensKnown": false,
+          "usdKnown": false
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 566099,
+              "freshInput": 101779,
+              "cacheRead": 464320,
+              "cacheWrite": 0
+            },
+            "usd": 0,
+            "ms": 0,
+            "tokensKnown": false,
+            "usdKnown": false
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:49",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:57:54.677Z",
+      "kind": "metered",
+      "category": "lifecycle",
+      "label": "metered",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 49
+      },
+      "detail": {
+        "lifecycle": "metered",
+        "usage": {
+          "input": 0,
+          "output": 0
+        },
+        "usageScope": "metered",
+        "spent": {
+          "iterations": 0,
+          "tokens": {
+            "input": 0,
+            "output": 0
+          },
+          "tokensKnown": false,
+          "usd": 0,
+          "usdKnown": false,
+          "ms": 0
+        },
+        "data": {
+          "spend": {
+            "iterations": 0,
+            "tokens": {
+              "input": 0
+            },
+            "tokensKnown": false,
+            "usd": 0,
+            "usdKnown": false,
+            "ms": 0
+          },
+          "providerModel": {
+            "status": "unknown",
+            "attempts": [
+              {
+                "observations": []
+              }
+            ],
+            "models": []
+          }
+        }
+      }
+    },
+    {
+      "id": "61534d780389:50",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T15:57:57.094Z",
+      "kind": "driver-attempt",
+      "category": "lifecycle",
+      "label": "driver attempt · terminal",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 50
+      },
+      "detail": {
+        "lifecycle": "driver-attempt",
+        "data": {
+          "record": {
+            "attempt": 4,
+            "durationMs": 243368,
+            "classification": "terminal",
+            "madeProgress": false,
+            "stop": "terminal-error",
+            "reentry": "driver-failure"
+          },
+          "attemptId": "albert-full-ldpc-lift-20261011b:attempt:ed989839-be03-416d-8fbb-1fea3e637447"
+        },
+        "publicText": "PASS [distance] min_weight_logical is a nontrivial logical of weight 8",
+        "publicationMode": "excerpt",
+        "publicationNote": "One line of checker output."
+      }
+    },
+    {
+      "id": "61534d780389:51",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T16:57:45.179Z",
+      "kind": "workspace-capture",
+      "category": "lifecycle",
+      "label": "workspace capture",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 51
+      },
+      "detail": {
+        "lifecycle": "workspace-capture",
+        "data": {
+          "executionId": "albert-full-ldpc-lift-20261011b:input:27",
+          "environmentId": "sandbox-b2ae07feb781",
+          "ahead": 0,
+          "queuedMs": 5,
+          "captureMs": 3599996,
+          "outcome": "failed"
+        }
+      }
+    },
+    {
+      "id": "61534d780389:53",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T16:58:35.861Z",
+      "kind": "environment-teardown",
+      "category": "lifecycle",
+      "label": "environment teardown",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 53
+      },
+      "detail": {
+        "lifecycle": "environment-teardown",
+        "data": {
+          "provider": "tangle-sandbox",
+          "environmentId": "sandbox-b2ae07feb781",
+          "destroyed": false
+        }
+      }
+    },
+    {
+      "id": "61534d780389:54",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T16:58:43.016Z",
+      "kind": "teardown-unconfirmed",
+      "category": "lifecycle",
+      "label": "teardown unconfirmed · done",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 54
+      },
+      "detail": {
+        "lifecycle": "teardown-unconfirmed",
+        "data": {
+          "label": "scope owner",
+          "runtime": "tangle-sandbox",
+          "status": "done",
+          "kept": [
+            {
+              "provider": "tangle-sandbox",
+              "environmentId": "sandbox-b2ae07feb781",
+              "keptFor": "evidence"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "61534d780389:55",
+      "node": "albert-full-ldpc-lift-20261011b",
+      "at": "2026-10-11T16:58:49.225Z",
+      "kind": "teardown-unconfirmed",
+      "category": "lifecycle",
+      "label": "teardown unconfirmed · done",
+      "source": {
+        "path": "spawn-journal.jsonl",
+        "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea",
+        "line": 55
+      },
+      "detail": {
+        "lifecycle": "teardown-unconfirmed",
+        "data": {
+          "label": "scope owner checkpoint capture fork",
+          "runtime": "tangle-sandbox",
+          "status": "done"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "coordination-log.jsonl",
+      "bytes": 30817,
+      "sha256": "53cdadd75a58935993ececc81536187f16ae52d29e90bf273f2e48820c7a7309"
+    },
+    {
+      "path": "evidence/native-index.jsonl",
+      "bytes": 8789,
+      "sha256": "24665016241dc03bc6db0b57eeec4ba283b077a956184ea444ba48685039d01c"
+    },
+    {
+      "path": "observer.jsonl",
+      "bytes": 6684,
+      "sha256": "1f4b802afcb65f02a013680c29078b6e561086601cf0ff55a2a4ab032b6a5425"
+    },
+    {
+      "path": "result.json",
+      "bytes": 2684,
+      "sha256": "4956330ced3a597341647e73f8c6ba631650c0d059bfa6ad01e0a3d44ae8cfd6"
+    },
+    {
+      "path": "root-stream.jsonl",
+      "bytes": 5148425,
+      "sha256": "5d3937ff6691a2f4886dea980ae0244a56101043cfd69999bdf7010e2339bb20"
+    },
+    {
+      "path": "root-stream.jsonl",
+      "line": 134,
+      "bytes": 37857,
+      "sha256": "ff103a9023224534401b57b7e9a981a8c200a2e3e55069165718f88c2080891f"
+    },
+    {
+      "path": "root-stream.jsonl",
+      "line": 136,
+      "bytes": 18218,
+      "sha256": "d787860467520774efe5d150b55c60a14d0fa947afbad4cb2bf82fb41ccb11b2"
+    },
+    {
+      "path": "run-input.json",
+      "bytes": 251869,
+      "sha256": "f28839f46d5a47dbc66d5a5aeeb258b3c3df2bf28193b35350df5b2faab7ffa3"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/0/content",
+      "bytes": 5085,
+      "label": "inputs/commission.md",
+      "sha256": "52f85bcd751d21b7bda20ac9675a10b7ba65341639a42f11792156de40c0a333"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/1/content",
+      "bytes": 32798,
+      "label": "inputs/check.py",
+      "sha256": "262d997f3353b9169a771650c853816947104a3493c798a68681fa1dacd22930"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/2/content",
+      "bytes": 1657,
+      "label": "inputs/profile-examples/glm.json",
+      "sha256": "92642247af1190385d1743b61a8b06be0e313b34d7a64ba9ac89dd9702c0a776"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/3/content",
+      "bytes": 1516,
+      "label": "inputs/profile-examples/claude.json",
+      "sha256": "bd020e2b037ee572ba69b6cbe206ed466db32ea05f05f482d32a886753571e29"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/4/content",
+      "bytes": 1386,
+      "label": "inputs/profile-examples/codex.json",
+      "sha256": "13370f1741248c77094dea03eb8a8ed9e8de385621f6d0763eb6e1e78a968dd7"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/5/content",
+      "bytes": 16607,
+      "label": "skills/profile-authoring/SKILL.md",
+      "sha256": "dd359ea6a4966dc97d132c7e344a2bcfeff70b61b753bd97f0b1bdde344b6178"
+    },
+    {
+      "path": "run-input.json",
+      "pointer": "/placement/childFiles/6/content",
+      "bytes": 11932,
+      "label": "skills/research-director/SKILL.md",
+      "sha256": "2940870f683dcc9db506faaa6637aa1fed2470b3b20e1c5808ef80dfdf1e9a19"
+    },
+    {
+      "path": "spawn-journal.jsonl",
+      "bytes": 36073,
+      "sha256": "61534d7803893c0acc50a8c904348b9952347626493dcb5a3c2af2e387c406ea"
+    }
+  ],
+  "assignment": {
+    "objective": "The journal retains the verdict from the second successful check. Some events from a resumed attempt are unavailable.",
+    "suppliedKnowledge": "",
+    "deliverables": "",
+    "constraints": "",
+    "source": null
+  },
+  "terminal": {
+    "kind": "no-winner",
+    "reason": "cancelled"
+  },
+  "coverage": {
+    "completeOriginalCapture": false,
+    "publicContent": "The journal retains the verdict from the second successful check. Some events from a resumed attempt are unavailable.",
+    "categoryMethod": "Activity types are keyword matches on tool names and commands. They do not measure research value or show independent verification.",
+    "cost": "Not recorded",
+    "nodes": [
+      {
+        "nodeId": "albert-full-ldpc-lift-20261011b",
+        "channel": "root",
+        "status": "lossy",
+        "reason": "resumed-attempt-replay-dropped"
+      }
+    ],
+    "gaps": [
+      {
+        "runId": "albert-full-ldpc-lift-20261011b",
+        "nodeId": "albert-full-ldpc-lift-20261011b",
+        "code": "archived-not-ingested",
+        "detail": "A native transcript archive exists but is not in the native cache"
+      },
+      {
+        "runId": "albert-full-ldpc-lift-20261011b",
+        "nodeId": "albert-full-ldpc-lift-20261011b",
+        "code": "root-replay-dropped",
+        "detail": "14460 rows of a resumed attempt repeat its predecessor and are not events"
+      }
+    ]
+  }
+}
