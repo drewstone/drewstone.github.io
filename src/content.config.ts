@@ -176,7 +176,7 @@ const traces = defineCollection({
 const research = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/research' }),
   schema: z.object({
-    title: z.string(), description: z.string(), assessed: z.coerce.date(),
+    title: z.string(), description: z.string(), published: z.coerce.date(), assessed: z.coerce.date(),
     claim: z.string(), limitation: z.string(),
     /** Field shown in the breadcrumb and link preview. */
     area: z.string().default('Quantum information'),

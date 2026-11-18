@@ -4,9 +4,9 @@ import { getCollection } from 'astro:content'
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 )
-const research = (await getCollection('research')).sort(
-  (a, b) => a.data.order - b.data.order,
-)
+const latestResearch = (await getCollection('research'))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf() || a.data.order - b.data.order)
+  .slice(0, 8)
 const originals = posts.filter((p) => p.data.original)
 ---
 
@@ -34,10 +34,10 @@ const originals = posts.filter((p) => p.data.original)
   <div class="home-columns">
     <section>
       <h2>
-        <a href="/research">Proofs &amp; counterexamples</a>
+        Latest proofs &amp; counterexamples
       </h2>
       <ol class="research-list">
-        {research.map((item) => (
+        {latestResearch.map((item) => (
           <li>
             <a href={`/research/${item.id}`}>
               <strong>{item.data.title}</strong>
@@ -46,6 +46,7 @@ const originals = posts.filter((p) => p.data.original)
           </li>
         ))}
       </ol>
+      <p><a href="/research">All proofs &amp; counterexamples</a></p>
     </section>
     <section>
       <h2><a href="/posts">Blog</a></h2>
