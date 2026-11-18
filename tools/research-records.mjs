@@ -641,9 +641,13 @@ async function checkReplays(gate) {
       gate.fail('G1', id, 'a replay needs overlay.json, replay.json and its public projection')
       continue
     }
-    const overlay = JSON.parse(overlayBytes.toString('utf8'))
-    const replay = JSON.parse(replayBytes.toString('utf8'))
-    const record = JSON.parse(publicBytes.toString('utf8'))
+    let overlay, replay, record
+    try {
+      [overlay, replay, record] = [overlayBytes, replayBytes, publicBytes].map((bytes) => JSON.parse(bytes.toString('utf8')))
+    } catch (error) {
+      gate.fail('G1', id, `invalid replay JSON: ${error.message}`)
+      continue
+    }
     checkOverlay(gate, id, overlay)
     if (replay.schema !== 'publication.replay.v1' || replay.recordId !== id)
       gate.fail('G1', id, 'replay.json is not the publication.replay.v1 statement of this id')
@@ -949,7 +953,9 @@ async function main([command, ...rest]) {
   if (command === 'check') return (await check({ ids: ids.length ? ids : undefined })).report('check')
   if (command === 'replay') {
     const from = ids.indexOf('--record')
-    if (!runDir || from < 0 || ids.length !== 3) throw new Error('usage: research-records.mjs replay <id> --record <converted record> --run-dir <original source>')
+    if (!runDir || from < 0 || ids.length !== 3) {
+      throw new Error('usage: research-records.mjs replay <id> --record <converted record> --run-dir <original source>')
+    }
     const recordPath = resolve(ids.splice(from, 2)[1])
     await replay(ids[0], recordPath, runDir)
     return 0

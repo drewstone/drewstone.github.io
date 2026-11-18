@@ -51,7 +51,7 @@ It takes the same review and the same projection, and the page says it is unsign
 - `research/replays/<record id>/overlay.json` is the review, in the publication overlay format.
 - `research/replays/<record id>/replay.json` says why it is unsigned, names the converter version, and holds the digests of the converted record, the overlay and the public projection.
 - `public/research/replays/<record id>.json` is the public projection; a post cites it in `replay_ids`, and its agent record section shows it with the signed records and a line saying no independent rebuild has signed it.
-- The overlay's `reviewer` names whoever actually read the published bodies, with the time they did; when that is not the post's author, a `note` says so, and the author's own read replaces the entry before merge.
+- The overlay's `reviewer` names the person or agent who read the published bodies and records when they did so. If the author delegates the disclosure review, credit the delegated reviewer.
 
 Convert the retained run directory read-only with the converter, review the events, and write the projection:
 

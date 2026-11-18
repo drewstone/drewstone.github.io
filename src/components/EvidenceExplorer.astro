@@ -12,4 +12,7 @@ const { records, idmap, behaviors = [], downloads } = Astro.props
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
 </style>
 <AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:load />
-<noscript><p>The interactive viewer requires JavaScript. {records.map((record) => <a href={downloads[record.runId]}>{record.title ?? record.runId}</a>)}</p></noscript>
+<noscript>
+  <p>The interactive viewer requires JavaScript. Download the records below.</p>
+  <ul>{records.map((record) => <li><a href={downloads[record.runId]}>{record.title ?? record.runId}</a></li>)}</ul>
+</noscript>
