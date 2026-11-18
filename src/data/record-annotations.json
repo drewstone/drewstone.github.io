@@ -1,0 +1,8 @@
+{
+  "claim-cyclic-full-weight-20261117b": {
+    "31c8d92898b9:53": { "role": "user", "check": { "outcome": "failed", "by": "the Lab", "subject": "rc1", "at": "2026-11-17T20:16:05.919Z" } },
+    "31c8d92898b9:72": { "role": "user" },
+    "31c8d92898b9:135": { "role": "user" },
+    "31c8d92898b9:172": { "role": "user", "check": { "outcome": "passed", "by": "the Lab", "subject": "rc2", "at": "2026-11-17T20:46:06.397Z", "reason": "The frozen cyclic-full-weight checker verified a refutation of the conjecture, and no dated source in its record table has published one." } }
+  }
+}
