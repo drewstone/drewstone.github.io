@@ -13,14 +13,15 @@ const download = downloads[records[0].runId] ?? `/research/records/${records[0].
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
   /* Until the shared timeline (@tangle-network/charts 4.0.2) does these itself: a header metric the record cannot
      report (its cell is a dash titled "not reported" or "No cost source") is left out instead of shown empty; the
-     legend wraps instead of clipping; the longest-leaf chip, never explained here, is dropped; and below 480 px the
-     axis labels, which overlap there and run to milliseconds, are hidden while the bars and markers stay. */
+     legend wraps instead of clipping; the unexplained longest-leaf chip is dropped; and in the timeline's narrow
+     layout (under 600 px) the axis labels, which run to milliseconds there and overlap at 480 px, are hidden while
+     the bars, markers and playback clock stay. */
   .research-agent-record .fw-summary > div:has(> dd[title$=' not reported'], > dd[title^='No cost source']) { display: none; }
   .research-agent-record .fw-legends,
   .research-agent-record .fw-legend { flex-wrap: wrap; overflow: visible; }
   .research-agent-record .fw-legends .fw-legend { flex: 0 1 auto; }
   .research-agent-record .fw-badge { display: none; }
-  @media (max-width: 479px) {
+  @container flow-waterfall (width <= 599px) {
     .research-agent-record .fw-axis-track .fw-tick { visibility: hidden; }
   }
 </style>
