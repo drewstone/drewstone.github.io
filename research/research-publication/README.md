@@ -8,7 +8,7 @@ Execution remains owned by Runtime; this repository publishes reviewed projectio
 1. Verify the exact source statement, witness, assumptions, sign, and scope.
 2. Replay the existing artifact and distinguish that replay from an independently written checker.
 3. Review novelty separately; record corpus origin, prior art, corrections, and missing evidence.
-4. Add one MDX entry under `src/content/research`, with its dated assessment and applicable record IDs.
+4. Add one MDX entry under `src/content/research`, with a plain-language explanation, the technical argument, its dated assessment and the record or replay of the agents who produced the result. Link the account of the discovery to specific events.
 5. Review the rendered mathematics, interactions, source links, and mobile layout before delivery.
 
 Human-original essays remain unchanged.
@@ -43,12 +43,33 @@ node tools/research-records.mjs verify <record id>  # reproduce it from the stor
 `build` signs each lock with `BLOG_RECORDS_SIGNING_KEY` from the same encrypted file (tangle-devops `secrets/agent-state.env`); `research/publications/attestation-keys.json` lists the public keys the site build accepts.
 Pin existing stored snapshots with `disco evidence pin --from research/publications`. Lab has retired its manual upload and store-index writers; legacy single-snapshot publications must still match the retained catalog before they can pass verification.
 
+## Replays
+
+A replay is a record whose run snapshot is not in the evidence store yet, so no store build can reproduce and sign it.
+It takes the same review and the same projection, and the page says it is unsigned.
+
+- `research/replays/<record id>/overlay.json` is the review, in the publication overlay format.
+- `research/replays/<record id>/replay.json` says why it is unsigned, names the converter version, and holds the digests of the converted record, the overlay and the public projection.
+- `public/research/replays/<record id>.json` is the public projection; a post cites it in `replay_ids`, and its agent record section shows it with the signed records and a line saying no independent rebuild has signed it.
+- The overlay's `reviewer` names whoever actually read the published bodies, with the time they did; when that is not the post's author, a `note` says so, and the author's own read replaces the entry before merge.
+
+Convert the retained run directory read-only with the converter, review the events, and write the projection:
+
+```bash
+node tools/research-records.mjs replay <record id> --record <converted record.json>
+```
+
+Every overlay entry still binds to the sha256 of its source line, and each published text must occur verbatim in that line or, for streamed text, in the deltas of its anchor range.
+`check` holds every replay to the overlay shape, its digests, the viewer's schema, the G8 scan, and a citing post; `?event=` links into a replay resolve like links into a record.
+When the store holds the run, move the overlay to `research/publications/<record id>/` and build it as a signed record.
+
 ## Review overlay
 
 Overlay entries are keyed by event ID and bound to the exact source bytes the reviewer read (`sourceSha256`).
 A changed source line, file or JSON value invalidates its entry, and the build stops until it is reviewed again.
 Bodies are withheld unless an entry publishes them in full, redacted, as an excerpt, or as a summary.
-Redactions cover credentials, third-party email addresses, private paths, nonces, account names and IP addresses.
+Redactions cover credentials, third-party email addresses, private paths, private host names, nonces, account names and IP addresses.
+The projection itself drops stack traces and subscription seat, account, user and key identifiers from lifecycle payloads.
 Hidden thinking, unrelated memory, system reminders and encrypted inter-agent messages are never published.
 Never approve unread text mechanically to make a build pass.
 Agent finding text is distinct from the curator's assessment, which the overlay carries beside it.
@@ -74,7 +95,8 @@ Joins, channel choices and converter upgrades do not change an ID, so a publishe
 - the committed projection and overlay match their lock;
 - every published ID, every `?event=` link under `src/content` and `research/`, and every map target resolves to an event;
 - public records hold no credential, private path, unlisted email address, nonce, encrypted blob or hidden reasoning, and every published body traces to the overlay;
-- no file under `public/research/records` lacks a manifest;
+- no file under `public/research/records` lacks a manifest, and none under `public/research/replays` lacks a replay statement;
+- each replay matches its statement's digests, passes the viewer's schema and the same scan, and is cited by a post;
 - every lock carries a valid signature over the current manifest, overlay, projection and record digests.
 
 The site build cannot read the store, so the signature carries the store's verdict to it: `build` signs only after the pins pass and the record reproduces from the store, and a lock, overlay or manifest edited afterwards fails `check`, wherever the commit came from.

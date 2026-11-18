@@ -1,0 +1,31 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "albert-full-ldpc-lift-20261011b",
+  "title": "Second check of the lift",
+  "assignment": {
+    "summary": {
+      "objective": "The journal retains the verdict from the second successful check. Some events from a resumed attempt are unavailable."
+    }
+  },
+  "defaults": {
+    "bodies": "withheld"
+  },
+  "events": {
+    "61534d780389:50": {
+      "sourceSha256": "4838e90d8f91989880b0ed0a7045950f8f91aabdf4b9dd13b0224393db2cba50",
+      "mode": "excerpt",
+      "text": "PASS [distance] min_weight_logical is a nontrivial logical of weight 8",
+      "note": "One line of checker output."
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    }
+  ],
+  "coverageText": "The journal retains the verdict from the second successful check. Some events from a resumed attempt are unavailable.",
+  "reviewer": {
+    "by": "Codex",
+    "at": "2026-11-18T23:42:05Z"
+  }
+}

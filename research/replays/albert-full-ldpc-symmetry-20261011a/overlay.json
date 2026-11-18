@@ -1,0 +1,43 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "albert-full-ldpc-symmetry-20261011a",
+  "title": "Discovery of the two-sheet lift",
+  "assignment": {
+    "summary": {
+      "objective": "The cancelled discovery run found the lift and tested its distance and logical gates. Three excerpts show which checks were still open at each step."
+    }
+  },
+  "defaults": {
+    "bodies": "withheld"
+  },
+  "events": {
+    "b80469bb6364:419": {
+      "sourceSha256": "aa7f6384a92e745d85d7d9666186d5a2b3a4393fd0141dec67e50fcb9e6f06cc",
+      "mode": "excerpt",
+      "text": "A two-sheet lift of the incumbent has produced an indecomposable \\([[128,16]]\\) candidate with check weight 8 and qubit degree 8. It would meet the \\(k\\ge12,\\ d\\ge8\\) route if the distance and fullness checks pass. The exact low-weight search is running, and the certificate branch is testing its depth-one layers.",
+      "note": "One line from the recorded turn."
+    },
+    "b80469bb6364:555": {
+      "sourceSha256": "c08bcb802263df4d799f28e5eb13dd566ae89915caf8115f8c86d49844826b94",
+      "mode": "excerpt",
+      "text": "The exact distance search passed for the \\([[128,16,8]]\\) lift. Two \\([[64,12,8]]\\) constructions and a graph-derived \\([[192,12,8]]\\) construction also meet the parameter and check limits.",
+      "note": "One line from the recorded turn."
+    },
+    "b80469bb6364:660": {
+      "sourceSha256": "fbfca94e1168a6d33b84a4ee425de879e83da4d6b74dd761ad07e0caff67960a",
+      "mode": "excerpt",
+      "text": "The \\([[128,16,8]]\\) lift’s new layers passed the evaluator’s exact fullness test. I’m now constructing the 47 transvection words required by the mounted checker. Those words and a successful full checker run are still needed before I can report success.",
+      "note": "One line from the recorded turn."
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    }
+  ],
+  "coverageText": "The cancelled discovery run found the lift and tested its distance and logical gates. Three excerpts show which checks were still open at each step.",
+  "reviewer": {
+    "by": "Codex",
+    "at": "2026-11-18T23:42:05Z"
+  }
+}

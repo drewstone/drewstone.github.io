@@ -1,0 +1,17 @@
+{
+  "schema": "publication.replay.v1",
+  "recordId": "albert-full-ldpc-lift-20261011b",
+  "overlay": "overlay.json",
+  "public": "public/research/replays/albert-full-ldpc-lift-20261011b.json",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "3.0.9",
+    "adapter": "agent-runtime",
+    "idScheme": "anchor.v1"
+  },
+  "source": "Converted from its retained run directory and checked against its original journal.",
+  "unsigned": "Rebuilt directly from retained execution logs. There is no signed evidence-store publication for this replay.",
+  "recordSha256": "bb3b74c3b37d41e385d9894f6b1080ffa6e980cab15931f53bc6412fe6a5b77d",
+  "overlaySha256": "8ccecb968ebb185c0ae9acbd3391f9778224b73aa86619504ccffc9ed1669cbe",
+  "publicSha256": "979301ec2e4366163bfcfdb1508e50b2bfb16161d876a3d285791bec39868013"
+}

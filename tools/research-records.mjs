@@ -11,6 +11,16 @@
  *   research/publications/attestation-keys.json  public keys whose lock signatures the site build accepts
  *   public/research/records/<id>.json         the public projection, a checked build output
  *
+ * A replay is a record whose run snapshot is not in the evidence store, so no store build can sign it. It takes the same
+ * review (overlay.json) and the same projection (applyOverlay), and says on the page that it is unsigned:
+ *   research/replays/<id>/overlay.json         the review, as for a publication
+ *   research/replays/<id>/replay.json          why it is unsigned, the converter, and the digests of the private record,
+ *                                              the overlay and the public projection
+ *   public/research/replays/<id>.json          the public projection; a post cites it with replay_ids
+ *
+ *   node tools/research-records.mjs replay <id> --record <converted record>   apply the review, write the projection
+ *                                                    and its digests; check then holds G1, G6, G8 and G9 on every replay
+ *
  *   node tools/research-records.mjs check            offline gates G1, G6-G10; runs before every site build, no network
  *   node tools/research-records.mjs build [<id>...]  from the store: materialize, convert, apply the review, check the
  *                                                    pins, write, and sign the lock (G10)
@@ -39,6 +49,8 @@ const exec = promisify(execFile)
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const PUB = join(ROOT, 'research/publications')
 const PUBLIC = join(ROOT, 'public/research/records')
+const REPLAYS = join(ROOT, 'research/replays')
+const PUBLIC_REPLAYS = join(ROOT, 'public/research/replays')
 const POSTS = join(ROOT, 'src/content/research')
 const CITATION_ROOTS = [join(ROOT, 'src/content'), join(ROOT, 'research')]
 const CONVERTER = '@drewstone/agent-record'
@@ -91,21 +103,21 @@ async function readPublication(id) {
   return { id, manifest: await read('manifest.json'), overlay: await read('overlay.json'), lock: await read('lock.json') }
 }
 
-/** record_ids of one front-matter block (inline or block list). */
-function recordIdsOf(front) {
-  const inline = /^record_ids:\s*\[(.*)\]\s*$/m.exec(front)?.[1]
-  const block = /^record_ids:\s*\n((?:\s+-\s+.*\n?)+)/m.exec(front)?.[1]
+/** record_ids (or replay_ids) of one front-matter block (inline or block list). */
+function recordIdsOf(front, key = 'record_ids') {
+  const inline = new RegExp(`^${key}:\\s*\\[(.*)\\]\\s*$`, 'm').exec(front)?.[1]
+  const block = new RegExp(`^${key}:\\s*\\n((?:\\s+-\\s+.*\\n?)+)`, 'm').exec(front)?.[1]
   return inline !== undefined
     ? inline.split(',').map((item) => item.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
     : (block ?? '').split('\n').map((line) => line.replace(/^\s+-\s+/, '').trim().replace(/^['"]|['"]$/g, '')).filter(Boolean)
 }
 
-/** record_ids of every research post (front matter, inline or block list). */
-async function citedRecords() {
+/** record_ids (or replay_ids) of every research post (front matter, inline or block list). */
+async function citedRecords(key = 'record_ids') {
   const cited = new Map()
   for (const name of (await readdir(POSTS)).filter((file) => /\.mdx?$/.test(file))) {
     const text = await readFile(join(POSTS, name), 'utf8')
-    cited.set(name.replace(/\.mdx?$/, ''), recordIdsOf(/^---\n([\s\S]*?)\n---/.exec(text)?.[1] ?? ''))
+    cited.set(name.replace(/\.mdx?$/, ''), recordIdsOf(/^---\n([\s\S]*?)\n---/.exec(text)?.[1] ?? '', key))
   }
   return cited
 }
@@ -191,6 +203,7 @@ const LEAKS = [
   ['credential', /\b(?:api[_-]?key|secret|token|password|passwd)\s*[=:]\s*["']?(?![\[<$])[A-Za-z0-9_\-+/]{16,}/i],
   // Also the dash-encoded form a Pi or Claude Code session directory uses for its working directory (--home-drew-code-…).
   ['private-path', /[/-](?:home|Users)[/-]drew\b|\/tmp\/claude-|\/private\/tmp\b/],
+  ['private-host', /\b[a-z0-9-]+\.[a-z0-9-]+\.ts\.net\b/i],
   ['encrypted-message', /\bgAAAAA[A-Za-z0-9_-]{20,}/],
   ['nonce', /\bnonce["']?\s*[:=]\s*["']?[0-9a-f]{16,}/i],
 ]
@@ -260,13 +273,18 @@ const DETAIL_FIELDS = ['role', 'lifecycle', 'subject', 'atBasis', 'toolCallId', 
   'contentCharacters']
 const BODY_FIELDS = ['publicText', 'reasoning', 'publicToolCalls', 'clip', 'recordedClaim', 'body', 'content']
 const NATIVE_RECORD_FIELDS = ['version', 'id', 'parentId', 'provider', 'modelId', 'thinkingLevel', 'customType']
-// Prose inside a lifecycle payload is a body too: an error reason, a prompt, captured output.
-const PROSE_KEYS = new Set(['reason', 'cause', 'detail', 'error', 'message', 'text', 'prompt', 'task', 'instruction', 'output', 'stdout', 'stderr', 'cwd'])
+// Prose inside a lifecycle payload is a body too: an error reason, a prompt, captured output, a stack trace (whose
+// frames name the operator's checkout and dependency bundle).
+const PROSE_KEYS = new Set(['reason', 'cause', 'detail', 'error', 'message', 'text', 'prompt', 'task', 'instruction', 'output', 'stdout', 'stderr', 'cwd',
+  'errorStack', 'stack'])
+// Which subscription seat, account, user or key paid for a turn stays in the lab.
+const IDENTITY_KEYS = new Set(['seat', 'seatId', 'accountId', 'userId', 'keyId'])
 function withoutProse(value) {
   if (Array.isArray(value)) return value.map(withoutProse)
   if (typeof value === 'string') return redactPath(value)
   if (!value || typeof value !== 'object') return value
-  return Object.fromEntries(Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key)).map(([key, inner]) => [key, withoutProse(inner)]))
+  const kept = Object.entries(value).filter(([key]) => !PROSE_KEYS.has(key) && !IDENTITY_KEYS.has(key))
+  return Object.fromEntries(kept.map(([key, inner]) => [key, withoutProse(inner)]))
 }
 // A source path keeps its shape, but not the private home it names: a Pi session directory encodes its working directory
 // (trace/pi-sessions/--home-drew-code-…), which G8 refuses like /home/drew itself.
@@ -571,6 +589,7 @@ export async function check({ ids } = {}) {
     records.set(id, record)
   }
 
+  const replays = ids ? new Map() : await checkReplays(gate)
   // G9: nothing public without a manifest.
   for (const name of await readdir(PUBLIC).catch(() => [])) {
     const id = name.replace(/\.json$/, '')
@@ -581,7 +600,7 @@ export async function check({ ids } = {}) {
 
   // G7: every id ever published, every cited link and every map target resolves to a current event.
   const resolveIn = (runId, eventId, where) => {
-    const record = records.get(runId)
+    const record = records.get(runId) ?? replays.get(runId)
     if (!record) {
       if (!ids || ids.includes(runId)) gate.fail('G7', runId, `${where} names event ${eventId} in a record that is not published`)
       return
@@ -600,6 +619,63 @@ export async function check({ ids } = {}) {
     if (missing.length) gate.fail('G7', id, `published-ids.json lacks ${missing.length} public event ids (run build)`)
   }
   return gate
+}
+
+// ---------------------------------------------------------------- replays (unsigned records)
+
+const REPLAY_FIELDS = ['recordSha256', 'overlaySha256', 'publicSha256']
+
+/** G1, G6, G8 and G9 for replays: the review's shape, its digests, what the public bytes hold, and who cites them. A post's
+ * event links into a replay resolve against the replays this returns (G7). */
+async function checkReplays(gate) {
+  const replays = new Map()
+  const ids = (await readdir(REPLAYS, { withFileTypes: true }).catch(() => [])).filter((entry) => entry.isDirectory()).map((entry) => entry.name)
+  const cited = new Set([...(await citedRecords('replay_ids')).values()].flat())
+  for (const id of ids) {
+    const dir = join(REPLAYS, id)
+    if (!ID.test(id)) gate.fail('G1', id, 'replay id is not a lowercase slug')
+    const read = async (path) => (existsSync(path) ? readFile(path) : null)
+    const paths = [join(dir, 'overlay.json'), join(dir, 'replay.json'), join(PUBLIC_REPLAYS, `${id}.json`)]
+    const [overlayBytes, replayBytes, publicBytes] = await Promise.all(paths.map(read))
+    if (!overlayBytes || !replayBytes || !publicBytes) {
+      gate.fail('G1', id, 'a replay needs overlay.json, replay.json and its public projection')
+      continue
+    }
+    const overlay = JSON.parse(overlayBytes.toString('utf8'))
+    const replay = JSON.parse(replayBytes.toString('utf8'))
+    const record = JSON.parse(publicBytes.toString('utf8'))
+    checkOverlay(gate, id, overlay)
+    if (replay.schema !== 'publication.replay.v1' || replay.recordId !== id)
+      gate.fail('G1', id, 'replay.json is not the publication.replay.v1 statement of this id')
+    if (!replay.unsigned) gate.fail('G1', id, 'replay.json does not say why no store build signed it')
+    if (replay.converter?.package !== CONVERTER || !replay.converter?.version) gate.fail('G1', id, 'replay.json names no converter version')
+    for (const key of REPLAY_FIELDS) if (!HEX.test(String(replay[key]))) gate.fail('G1', id, `replay.json has no ${key}`)
+    if (sha256(overlayBytes) !== replay.overlaySha256) gate.fail('G6', id, 'overlay.json differs from replay.overlaySha256 (run replay after review)')
+    if (sha256(publicBytes) !== replay.publicSha256) gate.fail('G6', id, 'public replay bytes differ from replay.publicSha256')
+    if (record.schema !== 'agent-record.v1' || record.runId !== id) gate.fail('G6', id, 'public replay is not the agent-record.v1 projection of this id')
+    const issues = await viewerIssues(record)
+    if (issues) gate.fail('G6', id, `the viewer refuses the public replay: ${issues}`)
+    scanPublic(gate, id, publicBytes.toString('utf8'), record, overlay)
+    if (!cited.has(id)) gate.fail('G1', id, 'no research post cites this replay')
+    replays.set(id, record)
+  }
+  for (const name of await readdir(PUBLIC_REPLAYS).catch(() => [])) {
+    const id = name.replace(/\.json$/, '')
+    if (!ids.includes(id)) gate.fail('G9', id, `${relative(ROOT, join(PUBLIC_REPLAYS, name))} has no replay.json`)
+  }
+  for (const id of cited) if (!ids.includes(id)) gate.fail('G1', id, 'a post cites a replay that does not exist')
+  return replays
+}
+
+/** Apply the review to a converted record whose snapshot the store does not hold, and write the projection and its digests. */
+export async function replay(id, recordPath) {
+  const dir = join(REPLAYS, id)
+  const [recordBytes, overlayBytes] = await Promise.all([readFile(recordPath), readFile(join(dir, 'overlay.json'))])
+  const statement = await readJson(join(dir, 'replay.json'))
+  const projected = json(applyOverlay(JSON.parse(recordBytes.toString('utf8')), JSON.parse(overlayBytes.toString('utf8'))))
+  await writeAtomic(join(PUBLIC_REPLAYS, `${id}.json`), projected)
+  const digests = { recordSha256: sha256(recordBytes), overlaySha256: sha256(overlayBytes), publicSha256: sha256(projected) }
+  await writeAtomic(join(dir, 'replay.json'), json({ ...statement, ...digests }))
 }
 
 // ---------------------------------------------------------------- the store (GTR)
@@ -868,6 +944,13 @@ async function main([command, ...rest]) {
   }
   if (runDir && ids.length !== 1) throw new Error('--run-dir names the materialized snapshot of exactly one record')
   if (command === 'check') return (await check({ ids: ids.length ? ids : undefined })).report('check')
+  if (command === 'replay') {
+    const from = ids.indexOf('--record')
+    if (from < 0 || ids.length !== 3) throw new Error('usage: research-records.mjs replay <id> --record <converted record>')
+    const recordPath = resolve(ids.splice(from, 2)[1])
+    await replay(ids[0], recordPath)
+    return 0
+  }
   if (command === 'build') {
     await build({ ids })
     return (await check()).report('build, then check')
@@ -877,7 +960,8 @@ async function main([command, ...rest]) {
     const store = await verify({ ids, runDir })
     return Math.max(offline.report('check'), store.report('verify'))
   }
-  process.stderr.write('usage: research-records.mjs check | build [<id>...] | verify [<id>...] [--run-dir <materialized snapshot>] [--if-changed]\n')
+  process.stderr.write('usage: research-records.mjs check | build [<id>...] | verify [<id>...] [--run-dir <materialized snapshot>] [--if-changed]\n'
+    + '       research-records.mjs replay <id> --record <converted record>\n')
   return 64
 }
 

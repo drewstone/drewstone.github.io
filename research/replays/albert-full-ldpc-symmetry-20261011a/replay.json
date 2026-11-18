@@ -1,0 +1,17 @@
+{
+  "schema": "publication.replay.v1",
+  "recordId": "albert-full-ldpc-symmetry-20261011a",
+  "overlay": "overlay.json",
+  "public": "public/research/replays/albert-full-ldpc-symmetry-20261011a.json",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "3.0.9",
+    "adapter": "codex",
+    "idScheme": "anchor.v1"
+  },
+  "source": "The native capture index binds the discovery run to its retained Codex session. SHA-256 of the original transcript: b80469bb636457d16b49d3508b71601da78beec3749cfd7a321767c9452a7d4e.",
+  "unsigned": "Rebuilt directly from retained execution logs. There is no signed evidence-store publication for this replay.",
+  "recordSha256": "90a2418df940f96967bb249442cd2903b8c8df02dc480211b2bf92f30b1dcc1e",
+  "overlaySha256": "6cddbf48b5c814239ec7f85bccea607dec6454d5cab4c2f7531c1a393c170136",
+  "publicSha256": "193324f0057e853d1278f7a8719352bf437884e5f11ba96bedb76f65f3570da1"
+}

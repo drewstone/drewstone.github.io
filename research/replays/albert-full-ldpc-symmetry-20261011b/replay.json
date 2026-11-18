@@ -1,0 +1,17 @@
+{
+  "schema": "publication.replay.v1",
+  "recordId": "albert-full-ldpc-symmetry-20261011b",
+  "overlay": "overlay.json",
+  "public": "public/research/replays/albert-full-ldpc-symmetry-20261011b.json",
+  "converter": {
+    "package": "@drewstone/agent-record",
+    "version": "3.0.9",
+    "adapter": "agent-runtime",
+    "idScheme": "anchor.v1"
+  },
+  "source": "Converted from its retained run directory and checked against its original journal.",
+  "unsigned": "Rebuilt directly from retained execution logs. There is no signed evidence-store publication for this replay.",
+  "recordSha256": "a5f72b9f53e539c0f0decad9e391668763bf14852ceef44d1839c37c44c2a9bc",
+  "overlaySha256": "b8db81c3a4c62cf8dabe7065e89f397133badff60ad12b3f0bfeeeacebfb0b9c",
+  "publicSha256": "42ba2f94baee9b277bcad30c17bc38d1b773f157033d8a735a3dc1fb9e5c8179"
+}

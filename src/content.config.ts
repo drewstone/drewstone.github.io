@@ -188,7 +188,16 @@ const research = defineCollection({
           ctx.addIssue({ code: 'custom', message: `Record ${id} has no manifest, overlay and lock under research/publications/${id}` })
       }),
     ).default([]),
+    // A replay is a reviewed record the evidence store cannot sign yet: overlay and statement under research/replays.
+    replay_ids: z.array(
+      z.string().regex(/^[a-z0-9][a-z0-9._-]*$/).superRefine((id, ctx) => {
+        if (!['overlay.json', 'replay.json'].every((name) => existsSync(join('research/replays', id, name))))
+          ctx.addIssue({ code: 'custom', message: `Replay ${id} has no overlay and replay statement under research/replays/${id}` })
+      }),
+    ).default([]),
     order: z.number(),
+  }).refine((post) => post.record_ids.length + post.replay_ids.length > 0, {
+    message: 'A research post needs a published agent record or a reviewed replay.',
   }),
 })
 

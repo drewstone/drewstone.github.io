@@ -1,0 +1,49 @@
+{
+  "schema": "publication.overlay.v1",
+  "recordId": "albert-full-ldpc-symmetry-20261011b",
+  "title": "Certification of the recovered construction",
+  "assignment": {
+    "summary": {
+      "objective": "The operator recovered the construction from the cancelled run. This run checked the recovered files. The selected lines are outputs of the checker."
+    }
+  },
+  "defaults": {
+    "bodies": "withheld"
+  },
+  "events": {
+    "b2de3ae4ba72:473": {
+      "sourceSha256": "3c9f33bc1e1029260108da9e5c0baf0cedce25828b8785a81a3e76f120aaf93f",
+      "mode": "excerpt",
+      "text": "PASS [code] CSS code n=128 k=16, logical basis symplectic, claimed d=8",
+      "note": "One line of checker output."
+    },
+    "b2de3ae4ba72:502": {
+      "sourceSha256": "32a7ec5a3ce6b846a8e2baf389c06b826eef33b325d6d1eedcb144df90c53b63",
+      "mode": "excerpt",
+      "text": "PASS [indecomposable] the code is not a direct sum of smaller codes",
+      "note": "One line of checker output."
+    },
+    "b2de3ae4ba72:522": {
+      "sourceSha256": "990ad74a72479f41caf10faee2b9b2bbd9c9a2572ed960db4d0b1d898ab2d196",
+      "mode": "excerpt",
+      "text": "PASS [words] words for all 47 transvections",
+      "note": "One line of checker output."
+    },
+    "b2de3ae4ba72:538": {
+      "sourceSha256": "1f29a22e6113e45b4605d43215bce7a561f4f5c4fc8b685379b8c1f363640b2b",
+      "mode": "excerpt",
+      "text": "PASS [words] 218 generators used, 1144 items in macros and words",
+      "note": "One line of checker output."
+    }
+  },
+  "withhold": [
+    {
+      "class": "hidden-thinking"
+    }
+  ],
+  "coverageText": "The operator recovered the construction from the cancelled run. This run checked the recovered files. The selected lines are outputs of the checker.",
+  "reviewer": {
+    "by": "Codex",
+    "at": "2026-11-18T23:42:05Z"
+  }
+}
