@@ -122,7 +122,16 @@ It shows 49 moments in the agents' own words.
 | Result | best word had 7 zeros | verified counterexample |
 
 The model calls ran on a flat-rate coding-plan subscription and added nothing to the bill.
-The list-price figure prices the run's recorded tokens, 22.5 million input (22.0 million of them cache reads) and 260,584 output, at base rates; two model attempts went unmetered, so it is a floor.
+The list-price figure prices the tokens the runtime metered per agent attempt, 22.5 million input (22.0 million of them cache reads) and 260,584 output, at base rates; two attempts went unmetered, so it is a floor.
+
+<details class="ui-disclosure">
+<summary>How the record's own counts relate to these</summary>
+
+The record's metered rows add up to 27.5 million input tokens and 337,214 output, because four of its 23 rows repeat an attempt total already logged.
+Its lanes count 345 model calls where the run's traces count 223, because the record logs each text and each tool request of a reply as its own message.
+Its header counts 13 errors, the lead's tool calls that came back with one: seven shell commands, five notes the team's shared notebook refused, and one malformed status query.
+Its one failed agent is the writer that never started.
+</details>
 
 ## What it says about research agents
 

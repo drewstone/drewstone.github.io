@@ -11,6 +11,18 @@ const download = downloads[records[0].runId] ?? `/research/records/${records[0].
   .record-view-switch { display: flex; gap: .4rem; margin: 0 0 .75rem; }
   .record-view-switch button { font: inherit; padding: .3rem .8rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: inherit; cursor: pointer; }
   .record-view-switch button[aria-pressed='true'] { background: var(--fg); color: var(--bg); }
+  /* Until the shared timeline (@tangle-network/charts 4.0.2) does these itself: a header metric the record cannot
+     report (its cell is a dash titled "not reported" or "No cost source") is left out instead of shown empty; the
+     legend wraps instead of clipping; the longest-leaf chip, never explained here, is dropped; and below 480 px the
+     axis labels, which overlap there and run to milliseconds, are hidden while the bars and markers stay. */
+  .research-agent-record .fw-summary > div:has(> dd[title$=' not reported'], > dd[title^='No cost source']) { display: none; }
+  .research-agent-record .fw-legends,
+  .research-agent-record .fw-legend { flex-wrap: wrap; overflow: visible; }
+  .research-agent-record .fw-legends .fw-legend { flex: 0 1 auto; }
+  .research-agent-record .fw-badge { display: none; }
+  @media (max-width: 479px) {
+    .research-agent-record .fw-axis-track .fw-tick { visibility: hidden; }
+  }
 </style>
 {/* Hydrated when it comes into view, so a reader of the essay does not load the viewer up front; a link to #agent-record opens it at once. */}
 <AgentRecordView records={records} idmap={idmap} behaviors={behaviors} client:visible />

@@ -327,7 +327,8 @@
   ],
   "coverageText": "Published in the agents' own words: 49 beats, from the lead's plan through the hit, the rc1 failure and its misdiagnosis, the two operator steers, and the rc2 pass, plus the writers' key turns. The four wake inputs that carried the Lab's verdicts and the operator's steers are published as marked excerpts. Every other body is withheld, and every event keeps its time, agent and tool name. Hidden reasoning, stack traces, and subscription seat ids are removed. The first writer never started, so it has no transcript.",
   "reviewer": {
-    "by": "drewstone",
-    "at": "2026-11-17T22:00:00Z"
+    "by": "the operator, a Claude Code session",
+    "at": "2026-11-17T23:12:53Z",
+    "note": "The operator chose the 49 published bodies and checked each against its source line and the leak scan. Drew has not read them yet; his read replaces this entry before the page merges."
   }
 }
