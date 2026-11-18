@@ -18,7 +18,7 @@
  *                                              the overlay and the public projection
  *   public/research/replays/<id>.json          the public projection; a post cites it with replay_ids
  *
- *   node tools/research-records.mjs replay <id> --record <converted record>   apply the review, write the projection
+ *   node tools/research-records.mjs replay <id> --record <converted record> --run-dir <original source>   apply the review, write the projection
  *                                                    and its digests; check then holds G1, G6, G8 and G9 on every replay
  *
  *   node tools/research-records.mjs check            offline gates G1, G6-G10; runs before every site build, no network
@@ -668,11 +668,15 @@ async function checkReplays(gate) {
 }
 
 /** Apply the review to a converted record whose snapshot the store does not hold, and write the projection and its digests. */
-export async function replay(id, recordPath) {
+export async function replay(id, recordPath, runDir) {
   const dir = join(REPLAYS, id)
   const [recordBytes, overlayBytes] = await Promise.all([readFile(recordPath), readFile(join(dir, 'overlay.json'))])
   const statement = await readJson(join(dir, 'replay.json'))
-  const projected = json(applyOverlay(JSON.parse(recordBytes.toString('utf8')), JSON.parse(overlayBytes.toString('utf8'))))
+  const record = JSON.parse(recordBytes.toString('utf8'))
+  const overlay = JSON.parse(overlayBytes.toString('utf8'))
+  const issues = await checkReviewSources(record, overlay, runDir)
+  if (issues.length) throw new Error(issues.join('\n'))
+  const projected = json(applyOverlay(record, overlay))
   await writeAtomic(join(PUBLIC_REPLAYS, `${id}.json`), projected)
   const digests = { recordSha256: sha256(recordBytes), overlaySha256: sha256(overlayBytes), publicSha256: sha256(projected) }
   await writeAtomic(join(dir, 'replay.json'), json({ ...statement, ...digests }))
@@ -942,15 +946,15 @@ async function main([command, ...rest]) {
       return 0
     }
   }
-  if (runDir && ids.length !== 1) throw new Error('--run-dir names the materialized snapshot of exactly one record')
   if (command === 'check') return (await check({ ids: ids.length ? ids : undefined })).report('check')
   if (command === 'replay') {
     const from = ids.indexOf('--record')
-    if (from < 0 || ids.length !== 3) throw new Error('usage: research-records.mjs replay <id> --record <converted record>')
+    if (!runDir || from < 0 || ids.length !== 3) throw new Error('usage: research-records.mjs replay <id> --record <converted record> --run-dir <original source>')
     const recordPath = resolve(ids.splice(from, 2)[1])
-    await replay(ids[0], recordPath)
+    await replay(ids[0], recordPath, runDir)
     return 0
   }
+  if (runDir && ids.length !== 1) throw new Error('--run-dir names the materialized snapshot of exactly one record')
   if (command === 'build') {
     await build({ ids })
     return (await check()).report('build, then check')
@@ -961,7 +965,7 @@ async function main([command, ...rest]) {
     return Math.max(offline.report('check'), store.report('verify'))
   }
   process.stderr.write('usage: research-records.mjs check | build [<id>...] | verify [<id>...] [--run-dir <materialized snapshot>] [--if-changed]\n'
-    + '       research-records.mjs replay <id> --record <converted record>\n')
+    + '       research-records.mjs replay <id> --record <converted record> --run-dir <original source>\n')
   return 64
 }
 

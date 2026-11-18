@@ -56,10 +56,10 @@ It takes the same review and the same projection, and the page says it is unsign
 Convert the retained run directory read-only with the converter, review the events, and write the projection:
 
 ```bash
-node tools/research-records.mjs replay <record id> --record <converted record.json>
+node tools/research-records.mjs replay <record id> --record <converted record.json> --run-dir <original source directory>
 ```
 
-Every overlay entry still binds to the sha256 of its source line, and each published text must occur verbatim in that line or, for streamed text, in the deltas of its anchor range.
+The replay builder checks the SHA-256 of each reviewed source line before writing either output, and each published text must occur verbatim in that line or, for streamed text, in the deltas of its anchor range.
 `check` holds every replay to the overlay shape, its digests, the viewer's schema, the G8 scan, and a citing post; `?event=` links into a replay resolve like links into a record.
 When the store holds the run, move the overlay to `research/publications/<record id>/` and build it as a signed record.
 
