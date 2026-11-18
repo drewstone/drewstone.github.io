@@ -1,0 +1,40 @@
+{
+ "fix1_before_words": [
+  "play",
+  "profile",
+  "the runtime"
+ ],
+ "fix2_before_head": "Li-Yuan Conjecture 4.2 counterexample, November 17\nAsked\nDecide whether Conjecture 4.2 of Li and Yuan (arXiv:2607.02239v1; the play calls it li-yuan-3.2) is false by building one finite counterexample that a frozen exact checker verifies.\nFull brief\nResult\n\u201cThe Lab's check passed at 2026-11-17T20:46:06.397Z on tag rc2: \u2026 SOLVED: the frozen cyclic-full-weight checker verified a refutation of li-yuan-3.2, and no dated source in its record table has published one\u201d\nThe Lab's rc2 pass, 20:46 UTC \u00b7 See where it landed\nCancelled, no winner\nNov 17, 2026 19:45\u201320:50 UTC\n1 h 5 m\n5 agents\n246 steps, 13 f",
+ "fix4_before_moments": "19:45\n1\n2 steps failed \u00b7 Worked with sources in the shell and read files\n19:54\n2\nwriter, first spawn did not start \u00b7 Never got a box: its profile asked for a tool the runtime does not serve.\n19:57\n3\n2 steps failed \u00b7 Communicator spawned.\n20:01\n4\n2 steps failed \u00b7 n=13 validation matches the source exactly\n20:06\n5\nwriter, draft started \u00b7 Drafted the entry page for a non-specialist reader.\n20:16\n6\nThe Lab's rc1 failure\n20:28\n7\nThe first operator steer\n20:31\n8\n2 steps failed \u00b7 Still 110 \u2014 my verification *paste* and/or the page line is corrupted again\n20:32\n9\nwriter, draft finished\n20:33\n10\n3 steps failed \u00b7 Digest typo (dropped a hex char).\n20:37\n11\n1 step failed \u00b7 README already carries the corrected rc1 explanation (the digests were my own successive writes).\n20:37\n12\nwriter, merge started \u00b7 Merged the draft into the run's pages after the citation fix and the rc2 verdict.\n20:38\n13\nThe second operator steer\n20:40\n14\n1 step failed \u00b7 The second operator steer\n20:46\n15\nThe Lab's rc2 pass\n20:48\n16\npage relay started \u00b7 Read the recorded pages back for the merge writer, whose session had no page tools.\n20:48\n17\nwriter, merge and page relay were cancelled by the operator\n20:50\n18\nThe run was cancelled with no winner",
+ "fix3_before_iso": [
+  "callout tone-fail:  (commit 08e50816eb9e5ceeb82ea2f0f4a8389672b03429), checked 2026-11-17T20:16:05.919Z.",
+  "callout tone-ok: The Lab's check passed at 2026-11-17T20:46:06.397Z",
+  "callout tone-note: e Lab's own, exactly these facts: the Lab's check passed at 2026-11-17T20:46:06Z"
+ ],
+ "fix6_before_titles": [
+  "Ran computations and looked up its tools",
+  "Read the run's notes, ran computations and set up the workspace",
+  "Worked with sources in the shell, searched the web and fetched web pages",
+  "Recorded \u201cClaim R1: independent recheck\u201d and 2 more pages",
+  "Ran long commands on sources, read the run's notes and worked with sources in the shell",
+  "Ran computations, worked with sources in the shell and checked on running work",
+  "Ran long computations, ran computations and wrote files",
+  "Recorded pages, ran computations and read the run's notes",
+  "Ran long computations",
+  "Read the run's notes and recorded pages",
+  "Recorded \u201cThe k=4 witness re-verified independently\u201d",
+  "Ran long computations, read the run's notes and ran computations",
+  "Looked up notes pages, read the run's notes and ran computations",
+  "Second attempt met its contract"
+ ],
+ "fix8_before_ucs_1440_px": 1628,
+ "fix7_before_strip": {
+  "box_px": 358,
+  "content_px": 663
+ },
+ "fix4_before_390_overlaps": {
+  "markers": 18,
+  "overlapping": 2
+ },
+ "fix8_before_liyuan_390_px": 5818
+}

@@ -1,0 +1,35 @@
+{
+ "ucs-join": {
+  "outside_sha256": "a484350302b43029e01349e66e99eb84f7e6ea117ebba4c470f6eb75159e8805",
+  "outside_chars": 8738,
+  "record_top_px": 3568,
+  "record_height_1440_px": 1280,
+  "record_height_390_px": 1609,
+  "overflow_390_px": 0
+ },
+ "apn-critical-point": {
+  "outside_sha256": "8c0aac1004cc7151acec08fdeba79357ee353d115bc1139191eb1d939647e7ad",
+  "outside_chars": 15198,
+  "record_top_px": 5368
+ },
+ "bcww": {
+  "outside_sha256": "e1e55390d3092110d43820b3cba16a4256d1339b5c899005a19ebc41e6a1a2fc",
+  "outside_chars": 5371,
+  "record_top_px": 2990
+ },
+ "ghz": {
+  "outside_sha256": "0a524139e8012c38e0d29af3deab57abf8ceeb7db20ae0c9e8011ddd721516e0",
+  "outside_chars": 5027,
+  "record_top_px": 2564
+ },
+ "linden-winter": {
+  "outside_sha256": "2d0ed49cb99f56764ca2eccf53cac34226300a23f71d7602e10bdd51762a49aa",
+  "outside_chars": 7979,
+  "record_top_px": 3973
+ },
+ "orientable-sequences": {
+  "outside_sha256": "7794b746d7b88e9384c8a9e245f3f4738f65b1a484d0083dd0f0eb0528623c0b",
+  "outside_chars": 10927,
+  "record_top_px": 4660
+ }
+}

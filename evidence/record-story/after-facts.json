@@ -1,0 +1,193 @@
+{
+ "ucs-join": {
+  "outside_sha256": "a484350302b43029e01349e66e99eb84f7e6ea117ebba4c470f6eb75159e8805",
+  "outside_chars": 8738,
+  "record_top_px": 3568,
+  "first_paint_ms": 229,
+  "default_height_1440_px": 766,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 3568,
+  "banned": [],
+  "records_in_switch": 0,
+  "w1440": {
+   "default_height_px": 766,
+   "overflow_px": 0,
+   "marker_overlaps": 0,
+   "first_screen_words": [],
+   "turning_points": 2,
+   "episode_rows": 6,
+   "folds": 0,
+   "episode_titles": [
+    "Read 17 sources",
+    "Read 18 sources",
+    "Read a source, about 10 min",
+    "Ran 19 computations",
+    "Ran 12 computations, about 10 min each",
+    "No steps captured for 25 min"
+   ],
+   "expanded_height_px": 5671,
+   "expanded_overflow_px": 0,
+   "expanded_viewer_banned": [],
+   "json_tags": 0
+  },
+  "w390": {
+   "default_height_px": 1260,
+   "overflow_px": 0,
+   "marker_overlaps": 0,
+   "first_screen_words": [],
+   "turning_points": 2,
+   "episode_rows": 6,
+   "folds": 0,
+   "episode_titles": [
+    "Read 17 sources",
+    "Read 18 sources",
+    "Read a source, about 10 min",
+    "Ran 19 computations",
+    "Ran 12 computations, about 10 min each",
+    "No steps captured for 25 min"
+   ],
+   "expanded_height_px": 6184,
+   "expanded_overflow_px": 0,
+   "expanded_viewer_banned": [],
+   "json_tags": 0
+  }
+ },
+ "apn-critical-point": {
+  "outside_sha256": "8c0aac1004cc7151acec08fdeba79357ee353d115bc1139191eb1d939647e7ad",
+  "outside_chars": 15198,
+  "record_top_px": 5368,
+  "first_paint_ms": 217,
+  "default_height_1440_px": 3809,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 5368,
+  "banned": [],
+  "records_in_switch": 0
+ },
+ "bcww": {
+  "outside_sha256": "e1e55390d3092110d43820b3cba16a4256d1339b5c899005a19ebc41e6a1a2fc",
+  "outside_chars": 5371,
+  "record_top_px": 2990,
+  "first_paint_ms": 162,
+  "default_height_1440_px": 1888,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 2990,
+  "banned": [],
+  "records_in_switch": 4,
+  "w390_switch": {
+   "box_px": 336,
+   "content_px": 334,
+   "buttons": 4
+  },
+  "w390_overflow_px": 0
+ },
+ "ghz": {
+  "outside_sha256": "0a524139e8012c38e0d29af3deab57abf8ceeb7db20ae0c9e8011ddd721516e0",
+  "outside_chars": 5027,
+  "record_top_px": 2564,
+  "first_paint_ms": 150,
+  "default_height_1440_px": 1292,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 2564,
+  "banned": [],
+  "records_in_switch": 2
+ },
+ "linden-winter": {
+  "outside_sha256": "2d0ed49cb99f56764ca2eccf53cac34226300a23f71d7602e10bdd51762a49aa",
+  "outside_chars": 7979,
+  "record_top_px": 3973,
+  "first_paint_ms": 165,
+  "default_height_1440_px": 1711,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 3973,
+  "banned": [],
+  "records_in_switch": 0
+ },
+ "orientable-sequences": {
+  "outside_sha256": "7794b746d7b88e9384c8a9e245f3f4738f65b1a484d0083dd0f0eb0528623c0b",
+  "outside_chars": 10927,
+  "record_top_px": 4660,
+  "first_paint_ms": 238,
+  "default_height_1440_px": 1429,
+  "overflow_px": 0,
+  "outside_same_as_live": true,
+  "live_record_top_px": 4660,
+  "banned": [],
+  "records_in_switch": 0
+ },
+ "li-yuan-full-weight": {
+  "outside_sha256": "e3b7ee799dbac7c37820bff86e3116d8da00a0e697d8afae231d51da997e9e98",
+  "outside_chars": 15144,
+  "record_top_px": 4922,
+  "first_paint_ms": 197,
+  "default_height_1440_px": 1845,
+  "overflow_px": 0,
+  "banned": [],
+  "records_in_switch": 0,
+  "w1440": {
+   "default_height_px": 1845,
+   "overflow_px": 0,
+   "marker_overlaps": 0,
+   "first_screen_words": [
+    "play"
+   ],
+   "turning_points": 13,
+   "episode_rows": 13,
+   "folds": 3,
+   "episode_titles": [
+    "Read 5 sources",
+    "4 more episodes",
+    "Read 20 sources",
+    "The team's pages and the drafted README are not mounted in this sandbox \u2014 only inputs/, skills/, and the verifier sources are.",
+    "The Lab's check failed on rc1 at 20:16 UTC",
+    "Operator fact, checked outside the run: the compressed artifact in claim.json.md decodes to 109 entries in {1,2}.",
+    "2 more episodes",
+    "Read 6 sources",
+    "Operator citation fix: the play's labels are wrong.",
+    "4 quieter episodes",
+    "The Lab's check passed on rc2 at 20:46 UTC",
+    "The example profile reveals it: opencode children CAN get knowledge tools.",
+    "Search found 3 pages under pages/claim-cyclic-full-weight/"
+   ],
+   "expanded_height_px": 16404,
+   "expanded_overflow_px": 0,
+   "expanded_viewer_banned": [],
+   "json_tags": 0,
+   "check_callout": "Check passed, the Lab on rc2\n20:46:46 UTC\n\nThe Lab's check passed at 20:46:06 UTC on tag rc2: \u2026 SOLVED: the frozen cyclic-full-weight checker verified a refutation of li-yuan-3.2, and no dated source in its record table has published one\n\nWake input: the Lab's rc2 pass, from input blob sha256:0cf9e1"
+  },
+  "w390": {
+   "default_height_px": 3400,
+   "overflow_px": 0,
+   "marker_overlaps": 0,
+   "first_screen_words": [
+    "play"
+   ],
+   "turning_points": 13,
+   "episode_rows": 13,
+   "folds": 3,
+   "episode_titles": [
+    "Read 5 sources",
+    "4 more episodes",
+    "Read 20 sources",
+    "The team's pages and the drafted README are not mounted in this sandbox \u2014 only inputs/, skills/, and the verifier sources are.",
+    "The Lab's check failed on rc1 at 20:16 UTC",
+    "Operator fact, checked outside the run: the compressed artifact in claim.json.md decodes to 109 entries in {1,2}.",
+    "2 more episodes",
+    "Read 6 sources",
+    "Operator citation fix: the play's labels are wrong.",
+    "4 quieter episodes",
+    "The Lab's check passed on rc2 at 20:46 UTC",
+    "The example profile reveals it: opencode children CAN get knowledge tools.",
+    "Search found 3 pages under pages/claim-cyclic-full-weight/"
+   ],
+   "expanded_height_px": 24787,
+   "expanded_overflow_px": 0,
+   "expanded_viewer_banned": [],
+   "json_tags": 0
+  }
+ }
+}
