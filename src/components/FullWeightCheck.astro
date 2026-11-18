@@ -1,0 +1,51 @@
+---
+// Runs the counterexample's check in the reader's browser: the same arithmetic as /research/verify-li-yuan-109.py.
+---
+
+<div class="full-weight-check">
+  <button type="button" data-run>Run the check in this page</button>
+  <pre data-output aria-live="polite" hidden></pre>
+</div>
+
+<script>
+  import { runCheck } from '../lib/li-yuan-109'
+  for (const box of document.querySelectorAll('.full-weight-check')) {
+    const button = box.querySelector<HTMLButtonElement>('[data-run]')
+    const output = box.querySelector<HTMLPreElement>('[data-output]')
+    if (!button || !output) continue
+    button.addEventListener('click', () => {
+      const started = performance.now()
+      const lines = runCheck()
+      output.textContent = [...lines, `(${(performance.now() - started).toFixed(0)} ms in your browser)`].join('\n')
+      output.hidden = false
+    })
+  }
+</script>
+
+<style>
+  .full-weight-check {
+    margin: 1rem 0;
+  }
+  button {
+    font: 0.8rem var(--font-mono);
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+  }
+  button:hover {
+    background: var(--bg-alt);
+  }
+  button:focus-visible {
+    outline: 2px solid var(--c-action);
+    outline-offset: 2px;
+  }
+  pre {
+    margin-top: 0.6rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.75rem;
+  }
+</style>

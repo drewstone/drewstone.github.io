@@ -1,0 +1,145 @@
+---
+title: 'A counterexample to the Li-Yuan full-weight conjecture'
+description: 'A ternary cyclic code of length 109 with 0 outside its spectral support and only half its cosets inside still holds a codeword with no zero entry, so the "if" direction of Conjecture 4.2 of Li and Yuan is false. A check that runs in the page, how a team of AI agents found the word, and a billed cost of USD 0.38.'
+assessed: '2026-11-17'
+claim: 'Li and Yuan conjectured that certain ternary cyclic codes contain no codeword with every entry nonzero. A [109, 54] code that meets their conditions contains one, so the "if" direction of their Conjecture 4.2 (arXiv:2607.02239v1) is false.'
+limitation: 'The authors have not confirmed it yet. The search method was written by the operator, not found by the agents. Only the "if" direction is refuted; the "only if" direction and the true value of |N(109, 3)| are open.'
+area: 'Coding theory'
+order: 8
+---
+import FullWeightRing from '../../components/FullWeightRing.astro'
+import FullWeightCheck from '../../components/FullWeightCheck.astro'
+import ResearchBibliography from '../../components/ResearchBibliography.astro'
+
+Li and Yuan conjectured that a ternary cyclic code of prime length avoids full-weight codewords exactly when 0 is outside its spectral support and at most half of the nonzero cyclotomic cosets are inside it [[1]](#ref-1).
+At length 109 that is false: the code below meets both conditions and still contains a word whose 109 entries are all nonzero.
+A team of AI agents in my research lab found the word in a 0.9-second search, the lab's fixed checker (one the agents cannot change) verified it, and the run billed USD 0.38.
+You can check the word yourself: a button under [Why it is right](#why-it-is-right) runs the check in your browser, and the same check is a 35-line Python file.
+The search method was not theirs, and the one error that reached the checker was an array an agent copied by hand.
+
+## The conjecture
+
+Fix a prime $n > 3$ with $f = \operatorname{ord}_n(3)$ odd.
+The cyclotomic coset of $s$ is $C_s = \{s, 3s, 9s, \dots\} \bmod n$; the $r = (n-1)/f$ nonzero cosets each have $f$ elements.
+With $\zeta$ a primitive $n$-th root of unity in $\mathbb{F}_{3^f}$, a word $c \in \mathbb{F}_3^n$ has spectrum $\widehat{c}_j = \sum_i c_i \zeta^{ij}$, and $\mathcal{C}_S$ is the cyclic code of words whose spectrum vanishes outside $S$, a union of $t$ cosets.
+$\mathcal{N}(n,3)$ is the set of these codes with no full-weight codeword, no word with every $c_i \neq 0$.
+
+Conjecture 4.2 of [[1]](#ref-1) says $\mathcal{C}_S \in \mathcal{N}(n,3)$ if and only if $0 \notin S$ and $t \le r/2$, and it implies their Conjecture 4.1, $|\mathcal{N}(n,3)| = \sum_{j \le r/2} \binom{r}{j}$.
+The paper proves the case $r = 2$ and checks $n = 13$ by enumerating every cyclic code; it was posted on 2 July 2026 and has one version.
+
+Since $f$ is odd, negation sends each coset to a different one, its mirror.
+The paper's Theorem 4.2 rules out full-weight words when $S \cap (-S) = \emptyset$: such a word has $(c, c) = n \neq 0$, while that spectrum forces $(c, c) = 0$.
+One mirror pair escapes the argument and still has $t \le r/2$ when $r = 4$.
+After $n = 13$, the smallest prime with $f$ odd and $r \ge 4$ is $n = 109$: $\operatorname{ord}_{109}(3) = 27$, and the cosets are $C_1, C_2, C_4, C_8$ with $-C_1 = C_4$ and $-C_2 = C_8$.
+
+## The counterexample
+
+Let $S = C_1 \cup C_4$, so $\mathcal{C}_S$ is a $[109, 54]$ code with $0 \notin S$ and $t = 2 = r/2$.
+The conjecture says it has no full-weight word.
+This word, with 62 ones and 47 twos, is in it:
+
+<FullWeightRing />
+
+<details class="ui-disclosure">
+<summary>The 109 entries</summary>
+
+```text
+1,2,2,2,2,1,2,2,1,1,1,1,2,2,1,1,1,2,2,1,1,2,2,1,2,1,2,1,1,1,1,2,2,1,2,1,
+2,1,1,2,2,1,1,2,1,2,1,2,2,1,2,1,2,2,2,1,2,1,2,1,2,2,2,2,2,1,2,1,1,2,1,1,
+2,1,1,2,2,2,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,
+2
+```
+
+The checker received it as one zlib and base64 string, `eNqrVspTsjI0sNRRKi4tKMgvKlGyijbUMTSwiNVRSs5PSS3PL0oBCxlBoSGUhEAEG8aCqTHEUIUQQ6g1RDIRxjJCk0EWQyeN0OwlFsLNj60FADRhNEk=`.
+</details>
+
+$C_1 \cup C_4$ is the set of quadratic residues mod 109, so $\mathcal{C}_S$ is an even-like ternary quadratic-residue code; a coding theorist may know a shorter route to this word than our search.
+
+## Why it is right
+
+You do not need $\mathbb{F}_{3^{27}}$ to check it.
+Since $\widehat{c}_j = c(\zeta^j)$ for $c(x) = \sum_i c_i x^i$, the spectrum vanishes exactly where $\zeta^j$ is a root of $g(x) = \gcd(c(x), x^{109} - 1)$, a polynomial over $\mathbb{F}_3$:
+
+1. $\deg g = 55$, and since $3 \nmid 109$ the roots of $x^{109} - 1$ are distinct, so the spectrum has exactly 55 zeros.
+2. Roots over $\mathbb{F}_3$ are closed under cubing, so the zeros form a union of cosets, and $55 = 1 + 27 + 27$ forces $\{0\}$ and two nonzero cosets.
+3. $g$ equals its own reciprocal up to a scalar, so its roots are closed under $j \mapsto -j$, and the two cosets are a mirror pair.
+4. The spectrum is nonzero on exactly the other mirror pair: $0 \notin S$, $t = 2 = r/2$, and every entry of $c$ is 1 or 2.
+
+This button runs that computation in your browser:
+
+<FullWeightCheck />
+
+The same check is a 35-line Python file with no imports [[2]](#ref-2).
+Which mirror pair carries the spectrum depends on which root you call $\zeta$; with the lab checker's choice it is $C_1 \cup C_4$, and the permutation $i \mapsto 2i$ maps one mirror-pair code onto the other, so both hold full-weight words.
+The lab's checker also evaluated the whole spectrum in $\mathbb{F}_{3^{27}}$, and the operator recomputed it there separately.
+
+<details class="ui-disclosure">
+<summary>Why the paper's own theorems do not rule it out</summary>
+
+Theorem 4.3 of [[1]](#ref-1) could have forbidden this code, and does not reach it.
+It needs every nonempty union of cosets $T \subseteq S$ to satisfy (1) $T \cap (-T) = \emptyset$ or (2) some $\ell \neq 0$ with exactly one representation $\ell = a + b$, $a, b \in T$.
+For $T = S$ both fail: $S = -S$, and every nonzero $\ell$ has 13 or 14 representations.
+The count does break.
+Theorem 4.2 puts nine codes in $\mathcal{N}(109, 3)$: the zero code, the four single cosets and the four pairs that are not mirrors.
+Conjecture 4.1's 11 also counted the two mirror pairs, so it can only hold at $n = 109$ if the "only if" direction fails there too.
+</details>
+
+## How the agents found it
+
+A lead and a writer ran GLM-5.3 in opencode, an open-source coding agent, each in its own sandbox.
+Their output is a claim: a short write-up with the codeword attached, which the fixed checker decides in three stages: format, mathematics, and novelty against dated sources.
+The operator is the Claude Code session that runs the lab for me; it watches runs from outside and can message a team.
+
+The method was the operator's.
+A 2-hour pilot the day before ran annealed walks toward fewer zero entries and stalled at 7 zeros, which says nothing: a random-like $[109, 54]$ code has about $9 \times 10^{14}$ words with 7 zeros and about $3.7 \times 10^{6}$ with none.
+The operator wrote that count into the run's brief with the method: a full-weight word is nonzero on every information set, so walking all $2^{53}$ sign patterns on 54 information coordinates passes every one, and the first should come after about $(3/2)^{55} \approx 5 \times 10^{9}$ steps.
+Before the run, the brief recorded 0.35 as the chance of a verified refutation within 4 hours.
+
+The agents built it and got it right.
+All times are UTC on 17 November 2026; the run started at 19:44.
+The lead chose an exhaustive Gray-code walk over more annealing, built the code "exactly as the checker constructs it (same irreducible modulus, same ζ)", and validated the search at $n = 13$, where the paper's enumeration gives the answer.
+At 20:03:59 the C search on 8 cores printed `FOUND thread 5 outer_step 9058516 lane 21 full=1 sum=0`, after about $1.8 \times 10^{9}$ patterns and 0.9 seconds, earlier than expected about one time in three.
+Within 25 seconds the lead had recomputed the word's spectrum and a copy of the checker in its sandbox had accepted it.
+
+Then a typo cost thirty minutes.
+The first submission to the checker, rc1, failed at 20:16 with `artifact.codeword must be 109 entries in {0, 1, 2}`.
+The lead's local copy passed, so it concluded that "the corruption happens in the Lab's unwrap/collector", re-typed the word as a compressed string, mistyped that too, and told the writer the pipeline had mangled the array.
+At 20:28 the operator sent one fact checked outside the run: the array in the write-up had 110 entries, and that, not the lab, failed rc1.
+The lead agreed, found the line now held 112 entries, watched a code-generated paste come out at 110, and stopped: "hand-copying long arrays is unworkable."
+A second message fixed the citations (the brief's source said conj3.2; the PDF prints Conjecture 4.2) and asked for the Theorem 4.3 check, which the lead did by 20:40.
+The second submission, rc2, passed all three stages at 20:46; the run settled at 20:52, 68 minutes after it started.
+
+Five agents took part: the lead, three spawns of the writer (the first never started; the other two lacked tools their setup asked for) and a helper the last writer spawned to read the write-up back.
+
+## What it cost
+
+| | Pilot, Nov 16 | This run |
+| --- | --- | --- |
+| Wall time | 2 h | 68 min |
+| Billed cash, sandboxes | USD 0.53 | USD 0.38 (1.98 box-hours on 4 boxes) |
+| Model calls at list API prices | about USD 1.50 | about USD 7.53, a floor |
+| Result | best word had 7 zeros | verified counterexample |
+
+The model calls ran on a flat-rate coding-plan subscription and added nothing to the bill.
+The list-price figure prices the tokens the runtime metered per agent attempt, 22.5 million input (22.0 million of them cache reads) and 260,584 output, at base rates; two attempts went unmetered, so it is a floor.
+
+## What it says about research agents
+
+A person with the method note and a 200-line script could have done this in an afternoon.
+The hard step was the count that said where the words are and why annealing could not find them, and it came from outside the team.
+The agents did the tedious part well: field arithmetic matched to the checker, validation at the one length where the answer is known, and no claim until the checker agreed.
+They failed in a specific way: a low-cost model copied 109 numbers by hand, got 110, and blamed the infrastructure with confidence.
+The fixed checker refused the wrong word, and the operator, reading from outside the run, found the cause and sent it in one message.
+
+So if you build a research-agent team, spend on the checker and the method before the model, and give the agents one hard rule: every number a claim carries is produced by code, never typed.
+
+## Status
+
+I wrote to Li and Yuan about the counterexample on 17 November 2026, and they have not replied yet, so the authors have not confirmed it.
+We found no published refutation, and the checker's novelty stage found none among its dated sources.
+This refutes only the "if" direction at $n = 109$; the "only if" direction and the value of $|\mathcal{N}(109, 3)|$ are open.
+
+<ResearchBibliography entries={[
+  { authors: 'Y. Li and P. Yuan', title: 'Cyclic Codes and Cyclically Covering Subspaces over Finite Fields', url: 'https://arxiv.org/abs/2607.02239v1', publication: 'arXiv:2607.02239v1, July 2, 2026, the only version. Section 4: Theorems 4.2 and 4.3, Corollary 4.3, Conjectures 4.1 and 4.2.' },
+  { title: 'verify-li-yuan-109.py', url: '/research/verify-li-yuan-109.py', publication: 'Python 3, standard library only. Prints the coset structure, the weight, the entry sum, deg gcd(c(x), x^109 - 1) = 55 and the self-reciprocity of that gcd.' },
+]} />

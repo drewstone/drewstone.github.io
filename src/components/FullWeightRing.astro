@@ -1,0 +1,164 @@
+---
+// The n = 109 codeword as a ring: entries coloured by value outside, its spectrum's support inside.
+import { codeword, cosets, n } from '../lib/li-yuan-109'
+
+const size = 440
+const mid = size / 2
+const outer = 188
+const inner = 132
+// Index i sits at angle 2πi/n, clockwise from the top, so j and -j are mirror images across the vertical axis.
+const at = (i: number, radius: number) => {
+  const angle = (2 * Math.PI * i) / n - Math.PI / 2
+  return { x: mid + radius * Math.cos(angle), y: mid + radius * Math.sin(angle) }
+}
+const entries = codeword.map((value, i) => ({ i, value, ...at(i, outer) }))
+const spectrum = Array.from({ length: n }, (_, j) => ({
+  j,
+  kind: j === 0 ? 'zero' : cosets[1].has(j) ? 'c1' : cosets[4].has(j) ? 'c4' : 'off',
+  ...at(j, inner),
+}))
+const ticks = [0, 27, 54, 81].map((i) => ({ i, ...at(i, outer + 19) }))
+const ones = codeword.filter((value) => value === 1).length
+---
+
+<figure class="full-weight-ring">
+  <svg viewBox={`0 0 ${size} ${size}`} role="img" aria-labelledby="ring-title ring-desc">
+    <title id="ring-title">The 109 entries of the codeword and the support of its spectrum</title>
+    <desc id="ring-desc">
+      Outer ring: {n} entries, {ones} equal to 1 and {n - ones} equal to 2, none zero. Inner ring: the spectrum is nonzero on
+      the 27 indices of C_1 and the 27 of C_4, mirror images across the vertical axis, and zero at 0 and on C_2 and C_8.
+    </desc>
+    <line class="axis" x1={mid} y1={mid - inner - 16} x2={mid} y2={mid + inner + 16} />
+    {entries.map((entry) => (
+      <circle class={entry.value === 1 ? 'one' : 'two'} cx={entry.x.toFixed(2)} cy={entry.y.toFixed(2)} r="4.3">
+        <title>{`c_${entry.i} = ${entry.value}`}</title>
+      </circle>
+    ))}
+    {ticks.map((tick) => (
+      <text class="tick" x={tick.x.toFixed(2)} y={tick.y.toFixed(2)} text-anchor="middle" dominant-baseline="middle">{tick.i}</text>
+    ))}
+    {spectrum.map((mark) =>
+      mark.kind === 'off' ? (
+        <circle class="off" cx={mark.x.toFixed(2)} cy={mark.y.toFixed(2)} r="1.6"><title>{`ĉ_${mark.j} = 0`}</title></circle>
+      ) : mark.kind === 'zero' ? (
+        <circle class="zero" cx={mark.x.toFixed(2)} cy={mark.y.toFixed(2)} r="3.6"><title>ĉ_0 = 0</title></circle>
+      ) : (
+        <rect
+          class={mark.kind}
+          x={(mark.x - 3).toFixed(2)}
+          y={(mark.y - 3).toFixed(2)}
+          width="6"
+          height="6"
+          transform={`rotate(${((360 * mark.j) / n).toFixed(2)} ${mark.x.toFixed(2)} ${mark.y.toFixed(2)})`}
+        >
+          <title>{`ĉ_${mark.j} ≠ 0 (C_${mark.kind === 'c1' ? 1 : 4})`}</title>
+        </rect>
+      ),
+    )}
+    <text class="label" x={mid} y={mid - 8} text-anchor="middle">{ones} ones, {n - ones} twos</text>
+    <text class="label muted" x={mid} y={mid + 12} text-anchor="middle">spectrum on C₁ ∪ C₄</text>
+  </svg>
+  <figcaption>
+    <span class="key"><span class="swatch one"></span>entry 1</span>
+    <span class="key"><span class="swatch two"></span>entry 2</span>
+    <span class="key"><span class="swatch c1"></span>C₁</span>
+    <span class="key"><span class="swatch c4"></span>C₄ = −C₁</span>
+    <span class="key"><span class="swatch off"></span>spectrum zero</span>
+    <span class="caption">
+      Outer ring: entry c<sub>i</sub> at position i, clockwise from the top. Inner ring: spectrum index j. The dashed axis
+      maps j to −j, so it carries C₁ onto C₄.
+    </span>
+  </figcaption>
+</figure>
+
+<style>
+  .full-weight-ring {
+    margin: 1.5rem auto;
+    max-width: 28rem;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .axis {
+    stroke: var(--border-strong);
+    stroke-dasharray: 3 4;
+  }
+  .one {
+    fill: var(--c-info);
+  }
+  .two {
+    fill: var(--c-run);
+  }
+  .c1 {
+    fill: var(--fg);
+  }
+  .c4 {
+    fill: var(--bg);
+    stroke: var(--fg);
+    stroke-width: 1.4;
+  }
+  .off {
+    fill: var(--border-strong);
+  }
+  .zero {
+    fill: none;
+    stroke: var(--fg-muted);
+    stroke-width: 1.4;
+  }
+  .tick {
+    font: 10px var(--font-mono);
+    fill: var(--fg-faint);
+  }
+  .label {
+    font: 13px var(--font-mono);
+    fill: var(--fg);
+  }
+  .muted {
+    fill: var(--fg-muted);
+  }
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    margin-top: 0.5rem;
+    color: var(--fg-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font: 0.75rem var(--font-mono);
+  }
+  .swatch {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+  }
+  .swatch.one {
+    background: var(--c-info);
+  }
+  .swatch.two {
+    background: var(--c-run);
+  }
+  .swatch.c1 {
+    border-radius: 0;
+    background: var(--fg);
+  }
+  .swatch.c4 {
+    border-radius: 0;
+    border: 1.4px solid var(--fg);
+  }
+  .swatch.off {
+    width: 0.35rem;
+    height: 0.35rem;
+    background: var(--border-strong);
+  }
+  .caption {
+    flex-basis: 100%;
+  }
+</style>
