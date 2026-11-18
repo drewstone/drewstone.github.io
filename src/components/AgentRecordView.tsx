@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AgentRecord, RecordWorkGraph, type BehaviorReport } from '@tangle-network/sandbox-ui/record'
 import type { RecordSelection, RunRecord } from '@drewstone/agent-record/record'
+import annotations from '../data/record-annotations.json'
 
 /** Old event ids per record, each mapped to its current id (research/publications/idmap.json). */
 export type EventIdMap = Record<string, Record<string, string>>
@@ -18,8 +19,19 @@ function resolveEvent(record: RunRecord | undefined, idmap: EventIdMap, id: stri
   return undefined
 }
 
+type Annotations = Record<string, Record<string, Record<string, unknown>>>
+/** What the site knows about a frozen record and the record does not say: which events were text given to an agent
+ *  (`role: 'user'`) and which carried an outside check's verdict (`check`), by event id (src/data/record-annotations.json).
+ *  The published file is unchanged; the viewer reads the annotated copy. */
+function annotate(record: RunRecord): RunRecord {
+  const notes = (annotations as Annotations)[record.runId]
+  if (!notes) return record
+  return { ...record, events: record.events.map((event) => (notes[event.id] ? { ...event, detail: { ...event.detail, ...notes[event.id] } } : event)) } as RunRecord
+}
+
 /** URL ownership stays with the site; the shared viewer has no routing side effects. */
-export default function AgentRecordView({ records, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: readonly BehaviorReport[] }) {
+export default function AgentRecordView({ records: published, idmap = {}, behaviors = [] }: { records: RunRecord[]; idmap?: EventIdMap; behaviors?: readonly BehaviorReport[] }) {
+  const records = useMemo(() => published.map(annotate), [published])
   const [selection, setSelection] = useState<RecordSelection>({ runId: records[0]?.runId ?? '' })
   useEffect(() => {
     const read = () => {

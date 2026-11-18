@@ -12,11 +12,11 @@
   "bytes": 1142862882,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.39.2",
-    "adapter": "2.6.0",
+    "version": "4.0.0",
+    "adapter": "2.8.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:ae418ddcd56339cab87d76e248a19fa5a76118c13e59c3344a49340f6fcbd45d",
+  "recordDigest": "sha256:798e00724c6e32e56ed93277ffb7f5b9688167af906b66186d901844ee8a60ba",
   "overlay": "overlay.json",
   "public": "public/research/records/research-math-20261003system4.json"
 }

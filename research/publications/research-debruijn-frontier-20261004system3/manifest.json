@@ -12,11 +12,11 @@
   "bytes": 351486944,
   "converter": {
     "package": "@drewstone/agent-record",
-    "version": "0.33.1",
-    "adapter": "2.4.0",
+    "version": "4.0.0",
+    "adapter": "2.8.0",
     "idScheme": "anchor.v1"
   },
-  "recordDigest": "sha256:f2a203dc0335aa729f8077f5daa63c5cff5a1d7f7de81b741c06fa4592de5146",
+  "recordDigest": "sha256:a663ce789496e0c604c760baa4a8ca61415114bfa9a36325b248a322f5331a75",
   "overlay": "overlay.json",
   "public": "public/research/records/research-debruijn-frontier-20261004system3.json"
 }
