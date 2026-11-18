@@ -178,6 +178,10 @@ p {
 
 a {
   color: var(--fg);
+}
+
+/* The agent record styles its own links; the essay underline stops at its edge. */
+a:where(:not(.agent-record a)) {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
@@ -185,7 +189,7 @@ a {
   transition: text-decoration-color 0.15s;
 }
 
-a:hover {
+a:where(:not(.agent-record a)):hover {
   text-decoration-color: var(--fg);
 }
 
