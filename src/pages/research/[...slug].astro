@@ -118,11 +118,14 @@ const sectionLinks = [
   .claim {
     font-size: 1rem;
   }
+  /* Sticky across the column's full width with the page background, so body text scrolls under it, not beside it. */
   .page-contents {
     position: sticky;
-    top: 0.4rem;
+    top: 0;
     z-index: 4;
     margin: 0 0 1.25rem;
+    padding: 0.4rem 0 0.3rem;
+    background: var(--bg);
     font: 0.72rem var(--font-mono);
   }
   .page-contents > summary {
