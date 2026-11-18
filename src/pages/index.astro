@@ -1,11 +1,10 @@
 ---
 import Base from '../layouts/Base.astro'
 import { getCollection } from 'astro:content'
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-)
+import { byDateDesc, byPublishedDesc } from '../lib/ordering'
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(byDateDesc)
 const latestResearch = (await getCollection('research'))
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf() || a.data.order - b.data.order)
+  .sort(byPublishedDesc)
   .slice(0, 8)
 const originals = posts.filter((p) => p.data.original)
 ---
