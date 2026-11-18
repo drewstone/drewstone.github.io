@@ -1,9 +1,10 @@
 ---
 title: 'A counterexample to the Li-Yuan full-weight conjecture'
 description: 'A ternary cyclic code of length 109 with 0 outside its spectral support and only half its cosets inside still holds a codeword with no zero entry, so the "if" direction of Conjecture 4.2 of Li and Yuan is false. A check that runs in the page, how a team of AI agents found the word, and a billed cost of USD 0.38.'
-assessed: '2026-11-17'
-claim: 'Li and Yuan conjectured that certain ternary cyclic codes contain no codeword with every entry nonzero. A [109, 54] code that meets their conditions contains one, so the "if" direction of their Conjecture 4.2 (arXiv:2607.02239v1) is false.'
-limitation: 'The authors have not confirmed it yet. The search method was written by the operator, not found by the agents. Only the "if" direction is refuted; the "only if" direction and the true value of |N(109, 3)| are open.'
+published: '2026-11-17'
+assessed: '2026-11-18'
+claim: 'A ternary cyclic code of length 109 refutes the sufficiency claim in Conjecture 4.2 of Li and Yuan. Exactly nine codes at this length have no full-weight word. Conjecture 4.1 predicts eleven.'
+limitation: 'The count is specific to length 109. The operator supplied the search method and the agents found the word.'
 area: 'Coding theory'
 order: 8
 ---
@@ -12,7 +13,7 @@ import FullWeightCheck from '../../components/FullWeightCheck.astro'
 import ResearchBibliography from '../../components/ResearchBibliography.astro'
 
 Li and Yuan conjectured that a ternary cyclic code of prime length avoids full-weight codewords exactly when 0 is outside its spectral support and at most half of the nonzero cyclotomic cosets are inside it [[1]](#ref-1).
-At length 109 that is false: the code below meets both conditions and still contains a word whose 109 entries are all nonzero.
+The code below meets both conditions at length 109 and contains a word whose 109 entries are all nonzero. Exactly nine cyclic codes at this length contain no full-weight word.
 A team of AI agents in my research lab found the word in a 0.9-second search, the lab's fixed checker (one the agents cannot change) verified it, and the run billed USD 0.38.
 You can check the word yourself: a button under [Why it is right](#why-it-is-right) runs the check in your browser, and the same check is a 35-line Python file.
 The search method was not theirs, and the one error that reached the checker was an array an agent copied by hand.
@@ -79,10 +80,15 @@ The lab's checker also evaluated the whole spectrum in $\mathbb{F}_{3^{27}}$, an
 Theorem 4.3 of [[1]](#ref-1) could have forbidden this code, and does not reach it.
 It needs every nonempty union of cosets $T \subseteq S$ to satisfy (1) $T \cap (-T) = \emptyset$ or (2) some $\ell \neq 0$ with exactly one representation $\ell = a + b$, $a, b \in T$.
 For $T = S$ both fail: $S = -S$, and every nonzero $\ell$ has 13 or 14 representations.
-The count does break.
-Theorem 4.2 puts nine codes in $\mathcal{N}(109, 3)$: the zero code, the four single cosets and the four pairs that are not mirrors.
-Conjecture 4.1's 11 also counted the two mirror pairs, so it can only hold at $n = 109$ if the "only if" direction fails there too.
 </details>
+
+## Why the exact count is nine
+
+Yangcheng Li independently checked the witness and pointed out how it gives the exact count in Conjecture 4.1 at length 109. If the support $S$ contains frequency zero, its code contains the all-one word. If $S$ contains either whole mirror pair, its code contains the corresponding full-weight word constructed above. Enlarging the support preserves that word.
+
+This leaves supports that omit zero and choose at most one coset from each mirror pair. Their codes are self-orthogonal because $S$ and $-S$ are disjoint. A ternary word of weight 109 has self-inner product $109 \equiv 1 \pmod{3}$, since each nonzero entry squares to one. Such a word cannot belong to a self-orthogonal code.
+
+For each of the two mirror pairs we may choose either coset or neither. These choices give exactly $3^2=9$ codes, including the zero code. This count attains the lower bound in Theorem 4.2. Conjecture 4.1 predicts $1+4+6=11$ and fails at this length.
 
 ## How the agents found it
 
@@ -135,9 +141,7 @@ So if you build a research-agent team, spend on the checker and the method befor
 
 ## Status
 
-I wrote to Li and Yuan about the counterexample on 17 November 2026, and they have not replied yet, so the authors have not confirmed it.
-We found no published refutation, and the checker's novelty stage found none among its dated sources.
-This refutes only the "if" direction at $n = 109$; the "only if" direction and the value of $|\mathcal{N}(109, 3)|$ are open.
+I sent the witness to the authors on 17 November 2026 and received their response the following day. At this length, each of the nine codes without a full-weight word satisfies both spectral conditions in Conjecture 4.2.
 
 <ResearchBibliography entries={[
   { authors: 'Y. Li and P. Yuan', title: 'Cyclic Codes and Cyclically Covering Subspaces over Finite Fields', url: 'https://arxiv.org/abs/2607.02239v1', publication: 'arXiv:2607.02239v1, July 2, 2026, the only version. Section 4: Theorems 4.2 and 4.3, Corollary 4.3, Conjectures 4.1 and 4.2.' },
