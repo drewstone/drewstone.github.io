@@ -836,7 +836,18 @@ async function changedSinceBase() {
   const git = async (...args) => (await exec('git', args, { cwd: ROOT })).stdout.trim()
   const base = await git('merge-base', 'HEAD', 'origin/main').catch(() => '')
   if (!base) return [...GATED, POSTS_GATED]
-  const changed = (await git('diff', '--name-only', base, 'HEAD', '--', ...GATED, POSTS_GATED)).split('\n').filter(Boolean)
+  // package.json reaches a store gate only through a converter verify loads: an alias `<CONVERTER>-<version>`, or the
+  // main dependency while it is a version a manifest pins. A viewer dependency bump changes neither.
+  const converters = async (tree) => {
+    const pkg = JSON.parse((await git('show', `${tree}:package.json`).catch(() => '')) || '{}')
+    const pins = await Promise.all((await git('ls-tree', '--name-only', `${tree}:research/publications`).catch(() => '')).split('\n').filter(Boolean)
+      .map(async (id) => JSON.parse((await git('show', `${tree}:research/publications/${id}/manifest.json`).catch(() => '')) || '{}').converter?.version))
+    const main = pkg.dependencies?.[CONVERTER] ?? ''
+    return JSON.stringify([Object.entries(pkg.devDependencies ?? {}).filter(([name]) => name.startsWith(`${CONVERTER}-`)), pins.some((version) => version && main.includes(version)) ? main : ''])
+  }
+  const listed = (await git('diff', '--name-only', base, 'HEAD', '--', ...GATED, POSTS_GATED)).split('\n').filter(Boolean)
+  const pinsMoved = listed.includes('package.json') && (await converters(base)) !== (await converters('HEAD'))
+  const changed = listed.filter((path) => path !== 'package.json' || pinsMoved)
   if (changed.some((path) => !path.startsWith(POSTS_GATED))) return changed
   const idsAt = async (tree, file) => JSON.stringify(recordIdsOf(/^---\n([\s\S]*?)\n---/.exec((await git('show', `${tree}:${file}`).catch(() => '')))?.[1] ?? ''))
   return (await Promise.all(changed.map(async (file) => (await idsAt(base, file)) !== (await idsAt('HEAD', file))))).some(Boolean) ? changed : []
