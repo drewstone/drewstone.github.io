@@ -102,8 +102,8 @@ const sectionLinks = [
     }
   </script>
   {shown.length > 0 && (
-    <section id="agent-record" class="record">
-      <h2>Agent record</h2>
+    <section id="agent-record" class="record" aria-labelledby="agent-record-title">
+      <h2 id="agent-record-title">Agent record</h2>
       {replays.length > 0 && (
         <p class="record-status">
           These replays use the original run logs. Each published excerpt carries its source digest. The evidence store has yet to sign an independent rebuild.
@@ -221,11 +221,17 @@ const sectionLinks = [
     }
   }
   .record {
-    margin-top: 1.75rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding-top: clamp(1.25rem, 3vw, 2rem);
+    border-top: 1px solid var(--border);
+    scroll-margin-top: 1.5rem;
+  }
+  .record > h2 {
+    margin: 0 0 0.5rem;
   }
   .record-status {
     max-width: var(--max-width);
-    margin: 0 auto 0.9rem;
+    margin: 0 0 1.5rem;
     font-size: 0.9rem;
     color: var(--fg-muted);
   }
